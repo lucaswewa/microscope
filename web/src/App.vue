@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import AppShell from './app/AppShell.vue'
+import OverlayProvider from './ui/OverlayProvider.vue'
 </script>
 
 <template>
-  <AppShell />
+  <OverlayProvider>
+    <AppShell />
+  </OverlayProvider>
 </template>

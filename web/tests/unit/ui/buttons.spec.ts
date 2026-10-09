@@ -1,6 +1,6 @@
 import add from '@material-symbols/svg-400/outlined/add.svg?raw'
-import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import AppButton from '@/ui/AppButton.vue'
 import IconButton from '@/ui/IconButton.vue'
@@ -34,10 +34,37 @@ describe('AppButton', () => {
 })
 
 describe('IconButton', () => {
-  it('is named by its label, which is also its tooltip', () => {
-    const button = mount(IconButton, { props: { icon: add, label: 'Add' } }).get('button')
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('is named by its label, which is also its tooltip on keyboard focus', async () => {
+    const wrapper = mount(IconButton, {
+      props: { icon: add, label: 'Add' },
+      attachTo: document.body,
+    })
+    const button = wrapper.get('button')
     expect(button.attributes('aria-label')).toBe('Add')
-    expect(button.attributes('title')).toBe('Add')
+    expect(button.attributes('title')).toBeUndefined()
     expect(button.text()).toBe('')
+    button.element.focus()
+    await flushPromises()
+    expect(document.querySelector('[role="tooltip"]')?.textContent).toBe('Add')
+    const description = document.getElementById(button.attributes('aria-describedby')!)
+    expect(description?.textContent).toContain('Add')
+  })
+
+  it('passes attributes and listeners to the button', async () => {
+    const onClick = vi.fn()
+    const wrapper = mount(IconButton, {
+      props: { icon: add, label: 'Add' },
+      attrs: { disabled: true, onClick, 'data-test': 'x' },
+    })
+    const button = wrapper.get('button')
+    expect(button.element.disabled).toBe(true)
+    expect(button.attributes('data-test')).toBe('x')
+    button.element.disabled = false
+    await button.trigger('click')
+    expect(onClick).toHaveBeenCalledOnce()
   })
 })
