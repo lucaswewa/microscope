@@ -26,8 +26,7 @@ Milestone 1 targets Windows x86_64 ([ADR-0003](docs/adr/0003-milestone-1-platfor
 
 - Windows x86_64.
 - [rustup](https://rustup.rs/), with the MSVC toolchain and Visual Studio's C++ build tools. The repository pins its compiler (Rust 1.98.1) in `rust-toolchain.toml`; `rustup toolchain install` in the repository installs it.
-
-The web app's prerequisites arrive with P04.
+- [Node.js](https://nodejs.org/) 24 LTS, with npm, for the web app.
 
 ### Build and check
 
@@ -51,6 +50,30 @@ It listens on <http://127.0.0.1:5000/> (`--host` and `--port` change that). The 
 Logs go to the console, to daily files in `.microscope/logs/`, and to the server log at <http://127.0.0.1:5000/api/v1/log/>; `/api/v1/logfile/` downloads today's file. `--debug` adds DEBUG events from the application and `teta-wot` ([ADR-0008](docs/adr/0008-server-logging-and-log-endpoints.md)).
 
 The workspace's crates and the rules between them are described in [ADR-0005](docs/adr/0005-repository-layout-and-crate-boundaries.md).
+
+### The web app
+
+The web app is in `web/` ([ADR-0009](docs/adr/0009-frontend-toolchain.md)):
+
+```powershell
+cd web
+npm ci
+npm run dev          # http://localhost:5173/, with /api forwarded to the server on port 5000
+```
+
+These are the checks CI runs, plus the end-to-end tests:
+
+```powershell
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run build
+npx playwright install chromium   # once per machine
+npm run test:e2e
+```
+
+`MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`. The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
 
 ### Contributing
 

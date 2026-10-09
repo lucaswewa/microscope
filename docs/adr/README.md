@@ -23,5 +23,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0006](0006-own-the-server-lifecycle-around-teta-wots-runtime.md) | Own the server lifecycle around `teta-wot`'s runtime | Accepted | P02 |
 | [0007](0007-api-prefix-and-openflexure-mirrored-names.md) | API prefix `/api/v1` and OpenFlexure-mirrored names | Accepted | P02 |
 | [0008](0008-server-logging-and-log-endpoints.md) | Server logging and log endpoints | Accepted | P03 |
+| [0009](0009-frontend-toolchain.md) | Frontend toolchain | Accepted | P04 |
+| [0010](0010-rules-for-a-tauri-ready-web-app.md) | Rules for a Tauri-ready web app | Accepted | P04 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.
