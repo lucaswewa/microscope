@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.app.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "tests/unit/**/*"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "tests/unit/**/*", "tests/contract/**/*"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
     "types": ["node"]

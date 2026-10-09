@@ -53,3 +53,39 @@ jobs:
         run: npm run test:unit
       - name: Build
         run: npm run build
+
+  contract:
+    name: Contract (Windows x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the server
+        run: cargo build -p microscope-server --locked
+      - name: Install
+        run: npm ci
+        working-directory: web
+      # The server must run in the same step as the tests: on Windows, the
+      # runner stops a step's processes when the step ends.
+      - name: Contract tests against a running server
+        working-directory: web
+        env:
+          MICROSCOPE_API_URL: http://127.0.0.1:5090/api/v1/
+        run: |
+          $server = Start-Process -PassThru -FilePath ../target/debug/microscope-server.exe -WorkingDirectory .. -ArgumentList '-c', 'configs/simulation.json', '--port', '5090' -RedirectStandardOutput ../server.log -RedirectStandardError ../server.err.log
+          $ready = $false
+          for ($i = 0; $i -lt 60 -and -not $ready; $i++) {
+            try { Invoke-RestMethod http://127.0.0.1:5090/api/v1/health | Out-Null; $ready = $true } catch { Start-Sleep -Seconds 1 }
+          }
+          $status = 1
+          if ($ready) { npm run test:contract; $status = $LASTEXITCODE }
+          Stop-Process -Id $server.Id
+          if ($status -ne 0) { Get-Content ../server.log, ../server.err.log }
+          exit $status

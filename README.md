@@ -73,6 +73,8 @@ npx playwright install chromium   # once per machine
 npm run test:e2e
 ```
 
+`npm run test:contract` runs the web app's WoT client against a running server, whose API root is `MICROSCOPE_API_URL` (by default `http://127.0.0.1:5000/api/v1/`). CI runs it against a fresh server.
+
 `MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`.
 
 Two pages exist only in development, each showing light and dark side by side:
