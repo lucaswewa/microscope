@@ -13,4 +13,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P00 | [Docs scaffolding and foundational ADRs](P00-docs-scaffolding.md) | Done |
 | P01 | [Rust workspace and CI](P01-rust-workspace.md) | Done |
 | P02 | [Server lifecycle and composed router](P02-server-lifecycle.md) | Done |
-| P03 | [Server logging and log endpoints](P03-server-logging.md) | In review |
+| P03 | [Server logging and log endpoints](P03-server-logging.md) | Done |
+| P04 | [Web app scaffold and tooling](P04-web-scaffold.md) | In review |

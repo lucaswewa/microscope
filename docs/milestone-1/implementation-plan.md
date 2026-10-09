@@ -381,13 +381,13 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P00 | Docs scaffolding and foundational ADRs | — | S | 0001–0004 | Done |
 | P01 | Rust workspace and CI | P00 | S | 0005 | Done |
 | P02 | Server lifecycle and composed router | P01 | M | 0006, 0007 | Done |
-| P03 | Server logging and log endpoints | P02 | M | 0008 | In review |
+| P03 | Server logging and log endpoints | P02 | M | 0008 | Done |
 
 ### Stage 1: Web foundations
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P04 | Web app scaffold and tooling | P01 | M | 0009, 0010 | Planned |
+| P04 | Web app scaffold and tooling | P01 | M | 0009, 0010 | In review |
 | P05 | OpenFlexure reference screenshots | P04 | S | — | Planned |
 | P06 | Design tokens and theme switching | P04, P05 | M | 0011 | Planned |
 | P07 | App shell and navigation rail | P06 | M | 0012 | Planned |
