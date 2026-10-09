@@ -27,5 +27,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0010](0010-rules-for-a-tauri-ready-web-app.md) | Rules for a Tauri-ready web app | Accepted | P04 |
 | [0011](0011-design-tokens-and-theming.md) | Design tokens and theming | Accepted | P06 |
 | [0012](0012-icon-set.md) | Icon set | Accepted | P07 |
+| [0013](0013-own-components-on-reka-ui-primitives.md) | Own components on Reka UI primitives | Accepted | P08 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

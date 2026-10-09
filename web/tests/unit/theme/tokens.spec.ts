@@ -86,6 +86,7 @@ const PAIRS: [string, string, number][] = [
   ['--color-accent-text', '--color-surface-rail', 4.5],
   ['--color-accent-text', '--color-surface-raised', 4.5],
   ['--color-text', '--color-accent-subtle', 4.5],
+  ['--color-accent-text', '--color-accent-subtle', 4.5],
   ['--color-on-accent', '--color-accent', 4.5],
   ['--color-on-accent', '--color-accent-hover', 4.5],
   ['--color-on-accent', '--color-accent-pressed', 4.5],

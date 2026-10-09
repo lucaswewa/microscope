@@ -44,6 +44,14 @@ describe('the app', () => {
     expect(wrapper.text()).toContain('Section: camera')
   })
 
+  it('has a gallery of the UI components in both themes, in development', async () => {
+    const app = await mountApp('/dev/components')
+    wrapper = app.wrapper
+    expect(app.router.currentRoute.value.name).toBe('dev-components')
+    const panels = wrapper.findAll('section[data-theme]')
+    expect(panels.map((panel) => panel.attributes('data-theme'))).toEqual(['light', 'dark'])
+  })
+
   it('says so when no host is provided', () => {
     const NeedsHost = defineComponent({
       setup() {

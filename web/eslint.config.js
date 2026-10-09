@@ -4,6 +4,12 @@ import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescri
 import pluginVue from 'eslint-plugin-vue'
 import { globalIgnores } from 'eslint/config'
 
+const hashHistoryOnly = {
+  name: 'vue-router',
+  importNames: ['createWebHistory'],
+  message: 'Routes live in the hash: use createWebHashHistory (ADR-0010).',
+}
+
 // Formatting is Prettier's job (`npm run format:check`), so the ESLint
 // rules that overlap with it are turned off.
 export default defineConfigWithVueTs(
@@ -22,10 +28,10 @@ export default defineConfigWithVueTs(
         'error',
         {
           paths: [
+            hashHistoryOnly,
             {
-              name: 'vue-router',
-              importNames: ['createWebHistory'],
-              message: 'Routes live in the hash: use createWebHashHistory (ADR-0010).',
+              name: 'reka-ui',
+              message: 'Use the components in src/ui, which wrap Reka UI (ADR-0013).',
             },
           ],
         },
@@ -46,6 +52,13 @@ export default defineConfigWithVueTs(
         },
       ],
     },
+  },
+  {
+    // Only the UI components use Reka UI directly (ADR-0013). Rule options
+    // don't merge between blocks, so this repeats the router rule above.
+    name: 'app/ui-components',
+    files: ['src/ui/**/*.{ts,vue}'],
+    rules: { 'no-restricted-imports': ['error', { paths: [hashHistoryOnly] }] },
   },
   skipFormatting,
 )
