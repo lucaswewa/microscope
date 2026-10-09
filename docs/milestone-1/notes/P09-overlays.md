@@ -1,7 +1,7 @@
 # P09: UI components II: overlays and feedback
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#10](https://github.com/lucaswewa/microscope/pull/10)
 - ADRs: none
 - Spec: [phases.md#p09](../phases.md#p09)
 
