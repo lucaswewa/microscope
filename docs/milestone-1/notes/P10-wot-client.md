@@ -68,7 +68,7 @@ ADR-0014 records the transport decisions. The details:
   - it drops an event the stream ends in the middle of.
 
   Testing found two bugs, both fixed: a CR ending the stream lost the last event, and `formUrl` could pick a WebSocket form.
-- **The contract test** uses the `system` Thing, the only one so far. It checks the listing and the base, property reads, and the server's 405 and 404 as ApiErrors. It runs in Vitest's Node environment against `MICROSCOPE_API_URL`. Locally it passed against a server on port 5091.
+- **The contract test** uses the `system` Thing, the only one so far. It checks the listing and the base, property reads, and the server's 405 and 404 as ApiErrors. It runs in Vitest's Node environment against `MICROSCOPE_API_URL`. Locally it passed against a server on port 5091. In CI, the server is started in the same step as the tests. On Windows, the runner stops the processes a step started when that step ends, and the first CI run failed because the server started in a step of its own was gone by the next.
 - **Size:** 1,325 changed lines of hand-written code (688 in `src`, 583 in tests, 54 in configuration and CI) against L's budget of 900, above my estimate of about 1,100. About 124 of them are `describeError` moving from `src/ui/` to `src/api/wot/`, counted once deleted and once added.
 
 ## Tests
