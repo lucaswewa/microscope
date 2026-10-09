@@ -14,11 +14,10 @@ const { info } = useHost()
 
 <style scoped>
 .placeholder {
-  margin: 2rem;
-  font-family: system-ui, sans-serif;
+  padding: var(--space-8);
 }
 
 .version {
-  color: GrayText;
+  color: var(--color-text-muted);
 }
 </style>

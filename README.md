@@ -73,7 +73,7 @@ npx playwright install chromium   # once per machine
 npm run test:e2e
 ```
 
-`MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`. The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
+`MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`. In development, <http://localhost:5173/#/dev/tokens> shows the design tokens in both themes ([ADR-0011](docs/adr/0011-design-tokens-and-theming.md)). The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
 
 ### Contributing
 

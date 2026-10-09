@@ -1,6 +1,6 @@
 # P05: OpenFlexure reference screenshots
 
-- Status: In review
+- Status: Done
 - Pull request: [#6](https://github.com/lucaswewa/microscope/pull/6)
 - ADRs: none
 - Spec: [phases.md#p05](../phases.md#p05)
