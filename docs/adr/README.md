@@ -20,5 +20,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0003](0003-milestone-1-platform-windows-x86-64.md) | Milestone-1 platform: Windows x86_64 | Accepted | P00 |
 | [0004](0004-depend-on-teta-wot-v0-1-0-without-upstream-changes.md) | Depend on `teta-wot` v0.1.0 without upstream changes | Accepted | P00 |
 | [0005](0005-repository-layout-and-crate-boundaries.md) | Repository layout and crate boundaries | Accepted | P01 |
+| [0006](0006-own-the-server-lifecycle-around-teta-wots-runtime.md) | Own the server lifecycle around `teta-wot`'s runtime | Accepted | P02 |
+| [0007](0007-api-prefix-and-openflexure-mirrored-names.md) | API prefix `/api/v1` and OpenFlexure-mirrored names | Accepted | P02 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

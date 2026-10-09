@@ -1,0 +1,12 @@
+{
+    "things": {
+        "system": "microscope.system:MicroscopeSystem"
+    },
+    "settings_folder": ".microscope/settings",
+    "api_prefix": "/api/v1",
+    "enable_global_lock": true,
+    "application_config": {
+        "data_folder": ".microscope/data",
+        "log_folder": ".microscope/logs"
+    }
+}
