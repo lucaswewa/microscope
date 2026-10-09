@@ -14,4 +14,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P01 | [Rust workspace and CI](P01-rust-workspace.md) | Done |
 | P02 | [Server lifecycle and composed router](P02-server-lifecycle.md) | Done |
 | P03 | [Server logging and log endpoints](P03-server-logging.md) | Done |
-| P04 | [Web app scaffold and tooling](P04-web-scaffold.md) | In review |
+| P04 | [Web app scaffold and tooling](P04-web-scaffold.md) | Done |
+| P05 | [OpenFlexure reference screenshots](P05-reference-screenshots.md) | In review |

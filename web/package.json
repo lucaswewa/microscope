@@ -19,7 +19,8 @@
     "format:check": "prettier --check .",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "capture:reference": "node tests/reference/capture.ts"
   },
   "dependencies": {
     "pinia": "^4.0.3",
