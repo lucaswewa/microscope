@@ -1,7 +1,7 @@
 # P03: Server logging and log endpoints
 
 - Status: In review
-- Pull request: to be linked once opened
+- Pull request: [#4](https://github.com/lucaswewa/microscope/pull/4)
 - ADRs: [ADR-0008](../../adr/0008-server-logging-and-log-endpoints.md)
 - Spec: [phases.md#p03](../phases.md#p03)
 
