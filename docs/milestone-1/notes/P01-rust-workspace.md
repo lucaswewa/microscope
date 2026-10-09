@@ -39,6 +39,7 @@ cargo run -p microscope-launcher -- --version   # microscope-launcher 0.1.0
 - **The internal dependencies are declared now,** even though the crates are empty: `microscope-sim` → core; `microscope-things` → core, sim and `teta-wot`; `microscope-server` → things and `teta-wot`. Declaring them puts the layering from ADR-0005 in place from the start, and makes CI compile `teta-wot` at the pinned tag with the pinned toolchain, which shows early that the dependency works.
 - **`.gitattributes`** wasn't in the phase spec. It was added because `core.autocrlf` on the development machine was converting the LF files written for P00, and the warnings on every commit would hide real problems. ADR-0005 records it.
 - **The binaries print their version whatever the arguments.** P02 replaces the server's `main` with a real command line, and P45 replaces the launcher's.
+- **CI depends on `teta-wot` being public.** The first CI run failed because `teta-wot` was private: CI had no credentials to fetch it, while the development machine used stored ones. The owner made `teta-wot` public (it was already MIT-licensed), so CI and anyone else can build without secrets. If it ever goes private again, CI will need a read-only deploy key.
 - **CI uses the same actions as `teta-wot`'s workflow** (`actions/checkout@v7`, `Swatinem/rust-cache@v2`, `rustup toolchain install` reading `rust-toolchain.toml`), so the two repositories stay alike.
 
 ## Tests
