@@ -1,5 +1,6 @@
 //! The command line, through the built binary: exit codes and the fallback
-//! server.
+//! server. Each run is in a temporary folder, since the server writes log
+//! files to `.microscope/logs` by default.
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
@@ -8,8 +9,10 @@ use std::process::{Command, Output, Stdio};
 const SERVER: &str = env!("CARGO_BIN_EXE_microscope-server");
 
 fn run(args: &[&str]) -> Output {
+    let folder = tempfile::tempdir().expect("a temporary folder");
     Command::new(SERVER)
         .args(args)
+        .current_dir(folder.path())
         .output()
         .expect("the server binary runs")
 }
@@ -75,8 +78,10 @@ fn an_invalid_application_config_exits_3() {
 }
 
 #[test]
-fn fallback_serves_an_error_page_instead_of_exiting() {
+fn fallback_serves_an_error_page_with_the_log_instead_of_exiting() {
+    let folder = tempfile::tempdir().expect("a temporary folder");
     let mut child = Command::new(SERVER)
+        .current_dir(folder.path())
         .args([
             "--fallback",
             "--port",
@@ -107,4 +112,19 @@ fn fallback_serves_an_error_page_instead_of_exiting() {
 
     let page = page.expect("the fallback server printed its address");
     assert!(page.contains("no.such:Thing"), "{page}");
+    // The server log so far, which says where the log files are.
+    assert!(page.contains("application configuration"), "{page}");
+
+    // The default log folder, relative to the working directory.
+    let log_files: Vec<_> = std::fs::read_dir(folder.path().join(".microscope/logs"))
+        .expect("the log folder exists")
+        .filter_map(Result::ok)
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert!(
+        log_files
+            .iter()
+            .any(|name| name.starts_with("microscope.") && name.ends_with(".log")),
+        "{log_files:?}"
+    );
 }

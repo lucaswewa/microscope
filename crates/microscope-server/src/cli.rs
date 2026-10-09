@@ -18,6 +18,7 @@ use std::ffi::OsString;
 use std::future::Future;
 use std::net::SocketAddr;
 use std::process::ExitCode;
+use std::sync::Arc;
 
 use clap::Parser;
 use teta_wot::http::axum;
@@ -27,6 +28,7 @@ use tokio::net::TcpListener;
 use tokio::sync::watch;
 
 use crate::config::{self, ConfigError};
+use crate::logging::{self, Logs};
 use crate::{lifecycle, routes};
 
 /// The command-line options: `teta-wot`'s.
@@ -96,10 +98,11 @@ where
             return ExitCode::from(u8::try_from(error.exit_code()).unwrap_or(2));
         }
     };
-    let _ = teta_wot::logging::init(args.debug);
 
+    // Logging starts once the configuration says where log files go.
     let mut config_text = None;
-    let Err(failure) = serve(&args, &mut config_text, &stop).await else {
+    let mut logs = None;
+    let Err(failure) = serve(&args, &mut config_text, &mut logs, &stop).await else {
         return ExitCode::SUCCESS;
     };
 
@@ -117,7 +120,10 @@ where
                 Failure::Startup { error, .. } => error.clone(),
                 other => other.message(),
             },
-            logging: None,
+            logging: logs
+                .as_ref()
+                .map(Logs::text)
+                .filter(|text| !text.is_empty()),
         };
         if let Err(error) = serve_fallback(&args, page, &stop).await {
             eprintln!("Error: the fallback server couldn't start: {error}");
@@ -143,6 +149,7 @@ where
 async fn serve(
     args: &CliArgs,
     config_text: &mut Option<String>,
+    logs: &mut Option<Logs>,
     stop: &Stop,
 ) -> Result<(), Failure> {
     let text = config::text(args).map_err(|e| Failure::Other(e.message().to_owned()))?;
@@ -154,6 +161,7 @@ async fn serve(
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(&text) {
         *config_text = serde_json::to_string_pretty(&value).ok();
     }
+    let server_log = logs.insert(logging::init(args.debug, &config.app.log_folder));
     if config.server.mdns {
         tracing::warn!(
             "`mdns` isn't supported by microscope-server yet, and is ignored (ADR-0006)"
@@ -174,13 +182,14 @@ async fn serve(
         .things()
         .map(|t| t.name().to_owned())
         .collect();
+    server_log.attach(Arc::clone(server.runtime().invocations()));
 
     let listener = bind(args).await.map_err(Failure::Other)?;
     match listener.local_addr() {
         Ok(addr) => println!("listening on http://{addr}"),
         Err(_) => println!("listening"),
     }
-    let app_routes = routes::app_routes(&config.server.api_prefix);
+    let app_routes = routes::app_routes(&config.server.api_prefix, server_log.clone());
     match lifecycle::serve(server, app_routes, listener, stop.wait()).await {
         Ok(()) => Ok(()),
         Err(ServeError::Startup(failure)) => Err(Failure::Startup {
