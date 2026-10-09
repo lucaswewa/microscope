@@ -33,3 +33,4 @@ web/dist/
 # Reference screenshots of OpenFlexure and of this app (P05), kept out of git (ADR-0002)
 docs/reference/ofm/
 docs/reference/microscope/
+docs/reference/compare.html
