@@ -1,7 +1,7 @@
 # P11: Connection management
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#15](https://github.com/lucaswewa/microscope/pull/15)
 - ADRs: [ADR-0015](../../adr/0015-connection-model.md)
 - Spec: [phases.md#p11](../phases.md#p11)
 
