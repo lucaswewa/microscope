@@ -1,11 +1,13 @@
 //! The command line.
 //!
 //! ```text
-//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug]
+//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist]
 //! microscope-server -j '{"things": {…}}'
 //! ```
 //!
-//! The options, messages and exit codes are `teta-wot`'s (and LabThings'):
+//! The options, messages and exit codes are `teta-wot`'s (and LabThings'),
+//! plus `--webapp-dir`, which serves the web app from a folder instead of the
+//! build in the binary (ADR-0016):
 //!
 //! | Code | When |
 //! |---|---|
@@ -17,6 +19,7 @@
 use std::ffi::OsString;
 use std::future::Future;
 use std::net::SocketAddr;
+use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
@@ -29,9 +32,10 @@ use tokio::sync::watch;
 
 use crate::config::{self, ConfigError};
 use crate::logging::{self, Logs};
+use crate::webapp::{self, WebApp};
 use crate::{lifecycle, routes};
 
-/// The command-line options: `teta-wot`'s.
+/// The command-line options: `teta-wot`'s, and where the web app comes from.
 #[derive(Debug, Clone, Parser)]
 #[command(
     name = "microscope-server",
@@ -42,6 +46,10 @@ pub struct Args {
     /// The options every `teta-wot` server takes.
     #[command(flatten)]
     pub server: CliArgs,
+    /// Serve the web app from this folder, such as `web/dist`, instead of
+    /// the build in the binary.
+    #[arg(long, value_name = "PATH")]
+    pub webapp_dir: Option<PathBuf>,
 }
 
 /// Why serving failed, and so the exit code.
@@ -90,8 +98,11 @@ where
     });
     let stop = Stop(stopped);
 
-    let args = match Args::try_parse_from(args) {
-        Ok(args) => args.server,
+    let Args {
+        server: args,
+        webapp_dir,
+    } = match Args::try_parse_from(args) {
+        Ok(args) => args,
         Err(error) => {
             // --help and --version are "errors" with exit code 0.
             let _ = error.print();
@@ -102,7 +113,8 @@ where
     // Logging starts once the configuration says where log files go.
     let mut config_text = None;
     let mut logs = None;
-    let Err(failure) = serve(&args, &mut config_text, &mut logs, &stop).await else {
+    let source = webapp_dir.map_or(WebApp::Embedded, WebApp::Dir);
+    let Err(failure) = serve(&args, source, &mut config_text, &mut logs, &stop).await else {
         return ExitCode::SUCCESS;
     };
 
@@ -148,6 +160,7 @@ where
 
 async fn serve(
     args: &CliArgs,
+    webapp: WebApp,
     config_text: &mut Option<String>,
     logs: &mut Option<Logs>,
     stop: &Stop,
@@ -189,7 +202,8 @@ async fn serve(
         Ok(addr) => println!("listening on http://{addr}"),
         Err(_) => println!("listening"),
     }
-    let app_routes = routes::app_routes(&config.server.api_prefix, server_log.clone());
+    let app_routes = routes::app_routes(&config.server.api_prefix, server_log.clone())
+        .merge(webapp::webapp_routes(webapp));
     match lifecycle::serve(server, app_routes, listener, stop.wait()).await {
         Ok(()) => Ok(()),
         Err(ServeError::Startup(failure)) => Err(Failure::Startup {

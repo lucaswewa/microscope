@@ -22,4 +22,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P09 | [UI components II: overlays and feedback](P09-overlays.md) | Done |
 | P09b | [UI components III: menus, lists and shortcuts](P09b-menus-shortcuts.md) | Done |
 | P10 | [WoT client library](P10-wot-client.md) | Done |
-| P11 | [Connection management](P11-connection.md) | In review |
+| P11 | [Connection management](P11-connection.md) | Done |
+| P12 | [Serve the web app from the backend](P12-serve-webapp.md) | In review |

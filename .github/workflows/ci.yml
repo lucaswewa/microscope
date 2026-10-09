@@ -89,3 +89,40 @@ jobs:
           Stop-Process -Id $server.Id
           if ($status -ne 0) { Get-Content ../server.log, ../server.err.log }
           exit $status
+
+  e2e:
+    name: End to end (Windows x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      # The web app first: the release build embeds web/dist (ADR-0016).
+      - name: Build the web app
+        run: npm run build
+        working-directory: web
+      - name: Build the server, with the web app embedded
+        run: cargo build --release -p microscope-server --locked
+      - name: Install Chromium
+        run: npx playwright install chromium
+        working-directory: web
+      - name: End-to-end and visual tests against the served app
+        run: npx playwright test
+        working-directory: web
+        env:
+          MICROSCOPE_SERVER: target/release/microscope-server.exe
+      - name: Test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: web/test-results

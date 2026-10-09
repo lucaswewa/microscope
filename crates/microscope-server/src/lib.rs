@@ -10,10 +10,12 @@
 //! - [`config`]: reading the configuration file;
 //! - [`lifecycle`]: start, serve and shut down;
 //! - [`logging`]: the console, the server log and the log files;
-//! - [`routes`]: the application's own routes, such as `/api/v1/health`.
+//! - [`routes`]: the application's own routes, such as `/api/v1/health`;
+//! - [`webapp`]: the web app, at `/`.
 
 pub mod cli;
 pub mod config;
 pub mod lifecycle;
 pub mod logging;
 pub mod routes;
+pub mod webapp;

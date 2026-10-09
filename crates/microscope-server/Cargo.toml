@@ -12,6 +12,7 @@ publish.workspace = true
 chrono.workspace = true
 clap.workspace = true
 microscope-things.workspace = true
+rust-embed.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 teta-wot.workspace = true

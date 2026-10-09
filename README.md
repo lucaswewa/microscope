@@ -45,7 +45,23 @@ cargo doc --workspace --no-deps --locked   # CI sets RUSTDOCFLAGS=-D warnings
 cargo run -p microscope-server -- -c configs/simulation.json
 ```
 
-It listens on <http://127.0.0.1:5000/> (`--host` and `--port` change that). The API is under `/api/v1` (for example <http://127.0.0.1:5000/api/v1/health> and <http://127.0.0.1:5000/api/v1/system/>), and the interactive API docs are at <http://127.0.0.1:5000/docs>. Ctrl-C stops it gracefully. `--help` lists the options; they are `teta-wot`'s.
+It listens on <http://127.0.0.1:5000/> (`--host` and `--port` change that). The API is under `/api/v1` (for example <http://127.0.0.1:5000/api/v1/health> and <http://127.0.0.1:5000/api/v1/system/>), and the interactive API docs are at <http://127.0.0.1:5000/docs>. Ctrl-C stops it gracefully. `--help` lists the options: `teta-wot`'s, and `--webapp-dir`.
+
+The server also serves the web app, at <http://127.0.0.1:5000/> ([ADR-0016](docs/adr/0016-serving-and-embedding-the-web-app.md)). A debug build reads it from `web/dist`, so build the web app first (`npm run build` in `web/`); without a build, `/` shows a placeholder page. `--webapp-dir <path>` serves it from another folder.
+
+### Build a release
+
+Build the web app first, then the server, which embeds `web/dist`:
+
+```powershell
+cd web
+npm ci
+npm run build
+cd ..
+cargo build --release -p microscope-server
+```
+
+`target/release/microscope-server.exe -c configs/simulation.json` then serves the API and the app on its own.
 
 Logs go to the console, to daily files in `.microscope/logs/`, and to the server log at <http://127.0.0.1:5000/api/v1/log/>; `/api/v1/logfile/` downloads today's file. `--debug` adds DEBUG events from the application and `teta-wot` ([ADR-0008](docs/adr/0008-server-logging-and-log-endpoints.md)).
 
@@ -70,7 +86,7 @@ npm run typecheck
 npm run test:unit
 npm run build
 npx playwright install chromium   # once per machine
-npm run test:e2e                  # also builds and starts a server, on ports 5098 and 5099
+npm run test:e2e                  # builds the app and a server that serves it, on ports 5098 and 5099
 ```
 
 `npm run test:contract` runs the web app's WoT client against a running server, whose API root is `MICROSCOPE_API_URL` (by default `http://127.0.0.1:5000/api/v1/`). CI runs it against a fresh server.
