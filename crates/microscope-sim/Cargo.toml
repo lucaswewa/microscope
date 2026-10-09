@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 microscope-core.workspace = true
+image.workspace = true
 
 [lints]
 workspace = true

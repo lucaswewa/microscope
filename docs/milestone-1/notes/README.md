@@ -23,4 +23,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P09b | [UI components III: menus, lists and shortcuts](P09b-menus-shortcuts.md) | Done |
 | P10 | [WoT client library](P10-wot-client.md) | Done |
 | P11 | [Connection management](P11-connection.md) | Done |
-| P12 | [Serve the web app from the backend](P12-serve-webapp.md) | In review |
+| P12 | [Serve the web app from the backend](P12-serve-webapp.md) | Done |
+| P13 | [Simulation world, optics and blob specimen](P13-simulator-core.md) | In review |

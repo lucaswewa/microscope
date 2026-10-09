@@ -31,5 +31,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0014](0014-client-transports-td-forms-fetch-streams-polled-invocations.md) | Client transports: TD forms, fetch streams, polled invocations | Accepted | P10 |
 | [0015](0015-connection-model.md) | Connection model | Accepted | P11 |
 | [0016](0016-serving-and-embedding-the-web-app.md) | Serving and embedding the web app | Accepted | P12 |
+| [0017](0017-simulator-architecture.md) | Simulator architecture | Accepted | P13 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.
