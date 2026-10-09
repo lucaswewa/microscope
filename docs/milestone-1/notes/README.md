@@ -11,4 +11,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | Phase | Notes | Status |
 |---|---|---|
 | P00 | [Docs scaffolding and foundational ADRs](P00-docs-scaffolding.md) | Done |
-| P01 | [Rust workspace and CI](P01-rust-workspace.md) | In review |
+| P01 | [Rust workspace and CI](P01-rust-workspace.md) | Done |
+| P02 | [Server lifecycle and composed router](P02-server-lifecycle.md) | In review |

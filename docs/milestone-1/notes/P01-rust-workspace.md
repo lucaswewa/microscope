@@ -1,6 +1,6 @@
 # P01: Rust workspace and CI
 
-- Status: In review
+- Status: Done
 - Pull request: [#2](https://github.com/lucaswewa/microscope/pull/2)
 - ADRs: [ADR-0005](../../adr/0005-repository-layout-and-crate-boundaries.md)
 - Spec: [phases.md#p01](../phases.md#p01)

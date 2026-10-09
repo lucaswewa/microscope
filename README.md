@@ -40,7 +40,13 @@ cargo test --workspace --locked
 cargo doc --workspace --no-deps --locked   # CI sets RUSTDOCFLAGS=-D warnings
 ```
 
-`cargo run -p microscope-server -- --version` prints the server's version. The server itself arrives in P02.
+### Run the server
+
+```powershell
+cargo run -p microscope-server -- -c configs/simulation.json
+```
+
+It listens on <http://127.0.0.1:5000/> (`--host` and `--port` change that). The API is under `/api/v1` (for example <http://127.0.0.1:5000/api/v1/health> and <http://127.0.0.1:5000/api/v1/system/>), and the interactive API docs are at <http://127.0.0.1:5000/docs>. Ctrl-C stops it gracefully. `--help` lists the options; they are `teta-wot`'s.
 
 The workspace's crates and the rules between them are described in [ADR-0005](docs/adr/0005-repository-layout-and-crate-boundaries.md).
 
