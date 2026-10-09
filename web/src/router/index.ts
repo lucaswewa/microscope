@@ -5,7 +5,25 @@ import {
   type RouterHistory,
 } from 'vue-router'
 
-import PlaceholderView from '@/views/PlaceholderView.vue'
+import { DESTINATIONS } from '@/app/navigation'
+import PlaceholderPage from '@/views/PlaceholderPage.vue'
+
+/** The layout each destination's page will have, which its placeholder shows. */
+const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }> = {
+  view: { liveImage: true },
+  control: { pane: 'narrow', liveImage: true },
+  'slide-scan': { pane: 'wide', liveImage: true },
+  sequence: { pane: 'wide', liveImage: true },
+  settings: { pane: 'narrow' },
+}
+
+/** One route per destination in the rail. Settings has sections: `/#/settings/camera`. */
+const destinationRoutes: RouteRecordRaw[] = DESTINATIONS.map((destination) => ({
+  path: destination.id === 'settings' ? '/settings/:section?' : `/${destination.id}`,
+  name: destination.id,
+  component: PlaceholderPage,
+  props: { destinationId: destination.id, ...LAYOUTS[destination.id] },
+}))
 
 /** Pages for development only: left out of production builds. */
 const devRoutes: RouteRecordRaw[] = import.meta.env.DEV
@@ -26,6 +44,11 @@ const devRoutes: RouteRecordRaw[] = import.meta.env.DEV
 export function createAppRouter(history: RouterHistory = createWebHashHistory()) {
   return createRouter({
     history,
-    routes: [{ path: '/', name: 'home', component: PlaceholderView }, ...devRoutes],
+    routes: [
+      { path: '/', redirect: { name: 'view' } },
+      ...destinationRoutes,
+      ...devRoutes,
+      { path: '/:unknown(.*)*', redirect: { name: 'view' } },
+    ],
   })
 }

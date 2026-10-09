@@ -12,7 +12,7 @@ test.describe('with the system in dark mode', () => {
   test('the app follows the system theme', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-    await expect(page.getByRole('heading', { name: 'Microscope' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
     expect(await bodyBackground(page)).toBe(DARK_BG)
   })
 })

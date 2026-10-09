@@ -16,4 +16,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P03 | [Server logging and log endpoints](P03-server-logging.md) | Done |
 | P04 | [Web app scaffold and tooling](P04-web-scaffold.md) | Done |
 | P05 | [OpenFlexure reference screenshots](P05-reference-screenshots.md) | Done |
-| P06 | [Design tokens and theme switching](P06-design-tokens.md) | In review |
+| P06 | [Design tokens and theme switching](P06-design-tokens.md) | Done |
+| P07 | [App shell and navigation rail](P07-app-shell.md) | In review |
