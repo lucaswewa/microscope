@@ -1,7 +1,7 @@
 # P09b: UI components III: menus, lists and shortcuts
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#13](https://github.com/lucaswewa/microscope/pull/13)
 - ADRs: none
 - Spec: [phases.md#p09b](../phases.md#p09b)
 
