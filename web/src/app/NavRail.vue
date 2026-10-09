@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import ConnectionIndicator from '@/connection/ConnectionIndicator.vue'
 import AppIcon from '@/ui/AppIcon.vue'
 
 import type { Destination } from './navigation'
@@ -34,6 +35,7 @@ const groups = computed(() => [
         </RouterLink>
       </li>
     </ul>
+    <ConnectionIndicator />
   </nav>
 </template>
 

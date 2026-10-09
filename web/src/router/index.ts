@@ -6,6 +6,7 @@ import {
 } from 'vue-router'
 
 import { DESTINATIONS } from '@/app/navigation'
+import ConnectView from '@/connection/ConnectView.vue'
 import PlaceholderPage from '@/views/PlaceholderPage.vue'
 
 /** The layout each destination's page will have, which its placeholder shows. */
@@ -52,6 +53,7 @@ export function createAppRouter(history: RouterHistory = createWebHashHistory())
     routes: [
       { path: '/', redirect: { name: 'view' } },
       ...destinationRoutes,
+      { path: '/connect', name: 'connect', component: ConnectView },
       ...devRoutes,
       { path: '/:unknown(.*)*', redirect: { name: 'view' } },
     ],

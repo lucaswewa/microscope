@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 
+import OfflineOverlay from '@/connection/OfflineOverlay.vue'
+
 import { useAvailableDestinations } from './availability'
 import NavRail from './NavRail.vue'
 import ShortcutHelp from './ShortcutHelp.vue'
@@ -19,6 +21,7 @@ useTabCycling(destinations)
         is wider.
       </p>
       <RouterView />
+      <OfflineOverlay />
     </div>
     <ShortcutHelp />
   </div>
@@ -31,6 +34,7 @@ useTabCycling(destinations)
 }
 
 .shell__content {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;

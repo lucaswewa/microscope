@@ -29,5 +29,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0012](0012-icon-set.md) | Icon set | Accepted | P07 |
 | [0013](0013-own-components-on-reka-ui-primitives.md) | Own components on Reka UI primitives | Accepted | P08 |
 | [0014](0014-client-transports-td-forms-fetch-streams-polled-invocations.md) | Client transports: TD forms, fetch streams, polled invocations | Accepted | P10 |
+| [0015](0015-connection-model.md) | Connection model | Accepted | P11 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

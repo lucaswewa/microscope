@@ -16,10 +16,10 @@ test.use({ viewport: { width: 1280, height: 800 } })
 test('clicking a destination goes there and marks it', async ({ page }) => {
   await page.goto('/#/view')
   const rail = page.getByRole('navigation', { name: 'Main' })
-  await rail.getByRole('link', { name: 'Gallery' }).click()
-  await expect(page).toHaveURL(/#\/gallery$/)
-  await expect(rail.getByRole('link', { name: 'Gallery' })).toHaveAttribute('aria-current', 'page')
-  await expect(page.getByRole('heading', { name: 'Gallery' })).toBeVisible()
+  await rail.getByRole('link', { name: 'Logging' }).click()
+  await expect(page).toHaveURL(/#\/logging$/)
+  await expect(rail.getByRole('link', { name: 'Logging' })).toHaveAttribute('aria-current', 'page')
+  await expect(page.getByRole('heading', { name: 'Logging' })).toBeVisible()
 })
 
 test('Shift+↓ and Shift+↑ switch tabs', async ({ page }) => {
