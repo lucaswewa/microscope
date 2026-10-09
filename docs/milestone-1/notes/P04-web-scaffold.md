@@ -1,7 +1,7 @@
 # P04: Web app scaffold and tooling
 
 - Status: In review
-- Pull request: to be linked once opened
+- Pull request: [#5](https://github.com/lucaswewa/microscope/pull/5)
 - ADRs: [ADR-0009](../../adr/0009-frontend-toolchain.md), [ADR-0010](../../adr/0010-rules-for-a-tauri-ready-web-app.md)
 - Spec: [phases.md#p04](../phases.md#p04)
 
