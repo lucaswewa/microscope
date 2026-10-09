@@ -33,6 +33,11 @@ const devRoutes: RouteRecordRaw[] = import.meta.env.DEV
         name: 'dev-tokens',
         component: () => import('@/views/dev/TokensView.vue'),
       },
+      {
+        path: '/dev/components',
+        name: 'dev-components',
+        component: () => import('@/views/dev/ComponentsView.vue'),
+      },
     ]
   : []
 

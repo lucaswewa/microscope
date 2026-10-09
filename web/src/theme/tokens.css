@@ -25,6 +25,7 @@
   --palette-accent-600: #b41d73; /* 41 */
   --palette-accent-700: #95185f; /* 34 */
   --palette-accent-800: #6b1145; /* 25 */
+  --palette-accent-900: #420b2a; /* 15 */
 
   /* Palette: neutral greys. */
   --palette-neutral-0: #ffffff;
@@ -98,6 +99,7 @@
   --control-height-sm: 30px;
   --control-height-md: 40px;
   --control-padding-x: 12px;
+  --icon-size-xs: 16px;
   --icon-size-sm: 20px;
   --icon-size-md: 24px;
   --border-width: 1px;
@@ -213,7 +215,7 @@
   --color-accent-hover: var(--palette-accent-600);
   --color-accent-pressed: var(--palette-accent-700);
   --color-accent-text: var(--palette-accent-300);
-  --color-accent-subtle: var(--palette-accent-800);
+  --color-accent-subtle: var(--palette-accent-900);
   --color-on-accent: var(--palette-neutral-0);
 
   --color-rail-text: var(--palette-neutral-100);

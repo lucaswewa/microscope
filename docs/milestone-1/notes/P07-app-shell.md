@@ -1,6 +1,6 @@
 # P07: App shell and navigation rail
 
-- Status: In review
+- Status: Done
 - Pull request: [#8](https://github.com/lucaswewa/microscope/pull/8)
 - ADRs: [ADR-0012](../../adr/0012-icon-set.md)
 - Spec: [phases.md#p07](../phases.md#p07)
