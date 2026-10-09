@@ -1,7 +1,7 @@
 # P00: Docs scaffolding and foundational ADRs
 
 - Status: In review
-- Pull request: opened from branch `m1/p00-docs-scaffolding`
+- Pull request: [#1](https://github.com/lucaswewa/microscope/pull/1)
 - ADRs: [ADR-0001](../../adr/0001-record-architecture-decisions.md), [ADR-0002](../../adr/0002-independent-implementation-of-openflexure-inspired-behaviour.md), [ADR-0003](../../adr/0003-milestone-1-platform-windows-x86-64.md), [ADR-0004](../../adr/0004-depend-on-teta-wot-v0-1-0-without-upstream-changes.md)
 - Spec: [phases.md#p00](../phases.md#p00)
 
@@ -33,7 +33,7 @@ Sets up the documentation system for the milestone and records the four decision
 - **Phase status.** For the same reason, each phase's pull request marks that phase *In review* in the plan's overview and in its notes, and the next phase's pull request marks it *Done*.
 - **`docs/README.md`** was first written with the plan. This phase extends it rather than creating it.
 - **The plan's header** now says it's approved and that it's a living document.
-- **Commit author.** No git identity is configured on the development machine, so commits use the identity of the repository's initial commit (`Lucas Wang <58446606+lucaswewa@users.noreply.github.com>`) through per-command `-c` options. No git configuration was changed.
+- **Commit author.** No git identity is configured on the development machine, so commits use the identity of the repository's initial commit (`Lucas Wang <58446606+lucaswewa@users.noreply.github.com>`) through per-command `-c` options. A git identity has since been configured, and later commits use it.
 
 ## Tests
 
@@ -41,7 +41,7 @@ Documentation only. All relative links in `README.md` and `docs/` were checked w
 
 ## Follow-ups and known gaps
 
-- The GitHub CLI (`gh`) isn't installed, so pull requests can't be opened from the command line yet. With `gh` installed and authenticated, later phases can open their own pull requests.
+- The GitHub CLI is now installed and authenticated, so each later phase opens its own pull request.
 - P01 adds the CI workflow. Until then, this pull request runs no checks.
 
 ## Independent implementation
