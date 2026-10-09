@@ -10,8 +10,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
     for (const route of ['control', 'settings/camera']) {
       test(`on ${route}`, async ({ page }) => {
         await page.goto(`/#/${route}`)
-        await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible()
-        await expect(page).toHaveScreenshot(`${route.replace('/', '-')}-${colorScheme}.png`)
+        await expect(page.locator('.connection-indicator')).toHaveAttribute(
+          'data-state',
+          'connected',
+        )
+        // The indicator names the machine the tests run on.
+        await expect(page).toHaveScreenshot(`${route.replace('/', '-')}-${colorScheme}.png`, {
+          mask: [page.locator('.connection-indicator__label')],
+        })
       })
     }
   })

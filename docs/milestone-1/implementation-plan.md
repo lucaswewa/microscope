@@ -399,8 +399,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P10 | WoT client library | P02, P04 | L | 0014 | In review |
-| P11 | Connection management | P07, P09, P10 | M | 0015 | Planned |
+| P10 | WoT client library | P02, P04 | L | 0014 | Done |
+| P11 | Connection management | P07, P09, P10 | M | 0015 | In review |
 | P12 | Serve the web app from the backend | P02, P04 | M | 0016 | Planned |
 
 ### Stage 3: Simulator and live microscope (ends with Checkpoint A)

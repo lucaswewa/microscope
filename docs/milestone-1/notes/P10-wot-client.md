@@ -1,6 +1,6 @@
 # P10: WoT client library
 
-- Status: In review
+- Status: Done
 - Pull request: [#14](https://github.com/lucaswewa/microscope/pull/14)
 - ADRs: [ADR-0014](../../adr/0014-client-transports-td-forms-fetch-streams-polled-invocations.md)
 - Spec: [phases.md#p10](../phases.md#p10)

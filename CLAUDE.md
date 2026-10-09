@@ -34,7 +34,7 @@ A microscope service: a Rust backend on [`teta-wot`](https://github.com/lucaswew
 - **Platform:** Windows x86_64 (ADR-0003).
   - Line endings are LF. Scripts that write files on Windows must not turn them into CRLF.
   - Playwright's visual baselines are Windows images (`*-chromium-win32.png`), so they don't match on Linux.
-- **Manual checks** use their own ports: 5090–5099 for `microscope-server`, 5190–5199 for Vite (`--strictPort`). The owner runs the server on 5000 and Vite on 5173. Stop only processes you started, by their process ID; never stop "whatever listens on a port".
+- **Manual checks** use their own ports: 5090–5097 for `microscope-server`, 5190–5199 for Vite (`--strictPort`). The end-to-end tests use 5098 and 5099 for their servers, and 4173 for the app. The owner runs the server on 5000 and Vite on 5173. Stop only processes you started, by their process ID; never stop "whatever listens on a port".
 
 ## Checks before opening a pull request
 
@@ -48,7 +48,7 @@ cargo doc --workspace --no-deps --locked
 
 cd web
 npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build
-npm run test:e2e    # end-to-end and visual tests; not in CI yet
+npm run test:e2e    # end-to-end and visual tests, with a server built from the checkout; not in CI yet
 # with a server running (see README):
 MICROSCOPE_API_URL=http://127.0.0.1:5090/api/v1/ npm run test:contract
 ```

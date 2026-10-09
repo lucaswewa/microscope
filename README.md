@@ -70,7 +70,7 @@ npm run typecheck
 npm run test:unit
 npm run build
 npx playwright install chromium   # once per machine
-npm run test:e2e
+npm run test:e2e                  # also builds and starts a server, on ports 5098 and 5099
 ```
 
 `npm run test:contract` runs the web app's WoT client against a running server, whose API root is `MICROSCOPE_API_URL` (by default `http://127.0.0.1:5000/api/v1/`). CI runs it against a fresh server.
