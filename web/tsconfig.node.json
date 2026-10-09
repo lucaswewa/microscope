@@ -3,6 +3,7 @@
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
+    "vitest.contract.config.ts",
     "playwright.config.ts",
     "tests/e2e/**/*",
     "tests/visual/**/*",

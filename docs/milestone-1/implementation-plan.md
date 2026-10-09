@@ -393,13 +393,13 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P07 | App shell and navigation rail | P06 | M | 0012 | Done |
 | P08 | UI components I: controls | P06 | L | 0013 | Done |
 | P09 | UI components II: overlays and feedback | P08 | L | — | Done |
-| P09b | UI components III: menus, lists and shortcuts | P09 | L | — | In review |
+| P09b | UI components III: menus, lists and shortcuts | P09 | L | — | Done |
 
 ### Stage 2: Client–server plumbing
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P10 | WoT client library | P02, P04 | L | 0014 | Planned |
+| P10 | WoT client library | P02, P04 | L | 0014 | In review |
 | P11 | Connection management | P07, P09, P10 | M | 0015 | Planned |
 | P12 | Serve the web app from the backend | P02, P04 | M | 0016 | Planned |
 

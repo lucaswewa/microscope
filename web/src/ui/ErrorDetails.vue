@@ -3,7 +3,7 @@
 // describeError): its heading and message, and each invalid input of a 422.
 import { computed } from 'vue'
 
-import { describeError } from './errors'
+import { describeError } from '@/api/wot/errors'
 
 const props = defineProps<{ error: unknown }>()
 

@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 
 import ErrorDetails from '@/ui/ErrorDetails.vue'
-import { describeError } from '@/ui/errors'
+import { describeError } from '@/api/wot/errors'
 
 // Response bodies in the shapes a teta-wot v0.1.0 server sends in its default
 // (`tetathing`) profile: crates/teta-wot-http/src/render.rs and problem.rs.

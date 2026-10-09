@@ -49,6 +49,8 @@ cargo doc --workspace --no-deps --locked
 cd web
 npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build
 npm run test:e2e    # end-to-end and visual tests; not in CI yet
+# with a server running (see README):
+MICROSCOPE_API_URL=http://127.0.0.1:5090/api/v1/ npm run test:contract
 ```
 
 For a UI change, also look at it in a browser in both themes. The development-only galleries are at `/#/dev/components` and `/#/dev/tokens`.

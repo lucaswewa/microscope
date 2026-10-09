@@ -53,3 +53,38 @@ jobs:
         run: npm run test:unit
       - name: Build
         run: npm run build
+
+  contract:
+    name: Contract (Windows x86_64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the server
+        run: cargo build -p microscope-server --locked
+      - name: Start the server
+        run: |
+          Start-Process -FilePath target/debug/microscope-server.exe -ArgumentList '-c', 'configs/simulation.json', '--port', '5090' -RedirectStandardOutput server.log -RedirectStandardError server.err.log
+          for ($i = 0; $i -lt 60; $i++) {
+            try { Invoke-RestMethod http://127.0.0.1:5090/api/v1/health | Out-Null; exit 0 } catch { Start-Sleep -Seconds 1 }
+          }
+          Get-Content server.log, server.err.log
+          exit 1
+      - name: Install
+        run: npm ci
+        working-directory: web
+      - name: Contract tests
+        run: npm run test:contract
+        working-directory: web
+        env:
+          MICROSCOPE_API_URL: http://127.0.0.1:5090/api/v1/
+      - name: Server log
+        if: failure()
+        run: Get-Content server.log, server.err.log
