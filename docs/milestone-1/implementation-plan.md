@@ -389,8 +389,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P04 | Web app scaffold and tooling | P01 | M | 0009, 0010 | Done |
 | P05 | OpenFlexure reference screenshots | P04 | S | — | Done |
-| P06 | Design tokens and theme switching | P04, P05 | M | 0011 | In review |
-| P07 | App shell and navigation rail | P06 | M | 0012 | Planned |
+| P06 | Design tokens and theme switching | P04, P05 | M | 0011 | Done |
+| P07 | App shell and navigation rail | P06 | M | 0012 | In review |
 | P08 | UI components I: controls | P06 | L | 0013 | Planned |
 | P09 | UI components II: overlays and feedback | P08 | M | — | Planned |
 

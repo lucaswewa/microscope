@@ -81,4 +81,4 @@ Work proceeds in small phases, each delivered as one pull request that follows t
 
 ## Licence
 
-[MIT](LICENSE)
+[MIT](LICENSE). Third-party material and its licences are listed in [NOTICE](NOTICE).

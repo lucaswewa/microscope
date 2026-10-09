@@ -1,6 +1,6 @@
 # P06: Design tokens and theme switching
 
-- Status: In review
+- Status: Done
 - Pull request: [#7](https://github.com/lucaswewa/microscope/pull/7)
 - ADRs: [ADR-0011](../../adr/0011-design-tokens-and-theming.md)
 - Spec: [phases.md#p06](../phases.md#p06)

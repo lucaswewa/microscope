@@ -2,9 +2,15 @@ import { defineConfig, devices } from '@playwright/test'
 
 const port = 4173
 
-// End-to-end tests run against the production build, served by `vite preview`.
+// End-to-end and visual tests run against the production build, served by
+// `vite preview`. (tests/unit is Vitest's.)
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
+  testMatch: /(e2e|visual)\/.*\.spec\.ts$/,
+  expect: {
+    // Allow for small differences in font rendering between machines.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01 },
+  },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

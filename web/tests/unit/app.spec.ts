@@ -1,28 +1,47 @@
-import { mount } from '@vue/test-utils'
-import { createPinia } from 'pinia'
-import { describe, expect, it } from 'vitest'
+import { mount, type VueWrapper } from '@vue/test-utils'
+import { afterEach, describe, expect, it } from 'vitest'
 import { defineComponent } from 'vue'
-import { createMemoryHistory } from 'vue-router'
 
-import App from '@/App.vue'
-import { hostKey, useHost } from '@/host'
-import { createBrowserHost } from '@/host/browser'
-import { createAppRouter } from '@/router'
+import { DESTINATIONS } from '@/app/navigation'
+import { useHost } from '@/host'
+
+import { mountApp } from './mountApp'
 
 describe('the app', () => {
-  it('shows the placeholder page at the root route', async () => {
-    const router = createAppRouter(createMemoryHistory())
-    await router.push('/')
+  let wrapper: VueWrapper | undefined
 
-    const wrapper = mount(App, {
-      global: {
-        plugins: [createPinia(), router],
-        provide: { [hostKey as symbol]: createBrowserHost() },
-      },
+  afterEach(() => {
+    wrapper?.unmount()
+    wrapper = undefined
+  })
+
+  it('opens on the View page', async () => {
+    const app = await mountApp('/')
+    wrapper = app.wrapper
+    expect(app.router.currentRoute.value.name).toBe('view')
+    expect(wrapper.get('h1').text()).toBe('View')
+  })
+
+  it('sends unknown addresses to the View page', async () => {
+    const app = await mountApp('/no/such/page')
+    wrapper = app.wrapper
+    expect(app.router.currentRoute.value.name).toBe('view')
+  })
+
+  for (const destination of DESTINATIONS) {
+    it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
+      const app = await mountApp(`/${destination.id}`)
+      wrapper = app.wrapper
+      expect(wrapper.get('h1').text()).toBe(destination.label)
+      expect(wrapper.text()).toContain(`built in ${destination.builtIn}`)
     })
+  }
 
-    expect(wrapper.get('h1').text()).toBe('Microscope')
-    expect(wrapper.text()).toContain(`Web app ${__APP_VERSION__}`)
+  it('shows the Settings section from the address', async () => {
+    const app = await mountApp('/settings/camera')
+    wrapper = app.wrapper
+    expect(app.router.currentRoute.value.name).toBe('settings')
+    expect(wrapper.text()).toContain('Section: camera')
   })
 
   it('says so when no host is provided', () => {

@@ -5,6 +5,7 @@
     "vitest.config.ts",
     "playwright.config.ts",
     "tests/e2e/**/*",
+    "tests/visual/**/*",
     "tests/reference/**/*"
   ],
   "compilerOptions": {

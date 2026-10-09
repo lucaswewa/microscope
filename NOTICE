@@ -1,0 +1,13 @@
+microscope
+Copyright (c) 2026 Lucas Wang
+Licensed under the MIT License (see LICENSE).
+
+This software includes third-party material:
+
+Material Symbols
+  Icons by Google (https://github.com/google/material-design-icons), used
+  through the @material-symbols/svg-400 package
+  (https://github.com/marella/material-symbols).
+  Licensed under the Apache License, Version 2.0:
+  https://www.apache.org/licenses/LICENSE-2.0
+  The web app bundles the icons it uses, unmodified.
