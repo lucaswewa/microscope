@@ -1,7 +1,7 @@
 # P13: Simulation world, optics and blob specimen
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#17](https://github.com/lucaswewa/microscope/pull/17)
 - ADRs: [ADR-0017](../../adr/0017-simulator-architecture.md)
 - Spec: [phases.md#p13](../phases.md#p13)
 
