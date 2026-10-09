@@ -20,9 +20,33 @@ Milestone 1 targets Windows x86_64 ([ADR-0003](docs/adr/0003-milestone-1-platfor
 - [Architecture decision records](docs/adr/README.md)
 - [Implementation notes](docs/milestone-1/notes/README.md), one per phase
 
-## Contributing
+## Development
 
-Work proceeds in small phases, each delivered as one pull request that follows the [Definition of Done](docs/milestone-1/implementation-plan.md#7-how-phases-work). Build and test instructions arrive with the first code phases (P01 for Rust, P04 for the web app).
+### Prerequisites
+
+- Windows x86_64.
+- [rustup](https://rustup.rs/), with the MSVC toolchain and Visual Studio's C++ build tools. The repository pins its compiler (Rust 1.98.1) in `rust-toolchain.toml`; `rustup toolchain install` in the repository installs it.
+
+The web app's prerequisites arrive with P04.
+
+### Build and check
+
+These are the checks CI runs:
+
+```powershell
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo test --workspace --locked
+cargo doc --workspace --no-deps --locked   # CI sets RUSTDOCFLAGS=-D warnings
+```
+
+`cargo run -p microscope-server -- --version` prints the server's version. The server itself arrives in P02.
+
+The workspace's crates and the rules between them are described in [ADR-0005](docs/adr/0005-repository-layout-and-crate-boundaries.md).
+
+### Contributing
+
+Work proceeds in small phases, each delivered as one pull request that follows the [Definition of Done](docs/milestone-1/implementation-plan.md#7-how-phases-work).
 
 ## Licence
 

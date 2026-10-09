@@ -1,6 +1,6 @@
 # P00: Docs scaffolding and foundational ADRs
 
-- Status: In review
+- Status: Done
 - Pull request: [#1](https://github.com/lucaswewa/microscope/pull/1)
 - ADRs: [ADR-0001](../../adr/0001-record-architecture-decisions.md), [ADR-0002](../../adr/0002-independent-implementation-of-openflexure-inspired-behaviour.md), [ADR-0003](../../adr/0003-milestone-1-platform-windows-x86-64.md), [ADR-0004](../../adr/0004-depend-on-teta-wot-v0-1-0-without-upstream-changes.md)
 - Spec: [phases.md#p00](../phases.md#p00)

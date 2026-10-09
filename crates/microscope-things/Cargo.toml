@@ -1,0 +1,17 @@
+[package]
+name = "microscope-things"
+description = "The microscope's teta-wot Things, the hardware interfaces they share, and the server-described UI model."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+microscope-core.workspace = true
+microscope-sim.workspace = true
+teta-wot.workspace = true
+
+[lints]
+workspace = true

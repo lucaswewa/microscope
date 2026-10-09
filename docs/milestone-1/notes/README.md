@@ -10,4 +10,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 
 | Phase | Notes | Status |
 |---|---|---|
-| P00 | [Docs scaffolding and foundational ADRs](P00-docs-scaffolding.md) | In review |
+| P00 | [Docs scaffolding and foundational ADRs](P00-docs-scaffolding.md) | Done |
+| P01 | [Rust workspace and CI](P01-rust-workspace.md) | In review |

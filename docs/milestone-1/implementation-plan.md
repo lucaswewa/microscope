@@ -378,8 +378,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P00 | Docs scaffolding and foundational ADRs | — | S | 0001–0004 | In review |
-| P01 | Rust workspace and CI | P00 | S | 0005 | Planned |
+| P00 | Docs scaffolding and foundational ADRs | — | S | 0001–0004 | Done |
+| P01 | Rust workspace and CI | P00 | S | 0005 | In review |
 | P02 | Server lifecycle and composed router | P01 | M | 0006, 0007 | Planned |
 | P03 | Server logging and log endpoints | P02 | M | 0008 | Planned |
 
