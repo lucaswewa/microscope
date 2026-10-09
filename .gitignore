@@ -22,3 +22,14 @@ rustc-ice-*.txt
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# The web app's dependencies and build output (P04, P12)
+node_modules/
+web/dist/
+
+# Settings, data and logs from development runs of the server
+.microscope/
+
+# Reference screenshots of OpenFlexure and of this app (P05), kept out of git (ADR-0002)
+docs/reference/ofm/
+docs/reference/microscope/

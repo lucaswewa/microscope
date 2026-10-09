@@ -1,0 +1,16 @@
+[package]
+name = "microscope-server"
+description = "The microscope server: serves the microscope's Things and the web app over HTTP."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+microscope-things.workspace = true
+teta-wot.workspace = true
+
+[lints]
+workspace = true

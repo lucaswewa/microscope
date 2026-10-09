@@ -1,0 +1,29 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+# The pinned toolchain (rust-toolchain.toml) is also the minimum supported
+# version. It matches teta-wot's.
+rust-version = "1.98"
+license = "MIT"
+repository = "https://github.com/lucaswewa/microscope"
+publish = false
+
+[workspace.dependencies]
+# Internal crates. The dependency rules between them are in ADR-0005.
+microscope-core = { path = "crates/microscope-core" }
+microscope-sim = { path = "crates/microscope-sim" }
+microscope-things = { path = "crates/microscope-things" }
+
+# teta-wot is pinned to its release tag, with no upstream changes (ADR-0004).
+teta-wot = { git = "https://github.com/lucaswewa/teta-wot", tag = "v0.1.0" }
+
+[workspace.lints.rust]
+missing_docs = "warn"
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
