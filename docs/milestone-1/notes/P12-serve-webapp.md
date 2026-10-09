@@ -1,7 +1,7 @@
 # P12: Serve the web app from the backend
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#16](https://github.com/lucaswewa/microscope/pull/16)
 - ADRs: [ADR-0016](../../adr/0016-serving-and-embedding-the-web-app.md)
 - Spec: [phases.md#p12](../phases.md#p12)
 
