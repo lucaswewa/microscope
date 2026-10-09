@@ -122,7 +122,7 @@ Mutation check: without the `aria-controls` workaround, the accordion's ARIA tes
 - **Reka UI:**
   - Remove the `aria-controls` workaround once a Reka UI release fixes it, after checking under ADR-0009's two-week rule.
   - Reka's Home and End go to the first or last section even when it's disabled, and then focus stays put. Keep disabled sections away from the ends, or work around it if a page needs one there.
-- P09 adds the overlays: Dialog, confirmations, toasts, Tooltip (which can replace the native `title` tooltips) and menus.
+- P09 adds the overlays: Dialog, confirmations, toasts and Tooltip (which can replace the native `title` tooltips). Menus come in P09b, split from P09 after these notes were written.
 - P12's end-to-end CI job runs against production builds, so it won't cover the gallery. Pages built from these components will be covered there.
 
 ## Independent implementation
