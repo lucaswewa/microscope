@@ -28,6 +28,8 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "std"
 clap = { version = "4.6", features = ["derive"] }
 gethostname = "1"
 http-body-util = "0.1.5"
+# Images for the simulator: PNG only for now; P17 adds JPEG.
+image = { version = "0.25.10", default-features = false, features = ["png"] }
 os_info = { version = "3", default-features = false }
 # 8.12, not 8.13: dependencies must be at least two weeks old (CLAUDE.md).
 rust-embed = "8.12"

@@ -401,13 +401,13 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P10 | WoT client library | P02, P04 | L | 0014 | Done |
 | P11 | Connection management | P07, P09, P10 | M | 0015 | Done |
-| P12 | Serve the web app from the backend | P02, P04 | M | 0016 | In review |
+| P12 | Serve the web app from the backend | P02, P04 | M | 0016 | Done |
 
 ### Stage 3: Simulator and live microscope (ends with Checkpoint A)
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P13 | Simulation world, optics and blob specimen | P01 | L | 0017 | Planned |
+| P13 | Simulation world, optics and blob specimen | P01 | L | 0017 | In review |
 | P14 | Simulated stage motion model | P13 | M | — | Planned |
 | P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Planned |
 | P16 | Simulated stage Thing | P14, P15 | M | — | Planned |
