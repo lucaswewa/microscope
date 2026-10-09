@@ -1,6 +1,6 @@
 # P02: Server lifecycle and composed router
 
-- Status: In review
+- Status: Done
 - Pull request: [#3](https://github.com/lucaswewa/microscope/pull/3)
 - ADRs: [ADR-0006](../../adr/0006-own-the-server-lifecycle-around-teta-wots-runtime.md), [ADR-0007](../../adr/0007-api-prefix-and-openflexure-mirrored-names.md)
 - Spec: [phases.md#p02](../phases.md#p02)
@@ -45,7 +45,7 @@ Press Ctrl-C to stop it. To see the fallback page, run `cargo run -p microscope-
 - **`application_config` keys are optional,** defaulting to `.microscope/data` and `.microscope/logs` (git-ignored since P01). Unknown keys are ignored, and keys of the wrong type make the configuration invalid (exit code 3). Nothing uses the folders yet. P03 uses `log_folder`, and P26 uses `data_folder`.
 - **`mdns: true` is warned about and ignored** (ADR-0006).
 - **The hostname** comes from the `gethostname` crate rather than `teta-wot`'s `default_server_id()`, which reads `COMPUTERNAME`, upper-cased and limited to 15 characters on Windows. The OS description comes from `os_info`, for example `Windows 10.0.26200 (Windows 11 Professional) [64-bit]`.
-- **Size.** The phase came out larger than its M estimate: 1,131 changed lines, or 835 without blank lines and comments, of which about 415 are tests. That's over 900 by the first measure and under it by the second. It stays one phase because the command line and the lifecycle only make sense together. Splitting it would leave a server that can't be run. The plan doesn't say whether comments and tests count towards the budget. If they should, P02 could be split, with the command line in its own pull request.
+- **Size.** The phase came out larger than its M estimate: 1,131 changed lines, or 835 without blank lines and comments, of which about 415 are tests. That's over 900 by the first measure and under it by the second. It stays one phase because the command line and the lifecycle only make sense together. Splitting it would leave a server that can't be run. The plan doesn't say whether comments and tests count towards the budget. If they should, P02 could be split, with the command line in its own pull request. *The owner reviewed it and chose to keep it as one pull request.*
 - **New dependencies**: `clap`, `tokio`, `serde`, `serde_json`, `tracing` (all already used by `teta-wot`), `tower-http` (CORS), `gethostname` and `os_info`. Dev-only: `anyhow`, `tower`, `http-body-util`. All are MIT or Apache-2.0.
 
 ## Tests

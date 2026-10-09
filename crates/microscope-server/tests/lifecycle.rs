@@ -5,6 +5,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use http_body_util::BodyExt;
+use microscope_server::logging::Logs;
 use microscope_server::{lifecycle, routes};
 use teta_wot::http::axum::body::Body;
 use teta_wot::http::axum::http::{Request, StatusCode};
@@ -85,7 +86,7 @@ async fn shutdown_cancels_invocations_and_stops_the_things() {
         .build()
         .expect("the server builds");
     // The same runtime, reached in-process, to start an invocation.
-    let in_process = lifecycle::compose(routes::app_routes(PREFIX), &server);
+    let in_process = lifecycle::compose(routes::app_routes(PREFIX, Logs::new(None)), &server);
     let grace = server.shutdown_grace();
 
     let listener = TcpListener::bind("127.0.0.1:0").await.expect("binds");
@@ -93,7 +94,7 @@ async fn shutdown_cancels_invocations_and_stops_the_things() {
     let (stop, stop_requested) = oneshot::channel::<()>();
     let serving = tokio::spawn(lifecycle::serve(
         server,
-        routes::app_routes(PREFIX),
+        routes::app_routes(PREFIX, Logs::new(None)),
         listener,
         async move {
             let _ = stop_requested.await;
@@ -140,7 +141,7 @@ async fn a_thing_that_cant_start_is_a_startup_error() {
     let listener = TcpListener::bind("127.0.0.1:0").await.expect("binds");
     let result = lifecycle::serve(
         server,
-        routes::app_routes(PREFIX),
+        routes::app_routes(PREFIX, Logs::new(None)),
         listener,
         std::future::pending(),
     )

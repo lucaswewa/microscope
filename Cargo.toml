@@ -24,6 +24,7 @@ teta-wot = { git = "https://github.com/lucaswewa/teta-wot", tag = "v0.1.0" }
 
 # External crates, at the versions teta-wot uses where it uses them too.
 anyhow = "1.0"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
 clap = { version = "4.6", features = ["derive"] }
 gethostname = "1"
 http-body-util = "0.1.5"
@@ -31,10 +32,14 @@ os_info = { version = "3", default-features = false }
 schemars = "1.2"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
-tokio = { version = "1.47", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
+tempfile = "3.27"
+tokio = { version = "1.47", features = ["fs", "macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
 tower = { version = "0.5.3", features = ["util"] }
 tower-http = { version = "0.6", features = ["cors"] }
 tracing = "0.1.41"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3.20", default-features = false, features = ["std", "registry", "fmt", "ansi", "env-filter"] }
+uuid = { version = "1.18", features = ["serde"] }
 
 [workspace.lints.rust]
 missing_docs = "warn"

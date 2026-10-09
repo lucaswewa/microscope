@@ -2,6 +2,7 @@
 //! every request they don't match.
 
 use http_body_util::BodyExt;
+use microscope_server::logging::Logs;
 use microscope_server::{lifecycle, routes};
 use microscope_things::system::MicroscopeSystem;
 use serde_json::Value;
@@ -22,7 +23,7 @@ async fn composed() -> (ThingServer, Router) {
         .build()
         .expect("the server builds");
     server.runtime().start().await.expect("the Things start");
-    let router = lifecycle::compose(routes::app_routes(PREFIX), &server);
+    let router = lifecycle::compose(routes::app_routes(PREFIX, Logs::new(None)), &server);
     (server, router)
 }
 
