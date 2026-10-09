@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url'
 import { expect, test } from '@playwright/test'
 
 // The app on one origin, connected to a microscope server on another
-// (through CORS), which stops and starts again. Playwright's own server
-// (playwright.config.ts) built the binary.
+// (through CORS), which stops and starts again.
 const PORT = 5099
 const ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-const EXE = `${ROOT}target/debug/microscope-server${process.platform === 'win32' ? '.exe' : ''}`
+// The same binary as Playwright's server: MICROSCOPE_SERVER in CI, else the debug build.
+const EXE = `${ROOT}${process.env.MICROSCOPE_SERVER ?? `target/debug/microscope-server${process.platform === 'win32' ? '.exe' : ''}`}`
 
 async function startServer(): Promise<ChildProcess> {
   const server = spawn(EXE, ['-c', 'configs/simulation.json', '--port', String(PORT)], {
