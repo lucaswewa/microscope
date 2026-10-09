@@ -19,4 +19,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P06 | [Design tokens and theme switching](P06-design-tokens.md) | Done |
 | P07 | [App shell and navigation rail](P07-app-shell.md) | Done |
 | P08 | [UI components I: controls](P08-ui-controls.md) | Done |
-| P09 | [UI components II: overlays and feedback](P09-overlays.md) | In review |
+| P09 | [UI components II: overlays and feedback](P09-overlays.md) | Done |
+| P09b | [UI components III: menus, lists and shortcuts](P09b-menus-shortcuts.md) | In review |

@@ -3,6 +3,9 @@
 // development only: the route exists only in development builds
 // (src/router/index.ts).
 import add from '@material-symbols/svg-400/outlined/add.svg?raw'
+import deleteIcon from '@material-symbols/svg-400/outlined/delete.svg?raw'
+import download from '@material-symbols/svg-400/outlined/download.svg?raw'
+import moreVert from '@material-symbols/svg-400/outlined/more_vert.svg?raw'
 import arrowUpward from '@material-symbols/svg-400/outlined/arrow_upward.svg?raw'
 import photoCamera from '@material-symbols/svg-400/outlined/photo_camera.svg?raw'
 import refresh from '@material-symbols/svg-400/outlined/refresh.svg?raw'
@@ -14,12 +17,16 @@ import AppButton from '@/ui/AppButton.vue'
 import AppCard from '@/ui/AppCard.vue'
 import AppCheckbox from '@/ui/AppCheckbox.vue'
 import AppDialog from '@/ui/AppDialog.vue'
+import AppMenu, { type MenuItems } from '@/ui/AppMenu.vue'
+import AppPagination from '@/ui/AppPagination.vue'
 import AppSelect from '@/ui/AppSelect.vue'
 import AppSpinner from '@/ui/AppSpinner.vue'
 import AppToggle from '@/ui/AppToggle.vue'
 import AppTooltip from '@/ui/AppTooltip.vue'
+import ButtonMenu from '@/ui/ButtonMenu.vue'
 import ErrorDetails from '@/ui/ErrorDetails.vue'
 import FormField from '@/ui/FormField.vue'
+import MultiSelect from '@/ui/MultiSelect.vue'
 import IconButton from '@/ui/IconButton.vue'
 import NumberField from '@/ui/NumberField.vue'
 import { useConfirm, useToast } from '@/ui/overlays'
@@ -46,6 +53,28 @@ const autoExposure = ref(false)
 const openSections = ref(['move'])
 const progress = ref(35)
 const lastEvent = ref('none')
+
+const levels = ref(['WARNING', 'ERROR'])
+const levelOptions = ['DEBUG', 'INFO', 'WARNING', 'ERROR'].map((level) => ({
+  value: level,
+  label: level[0] + level.slice(1).toLowerCase(),
+}))
+const page = ref(4)
+const downloads: MenuItems = [
+  { label: 'JPEG', run: () => (lastEvent.value = 'download JPEG') },
+  { label: 'TIFF', run: () => (lastEvent.value = 'download TIFF') },
+  { label: 'With metadata (ZIP)', disabled: true, run: () => {} },
+]
+const actions: MenuItems = [
+  { label: 'Download', icon: download, run: () => (lastEvent.value = 'action Download') },
+  'separator',
+  {
+    label: 'Delete',
+    icon: deleteIcon,
+    danger: true,
+    run: () => (lastEvent.value = 'action Delete'),
+  },
+]
 
 const errorSamples = {
   detail: { detail: 'No action found with the name "focus".' },
@@ -97,6 +126,8 @@ const state = computed(() =>
     saveToGallery: saveToGallery.value,
     autoExposure: autoExposure.value,
     openSections: openSections.value,
+    levels: levels.value,
+    page: page.value,
   }),
 )
 </script>
@@ -176,6 +207,18 @@ const state = computed(() =>
           </AccordionSection>
           <AccordionSection value="disabled" title="Disabled" disabled>Hidden</AccordionSection>
         </AppAccordion>
+
+        <h3>Menus and lists</h3>
+        <div class="gallery__row">
+          <ButtonMenu label="Download" :icon="download" :items="downloads" />
+          <AppMenu :items="actions">
+            <IconButton :icon="moreVert" label="More actions" variant="ghost" />
+          </AppMenu>
+          <FormField label="Levels" class="gallery__levels">
+            <MultiSelect v-model="levels" :options="levelOptions" placeholder="All levels" />
+          </FormField>
+        </div>
+        <AppPagination v-model:page="page" :total="250" :per-page="18" />
 
         <h3>Progress</h3>
         <div class="gallery__progress">
@@ -298,6 +341,10 @@ const state = computed(() =>
 
 .gallery__accent {
   color: var(--color-accent-text);
+}
+
+.gallery__levels {
+  width: 220px;
 }
 
 .gallery__range {

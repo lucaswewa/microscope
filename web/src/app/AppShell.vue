@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 
 import { useAvailableDestinations } from './availability'
 import NavRail from './NavRail.vue'
+import ShortcutHelp from './ShortcutHelp.vue'
 import { useTabCycling } from './useTabCycling'
 
 const destinations = useAvailableDestinations()
@@ -19,6 +20,7 @@ useTabCycling(destinations)
       </p>
       <RouterView />
     </div>
+    <ShortcutHelp />
   </div>
 </template>
 

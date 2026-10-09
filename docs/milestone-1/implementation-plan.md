@@ -392,8 +392,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P06 | Design tokens and theme switching | P04, P05 | M | 0011 | Done |
 | P07 | App shell and navigation rail | P06 | M | 0012 | Done |
 | P08 | UI components I: controls | P06 | L | 0013 | Done |
-| P09 | UI components II: overlays and feedback | P08 | L | — | In review |
-| P09b | UI components III: menus, lists and shortcuts | P09 | L | — | Planned |
+| P09 | UI components II: overlays and feedback | P08 | L | — | Done |
+| P09b | UI components III: menus, lists and shortcuts | P09 | L | — | In review |
 
 ### Stage 2: Client–server plumbing
 
