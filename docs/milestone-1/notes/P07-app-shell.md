@@ -74,7 +74,7 @@ Click through the rail, or press Shift+↓ and Shift+↑. Narrow the window belo
 
 ## Follow-ups and known gaps
 
-- P09's shortcut registry takes over Shift+↑/↓ and adds the `?` help.
+- P09b's shortcut registry takes over Shift+↑/↓ and adds the `?` help. (P09 was split after these notes were written.)
 - P11 provides real Thing availability.
 - The e2e CI job, including the visual baselines, comes with P12.
 

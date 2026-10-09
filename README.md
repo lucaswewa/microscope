@@ -7,7 +7,7 @@ Microscope control software. A Rust backend serves the microscope's camera, stag
 
 ## Status
 
-Early development; there is nothing to run yet.
+Early development. The server runs with a placeholder System Thing, logging and its API docs. The web app has its shell: the navigation rail, light, dark and system themes, and the UI components the pages will be built from. The pages themselves come in later phases. The [plan's phase overview](docs/milestone-1/implementation-plan.md#8-phase-overview) shows where each phase stands.
 
 **Milestone 1** builds the application against a simulated camera and XYZ stage, whose images depend on the stage position and focus. It aims for feature parity with the OpenFlexure Microscope: live view, stage control, autofocus, calibration, slide scanning with stitching, timelapse sequences, a gallery, and the Settings, Logging, About and Power pages. It also ships a local launcher and supports connecting to remote microscopes. Real cameras and stages follow in milestone 2, and the web app will later be reused in a Tauri desktop app.
 
@@ -73,11 +73,18 @@ npx playwright install chromium   # once per machine
 npm run test:e2e
 ```
 
-`MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`. In development, <http://localhost:5173/#/dev/tokens> shows the design tokens in both themes ([ADR-0011](docs/adr/0011-design-tokens-and-theming.md)). The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
+`MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`.
+
+Two pages exist only in development, each showing light and dark side by side:
+
+- <http://localhost:5173/#/dev/tokens> shows the design tokens ([ADR-0011](docs/adr/0011-design-tokens-and-theming.md));
+- <http://localhost:5173/#/dev/components> shows every UI component, with their states and overlays ([ADR-0013](docs/adr/0013-own-components-on-reka-ui-primitives.md)).
+
+The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
 
 ### Contributing
 
-Work proceeds in small phases, each delivered as one pull request that follows the [Definition of Done](docs/milestone-1/implementation-plan.md#7-how-phases-work).
+Work proceeds in small phases, each delivered as one pull request that follows the [Definition of Done](docs/milestone-1/implementation-plan.md#7-how-phases-work). [CLAUDE.md](CLAUDE.md) sums up the working rules, for people and for Claude Code sessions.
 
 ## Licence
 
