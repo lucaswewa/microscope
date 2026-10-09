@@ -310,7 +310,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | Control | Position fields, Move, Set Home, Move Home with confirmation | Yes | P20 |
 | Control | D-pad and focus jog, keyboard jog, scroll to focus | Yes | P20 |
 | Control | Double-click to move (camera–stage mapping) | Yes | P23 |
-| Control | Autofocus (`a`), capture to gallery or download (`c`), `?` shortcut help | Yes | P21, P26, P09 |
+| Control | Autofocus (`a`), capture to gallery or download (`c`), `?` shortcut help | Yes | P21, P26, P09b |
 | Slide Scan | Workflow choice with blurb and workflow-specific settings | Yes | P40 |
 | Slide Scan | Histo, Snake, Raster and C-Chip workflows | Yes | P35, P37 |
 | Slide Scan | Background-detection settings, set and check background | Yes | P27, P37 |
@@ -391,8 +391,9 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P05 | OpenFlexure reference screenshots | P04 | S | — | Done |
 | P06 | Design tokens and theme switching | P04, P05 | M | 0011 | Done |
 | P07 | App shell and navigation rail | P06 | M | 0012 | Done |
-| P08 | UI components I: controls | P06 | L | 0013 | In review |
-| P09 | UI components II: overlays and feedback | P08 | M | — | Planned |
+| P08 | UI components I: controls | P06 | L | 0013 | Done |
+| P09 | UI components II: overlays and feedback | P08 | L | — | In review |
+| P09b | UI components III: menus, lists and shortcuts | P09 | L | — | Planned |
 
 ### Stage 2: Client–server plumbing
 
@@ -413,7 +414,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Planned |
 | P18 | View tab: live image | P11, P17 | M | — | Planned |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
-| P20 | Control tab: stage navigation | P09, P18, P19 | L | — | Planned |
+| P20 | Control tab: stage navigation | P09b, P18, P19 | L | — | Planned |
 
 **Checkpoint A, "Live microscope":** the app shows the live simulated image, and you can jog and focus with the buttons, the keys and the wheel, or move to typed coordinates.
 
@@ -424,7 +425,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P21 | Autofocus | P17, P20 | M | 0022 | Planned |
 | P22 | Image registration core | P13 | M | 0023 | Planned |
 | P23 | Camera–stage mapping and click-to-move | P21, P22 | L | — | Planned |
-| P24 | Server-described UI elements | P09, P10 | L | 0024 | Planned |
+| P24 | Server-described UI elements | P09b, P10 | L | 0024 | Planned |
 | P25 | Specimens II and optical effects | P17, P24 | L | — | Planned |
 | P26 | Capture to the data folder | P17, P20 | M | 0025 | Planned |
 | P27 | Background detection and camera calibration | P24, P25 | L | — | Planned |
@@ -439,7 +440,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P31 | Gallery backend and data route | P26 | L | 0026 | Planned |
-| P32 | Gallery tab | P09, P31 | L | — | Planned |
+| P32 | Gallery tab | P09b, P31 | L | — | Planned |
 | P33 | Image and deep-zoom viewer | P32 | M | 0027 | Planned |
 
 **Checkpoint C, "Gallery":** captures appear as cards that you can filter, page through, download, delete and open in the viewer.
@@ -471,7 +472,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P43 | Logging tab | P03, P09, P11 | M | — | Planned |
+| P43 | Logging tab | P03, P09b, P11 | M | — | Planned |
 | P44 | Sidecar process contract | P02 | M | 0032 | Planned |
 | P45 | Local launcher | P12, P44 | L | 0033 | Planned |
 | P46 | About and Power tabs | P11, P44 | M | — | Planned |
@@ -652,3 +653,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-08 | First draft for review |
 | 2026-10-08 | Delivery: each pull request is merged only after the project owner approves it; the next phase starts only after the merge |
 | 2026-10-08 | P00: `goals.md` moved to `docs/milestone-1/goals.md`; approving a pull request accepts its ADRs; the next phase's pull request marks the previous phase *Done* |
+| 2026-10-09 | P09 split in two, at the project owner's choice, since it was estimated at three times its M budget. P09 keeps dialogs, confirmations, toasts, tooltips and error details. The new P09b has menus, pagination, multiple selection and keyboard shortcuts. Both are sized L. P20, P24, P32 and P43 now depend on P09b |

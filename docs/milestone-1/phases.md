@@ -7,7 +7,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ## Contents
 
 - [Stage 0: Groundwork](#stage-0-groundwork): [P00](#p00) [P01](#p01) [P02](#p02) [P03](#p03)
-- [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09)
+- [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
 - [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P18](#p18) [P19](#p19) [P20](#p20)
 - [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
@@ -190,18 +190,29 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 <a id="p09"></a>
 ### P09: UI components II: overlays and feedback
 
-**Goal.** Dialogs, confirmations, notifications and menus with consistent behaviour.
-**Depends on** P08 · **Size** M · **ADRs** —
+**Goal.** Dialogs, confirmations, notifications and tooltips with consistent behaviour.
+**Depends on** P08 · **Size** L · **ADRs** —
 
 **Scope**
 - Dialog (focus trap; Escape and outside-click policies) and `useConfirm()`, a promise-based confirmation with optional rich content.
 - Toasts (success, info and error, with expandable details) and Tooltip.
-- Menu and ButtonMenu, Pagination, and MultiSelect.
 - ErrorDetails, which renders `teta-wot` validation lists (422) and `{detail}` errors.
-- A keyboard-shortcut registry and the `?` help dialog that lists registered shortcuts.
 
 **Tests**
-- Focus handling, Escape behaviour, confirm resolve and reject, and the shortcut registry (conflicts, scoping to inputs).
+- Focus handling, Escape behaviour, confirm resolve and reject, toast timing, and each error shape.
+
+<a id="p09b"></a>
+### P09b: UI components III: menus, lists and shortcuts
+
+**Goal.** Menus, paging, multiple choice and keyboard shortcuts with consistent behaviour. Split from P09 (Appendix D of the plan).
+**Depends on** P09 · **Size** L · **ADRs** —
+
+**Scope**
+- Menu and ButtonMenu, Pagination, and MultiSelect.
+- A keyboard-shortcut registry and the `?` help dialog that lists registered shortcuts. P07's Shift+↑/↓ moves onto it.
+
+**Tests**
+- Menu keyboard and ARIA behaviour, Pagination, MultiSelect's `v-model`, and the shortcut registry (conflicts, scoping to inputs).
 
 ---
 
@@ -378,7 +389,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P20: Control tab: stage navigation
 
 **Goal.** Moving around the sample the way OpenFlexure's Control tab does.
-**Depends on** P09, P18, P19 · **Size** L · **ADRs** —
+**Depends on** P09b, P18, P19 · **Size** L · **ADRs** —
 
 **Scope**
 - The Control layout: a narrow control pane beside the live image.
@@ -447,7 +458,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P24: Server-described UI elements
 
 **Goal.** Let Things describe the hardware-dependent parts of the UI, and draw them generically.
-**Depends on** P09, P10 · **Size** L · **ADRs** 0024
+**Depends on** P09b, P10 · **Size** L · **ADRs** 0024
 
 **Scope**
 - A Rust model of our own design, informed by OpenFlexure's idea:
@@ -586,7 +597,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P32: Gallery tab
 
 **Goal.** Browse and manage saved items, as OpenFlexure's Gallery does.
-**Depends on** P09, P31 · **Size** L · **ADRs** —
+**Depends on** P09b, P31 · **Size** L · **ADRs** —
 
 **Scope**
 - A card grid, detailed or thumbnail-only, at 18 or 25 cards per page. "Showing a–b of n", pagination and Refresh.
@@ -762,7 +773,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P43: Logging tab
 
 **Goal.** Read the server's log in the app.
-**Depends on** P03, P09, P11 · **Size** M · **ADRs** —
+**Depends on** P03, P09b, P11 · **Size** M · **ADRs** —
 
 **Scope**
 - Groups of related records (by invocation, or consecutive records from the same source), each showing its highest level.

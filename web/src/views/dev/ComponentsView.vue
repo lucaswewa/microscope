@@ -6,19 +6,23 @@ import add from '@material-symbols/svg-400/outlined/add.svg?raw'
 import arrowUpward from '@material-symbols/svg-400/outlined/arrow_upward.svg?raw'
 import photoCamera from '@material-symbols/svg-400/outlined/photo_camera.svg?raw'
 import refresh from '@material-symbols/svg-400/outlined/refresh.svg?raw'
-import { computed, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 
 import AccordionSection from '@/ui/AccordionSection.vue'
 import AppAccordion from '@/ui/AppAccordion.vue'
 import AppButton from '@/ui/AppButton.vue'
 import AppCard from '@/ui/AppCard.vue'
 import AppCheckbox from '@/ui/AppCheckbox.vue'
+import AppDialog from '@/ui/AppDialog.vue'
 import AppSelect from '@/ui/AppSelect.vue'
 import AppSpinner from '@/ui/AppSpinner.vue'
 import AppToggle from '@/ui/AppToggle.vue'
+import AppTooltip from '@/ui/AppTooltip.vue'
+import ErrorDetails from '@/ui/ErrorDetails.vue'
 import FormField from '@/ui/FormField.vue'
 import IconButton from '@/ui/IconButton.vue'
 import NumberField from '@/ui/NumberField.vue'
+import { useConfirm, useToast } from '@/ui/overlays'
 import ProgressBar from '@/ui/ProgressBar.vue'
 import SectionHeading from '@/ui/SectionHeading.vue'
 import TextField from '@/ui/TextField.vue'
@@ -41,7 +45,48 @@ const saveToGallery = ref(true)
 const autoExposure = ref(false)
 const openSections = ref(['move'])
 const progress = ref(35)
-const lastSubmit = ref('none')
+const lastEvent = ref('none')
+
+const errorSamples = {
+  detail: { detail: 'No action found with the name "focus".' },
+  invalid: {
+    detail: [
+      {
+        type: 'int_parsing',
+        loc: ['body', 'x'],
+        msg: 'Input should be a valid integer',
+        input: 'ten',
+      },
+      { type: 'missing', loc: ['body', 'path', 1], msg: 'Field required', input: {} },
+    ],
+  },
+  problem: { title: 'GlobalLockBusyError', detail: 'The microscope is busy.', status: 503 },
+}
+
+const dialogOpen = ref(false)
+const busyOpen = ref(false)
+const moveX = ref(0)
+const confirm = useConfirm()
+const toast = useToast()
+
+async function ask(danger: boolean) {
+  const confirmed = await confirm(
+    danger
+      ? {
+          title: 'Delete 3 captures?',
+          message: "This can't be undone.",
+          content: () =>
+            h(
+              'ul',
+              ['cell-1.jpg', 'cell-2.jpg', 'cell-3.jpg'].map((n) => h('li', n)),
+            ),
+          confirmLabel: 'Delete',
+          danger: true,
+        }
+      : { title: 'Move home?', message: 'Take the sample out first.', confirmLabel: 'Move home' },
+  )
+  lastEvent.value = `confirm ${confirmed}`
+}
 
 const state = computed(() =>
   JSON.stringify({
@@ -89,7 +134,7 @@ const state = computed(() =>
             <TextField
               v-model="name"
               placeholder="Untitled"
-              @submit="lastSubmit = `name ${JSON.stringify($event)}`"
+              @submit="lastEvent = `name ${JSON.stringify($event)}`"
             />
           </FormField>
           <FormField label="Exposure (µs)" help="1–100 000, whole numbers. ↑ and ↓ step.">
@@ -98,7 +143,7 @@ const state = computed(() =>
               :min="1"
               :max="100000"
               :step="1"
-              @submit="lastSubmit = `exposure ${$event}`"
+              @submit="lastEvent = `exposure ${$event}`"
             />
           </FormField>
           <FormField
@@ -158,10 +203,49 @@ const state = computed(() =>
           <SectionHeading :level="3">Capture</SectionHeading>
           <p class="gallery__note">A card holds a block of related content.</p>
         </AppCard>
+
+        <h3>Error details</h3>
+        <div class="gallery__progress">
+          <AppCard v-for="(sample, key) in errorSamples" :key="key">
+            <ErrorDetails :error="sample" />
+          </AppCard>
+        </div>
       </section>
     </div>
 
-    <p class="gallery__state"><strong>Last submit:</strong> {{ lastSubmit }}</p>
+    <section class="gallery__overlays">
+      <h2>Overlays</h2>
+      <p class="gallery__note">These open in the page's theme.</p>
+      <div class="gallery__row">
+        <AppButton @click="dialogOpen = true">Dialog</AppButton>
+        <AppButton @click="busyOpen = true">Busy dialog</AppButton>
+        <AppButton @click="ask(false)">Confirm</AppButton>
+        <AppButton variant="danger" @click="ask(true)">Confirm a deletion</AppButton>
+        <AppButton @click="toast.success('Saved to the gallery.')">Success toast</AppButton>
+        <AppButton @click="toast.info('Calibration takes about a minute.')">Info toast</AppButton>
+        <AppButton
+          @click="toast.error('The stage could not move.', { details: errorSamples.invalid })"
+        >
+          Error toast
+        </AppButton>
+        <AppTooltip text="Shown on hover and on keyboard focus">
+          <AppButton variant="ghost">Tooltip</AppButton>
+        </AppTooltip>
+      </div>
+      <AppDialog v-model:open="dialogOpen" title="Move to" description="In steps from home.">
+        <FormField label="x"><NumberField v-model="moveX" /></FormField>
+        <template #footer>
+          <AppButton @click="dialogOpen = false">Cancel</AppButton>
+          <AppButton variant="primary" @click="dialogOpen = false">Move</AppButton>
+        </template>
+      </AppDialog>
+      <AppDialog v-model:open="busyOpen" title="Autofocusing" size="sm" :dismissible="false">
+        <ProgressBar label="Autofocusing" />
+        <template #footer><AppButton @click="busyOpen = false">Cancel</AppButton></template>
+      </AppDialog>
+    </section>
+
+    <p class="gallery__state"><strong>Last event:</strong> {{ lastEvent }}</p>
     <p class="gallery__state"><strong>State:</strong> {{ state }}</p>
   </main>
 </template>

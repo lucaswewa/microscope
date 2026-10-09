@@ -1,8 +1,11 @@
 <script setup lang="ts">
 // A square button showing only an icon, such as the stage's arrow pad. Its
-// `label` names it for assistive technology and is its tooltip.
+// `label` names it for assistive technology and is its tooltip. Other
+// attributes and listeners go to the button.
 import AppButton from './AppButton.vue'
+import AppTooltip from './AppTooltip.vue'
 
+defineOptions({ inheritAttrs: false })
 withDefaults(
   defineProps<{
     /** The icon, as raw SVG text (see AppIcon). */
@@ -16,15 +19,17 @@ withDefaults(
 </script>
 
 <template>
-  <AppButton
-    class="icon-button"
-    :class="`icon-button--${size}`"
-    :variant="variant"
-    :size="size"
-    :icon="icon"
-    :aria-label="label"
-    :title="label"
-  />
+  <AppTooltip :text="label">
+    <AppButton
+      v-bind="$attrs"
+      class="icon-button"
+      :class="`icon-button--${size}`"
+      :variant="variant"
+      :size="size"
+      :icon="icon"
+      :aria-label="label"
+    />
+  </AppTooltip>
 </template>
 
 <style scoped>
