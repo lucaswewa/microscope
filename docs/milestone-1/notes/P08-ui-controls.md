@@ -1,7 +1,7 @@
 # P08: UI components I: controls
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#9](https://github.com/lucaswewa/microscope/pull/9)
 - ADRs: [ADR-0013](../../adr/0013-own-components-on-reka-ui-primitives.md)
 - Spec: [phases.md#p08](../phases.md#p08)
 
