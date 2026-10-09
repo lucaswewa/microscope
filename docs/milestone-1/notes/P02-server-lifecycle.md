@@ -1,7 +1,7 @@
 # P02: Server lifecycle and composed router
 
 - Status: In review
-- Pull request: to be linked once opened
+- Pull request: [#3](https://github.com/lucaswewa/microscope/pull/3)
 - ADRs: [ADR-0006](../../adr/0006-own-the-server-lifecycle-around-teta-wots-runtime.md), [ADR-0007](../../adr/0007-api-prefix-and-openflexure-mirrored-names.md)
 - Spec: [phases.md#p02](../phases.md#p02)
 
