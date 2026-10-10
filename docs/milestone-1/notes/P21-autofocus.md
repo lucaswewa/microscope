@@ -1,7 +1,7 @@
 # P21: Autofocus
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#29](https://github.com/lucaswewa/microscope/pull/29)
 - ADRs: [ADR-0022](../../adr/0022-sharpness-metric-and-fast-autofocus.md)
 - Spec: [phases.md#p21](../phases.md#p21)
 
