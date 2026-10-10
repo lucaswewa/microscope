@@ -408,8 +408,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P13 | Simulation world, optics and blob specimen | P01 | L | 0017 | Done |
-| P14 | Simulated stage motion model | P13 | M | — | In review |
-| P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Planned |
+| P14 | Simulated stage motion model | P13 | M | — | Done |
+| P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | In review |
 | P16 | Simulated stage Thing | P14, P15 | M | — | Planned |
 | P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Planned |
 | P18 | View tab: live image | P11, P17 | M | — | Planned |

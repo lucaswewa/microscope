@@ -1,6 +1,6 @@
 //! The microscope server.
 //!
-//! It serves the Things in [`microscope_things::registry`] from a
+//! It serves the Things in [`microscope_things::registry()`] from a
 //! configuration file, with `teta-wot`. Rather than `teta-wot`'s own serve
 //! loop, which only serves `teta-wot`'s router, it runs the lifecycle itself
 //! ([`lifecycle`], ADR-0006), so that routes of its own ([`routes`]) can sit
