@@ -25,7 +25,7 @@ export interface Destination {
 
 /** The rail's destinations, in order: Shift+↑ and Shift+↓ follow it. */
 export const DESTINATIONS: readonly Destination[] = [
-  { id: 'view', label: 'View', icon: view, group: 'top', requires: [], builtIn: 'P18' },
+  { id: 'view', label: 'View', icon: view, group: 'top', requires: [], builtIn: 'P18b' },
   { id: 'control', label: 'Control', icon: control, group: 'top', requires: [], builtIn: 'P20' },
   {
     id: 'slide-scan',

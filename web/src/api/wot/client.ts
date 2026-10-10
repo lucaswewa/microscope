@@ -1,5 +1,6 @@
 import { ApiError } from './errors'
 import { Invocation, sleep, type FollowOptions, type InvocationRecord } from './invocation'
+import { byteChunks, multipartBoundary, parseMultipart } from './mjpeg'
 import { parseEventStream, textChunks, type SseMessage } from './sse'
 import { formUrl, type Form, type ThingDescription } from './td'
 
@@ -78,6 +79,33 @@ export class WotClient {
    * ends it.
    */
   stream(url: URL, onMessage: (message: SseMessage) => void, options: StreamOptions = {}) {
+    return this.follow(url, 'text/event-stream', options, async (body) => {
+      for await (const message of parseEventStream(textChunks(body))) onMessage(message)
+    })
+  }
+
+  /**
+   * Follows an MJPEG stream (`multipart/x-mixed-replace`), calling `onFrame`
+   * with each frame's bytes, until the returned function is called or
+   * `signal` aborts. It reconnects as `stream` does.
+   */
+  frames(url: URL, onFrame: (jpeg: Uint8Array<ArrayBuffer>) => void, options: StreamOptions = {}) {
+    return this.follow(url, 'multipart/x-mixed-replace', options, async (body, response) => {
+      const boundary = multipartBoundary(response.headers.get('Content-Type'))
+      if (!boundary) {
+        throw new ApiError('http', 'The answer is not an MJPEG stream.', response.status)
+      }
+      for await (const frame of parseMultipart(byteChunks(body), boundary)) onFrame(frame)
+    })
+  }
+
+  /** Requests `url` and reads its answer with `read`, reconnecting as `stream` describes. */
+  private follow(
+    url: URL,
+    accept: string,
+    options: StreamOptions,
+    read: (body: ReadableStream<Uint8Array>, response: Response) => Promise<void>,
+  ) {
     const controller = new AbortController()
     options.signal?.addEventListener('abort', () => controller.abort(), { once: true })
     const signal = controller.signal
@@ -87,14 +115,12 @@ export class WotClient {
       while (!signal.aborted) {
         try {
           const response = await this.fetch(url, {
-            headers: { Accept: 'text/event-stream', ...this.headers() },
+            headers: { Accept: accept, ...this.headers() },
             signal,
           })
           if (!response.ok || !response.body) throw await ApiError.fromResponse(response)
           delay = 1000
-          for await (const message of parseEventStream(textChunks(response.body))) {
-            onMessage(message)
-          }
+          await read(response.body, response)
           throw new ApiError('network', 'The stream ended.')
         } catch (failure) {
           if (signal.aborted) return
@@ -181,6 +207,16 @@ export class ConsumedThing {
       (message) => onChange(message.event, JSON.parse(message.data)),
       options,
     )
+  }
+
+  /** The URL of the Thing's MJPEG stream `name`, from its description's links. */
+  streamUrl(name: string): URL {
+    for (const link of this.td.links ?? []) {
+      if (link.type?.split(';')[0]?.trim() !== 'multipart/x-mixed-replace') continue
+      const url = new URL(link.href, this.td.base ?? this.client.baseUrl)
+      if (url.pathname.split('/').pop() === name) return url
+    }
+    throw new Error(`${this.td.title} has no stream "${name}".`)
   }
 
   /** Calls `onEvent` with the data of each of the event's occurrences. */

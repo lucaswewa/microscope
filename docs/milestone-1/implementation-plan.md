@@ -306,7 +306,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | Area | OpenFlexure feature | Milestone 1 | Phase |
 |---|---|---|---|
 | Shell | Vertical tab rail, light/dark/system theme, Shift+↑/↓ tab switching, narrow-window warning | Yes | P06, P07 |
-| View | Full-window live stream, option to disable the stream, flash on capture | Yes | P18, P26 |
+| View | Full-window live stream, option to disable the stream, flash on capture | Yes | P18b, P26 |
 | Control | Position fields, Move, Set Home, Move Home with confirmation | Yes | P20 |
 | Control | D-pad and focus jog, keyboard jog, scroll to focus | Yes | P20 |
 | Control | Double-click to move (camera–stage mapping) | Yes | P23 |
@@ -412,10 +412,11 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Done |
 | P16 | Simulated stage Thing | P14, P15 | M | — | Done |
 | P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Done |
-| P17b | Capture buffer and settling | P17 | M | — | In review |
-| P18 | View tab: live image | P11, P17 | M | — | Planned |
+| P17b | Capture buffer and settling | P17 | M | — | Done |
+| P18 | MJPEG streaming in the client | P10, P17 | M | — | In review |
+| P18b | View tab: live image | P11, P18 | M | — | Planned |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
-| P20 | Control tab: stage navigation | P09b, P18, P19 | L | — | Planned |
+| P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | Planned |
 
 **Checkpoint A, "Live microscope":** the app shows the live simulated image, and you can jog and focus with the buttons, the keys and the wheel, or move to typed coordinates.
 
@@ -560,7 +561,7 @@ docs/
 | Owning the serve loop duplicates `teta-wot` internals | It can drift when `teta-wot` is upgraded | Keep it in one small module with tests of the shutdown behaviour; pin the tag; ADR-0006 names the trigger to revisit (a router hook upstream) |
 | `teta-wot` is new (v0.1.0) | Bugs or gaps under real load (MJPEG, SSE, invocations) | Checkpoint A exercises the transports early; work around in the app and report upstream |
 | Simulator performance on Windows | A sluggish preview, slow autofocus and scans | Budgets set in P13 and P17; level of detail, caching and a fast blur; a lower-resolution preview stream |
-| Decoding MJPEG with `fetch` in the browser | CPU use and dropped frames | `createImageBitmap`, a frame cap, stream sharing; measured in P18 |
+| Decoding MJPEG with `fetch` in the browser | CPU use and dropped frames | `createImageBitmap`, a frame cap, stream sharing; measured in P18b |
 | Independent-implementation discipline | Licence contamination from the GPL reference | ADR-0002, spec-first notes, the PR checkbox, references kept out of git |
 | Visual fidelity is subjective | Rework late in the milestone | References from P05, token review in P06, side-by-side captures from P07, a dedicated pass in P47 |
 | Memory use in large mosaics | Out-of-memory on big scans | The DZI writer works tile by tile and never holds the full mosaic (P38) |
@@ -656,3 +657,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-08 | P00: `goals.md` moved to `docs/milestone-1/goals.md`; approving a pull request accepts its ADRs; the next phase's pull request marks the previous phase *Done* |
 | 2026-10-09 | P09 split in two, at the project owner's choice, since it was estimated at three times its M budget. P09 keeps dialogs, confirmations, toasts, tooltips and error details. The new P09b has menus, pagination, multiple selection and keyboard shortcuts. Both are sized L. P20, P24, P32 and P43 now depend on P09b |
 | 2026-10-09 | P17 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P17 keeps the illumination and the camera's preview pipeline, streams, settings and samples. The new P17b, sized M, has the capture buffer (`capture_to_memory`, `save_from_memory`, `clear_buffers`) and settling (`settle`, `discard_frames`). P21 and P26 now depend on P17b |
+| 2026-10-10 | P18 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its M budget. P18 is now MJPEG streaming in the client: the multipart parser, `WotClient.frames()` and shared, reference-counted streams. The new P18b, sized M, has `LiveImage`, the View tab and the "Disable stream" preference. P20 now depends on P18b |

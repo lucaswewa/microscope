@@ -9,7 +9,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 0: Groundwork](#stage-0-groundwork): [P00](#p00) [P01](#p01) [P02](#p02) [P03](#p03)
 - [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
-- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P19](#p19) [P20](#p20)
+- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20)
 - [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
@@ -371,21 +371,34 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - The buffer keeps at most `buffer_max` images and finds them by id; saving writes a readable image inside the data folder and refuses paths outside it; a frame grabbed after `settle` shows where the stage moved to.
 
 <a id="p18"></a>
-### P18: View tab: live image
+### P18: MJPEG streaming in the client
 
-**Goal.** The full-window live image, read with `fetch`.
-**Depends on** P11, P17 · **Size** M · **ADRs** —
+**Goal.** Live MJPEG streams read with `fetch`, shared and decoded once, ready for any view to draw.
+**Depends on** P10, P17 · **Size** M · **ADRs** —
 
 **Scope**
-- A fetch-based MJPEG reader: it parses the multipart stream, decodes frames with `createImageBitmap` and draws them to a canvas. Viewers of the same URL share one stream through reference counting. The stream pauses when it is hidden (IntersectionObserver and page visibility), and its frame rate is capped.
-- `LiveImage`: contain-fit with letterboxing; states for connecting, disabled, no connection and error; a flash on capture.
+- A multipart parser for `multipart/x-mixed-replace` streams. It honours `Content-Length` when a part has one, and hands on a JPEG as soon as it is complete, without waiting for the next boundary.
+- `WotClient.frames()`: a stream's JPEG frames, with the client's headers, reconnecting with backoff like its server-sent events. `ConsumedThing.streamUrl()` finds a stream through the Thing Description's links.
+- Shared streams: viewers of the same URL share one request through reference counting, and the request stops when the last viewer leaves or pauses. Frames are decoded once with `createImageBitmap`, only the latest is kept while decoding, and the frame rate is capped.
+
+**Tests**
+- The multipart parser (boundaries split across chunks, `Content-Length`, early hand-on), reconnection, reference counting, pausing and the frame-rate cap.
+
+<a id="p18b"></a>
+### P18b: View tab: live image
+
+**Goal.** The full-window live image. Split from P18 (Appendix D of the plan).
+**Depends on** P11, P18 · **Size** M · **ADRs** —
+
+**Scope**
+- `LiveImage`: draws a shared stream to a canvas, contain-fit with letterboxing; states for connecting, disabled, no connection and error; a flash on capture. It pauses its stream while hidden (IntersectionObserver and page visibility).
 - The View tab, full window, and a "Disable stream" preference.
 
 **Done when**
 - The live image runs at 10 fps or more on the development machine, CPU use is recorded in the notes, and the stream stops when you leave the tab.
 
 **Tests**
-- The multipart parser (boundaries split across chunks) and reference counting; end to end, frames arrive.
+- `LiveImage`'s states, pausing and flash; end to end, frames arrive, and the stream stops when you leave the tab.
 
 <a id="p19"></a>
 ### P19: Generated API types and typed facades
@@ -402,7 +415,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P20: Control tab: stage navigation
 
 **Goal.** Moving around the sample the way OpenFlexure's Control tab does.
-**Depends on** P09b, P18, P19 · **Size** L · **ADRs** —
+**Depends on** P09b, P18b, P19 · **Size** L · **ADRs** —
 
 **Scope**
 - The Control layout: a narrow control pane beside the live image.
