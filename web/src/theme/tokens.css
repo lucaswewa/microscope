@@ -143,6 +143,7 @@
   --color-surface-sunken: var(--palette-neutral-50);
   --color-image-backdrop: var(--palette-neutral-0);
   --color-overlay: rgb(0 0 0 / 40%);
+  --color-capture-flash: var(--palette-neutral-0);
 
   /* Text. */
   --color-text: var(--palette-neutral-950);
@@ -197,6 +198,7 @@
   --color-surface-sunken: var(--palette-neutral-950);
   --color-image-backdrop: var(--palette-neutral-925);
   --color-overlay: rgb(0 0 0 / 60%);
+  --color-capture-flash: var(--palette-neutral-0);
 
   --color-text: var(--palette-neutral-100);
   --color-text-muted: var(--palette-neutral-400);

@@ -28,7 +28,14 @@ describe('the app', () => {
     expect(app.router.currentRoute.value.name).toBe('view')
   })
 
-  for (const destination of DESTINATIONS) {
+  it('shows the live image on the View page', async () => {
+    const app = await mountApp('/view')
+    wrapper = app.wrapper
+    expect(wrapper.get('h1').text()).toBe('View')
+    expect(wrapper.find('.live-image').exists()).toBe(true)
+  })
+
+  for (const destination of DESTINATIONS.filter(({ id }) => id !== 'view')) {
     it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
       const app = await mountApp(`/${destination.id}`)
       wrapper = app.wrapper

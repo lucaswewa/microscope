@@ -1,3 +1,4 @@
+import type { Component } from 'vue'
 import {
   createRouter,
   createWebHashHistory,
@@ -8,22 +9,29 @@ import {
 import { DESTINATIONS } from '@/app/navigation'
 import ConnectView from '@/connection/ConnectView.vue'
 import PlaceholderPage from '@/views/PlaceholderPage.vue'
+import ViewPage from '@/views/ViewPage.vue'
 
 /** The layout each destination's page will have, which its placeholder shows. */
 const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }> = {
-  view: { liveImage: true },
   control: { pane: 'narrow', liveImage: true },
   'slide-scan': { pane: 'wide', liveImage: true },
   sequence: { pane: 'wide', liveImage: true },
   settings: { pane: 'narrow' },
 }
 
+/** The pages built so far; the other destinations show a placeholder. */
+const PAGES: Record<string, Component> = { view: ViewPage }
+
 /** One route per destination in the rail. Settings has sections: `/#/settings/camera`. */
 const destinationRoutes: RouteRecordRaw[] = DESTINATIONS.map((destination) => ({
   path: destination.id === 'settings' ? '/settings/:section?' : `/${destination.id}`,
   name: destination.id,
-  component: PlaceholderPage,
-  props: { destinationId: destination.id, ...LAYOUTS[destination.id] },
+  ...(PAGES[destination.id]
+    ? { component: PAGES[destination.id] }
+    : {
+        component: PlaceholderPage,
+        props: { destinationId: destination.id, ...LAYOUTS[destination.id] },
+      }),
 }))
 
 /** Pages for development only: left out of production builds. */

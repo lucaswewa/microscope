@@ -7,7 +7,8 @@ test('the built app opens on the View page, connected, with the navigation rail'
 
   // The router keeps routes in the URL's hash.
   await expect(page).toHaveURL(/\/#\/view$/)
-  await expect(page.getByRole('heading', { name: 'View' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'View' })).toBeAttached()
+  await expect(page.getByRole('img', { name: 'Live image' })).toBeVisible()
   // Connected to the test server, which names the window after its host.
   await expect(page.locator('.connection-indicator')).toHaveAttribute('data-state', 'connected')
   await expect(page).toHaveTitle(/^.+ – Microscope$/)
