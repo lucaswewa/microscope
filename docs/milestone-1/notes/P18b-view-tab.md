@@ -1,6 +1,6 @@
 # P18b: View tab: live image
 
-- Status: In review
+- Status: Done
 - Pull request: [#25](https://github.com/lucaswewa/microscope/pull/25)
 - ADRs: none new
 - Spec: [phases.md#p18b](../phases.md#p18b), split from P18 (plan Appendix D)
