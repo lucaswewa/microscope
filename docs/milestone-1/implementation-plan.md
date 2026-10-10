@@ -414,7 +414,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Done |
 | P17b | Capture buffer and settling | P17 | M | — | Done |
 | P18 | MJPEG streaming in the client | P10, P17 | M | — | Done |
-| P18b | View tab: live image | P11, P18 | M | — | Planned |
+| P18b | View tab: live image | P11, P18 | M | — | In review |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
 | P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | Planned |
 
