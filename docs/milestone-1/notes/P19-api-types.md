@@ -1,7 +1,7 @@
 # P19: Generated API types and typed facades
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#26](https://github.com/lucaswewa/microscope/pull/26)
 - ADRs: [ADR-0021](../../adr/0021-generated-api-types.md)
 - Spec: [phases.md#p19](../phases.md#p19)
 
