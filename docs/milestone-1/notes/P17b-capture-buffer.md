@@ -31,14 +31,22 @@ The camera can now hold captures in memory and save them later, and give a fresh
 cargo run -p microscope-server -- -c configs/simulation.json --port 5090
 ```
 
-Then, in another terminal:
+Then, in another terminal, also in the repository's root. The data folder, `.microscope/data`, is relative to the folder the server started in.
+
+A POST only starts an action, so `Invoke-Action` waits for each to end. Without it, `save_from_memory`, which doesn't wait for the global lock, could run before the capture is done:
 
 ```powershell
 $api = 'http://127.0.0.1:5090/api/v1'
-Invoke-RestMethod -Method Post "$api/camera/capture_to_memory" -ContentType application/json -Body '{}'
-Invoke-RestMethod -Method Post "$api/camera/save_from_memory" -ContentType application/json -Body '{"path": "tries/first.jpg"}'
+function Invoke-Action($path, $body = '{}') {
+    $run = Invoke-RestMethod -Method Post "$api/$path" -ContentType application/json -Body $body
+    while ($run.status -in 'pending', 'running') { Start-Sleep -Milliseconds 100; $run = Invoke-RestMethod $run.href }
+    $run
+}
+Invoke-Action camera/capture_to_memory                            # status completed, output 1
+Invoke-Action camera/save_from_memory '{"path": "tries/first.jpg"}'
 Get-Item .microscope/data/tries/first.jpg
-Invoke-RestMethod -Method Post "$api/camera/settle" -ContentType application/json -Body '{}'
+Invoke-Action camera/settle
+Invoke-Action camera/save_from_memory '{"path": "tries/again.jpg"}'   # error: memory is empty now
 ```
 
 ## Design notes and deviations from the plan
