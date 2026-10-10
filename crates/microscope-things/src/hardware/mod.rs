@@ -23,10 +23,12 @@
 //! - **Positions are whole steps** per axis, with an optional µm scale
 //!   (ADR-0019).
 
+mod backlash;
 mod camera;
 mod illumination;
 mod stage;
 
+pub use backlash::BacklashCompensation;
 pub use camera::{CameraApi, Capture, CaptureMetadata, StreamInfo};
 pub use illumination::IlluminationApi;
 pub use stage::{AxisScale, Position, StageApi};

@@ -169,7 +169,7 @@ The names mirror OpenFlexure's (D7). `teta-wot` Things can't be generic, so each
 | Thing name | Milestone-1 type | Main affordances | Phases |
 |---|---|---|---|
 | `system` | `MicroscopeSystem` | `hostname`, `version_data`, `os_version`, `managed`; `shutdown`, `restart` | P02, P44 |
-| `stage` | `SimulatedStage` (`StageApi`) | `position` (observable), `moving`, `axis_names`, `um_per_step`, `backlash_steps`, `axis_inverted`; `move_relative`, `move_absolute`, `move_to_origin`, `set_zero_position`, `jog`, `invert_axis_direction`, `stop` | P16 |
+| `stage` | `SimulatedStage` (`StageApi`) | `position` (observable), `moving`, `axis_names`, `um_per_step`, `backlash_steps`, `axis_inverted`; `move_relative`, `move_absolute`, `move_to_origin`, `set_zero_position`, `jog`, `halt` (`teta-wot` reserves `stop`), `invert_axis_direction`, `calibrate_z_direction`; the event `arrived` | P16 |
 | `camera` | `SimulatedCamera` (`CameraApi`) | `mjpeg_stream`, `lores_mjpeg_stream`, streaming modes, manual settings, calibration properties; `capture`, `grab_jpeg`, `capture_to_memory`, `save_from_memory`, `settle`, `full_auto_calibrate`, `set_background`, `image_is_sample`, `load_sample`, `remove_sample` | P17, P25–P27 |
 | `illumination` | `SimulatedIllumination` | `set_led`, `flash` | P17 |
 | `autofocus` | `Autofocus` | `fast_autofocus`, `looping_autofocus`, `z_move_and_measure_sharpness`, `run_smart_stack`, `run_basic_stack` | P21, P36 |
@@ -409,8 +409,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P13 | Simulation world, optics and blob specimen | P01 | L | 0017 | Done |
 | P14 | Simulated stage motion model | P13 | M | — | Done |
-| P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | In review |
-| P16 | Simulated stage Thing | P14, P15 | M | — | Planned |
+| P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Done |
+| P16 | Simulated stage Thing | P14, P15 | M | — | In review |
 | P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Planned |
 | P18 | View tab: live image | P11, P17 | M | — | Planned |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |

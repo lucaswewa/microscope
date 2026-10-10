@@ -26,4 +26,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P12 | [Serve the web app from the backend](P12-serve-webapp.md) | Done |
 | P13 | [Simulation world, optics and blob specimen](P13-simulator-core.md) | Done |
 | P14 | [Simulated stage motion model](P14-stage-model.md) | Done |
-| P15 | [Hardware interfaces and units](P15-hardware-interfaces.md) | In review |
+| P15 | [Hardware interfaces and units](P15-hardware-interfaces.md) | Done |
+| P16 | [Simulated stage Thing](P16-simulated-stage.md) | In review |
