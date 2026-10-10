@@ -30,4 +30,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P16 | [Simulated stage Thing](P16-simulated-stage.md) | Done |
 | P17 | [Simulated camera and illumination Things](P17-simulated-camera.md) | Done |
 | P17b | [Capture buffer and settling](P17b-capture-buffer.md) | Done |
-| P18 | [MJPEG streaming in the client](P18-mjpeg-streaming.md) | In review |
+| P18 | [MJPEG streaming in the client](P18-mjpeg-streaming.md) | Done |

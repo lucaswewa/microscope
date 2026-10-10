@@ -1,6 +1,6 @@
 # P18: MJPEG streaming in the client
 
-- Status: In review
+- Status: Done
 - Pull request: [#24](https://github.com/lucaswewa/microscope/pull/24)
 - ADRs: none new; it extends the WoT client of [ADR-0014](../../adr/0014-client-transports-td-forms-fetch-streams-polled-invocations.md)
 - Spec: [phases.md#p18](../phases.md#p18). P18 was split, at the owner's choice: `LiveImage` and the View tab are now P18b (plan Appendix D).
