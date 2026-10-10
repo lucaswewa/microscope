@@ -14,6 +14,7 @@
 pub mod fakes;
 pub mod hardware;
 pub mod registry;
+pub mod stage;
 pub mod system;
 
 pub use registry::registry;

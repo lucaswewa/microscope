@@ -10,7 +10,7 @@
 //! | Thing | Class | Phase |
 //! |---|---|---|
 //! | `system` | `microscope.system:MicroscopeSystem` | P02 (here) |
-//! | `stage` | `microscope.stage:SimulatedStage` | P16 |
+//! | `stage` | `microscope.stage:SimulatedStage` | P16 (here) |
 //! | `camera`, `illumination` | `microscope.camera:SimulatedCamera`, `microscope.illumination:SimulatedIllumination` | P17 |
 //! | `autofocus` | `microscope.autofocus:Autofocus` | P21 |
 //! | `camera_stage_mapping` | `microscope.camera_stage_mapping:CameraStageMapping` | P23 |
@@ -21,9 +21,12 @@
 
 use teta_wot::server::ThingRegistry;
 
+use crate::stage::SimulatedStage;
 use crate::system::MicroscopeSystem;
 
 /// Every Thing type a configuration file can name, under its class name.
 pub fn registry() -> ThingRegistry {
-    ThingRegistry::new().register::<MicroscopeSystem>("microscope.system:MicroscopeSystem")
+    ThingRegistry::new()
+        .register::<MicroscopeSystem>("microscope.system:MicroscopeSystem")
+        .register::<SimulatedStage>("microscope.stage:SimulatedStage")
 }

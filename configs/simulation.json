@@ -1,6 +1,7 @@
 {
     "things": {
-        "system": "microscope.system:MicroscopeSystem"
+        "system": "microscope.system:MicroscopeSystem",
+        "stage": "microscope.stage:SimulatedStage"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",
