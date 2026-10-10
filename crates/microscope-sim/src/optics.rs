@@ -89,6 +89,14 @@ impl Sensor {
         pixel_pitch_um: 4.48,
     };
 
+    /// A capture: 1640 × 1232 pixels, binned 2 × 2 from the same sensor, so
+    /// it shows the preview's field of view in twice the detail.
+    pub const CAPTURE: Sensor = Sensor {
+        width: 1640,
+        height: 1232,
+        pixel_pitch_um: 2.24,
+    };
+
     /// The part of the sample a frame shows, through `objective`, in µm (width, height).
     pub fn field_of_view_um(&self, objective: &Objective) -> (f64, f64) {
         let um_per_px = self.pixel_pitch_um / objective.magnification;

@@ -24,8 +24,8 @@ import {
  */
 export type ConnectionState = 'idle' | 'connecting' | 'connected' | 'lost' | 'reconnecting'
 
-/** The Things the app can't work without. The camera joins them in P17. */
-export const REQUIRED_THINGS = ['system']
+/** The Things the app can't work without. */
+export const REQUIRED_THINGS = ['system', 'camera']
 /** How often a connected app checks that the server is still there. */
 export const HEARTBEAT_MS = 5000
 /** The first wait before trying again; it doubles each time, up to the maximum. */

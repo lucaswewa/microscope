@@ -1,6 +1,6 @@
 # P16: Simulated stage Thing
 
-- Status: In review
+- Status: Done
 - Pull request: [#21](https://github.com/lucaswewa/microscope/pull/21)
 - ADRs: none new; it follows [ADR-0018](../../adr/0018-hardware-abstraction-through-teta-wot-interfaces.md) and [ADR-0019](../../adr/0019-stage-units-integer-steps-with-a-um-scale.md)
 - Spec: [phases.md#p16](../phases.md#p16)

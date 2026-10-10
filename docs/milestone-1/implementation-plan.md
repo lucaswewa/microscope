@@ -170,7 +170,7 @@ The names mirror OpenFlexure's (D7). `teta-wot` Things can't be generic, so each
 |---|---|---|---|
 | `system` | `MicroscopeSystem` | `hostname`, `version_data`, `os_version`, `managed`; `shutdown`, `restart` | P02, P44 |
 | `stage` | `SimulatedStage` (`StageApi`) | `position` (observable), `moving`, `axis_names`, `um_per_step`, `backlash_steps`, `axis_inverted`; `move_relative`, `move_absolute`, `move_to_origin`, `set_zero_position`, `jog`, `halt` (`teta-wot` reserves `stop`), `invert_axis_direction`, `calibrate_z_direction`; the event `arrived` | P16 |
-| `camera` | `SimulatedCamera` (`CameraApi`) | `mjpeg_stream`, `lores_mjpeg_stream`, streaming modes, manual settings, calibration properties; `capture`, `grab_jpeg`, `capture_to_memory`, `save_from_memory`, `settle`, `full_auto_calibrate`, `set_background`, `image_is_sample`, `load_sample`, `remove_sample` | P17, P25–P27 |
+| `camera` | `SimulatedCamera` (`CameraApi`) | `mjpeg_stream`, `lores_mjpeg_stream`, streaming modes, manual settings, calibration properties; `capture`, `grab_jpeg`, `capture_to_memory`, `save_from_memory`, `settle`, `full_auto_calibrate`, `set_background`, `image_is_sample`, `load_sample`, `remove_sample` | P17, P17b, P25–P27 |
 | `illumination` | `SimulatedIllumination` | `set_led`, `flash` | P17 |
 | `autofocus` | `Autofocus` | `fast_autofocus`, `looping_autofocus`, `z_move_and_measure_sharpness`, `run_smart_stack`, `run_basic_stack` | P21, P36 |
 | `camera_stage_mapping` | `CameraStageMapping` | `image_to_stage_displacement_matrix`, `image_resolution`, `last_calibration`; `calibrate_xy`, `move_in_image_coordinates`, `convert_*` | P23 |
@@ -410,8 +410,9 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P13 | Simulation world, optics and blob specimen | P01 | L | 0017 | Done |
 | P14 | Simulated stage motion model | P13 | M | — | Done |
 | P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Done |
-| P16 | Simulated stage Thing | P14, P15 | M | — | In review |
-| P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Planned |
+| P16 | Simulated stage Thing | P14, P15 | M | — | Done |
+| P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | In review |
+| P17b | Capture buffer and settling | P17 | M | — | Planned |
 | P18 | View tab: live image | P11, P17 | M | — | Planned |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
 | P20 | Control tab: stage navigation | P09b, P18, P19 | L | — | Planned |
@@ -422,12 +423,12 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P21 | Autofocus | P17, P20 | M | 0022 | Planned |
+| P21 | Autofocus | P17b, P20 | M | 0022 | Planned |
 | P22 | Image registration core | P13 | M | 0023 | Planned |
 | P23 | Camera–stage mapping and click-to-move | P21, P22 | L | — | Planned |
 | P24 | Server-described UI elements | P09b, P10 | L | 0024 | Planned |
 | P25 | Specimens II and optical effects | P17, P24 | L | — | Planned |
-| P26 | Capture to the data folder | P17, P20 | M | 0025 | Planned |
+| P26 | Capture to the data folder | P17b, P20 | M | 0025 | Planned |
 | P27 | Background detection and camera calibration | P24, P25 | L | — | Planned |
 | P28 | Settings tab | P23, P24, P27 | L | — | Planned |
 | P29 | Calibration wizard | P28 | L | — | Planned |
@@ -654,3 +655,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-08 | Delivery: each pull request is merged only after the project owner approves it; the next phase starts only after the merge |
 | 2026-10-08 | P00: `goals.md` moved to `docs/milestone-1/goals.md`; approving a pull request accepts its ADRs; the next phase's pull request marks the previous phase *Done* |
 | 2026-10-09 | P09 split in two, at the project owner's choice, since it was estimated at three times its M budget. P09 keeps dialogs, confirmations, toasts, tooltips and error details. The new P09b has menus, pagination, multiple selection and keyboard shortcuts. Both are sized L. P20, P24, P32 and P43 now depend on P09b |
+| 2026-10-09 | P17 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P17 keeps the illumination and the camera's preview pipeline, streams, settings and samples. The new P17b, sized M, has the capture buffer (`capture_to_memory`, `save_from_memory`, `clear_buffers`) and settling (`settle`, `discard_frames`). P21 and P26 now depend on P17b |

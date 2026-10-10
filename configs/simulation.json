@@ -1,7 +1,9 @@
 {
     "things": {
         "system": "microscope.system:MicroscopeSystem",
-        "stage": "microscope.stage:SimulatedStage"
+        "stage": "microscope.stage:SimulatedStage",
+        "camera": "microscope.camera:SimulatedCamera",
+        "illumination": "microscope.illumination:SimulatedIllumination"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",

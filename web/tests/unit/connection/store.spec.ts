@@ -16,8 +16,10 @@ const system: ThingDescription = {
   },
 }
 
-/** A server with the system Thing, which goes away and comes back when told. */
-function server(things: Record<string, ThingDescription> = { system }) {
+const camera: ThingDescription = { title: 'SimulatedCamera' }
+
+/** A server with the required Things, which goes away and comes back when told. */
+function server(things: Record<string, ThingDescription> = { system, camera }) {
   const control = { down: false }
   const answer = (body: unknown) => () =>
     control.down ? Promise.reject(new TypeError('Failed to fetch')) : json(body)
@@ -55,7 +57,7 @@ describe('the connection', () => {
     const connection = useConnectionStore()
     await connection.connect({ kind: 'local' })
     expect(states).toEqual(['connecting', 'connected'])
-    expect(Object.keys(connection.descriptions!)).toEqual(['system'])
+    expect(Object.keys(connection.descriptions!)).toEqual(['system', 'camera'])
     expect(connection.hostname).toBe('lab-pc')
     await vi.advanceTimersByTimeAsync(0)
     expect(document.title).toBe('lab-pc – Microscope')
@@ -109,11 +111,15 @@ describe('the connection', () => {
   })
 
   it('is lost when the server lacks a required Thing', async () => {
-    server({ camera: { title: 'Camera' } })
+    server({ camera })
     const connection = useConnectionStore()
     await connection.connect({ kind: 'local' })
     expect(connection.state).toBe('lost')
     expect(String(connection.error)).toContain('This server has no system Thing.')
+    server({ system })
+    connection.retry()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(String(connection.error)).toContain('This server has no camera Thing.')
   })
 
   it('ignores the answers to an attempt it has left', async () => {
@@ -122,8 +128,10 @@ describe('the connection', () => {
       // The first microscope answers late, after the app has moved on.
       'GET /api/v1/thing_descriptions/': (request: Received) =>
         old(request)
-          ? new Promise<Response>((resolve) => setTimeout(() => resolve(json({ system })), 1000))
-          : json({ system }),
+          ? new Promise<Response>((resolve) =>
+              setTimeout(() => resolve(json({ system, camera })), 1000),
+            )
+          : json({ system, camera }),
       'GET /api/v1/system/hostname': (request: Received) =>
         json(old(request) ? 'old-pc' : 'lab-pc'),
     })

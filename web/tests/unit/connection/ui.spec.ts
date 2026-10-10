@@ -13,6 +13,8 @@ const system = {
   },
 }
 
+const camera = { title: 'SimulatedCamera' }
+
 const control = { down: false }
 let wrapper: VueWrapper | undefined
 
@@ -25,7 +27,7 @@ beforeEach(() => {
   vi.stubGlobal(
     'fetch',
     fakeServer({
-      'GET /api/v1/thing_descriptions/': answer({ system }),
+      'GET /api/v1/thing_descriptions/': answer({ system, camera }),
       'GET /api/v1/system/hostname': answer('lab-pc'),
     }).fetch,
   )
