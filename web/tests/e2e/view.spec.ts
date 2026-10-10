@@ -16,7 +16,7 @@ test('the live image shows the camera’s frames', async ({ page }) => {
   await expect(page.locator('.live-image')).toHaveAttribute('data-status', 'live')
 })
 
-test('the stream stops when you leave the View tab', async ({ page }) => {
+test('the stream stops when you leave for a tab without the live image', async ({ page }) => {
   const stopped: string[] = []
   page.on('requestfailed', (request) => {
     if (request.url().endsWith('/camera/mjpeg_stream')) stopped.push(request.url())
@@ -25,7 +25,7 @@ test('the stream stops when you leave the View tab', async ({ page }) => {
   await expect.poll(() => framesDrawn(page)).toBeGreaterThan(0)
   await page
     .getByRole('navigation', { name: 'Main' })
-    .getByRole('link', { name: 'Control' })
+    .getByRole('link', { name: 'Logging' })
     .click()
   await expect.poll(() => stopped.length).toBe(1)
 })

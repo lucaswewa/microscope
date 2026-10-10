@@ -35,7 +35,15 @@ describe('the app', () => {
     expect(wrapper.find('.live-image').exists()).toBe(true)
   })
 
-  for (const destination of DESTINATIONS.filter(({ id }) => id !== 'view')) {
+  it('shows the stage controls beside the live image on the Control page', async () => {
+    const app = await mountApp('/control')
+    wrapper = app.wrapper
+    expect(wrapper.get('h1').text()).toBe('Control')
+    expect(wrapper.find('.direction-pad').exists()).toBe(true)
+    expect(wrapper.find('.live-image').exists()).toBe(true)
+  })
+
+  for (const destination of DESTINATIONS.filter(({ id }) => !['view', 'control'].includes(id))) {
     it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
       const app = await mountApp(`/${destination.id}`)
       wrapper = app.wrapper

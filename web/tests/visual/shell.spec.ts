@@ -9,6 +9,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     for (const route of ['control', 'settings/camera']) {
       test(`on ${route}`, async ({ page }) => {
+        // A still picture: the stream off, and the stage at a fixed place,
+        // whatever other tests do with it meanwhile.
+        await page.addInitScript(() => localStorage.setItem('microscope.stream-disabled', 'true'))
+        await page.route('**/api/v1/stage/position', (r) =>
+          r.fulfill({ json: { x: 0, y: 0, z: 0 } }),
+        )
+        await page.route('**/api/v1/stage/moving', (r) => r.fulfill({ json: false }))
         await page.goto(`/#/${route}`)
         await expect(page.locator('.connection-indicator')).toHaveAttribute(
           'data-state',
