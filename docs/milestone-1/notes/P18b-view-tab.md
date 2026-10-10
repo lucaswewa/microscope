@@ -38,7 +38,7 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
 
 Open `http://127.0.0.1:5090/#/view`. Then:
 
-- **Watch the stream:** move the stage from `http://127.0.0.1:5090/api/v1/docs` and see the image follow.
+- **Watch the stream:** move the stage from `http://127.0.0.1:5090/docs` and see the image follow.
 - **Turn it off:** use the eye button at the top right.
 - **Leave the tab** and watch the stream's request end in the browser's network panel.
 

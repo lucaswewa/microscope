@@ -49,6 +49,9 @@ jobs:
         run: npm run lint
       - name: Type check
         run: npm run typecheck
+      # The Rust job checks openapi.json against the server (ADR-0021).
+      - name: Generated API types are up to date
+        run: npm run api:types -- --check
       - name: Unit tests
         run: npm run test:unit
       - name: Build

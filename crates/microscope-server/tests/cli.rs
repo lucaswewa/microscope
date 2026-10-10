@@ -128,3 +128,24 @@ fn fallback_serves_an_error_page_with_the_log_instead_of_exiting() {
         "{log_files:?}"
     );
 }
+
+#[test]
+fn print_openapi_writes_the_committed_document() {
+    let root = concat!(env!("CARGO_MANIFEST_DIR"), "/../..");
+    let output = run(&[
+        "-c",
+        &format!("{root}/configs/simulation.json"),
+        "--print-openapi",
+    ]);
+    assert_eq!(code(&output), 0, "{}", text(&output.stderr));
+    let printed: serde_json::Value = serde_json::from_slice(&output.stdout).expect("JSON");
+    assert!(printed["paths"]["/api/v1/stage/move_relative"].is_object());
+    let committed = std::fs::read_to_string(format!("{root}/web/src/api/generated/openapi.json"))
+        .expect("the committed document");
+    let committed: serde_json::Value = serde_json::from_str(&committed).expect("JSON");
+    assert!(
+        printed == committed,
+        "web/src/api/generated/openapi.json is out of date: run `npm run api:openapi` and \
+         `npm run api:types` in web/, and commit the results (ADR-0021)"
+    );
+}

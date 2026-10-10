@@ -35,5 +35,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0018](0018-hardware-abstraction-through-teta-wot-interfaces.md) | Hardware abstraction through `teta-wot` interfaces | Accepted | P15 |
 | [0019](0019-stage-units-integer-steps-with-a-um-scale.md) | Stage units: integer steps with a µm scale | Accepted | P15 |
 | [0020](0020-camera-frame-pipeline.md) | Camera frame pipeline | Accepted | P17 |
+| [0021](0021-generated-api-types.md) | Generated API types | Accepted | P19 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

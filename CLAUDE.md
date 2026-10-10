@@ -48,6 +48,9 @@ cargo doc --workspace --no-deps --locked
 
 cd web
 npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build
+npm run api:types -- --check   # the generated API types match openapi.json
+# When a Thing's affordances change, regenerate them (ADR-0021):
+npm run api:openapi && npm run api:types
 npm run test:e2e    # end-to-end and visual tests, against the app as a server built from the checkout serves it
 # with a server running (see README):
 MICROSCOPE_API_URL=http://127.0.0.1:5090/api/v1/ npm run test:contract

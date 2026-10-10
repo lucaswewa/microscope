@@ -3,11 +3,13 @@
 //! ```text
 //! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist]
 //! microscope-server -j '{"things": {…}}'
+//! microscope-server -c config.json --print-openapi
 //! ```
 //!
 //! The options, messages and exit codes are `teta-wot`'s (and LabThings'),
 //! plus `--webapp-dir`, which serves the web app from a folder instead of the
-//! build in the binary (ADR-0016):
+//! build in the binary (ADR-0016), and `--print-openapi`, which writes the
+//! configured Things' OpenAPI document instead of serving them (ADR-0021):
 //!
 //! | Code | When |
 //! |---|---|
@@ -29,6 +31,7 @@ use teta_wot::server::cli::CliArgs;
 use teta_wot::server::{FallbackPage, ServeError, ThingServer, fallback_router, shutdown_signal};
 use tokio::net::TcpListener;
 use tokio::sync::watch;
+use tower::ServiceExt;
 
 use crate::config::{self, ConfigError};
 use crate::logging::{self, Logs};
@@ -50,6 +53,10 @@ pub struct Args {
     /// the build in the binary.
     #[arg(long, value_name = "PATH")]
     pub webapp_dir: Option<PathBuf>,
+    /// Write the OpenAPI document of the configured Things to standard
+    /// output, without starting them, and exit.
+    #[arg(long)]
+    pub print_openapi: bool,
 }
 
 /// Why serving failed, and so the exit code.
@@ -65,6 +72,15 @@ enum Failure {
     },
     /// Anything else (exit code 1).
     Other(String),
+}
+
+impl From<ConfigError> for Failure {
+    fn from(error: ConfigError) -> Self {
+        match error {
+            ConfigError::Missing(message) => Failure::Other(message),
+            ConfigError::Invalid(message) => Failure::Config(message),
+        }
+    }
 }
 
 impl Failure {
@@ -101,6 +117,7 @@ where
     let Args {
         server: args,
         webapp_dir,
+        print_openapi,
     } = match Args::try_parse_from(args) {
         Ok(args) => args,
         Err(error) => {
@@ -114,11 +131,16 @@ where
     let mut config_text = None;
     let mut logs = None;
     let source = webapp_dir.map_or(WebApp::Embedded, WebApp::Dir);
-    let Err(failure) = serve(&args, source, &mut config_text, &mut logs, &stop).await else {
+    let outcome = if print_openapi {
+        write_openapi(&args).await
+    } else {
+        serve(&args, source, &mut config_text, &mut logs, &stop).await
+    };
+    let Err(failure) = outcome else {
         return ExitCode::SUCCESS;
     };
 
-    if args.fallback {
+    if args.fallback && !print_openapi {
         println!("Error: {}", failure.message());
         println!("Starting fallback server.");
         let page = FallbackPage {
@@ -167,10 +189,7 @@ async fn serve(
 ) -> Result<(), Failure> {
     let text = config::text(args).map_err(|e| Failure::Other(e.message().to_owned()))?;
     *config_text = Some(text.clone());
-    let config = config::parse(&text).map_err(|error| match error {
-        ConfigError::Missing(message) => Failure::Other(message),
-        ConfigError::Invalid(message) => Failure::Config(message),
-    })?;
+    let config = config::parse(&text)?;
     if let Ok(value) = serde_json::from_str::<serde_json::Value>(&text) {
         *config_text = serde_json::to_string_pretty(&value).ok();
     }
@@ -213,6 +232,29 @@ async fn serve(
         }),
         Err(other) => Err(Failure::Other(other.to_string())),
     }
+}
+
+/// Writes the OpenAPI document of the configured Things to standard output,
+/// as the server would serve it, without starting them or listening.
+async fn write_openapi(args: &CliArgs) -> Result<(), Failure> {
+    let text = config::text(args).map_err(|e| Failure::Other(e.message().to_owned()))?;
+    let config = config::parse(&text)?;
+    let server = ThingServer::from_config(&config.server, &microscope_things::registry())
+        .map_err(|e| Failure::Config(e.to_string()))?
+        .build()
+        .map_err(|e| Failure::Other(e.to_string()))?;
+    // Served at the root, as in FastAPI, whatever the API prefix.
+    let request = axum::http::Request::get("/openapi.json")
+        .body(axum::body::Body::empty())
+        .map_err(|e| Failure::Other(e.to_string()))?;
+    let Ok(response) = server.router().oneshot(request).await;
+    let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .map_err(|e| Failure::Other(e.to_string()))?;
+    let document: serde_json::Value =
+        serde_json::from_slice(&body).map_err(|e| Failure::Other(e.to_string()))?;
+    println!("{document:#}");
+    Ok(())
 }
 
 async fn bind(args: &CliArgs) -> Result<TcpListener, String> {
