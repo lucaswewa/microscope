@@ -70,4 +70,8 @@ pub trait CameraApi: Send + Sync {
 
     /// The live stream, as it is now.
     fn stream_info(&self) -> StreamInfo;
+
+    /// The small preview stream. Its frames are timestamped when they were
+    /// taken, and their JPEG sizes measure sharpness (autofocus, ADR-0022).
+    fn lores_stream(&self) -> MjpegStream;
 }

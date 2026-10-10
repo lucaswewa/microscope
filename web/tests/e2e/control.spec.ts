@@ -65,6 +65,20 @@ test('the wheel over the image focuses, and the image blurs', async ({ page }) =
   await expect.poll(async () => difference(image, await glance(page))).toBeGreaterThan(5)
 })
 
+test('Autofocus brings a defocused sample back into focus', async ({ page }) => {
+  test.setTimeout(60_000)
+  await openControl(page)
+  await page.request.post('/api/v1/stage/move_absolute', { data: { z: 300 } }) // 15 µm out
+  await expect.poll(async () => (await position(page)).z).toBe(300)
+  await page.getByRole('button', { name: 'Autofocus', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Cancel autofocus' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Autofocus', exact: true })).toBeVisible({
+    timeout: 45_000,
+  })
+  // Within 6 µm: the stage's saved backlash, if it's on, offsets the reported z.
+  expect(Math.abs((await position(page)).z)).toBeLessThanOrEqual(120)
+})
+
 test('typed coordinates move the stage, and Move Home brings it back', async ({ page }) => {
   await openControl(page)
   const fields = page.locator('.position-section input')

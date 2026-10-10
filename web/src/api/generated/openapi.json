@@ -3291,6 +3291,257 @@
           }
         }
       }
+    },
+    "/api/v1/autofocus/fast_autofocus": {
+      "get": {
+        "summary": "All invocations of fast_autofocus.",
+        "description": "List all the invocations of fast_autofocus that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_autofocus_fast_autofocus_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of fast_autofocus.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Sweeps `dz` steps up through focus, then moves to the sharpest point,",
+        "description": "## Sweeps `dz` steps up through focus, then moves to the sharpest point,\n\nSweeps `dz` steps up through focus, then moves to the sharpest point,\napproaching it from below as the sweep did. With `start` \"centre\", the\nsweep is centred on where the stage is.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_autofocus_fast_autofocus_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/autofocus_fast_autofocus_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_fast_autofocus_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_fast_autofocus_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/autofocus/looping_autofocus": {
+      "get": {
+        "summary": "All invocations of looping_autofocus.",
+        "description": "List all the invocations of looping_autofocus that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_autofocus_looping_autofocus_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of looping_autofocus.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Autofocuses until the sharpest point is in the middle three fifths of",
+        "description": "## Autofocuses until the sharpest point is in the middle three fifths of\n\nAutofocuses until the sharpest point is in the middle three fifths of\na sweep: up to 10 sweeps, each centred on the last one's focus.\nReturns the last sweep.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_autofocus_looping_autofocus_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/autofocus_looping_autofocus_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_looping_autofocus_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_looping_autofocus_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/autofocus/z_move_and_measure_sharpness": {
+      "get": {
+        "summary": "All invocations of z_move_and_measure_sharpness.",
+        "description": "List all the invocations of z_move_and_measure_sharpness that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_autofocus_z_move_and_measure_sharpness_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of z_move_and_measure_sharpness.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Makes each move in `dz` in z, waiting `wait` seconds between them,",
+        "description": "## Makes each move in `dz` in z, waiting `wait` seconds between them,\n\nMakes each move in `dz` in z, waiting `wait` seconds between them,\nand measures sharpness throughout.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_autofocus_z_move_and_measure_sharpness_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/autofocus/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `autofocus`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_autofocus_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/autofocus/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `autofocus`: its properties, actions and events, and how to use them.",
+        "operationId": "things_autofocus_api_v1_autofocus__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -6632,6 +6883,518 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/illumination_set_led_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "autofocus_fast_autofocus_input": {
+        "type": "object",
+        "properties": {
+          "dz": {
+            "default": 2000,
+            "type": "integer"
+          },
+          "start": {
+            "description": "Where a sweep starts.",
+            "oneOf": [
+              {
+                "description": "Half the range below, so the sweep is centred on where the stage is.",
+                "const": "centre",
+                "type": "string"
+              },
+              {
+                "description": "Where the stage is.",
+                "const": "base",
+                "type": "string"
+              }
+            ],
+            "default": "centre"
+          }
+        },
+        "additionalProperties": false
+      },
+      "autofocus_fast_autofocus_output": {
+        "description": "What a focus routine measured, and where it ended.",
+        "type": "object",
+        "properties": {
+          "points": {
+            "description": "The frames taken while it measured, in order.",
+            "type": "array",
+            "items": {
+              "description": "A frame's sharpness, and the z it was taken at.",
+              "type": "object",
+              "properties": {
+                "z": {
+                  "description": "The stage's z, in steps, when the frame was taken.",
+                  "type": "number"
+                },
+                "sharpness": {
+                  "description": "The frame's JPEG size, in bytes: larger is sharper.",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "z",
+                "sharpness"
+              ]
+            }
+          },
+          "focus_z": {
+            "description": "The z it chose and moved to, if it chose one.",
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sweeps": {
+            "description": "How many sweeps it made.",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "points",
+          "sweeps"
+        ]
+      },
+      "autofocus_fast_autofocus_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/autofocus_fast_autofocus_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/autofocus_fast_autofocus_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "autofocus_looping_autofocus_input": {
+        "type": "object",
+        "properties": {
+          "dz": {
+            "default": 2000,
+            "type": "integer"
+          },
+          "start": {
+            "description": "Where a sweep starts.",
+            "oneOf": [
+              {
+                "description": "Half the range below, so the sweep is centred on where the stage is.",
+                "const": "centre",
+                "type": "string"
+              },
+              {
+                "description": "Where the stage is.",
+                "const": "base",
+                "type": "string"
+              }
+            ],
+            "default": "centre"
+          }
+        },
+        "additionalProperties": false
+      },
+      "autofocus_looping_autofocus_output": {
+        "description": "What a focus routine measured, and where it ended.",
+        "type": "object",
+        "properties": {
+          "points": {
+            "description": "The frames taken while it measured, in order.",
+            "type": "array",
+            "items": {
+              "description": "A frame's sharpness, and the z it was taken at.",
+              "type": "object",
+              "properties": {
+                "z": {
+                  "description": "The stage's z, in steps, when the frame was taken.",
+                  "type": "number"
+                },
+                "sharpness": {
+                  "description": "The frame's JPEG size, in bytes: larger is sharper.",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "z",
+                "sharpness"
+              ]
+            }
+          },
+          "focus_z": {
+            "description": "The z it chose and moved to, if it chose one.",
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sweeps": {
+            "description": "How many sweeps it made.",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "points",
+          "sweeps"
+        ]
+      },
+      "autofocus_looping_autofocus_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/autofocus_looping_autofocus_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/autofocus_looping_autofocus_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "autofocus_z_move_and_measure_sharpness_input": {
+        "type": "object",
+        "properties": {
+          "dz": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "wait": {
+            "default": 0.0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "dz"
+        ],
+        "additionalProperties": false
+      },
+      "autofocus_z_move_and_measure_sharpness_output": {
+        "description": "What a focus routine measured, and where it ended.",
+        "type": "object",
+        "properties": {
+          "points": {
+            "description": "The frames taken while it measured, in order.",
+            "type": "array",
+            "items": {
+              "description": "A frame's sharpness, and the z it was taken at.",
+              "type": "object",
+              "properties": {
+                "z": {
+                  "description": "The stage's z, in steps, when the frame was taken.",
+                  "type": "number"
+                },
+                "sharpness": {
+                  "description": "The frame's JPEG size, in bytes: larger is sharper.",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "z",
+                "sharpness"
+              ]
+            }
+          },
+          "focus_z": {
+            "description": "The z it chose and moved to, if it chose one.",
+            "oneOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sweeps": {
+            "description": "How many sweeps it made.",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "points",
+          "sweeps"
+        ]
+      },
+      "autofocus_z_move_and_measure_sharpness_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_output"
               },
               {
                 "type": "null"

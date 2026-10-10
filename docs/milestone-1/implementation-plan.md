@@ -417,7 +417,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P18b | View tab: live image | P11, P18 | M | — | Done |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Done |
 | P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | Done |
-| P20b | Control tab: wheel focus and navigation preferences | P20 | S | — | In review |
+| P20b | Control tab: wheel focus and navigation preferences | P20 | S | — | Done |
 
 **Checkpoint A, "Live microscope":** the app shows the live simulated image, and you can jog and focus with the buttons, the keys and the wheel, or move to typed coordinates.
 
@@ -425,7 +425,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P21 | Autofocus | P17b, P20 | M | 0022 | Planned |
+| P21 | Autofocus | P17b, P20 | M | 0022 | In review |
 | P22 | Image registration core | P13 | M | 0023 | Planned |
 | P23 | Camera–stage mapping and click-to-move | P21, P22 | L | — | Planned |
 | P24 | Server-described UI elements | P09b, P10 | L | 0024 | Planned |

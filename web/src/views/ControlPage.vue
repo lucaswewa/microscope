@@ -5,6 +5,7 @@
 import { ref } from 'vue'
 
 import { useThing } from '@/api/things'
+import AutofocusControl from '@/control/AutofocusControl.vue'
 import DirectionPad from '@/control/DirectionPad.vue'
 import NavigationSection from '@/control/NavigationSection.vue'
 import { useNavigationPreferences } from '@/control/navigation'
@@ -38,6 +39,7 @@ const onWheel = wheelFocus(
           <NavigationSection />
         </AccordionSection>
       </AppAccordion>
+      <AutofocusControl />
       <DirectionPad class="control-page__pad" :controller="jog" />
     </ControlPane>
     <LiveImage @wheel="onWheel" />
