@@ -1,7 +1,7 @@
 # P20: Control tab: stage navigation
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#27](https://github.com/lucaswewa/microscope/pull/27)
 - ADRs: none new
 - Spec: [phases.md#p20](../phases.md#p20). P20 was split, at the owner's choice: wheel focus and the navigation preferences are now P20b, which closes Checkpoint A (plan Appendix D).
 
