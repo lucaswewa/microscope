@@ -33,4 +33,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P18 | [MJPEG streaming in the client](P18-mjpeg-streaming.md) | Done |
 | P18b | [View tab: live image](P18b-view-tab.md) | Done |
 | P19 | [Generated API types and typed facades](P19-api-types.md) | Done |
-| P20 | [Control tab: stage navigation](P20-control-tab.md) | In review |
+| P20 | [Control tab: stage navigation](P20-control-tab.md) | Done |
+| P20b | [Control tab: wheel focus and navigation preferences](P20b-wheel-and-preferences.md) | In review |

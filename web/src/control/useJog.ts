@@ -4,9 +4,7 @@ import { useThing } from '@/api/things'
 import { useShortcut } from '@/app/shortcuts'
 
 import { JogController, type Axes } from './jog'
-
-/** How far one step goes on each axis: OpenFlexure's defaults. */
-export const DEFAULT_STEPS: Axes = { x: 200, y: 200, z: 50 }
+import { useNavigationPreferences } from './navigation'
 
 /**
  * Directions as the image shows them: ↑ shows what is above, which in the
@@ -36,11 +34,12 @@ const KEYS: [keys: string, direction: Axes, description: string][] = [
  */
 export function useJog() {
   const stage = useThing('stage')
+  const preferences = useNavigationPreferences()
   const ignore = () => {}
   const controller = new JogController({
     jog: (steps) => void stage.value?.invoke('jog', steps).catch(ignore),
     stop: () => void stage.value?.invoke('jog', { stop: true }).catch(ignore),
-    steps: () => DEFAULT_STEPS,
+    steps: preferences.signedSteps,
   })
 
   useShortcut(

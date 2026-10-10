@@ -55,6 +55,16 @@ test('a tap of a key moves one step, and PgDn focuses', async ({ page }) => {
     .toEqual({ x: before.x, y: before.y - 200, z: before.z - 50 })
 })
 
+test('the wheel over the image focuses, and the image blurs', async ({ page }) => {
+  await openControl(page)
+  const before = await position(page)
+  const image = await glance(page)
+  await page.locator('.live-image').hover()
+  await page.mouse.wheel(0, -600) // six notches away from you: up 300 steps, 15 µm
+  await expect.poll(() => position(page)).toEqual({ ...before, z: before.z + 300 })
+  await expect.poll(async () => difference(image, await glance(page))).toBeGreaterThan(5)
+})
+
 test('typed coordinates move the stage, and Move Home brings it back', async ({ page }) => {
   await openControl(page)
   const fields = page.locator('.position-section input')

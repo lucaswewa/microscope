@@ -137,6 +137,23 @@ describe('the Control tab', () => {
     expect(posted('move_to_origin')).toEqual([{}])
   })
 
+  it('jogs and focuses as the navigation preferences say', async () => {
+    window.localStorage.setItem(
+      'microscope.navigation',
+      JSON.stringify({ steps: { x: 200, y: 30, z: 10 }, invert: { y: true } }),
+    )
+    await open()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
+    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowUp' }))
+    await wrapper!.get('.live-image').trigger('wheel', { deltaY: -200 })
+    await vi.advanceTimersByTimeAsync(100)
+    expect(posted('jog')).toEqual([{ x: 0, y: 30, z: 0 }, { z: 20 }])
+    // The Navigation section changes them.
+    await button('Navigation').trigger('click')
+    await wrapper!.get('.navigation-section input[type="checkbox"]').setValue(true)
+    expect(JSON.parse(window.localStorage.getItem('microscope.navigation')!).invert.x).toBe(true)
+  })
+
   it('jogs with the keys while they are held, and with the d-pad', async () => {
     await open()
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
