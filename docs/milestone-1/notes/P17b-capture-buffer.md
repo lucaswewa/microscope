@@ -1,7 +1,7 @@
 # P17b: Capture buffer and settling
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#23](https://github.com/lucaswewa/microscope/pull/23)
 - ADRs: none new; it follows [ADR-0018](../../adr/0018-hardware-abstraction-through-teta-wot-interfaces.md) (shared structs) and [ADR-0020](../../adr/0020-camera-frame-pipeline.md) (grabbing and capturing)
 - Spec: [phases.md#p17b](../phases.md#p17b), split from P17 (plan Appendix D)
 
