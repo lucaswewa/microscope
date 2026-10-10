@@ -308,7 +308,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | Shell | Vertical tab rail, light/dark/system theme, Shift+↑/↓ tab switching, narrow-window warning | Yes | P06, P07 |
 | View | Full-window live stream, option to disable the stream, flash on capture | Yes | P18b, P26 |
 | Control | Position fields, Move, Set Home, Move Home with confirmation | Yes | P20 |
-| Control | D-pad and focus jog, keyboard jog, scroll to focus | Yes | P20 |
+| Control | D-pad and focus jog, keyboard jog, scroll to focus | Yes | P20, P20b |
 | Control | Double-click to move (camera–stage mapping) | Yes | P23 |
 | Control | Autofocus (`a`), capture to gallery or download (`c`), `?` shortcut help | Yes | P21, P26, P09b |
 | Slide Scan | Workflow choice with blurb and workflow-specific settings | Yes | P40 |
@@ -321,7 +321,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | Sequence | Timelapse: duration, interval, autofocus before each capture | Yes, with an MDA-ready model | P41, P42 |
 | Gallery | Detailed and thumbnail cards, pagination, type filter, bulk actions, Delete All, per-card downloads, actions and messages | Yes | P31, P32 |
 | Gallery | Deep-zoom viewer with brightness, contrast and saturation, fullscreen, image-sequence slider | Yes | P33 |
-| Settings | Display (theme, fullscreen, disable stream), stage-control preferences | Yes | P20, P28 |
+| Settings | Display (theme, fullscreen, disable stream), stage-control preferences | Yes | P20b, P28 |
 | Settings | Camera calibration actions and manual settings with a mini stream | Yes | P27, P28 |
 | Settings | Stage: z inversion, recentre, range-of-motion test | Yes | P16, P30 |
 | Settings | Camera–stage mapping: calibrate, details, download data | Yes | P23, P28 |
@@ -416,7 +416,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P18 | MJPEG streaming in the client | P10, P17 | M | — | Done |
 | P18b | View tab: live image | P11, P18 | M | — | Done |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Done |
-| P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | Planned |
+| P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | In review |
+| P20b | Control tab: wheel focus and navigation preferences | P20 | S | — | Planned |
 
 **Checkpoint A, "Live microscope":** the app shows the live simulated image, and you can jog and focus with the buttons, the keys and the wheel, or move to typed coordinates.
 
@@ -658,3 +659,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-09 | P09 split in two, at the project owner's choice, since it was estimated at three times its M budget. P09 keeps dialogs, confirmations, toasts, tooltips and error details. The new P09b has menus, pagination, multiple selection and keyboard shortcuts. Both are sized L. P20, P24, P32 and P43 now depend on P09b |
 | 2026-10-09 | P17 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P17 keeps the illumination and the camera's preview pipeline, streams, settings and samples. The new P17b, sized M, has the capture buffer (`capture_to_memory`, `save_from_memory`, `clear_buffers`) and settling (`settle`, `discard_frames`). P21 and P26 now depend on P17b |
 | 2026-10-10 | P18 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its M budget. P18 is now MJPEG streaming in the client: the multipart parser, `WotClient.frames()` and shared, reference-counted streams. The new P18b, sized M, has `LiveImage`, the View tab and the "Disable stream" preference. P20 now depends on P18b |
+| 2026-10-10 | P20 split in two, at the project owner's choice, since it was estimated at 1,050–1,250 lines against its L budget. P20 keeps the Control layout, the live position, the Position section, the d-pad and focus buttons, and keyboard jog. The new P20b, sized S, has wheel focus and the navigation preferences (step sizes and inversion), and closes Checkpoint A |

@@ -9,7 +9,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 0: Groundwork](#stage-0-groundwork): [P00](#p00) [P01](#p01) [P02](#p02) [P03](#p03)
 - [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
-- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20)
+- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20) [P20b](#p20b)
 - [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
@@ -421,15 +421,27 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - The Control layout: a narrow control pane beside the live image.
 - A Position section: x, y and z fields; Refresh; Move (cancellable); Set Home; Move Home, with a "remove your sample" confirmation.
 - A d-pad and focus ±: pointer capture, repeating while held, stopping on release.
-- Keyboard jog (the arrow keys and PgUp/PgDn), and the mouse wheel over the image to focus.
+- Keyboard jog (the arrow keys and PgUp/PgDn), listed in the `?` dialog.
 - The live position, through property observation.
-- Navigation preferences (step sizes and inversion), persisted, and the shortcuts listed in the `?` dialog.
+
+**Tests**
+- The jog controller (timers and key repeat); end to end, the d-pad and keys move the stage and the image changes.
+
+<a id="p20b"></a>
+### P20b: Control tab: wheel focus and navigation preferences
+
+**Goal.** Focusing with the mouse wheel, and navigation set up the way you like it. Split from P20 (Appendix D of the plan).
+**Depends on** P20 · **Size** S · **ADRs** —
+
+**Scope**
+- The mouse wheel over the image focuses.
+- Navigation preferences: step sizes and inversion for each axis, persisted, with a section to set them.
 
 **Done when (Checkpoint A)**
 - The app shows the live simulated image, and the buttons, keys, wheel and typed coordinates all move the stage, with the image following.
 
 **Tests**
-- The jog controller (timers and key repeat); end to end, the d-pad and keys move the stage and the image changes.
+- The wheel's focus steps and the preferences' effect on jogs; end to end, the wheel focuses and the image changes.
 
 ---
 

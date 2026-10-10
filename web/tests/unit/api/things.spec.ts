@@ -79,6 +79,7 @@ describe('typed facades', () => {
       void camera.run('save_from_memory')
       // Inputs with nothing required may be left out.
       void stage.run('move_to_origin')
+      void stage.run('set_zero_position')
       void camera.run('save_from_memory', { path: 'a.jpg' })
     }
     expect(misuses).toBeTypeOf('function')

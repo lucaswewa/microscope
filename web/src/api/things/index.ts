@@ -29,9 +29,10 @@ type Writable<T extends string> = {
 }[Names<T, 'value'>]
 
 /** An action's input, which may be left out when nothing in it is required, and the options. */
-type InputAndOptions<Input> = object extends Input
-  ? [input?: Input, options?: FollowOptions]
-  : [input: Input, options?: FollowOptions]
+type InputAndOptions<Input> =
+  Record<string, never> extends Input
+    ? [input?: Input, options?: FollowOptions]
+    : [input: Input, options?: FollowOptions]
 
 /** An invocation whose output has its action's type. */
 export type TypedInvocation<Output> = Omit<Invocation, 'output'> & { output(): Promise<Output> }
@@ -65,7 +66,8 @@ export class TypedThing<T extends string> {
     name: A,
     ...[input, options]: InputAndOptions<Schema<`${T}_${A}_input`>>
   ): Promise<TypedInvocation<Schema<`${T}_${A}_output`>>> {
-    return this.thing.invokeAction(name, input, options)
+    // An action with nothing required still takes an object, even an empty one.
+    return this.thing.invokeAction(name, input ?? {}, options)
   }
 
   /** Runs an action to its end, and returns its output. */
