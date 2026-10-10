@@ -26,9 +26,11 @@
 mod backlash;
 mod camera;
 mod illumination;
+mod preview;
 mod stage;
 
 pub use backlash::BacklashCompensation;
 pub use camera::{CameraApi, Capture, CaptureMetadata, StreamInfo};
 pub use illumination::IlluminationApi;
+pub use preview::{LORES_SIZE, PreviewFrames, encode_jpeg};
 pub use stage::{AxisScale, Position, StageApi};

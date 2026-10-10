@@ -9,7 +9,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 0: Groundwork](#stage-0-groundwork): [P00](#p00) [P01](#p01) [P02](#p02) [P03](#p03)
 - [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
-- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P18](#p18) [P19](#p19) [P20](#p20)
+- [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P19](#p19) [P20](#p20)
 - [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
@@ -349,13 +349,26 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - `camera` (`SimulatedCamera`, implementing `CameraApi`), with the stage in a slot:
   - a preview thread, started in `#[on_start]` and stopped in `#[on_stop]`, renders from the stage's true position into `mjpeg_stream` and `lores_mjpeg_stream`;
   - `streaming_modes`, `streaming_mode`, `change_streaming_mode` and `stream_active`;
-  - actions `grab_jpeg` (a Blob) and `grab_jpeg_size`, the buffer pair `capture_to_memory` and `save_from_memory`, `settle` (with a `settling_time` setting) and `discard_frames`;
+  - actions `grab_jpeg` (a Blob) and `grab_jpeg_size`;
   - settings for exposure, gain, objective, sample density and colour, noise, and a repeating sample, plus `load_sample` and `remove_sample`.
 - `illumination` (`SimulatedIllumination`): `set_led` and `flash`.
 - The client starts requiring `camera`.
 
 **Tests**
 - Frames change with stage x and y; sharpness falls as |dz| grows; LED off gives black frames; streams stop on shutdown.
+
+<a id="p17b"></a>
+### P17b: Capture buffer and settling
+
+**Goal.** Captures held in memory to be saved later, and fresh frames after a move. Split from P17 (Appendix D of the plan).
+**Depends on** P17 · **Size** M · **ADRs** —
+
+**Scope**
+- A shared capture-buffer struct, and the `camera` actions `capture_to_memory` (returning a buffer id, keeping at most `buffer_max` images), `save_from_memory` (to a path in the data folder, without the global lock) and `clear_buffers`.
+- `settle`, with a `settling_time` setting, and `discard_frames`, so that the next frame is captured after either.
+
+**Tests**
+- The buffer keeps at most `buffer_max` images and finds them by id; saving writes a readable image inside the data folder and refuses paths outside it; a frame grabbed after `settle` shows where the stage moved to.
 
 <a id="p18"></a>
 ### P18: View tab: live image
@@ -413,7 +426,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P21: Autofocus
 
 **Goal.** OpenFlexure-style fast autofocus driven by the live stream. **Spec-first.**
-**Depends on** P17, P20 · **Size** M · **ADRs** 0022
+**Depends on** P17b, P20 · **Size** M · **ADRs** 0022
 
 **Scope**
 - A sharpness monitor that records the MJPEG frames' JPEG sizes with timestamps, samples the stage position, and interpolates between them.
@@ -491,7 +504,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P26: Capture to the data folder
 
 **Goal.** Captures with metadata, saved for the gallery or downloaded.
-**Depends on** P17, P20 · **Size** M · **ADRs** 0025
+**Depends on** P17b, P20 · **Size** M · **ADRs** 0025
 
 **Scope**
 - The data folder layout (`captures/`, `scans/`, `sequences/`, `calibration/`) and the capture naming scheme.

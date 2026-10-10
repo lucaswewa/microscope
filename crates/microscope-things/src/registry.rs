@@ -11,7 +11,7 @@
 //! |---|---|---|
 //! | `system` | `microscope.system:MicroscopeSystem` | P02 (here) |
 //! | `stage` | `microscope.stage:SimulatedStage` | P16 (here) |
-//! | `camera`, `illumination` | `microscope.camera:SimulatedCamera`, `microscope.illumination:SimulatedIllumination` | P17 |
+//! | `camera`, `illumination` | `microscope.camera:SimulatedCamera`, `microscope.illumination:SimulatedIllumination` | P17 (here) |
 //! | `autofocus` | `microscope.autofocus:Autofocus` | P21 |
 //! | `camera_stage_mapping` | `microscope.camera_stage_mapping:CameraStageMapping` | P23 |
 //!
@@ -21,6 +21,8 @@
 
 use teta_wot::server::ThingRegistry;
 
+use crate::camera::SimulatedCamera;
+use crate::illumination::SimulatedIllumination;
 use crate::stage::SimulatedStage;
 use crate::system::MicroscopeSystem;
 
@@ -29,4 +31,6 @@ pub fn registry() -> ThingRegistry {
     ThingRegistry::new()
         .register::<MicroscopeSystem>("microscope.system:MicroscopeSystem")
         .register::<SimulatedStage>("microscope.stage:SimulatedStage")
+        .register::<SimulatedCamera>("microscope.camera:SimulatedCamera")
+        .register::<SimulatedIllumination>("microscope.illumination:SimulatedIllumination")
 }
