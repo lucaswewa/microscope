@@ -22,7 +22,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            data_folder: PathBuf::from(".microscope/data"),
+            data_folder: PathBuf::from(microscope_things::data::DEFAULT_DATA_FOLDER),
             log_folder: PathBuf::from(".microscope/logs"),
         }
     }

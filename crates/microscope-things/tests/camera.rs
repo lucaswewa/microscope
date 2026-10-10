@@ -1,25 +1,34 @@
 //! The simulated camera and illumination (P17): frames that follow the
 //! stage, the focus and the light; the streams; the settings; and
-//! `CameraApi`.
+//! `CameraApi`. Then captures held in memory and saved, and settling (P17b).
 
-use std::time::Duration;
+use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 use image::RgbImage;
 use serde_json::{Value, json};
 use teta_wot::prelude::*;
 use teta_wot::testing::{Harness, TestClient};
 
-use microscope_things::camera::SimulatedCamera;
+use microscope_things::camera::{SimulatedCamera, SimulatedCameraActions};
 use microscope_things::hardware::{CameraApi, Position, StageApi};
 use microscope_things::illumination::SimulatedIllumination;
 use microscope_things::stage::SimulatedStage;
 
 /// A camera with a fast stage and a light, and no noise, so the same view
-/// draws the same frame.
+/// draws the same frame. The global lock is on, as in the shipped
+/// configuration.
 async fn start() -> Harness<SimulatedCamera> {
+    start_with(json!({})).await
+}
+
+/// The same, with an `application_config`.
+async fn start_with(application_config: Value) -> Harness<SimulatedCamera> {
     let harness = Harness::builder("camera", SimulatedCamera::default())
         .thing("stage", SimulatedStage::default())
         .thing("illumination", SimulatedIllumination::default())
+        .application_config(application_config)
+        .global_lock(true)
         .start()
         .await
         .expect("the harness starts");
@@ -407,5 +416,141 @@ async fn other_things_use_it_through_camera_api() {
     assert!((metadata.um_per_pixel.expect("known") - 0.056).abs() < 1e-12);
     assert_eq!(metadata.camera_settings["objective"], json!(40));
     assert!(metadata.acquired.ends_with('Z'), "{}", metadata.acquired);
+    harness.stop().await;
+}
+
+/// A data folder in the system's temporary folder, unique to this run.
+fn data_folder() -> PathBuf {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("after 1970")
+        .as_nanos();
+    let name = format!("microscope-captures-{}-{nanos}", std::process::id());
+    std::env::temp_dir().join(name).join("data")
+}
+
+#[tokio::test]
+async fn captures_wait_in_memory_until_saved() {
+    let data = data_folder();
+    let harness = start_with(json!({"data_folder": data})).await;
+    let client = harness.client();
+    let capture = || {
+        run(
+            client,
+            "/camera/capture_to_memory",
+            json!({"buffer_max": 2}),
+        )
+    };
+    for id in 1..=3 {
+        assert_eq!(capture().await["output"], json!(id));
+    }
+    let save = |path: &str, id: Value| {
+        let input = json!({"path": path, "buffer_id": id});
+        async move { run(client, "/camera/save_from_memory", input).await["status"].clone() }
+    };
+    // Only the last two are held.
+    assert_eq!(save("one.jpg", json!(1)).await, "error");
+    assert_eq!(save("captures/two.jpg", json!(2)).await, "completed");
+    let two = image::open(data.join("captures/two.jpg")).expect("a readable JPEG");
+    assert_eq!((two.width(), two.height()), (1640, 1232));
+    assert_eq!(save("again.jpg", json!(2)).await, "error", "taken out");
+
+    // Paths outside the data folder, and other formats, are refused, and
+    // leave the capture in memory.
+    for refused in [
+        "../outside.jpg",
+        "C:/outside.jpg",
+        "/outside.jpg",
+        "three.bmp",
+        "",
+    ] {
+        assert_eq!(save(refused, Value::Null).await, "error", "{refused}");
+    }
+    let outside = data.parent().expect("a parent").join("outside.jpg");
+    assert!(!outside.exists());
+    // With no id, the latest is saved and memory emptied.
+    assert_eq!(save("three.PNG", Value::Null).await, "completed");
+    assert_eq!(
+        image::open(data.join("three.PNG")).expect("a PNG").width(),
+        1640
+    );
+    assert_eq!(save("none.jpg", Value::Null).await, "error");
+
+    capture().await;
+    run(client, "/camera/clear_buffers", json!({})).await;
+    assert_eq!(save("cleared.jpg", Value::Null).await, "error");
+    harness.stop().await;
+    std::fs::remove_dir_all(data.parent().expect("a parent")).expect("removed");
+}
+
+#[tokio::test]
+async fn saving_needs_no_global_lock() {
+    let data = data_folder();
+    let harness = start_with(json!({"data_folder": data})).await;
+    let client = harness.client();
+    run(client, "/camera/capture_to_memory", json!({})).await;
+    // A flash holds the global lock for a second.
+    let flash = client
+        .post_json(
+            "/illumination/flash",
+            Some(&json!({"number_of_flashes": 1, "dt": 0.5})),
+        )
+        .await;
+    let flash = format!(
+        "/action_invocations/{}",
+        flash.json()["id"].as_str().expect("an id")
+    );
+    let record = run(
+        client,
+        "/camera/save_from_memory",
+        json!({"path": "during.jpg"}),
+    )
+    .await;
+    assert_eq!(record["status"], "completed");
+    assert_eq!(client.get(&flash).await.json()["status"], "running");
+    assert!(data.join("during.jpg").exists());
+    harness.stop().await;
+    std::fs::remove_dir_all(data.parent().expect("a parent")).expect("removed");
+}
+
+#[tokio::test]
+async fn after_settling_the_next_frame_shows_where_the_stage_is() {
+    let harness = start().await;
+    let client = harness.client();
+    let (stage, camera) = (stage(&harness), harness.thing());
+    // Large frames, so one is nearly always being drawn during a move.
+    run(
+        client,
+        "/camera/change_streaming_mode",
+        json!({"mode": "full_resolution"}),
+    )
+    .await;
+    let places = [Position::new(0, 0, 0), Position::new(280, 0, 0)];
+    let mut views = Vec::new();
+    for place in places {
+        stage.move_absolute(place).await.expect("moved");
+        views.push(fresh_frame(&harness).await);
+    }
+    put(client, "/camera/settling_time", json!(0.0)).await;
+    for round in 0..4 {
+        stage.move_absolute(places[round % 2]).await.expect("moved");
+        camera.settle().await.expect("settled");
+        let frame = camera.grab_frame().await.expect("a frame");
+        assert!(
+            frame == views[round % 2],
+            "round {round}: a frame from before the move"
+        );
+    }
+
+    // Back to small frames, so waiting for one is quick.
+    run(client, "/camera/change_streaming_mode", json!({})).await;
+    assert_eq!(fresh_frame(&harness).await.width(), 820);
+    put(client, "/camera/settling_time", json!(0.5)).await;
+    let started = Instant::now();
+    assert_eq!(
+        run(client, "/camera/settle", json!({})).await["status"],
+        "completed"
+    );
+    assert!(started.elapsed() >= Duration::from_millis(500));
     harness.stop().await;
 }

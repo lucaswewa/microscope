@@ -13,15 +13,23 @@
 //!   apply from the next frame. `remove_sample` and `load_sample` take the
 //!   slide out and put it back.
 //! - **Light:** while an `illumination` Thing's LED is off, frames are black.
+//! - **Captures** are drawn at 1640 × 1232. `capture_to_memory` keeps them
+//!   in memory, and `save_from_memory` saves them to the data folder later.
+//! - **Settling:** after a move, `settle` waits `settling_time`, then
+//!   `discard_frames` makes sure the next frame is drawn after it.
 
 use std::borrow::Cow;
 use std::collections::BTreeMap;
+use std::fs::File;
+use std::io::BufWriter;
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
-use image::RgbImage;
+use image::codecs::jpeg::JpegEncoder;
+use image::{ImageFormat, ImageResult, RgbImage};
 use microscope_sim::{BlobConfig, BlobSpecimen, Extent, Objective, Sensor, SimState, render_frame};
 use schemars::{JsonSchema, Schema, SchemaGenerator, json_schema};
 use serde::{Deserialize, Serialize};
@@ -29,8 +37,10 @@ use serde_json::{Value, json};
 use teta_wot::blob::Jpeg;
 use teta_wot::prelude::*;
 
+use crate::data;
 use crate::hardware::{
-    CameraApi, Capture, CaptureMetadata, IlluminationApi, PreviewFrames, StageApi, StreamInfo,
+    CameraApi, Capture, CaptureBuffer, CaptureMetadata, IlluminationApi, PreviewFrames, StageApi,
+    StreamInfo,
 };
 use crate::stage::SimulatedStage;
 
@@ -186,7 +196,11 @@ pub struct SimulatedCamera {
     /// The sensor's gain.
     #[setting(default = 1.0, ge = 1.0, le = 16.0)]
     analogue_gain: Prop<f64>,
+    /// How long `settle` waits, in seconds.
+    #[setting(default = 0.2, ge = 0.0, le = 60.0)]
+    settling_time: Prop<f64>,
     frames: PreviewFrames,
+    captures: CaptureBuffer,
     preview: Mutex<Option<PreviewThread>>,
     /// The number of frames drawn, which seeds each one's noise.
     drawn: AtomicU64,
@@ -278,6 +292,67 @@ impl SimulatedCamera {
             return Err(ActionError::handled("the sample is already in place"));
         }
         self.sample_loaded.set(true).map_err(ActionError::handled)
+    }
+
+    /// Captures an image at 1640 × 1232 into memory, returning its id, for
+    /// `save_from_memory` to save. Memory keeps at most `buffer_max`
+    /// captures: the oldest go first.
+    #[action(blocking)]
+    fn capture_to_memory(&self, #[param(default = 1)] buffer_max: usize) -> u64 {
+        self.captures.add(self.capture(), buffer_max)
+    }
+
+    /// Saves a capture from memory to `path` in the data folder, as a JPEG
+    /// or a PNG by its extension, and takes it out of memory. Without
+    /// `buffer_id`, it saves the latest capture and empties memory.
+    #[action(blocking, global_lock = false)]
+    fn save_from_memory(
+        &self,
+        server: Server,
+        path: String,
+        #[param(default)] buffer_id: Option<u64>,
+    ) -> Result<(), ActionError> {
+        let target = data::resolve(&data::data_folder(&server), &path);
+        let target = target.map_err(ActionError::handled)?;
+        let extension = target.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let format = match extension.to_ascii_lowercase().as_str() {
+            "jpg" | "jpeg" => ImageFormat::Jpeg,
+            "png" => ImageFormat::Png,
+            _ => return Err(ActionError::handled("save as .jpg, .jpeg or .png")),
+        };
+        let capture = self.captures.take(buffer_id).ok_or_else(|| {
+            ActionError::handled(match buffer_id {
+                Some(id) => format!("there's no capture {id} in memory"),
+                None => "there's no capture in memory".to_owned(),
+            })
+        })?;
+        if let Some(folder) = target.parent() {
+            std::fs::create_dir_all(folder).map_err(ActionError::handled)?;
+        }
+        save_image(&capture.image, &target, format).map_err(ActionError::handled)
+    }
+
+    /// Empties memory of captures.
+    #[action]
+    async fn clear_buffers(&self) {
+        self.captures.clear();
+    }
+
+    /// Waits `settling_time` for the sample to settle after a move, then
+    /// discards frames, so the next frame shows it settled.
+    #[action]
+    async fn settle(&self, ctx: ActionCtx) -> Result<(), ActionError> {
+        ctx.sleep(Duration::from_secs_f64(self.settling_time.get()))
+            .await?;
+        self.discard_frames().await
+    }
+
+    /// Discards frames: waits for any frame being drawn, so that the next
+    /// frame grabbed was drawn after the call.
+    #[action]
+    async fn discard_frames(&self) -> Result<(), ActionError> {
+        let drawn = self.mjpeg_stream.next_frame().await;
+        drawn.map(|_| ()).map_err(ActionError::handled)
     }
 
     /// Starts the preview.
@@ -381,6 +456,26 @@ impl SimulatedCamera {
         frame
     }
 
+    /// A capture: a frame at 1640 × 1232, and how it was taken. Drawing it
+    /// takes a while, so it isn't for the async threads.
+    fn capture(&self) -> Capture {
+        let sensor = Sensor::CAPTURE;
+        let magnification = self.objective.get().objective().magnification;
+        let metadata = CaptureMetadata {
+            acquired: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
+            width: sensor.width,
+            height: sensor.height,
+            position: Some(ThingRef::thing(&self.stage).position_now()),
+            axis_scale: Some(StageApi::axis_scale(&*self.stage)),
+            um_per_pixel: Some(sensor.pixel_pitch_um / magnification),
+            camera_settings: self.settings(),
+        };
+        Capture {
+            image: self.draw(sensor),
+            metadata,
+        }
+    }
+
     /// What a capture records about the camera.
     fn settings(&self) -> BTreeMap<String, Value> {
         BTreeMap::from([
@@ -389,6 +484,16 @@ impl SimulatedCamera {
             ("analogue_gain".to_owned(), json!(self.analogue_gain.get())),
             ("noise_level".to_owned(), json!(self.noise_level.get())),
         ])
+    }
+}
+
+/// Saves `image` to `path` as `format`: a JPEG at quality 95, or a PNG.
+fn save_image(image: &RgbImage, path: &Path, format: ImageFormat) -> ImageResult<()> {
+    if format == ImageFormat::Jpeg {
+        let file = BufWriter::new(File::create(path)?);
+        JpegEncoder::new_with_quality(file, 95).encode_image(image)
+    } else {
+        image.save_with_format(path, format)
     }
 }
 
@@ -432,26 +537,10 @@ impl CameraApi for ThingRef<SimulatedCamera> {
     }
 
     fn capture_to_memory(&self) -> BoxFuture<'_, Result<Capture, ActionError>> {
+        let camera = Arc::clone(ThingRef::thing(self));
         Box::pin(async move {
-            let camera = Arc::clone(ThingRef::thing(self));
-            let position = StageApi::position(&*camera.stage).await?;
-            let axis_scale = StageApi::axis_scale(&*camera.stage);
-            let sensor = Sensor::CAPTURE;
-            let magnification = camera.objective.get().objective().magnification;
-            let metadata = CaptureMetadata {
-                acquired: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
-                width: sensor.width,
-                height: sensor.height,
-                position: Some(position),
-                axis_scale: Some(axis_scale),
-                um_per_pixel: Some(sensor.pixel_pitch_um / magnification),
-                camera_settings: camera.settings(),
-            };
-            // Drawing a capture takes a while: off the async threads.
-            let image = tokio::task::spawn_blocking(move || camera.draw(sensor))
-                .await
-                .map_err(ActionError::handled)?;
-            Ok(Capture { image, metadata })
+            let capture = tokio::task::spawn_blocking(move || camera.capture()).await;
+            capture.map_err(ActionError::handled)
         })
     }
 

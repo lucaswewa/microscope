@@ -411,8 +411,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P14 | Simulated stage motion model | P13 | M | — | Done |
 | P15 | Hardware interfaces and units | P02, P13 | M | 0018, 0019 | Done |
 | P16 | Simulated stage Thing | P14, P15 | M | — | Done |
-| P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | In review |
-| P17b | Capture buffer and settling | P17 | M | — | Planned |
+| P17 | Simulated camera and illumination Things | P13, P16 | L | 0020 | Done |
+| P17b | Capture buffer and settling | P17 | M | — | In review |
 | P18 | View tab: live image | P11, P17 | M | — | Planned |
 | P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
 | P20 | Control tab: stage navigation | P09b, P18, P19 | L | — | Planned |
