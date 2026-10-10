@@ -415,7 +415,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P17b | Capture buffer and settling | P17 | M | — | Done |
 | P18 | MJPEG streaming in the client | P10, P17 | M | — | Done |
 | P18b | View tab: live image | P11, P18 | M | — | Done |
-| P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Planned |
+| P19 | Generated API types and typed facades | P10, P17 | S | 0021 | Done |
 | P20 | Control tab: stage navigation | P09b, P18b, P19 | L | — | Planned |
 
 **Checkpoint A, "Live microscope":** the app shows the live simulated image, and you can jog and focus with the buttons, the keys and the wheel, or move to typed coordinates.

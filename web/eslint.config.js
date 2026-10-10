@@ -14,7 +14,14 @@ const hashHistoryOnly = {
 // rules that overlap with it are turned off.
 export default defineConfigWithVueTs(
   { name: 'app/files-to-lint', files: ['**/*.{ts,mts,vue}'] },
-  globalIgnores(['dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**']),
+  globalIgnores([
+    'dist/**',
+    'coverage/**',
+    'playwright-report/**',
+    'test-results/**',
+    // Generated from the server's OpenAPI document (ADR-0021).
+    'src/api/generated/**',
+  ]),
   pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
   {

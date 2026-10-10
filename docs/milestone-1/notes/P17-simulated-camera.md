@@ -53,7 +53,7 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090
 Then open these in a browser:
 
 - `http://127.0.0.1:5090/api/v1/camera/mjpeg_stream/viewer`, the live stream;
-- `http://127.0.0.1:5090/api/v1/docs`, to move the stage, change the settings, or switch the LED off.
+- `http://127.0.0.1:5090/docs`, to move the stage, change the settings, or switch the LED off.
 
 Or from PowerShell:
 

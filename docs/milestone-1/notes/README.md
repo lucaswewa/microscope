@@ -32,3 +32,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P17b | [Capture buffer and settling](P17b-capture-buffer.md) | Done |
 | P18 | [MJPEG streaming in the client](P18-mjpeg-streaming.md) | Done |
 | P18b | [View tab: live image](P18b-view-tab.md) | Done |
+| P19 | [Generated API types and typed facades](P19-api-types.md) | Done |
