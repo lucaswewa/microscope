@@ -12,6 +12,7 @@ use microscope_things::stage::{SimulatedStage, SimulatedStageActions};
 
 async fn start() -> Harness<SimulatedStage> {
     Harness::builder("stage", SimulatedStage::default())
+        .global_lock(true)
         .start()
         .await
         .expect("the harness starts")
@@ -292,6 +293,7 @@ async fn settings_survive_a_restart() {
     let folder =
         std::env::temp_dir().join(format!("microscope-stage-{}-{nanos}", std::process::id()));
     let harness = Harness::builder("stage", SimulatedStage::default())
+        .global_lock(true)
         .settings_folder(&folder)
         .start()
         .await
@@ -311,6 +313,7 @@ async fn settings_survive_a_restart() {
     harness.stop().await;
 
     let harness = Harness::builder("stage", SimulatedStage::default())
+        .global_lock(true)
         .settings_folder(&folder)
         .start()
         .await

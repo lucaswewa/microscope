@@ -12,6 +12,7 @@
 //! `microscope-sim`; this crate connects them to `teta-wot`.
 
 pub mod camera;
+pub mod data;
 pub mod fakes;
 pub mod hardware;
 pub mod illumination;

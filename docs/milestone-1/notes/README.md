@@ -28,4 +28,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P14 | [Simulated stage motion model](P14-stage-model.md) | Done |
 | P15 | [Hardware interfaces and units](P15-hardware-interfaces.md) | Done |
 | P16 | [Simulated stage Thing](P16-simulated-stage.md) | Done |
-| P17 | [Simulated camera and illumination Things](P17-simulated-camera.md) | In review |
+| P17 | [Simulated camera and illumination Things](P17-simulated-camera.md) | Done |
+| P17b | [Capture buffer and settling](P17b-capture-buffer.md) | In review |

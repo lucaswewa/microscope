@@ -269,7 +269,7 @@ impl SimulatedStage {
         #[param(default)] z: Option<i64>,
         #[param(default)] backlash_compensation: bool,
     ) -> Result<Position, ActionError> {
-        let here = self.here();
+        let here = self.position_now();
         let target = Position::new(
             x.unwrap_or(here.x),
             y.unwrap_or(here.y),
@@ -286,7 +286,7 @@ impl SimulatedStage {
         ctx: ActionCtx,
         #[param(default)] backlash_compensation: bool,
     ) -> Result<Position, ActionError> {
-        let here = self.here();
+        let here = self.position_now();
         self.move_by(&ctx, -here, backlash_compensation).await
     }
 
@@ -301,7 +301,7 @@ impl SimulatedStage {
             // A jog in progress keeps its start in the new frame.
             state.move_start = state.move_start - here;
         }
-        self.here()
+        self.position_now()
     }
 
     /// Starts moving by `x`, `y` and `z` steps and returns at once, or with
@@ -319,7 +319,7 @@ impl SimulatedStage {
         } else {
             self.begin_move(self.flip(Position::new(x, y, z)));
         }
-        self.here()
+        self.position_now()
     }
 
     /// Stops the stage where it is. (OpenFlexure has no such action; the
@@ -327,7 +327,7 @@ impl SimulatedStage {
     #[action(global_lock = false)]
     async fn halt(&self) -> Position {
         self.stop_motion();
-        self.here()
+        self.position_now()
     }
 
     /// Makes an axis count the other way.
@@ -423,8 +423,8 @@ impl SimulatedStage {
         )
     }
 
-    /// Where the stage is now, after a refresh.
-    fn here(&self) -> Position {
+    /// Where the stage is now, in steps in the program's frame.
+    pub fn position_now(&self) -> Position {
         self.refresh();
         self.position.get()
     }
@@ -533,7 +533,7 @@ impl SimulatedStage {
 
 impl StageApi for ThingRef<SimulatedStage> {
     fn position(&self) -> BoxFuture<'_, Result<Position, ActionError>> {
-        let position = ThingRef::thing(self).here();
+        let position = ThingRef::thing(self).position_now();
         Box::pin(async move { Ok(position) })
     }
 
