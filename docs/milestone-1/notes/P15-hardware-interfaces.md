@@ -1,7 +1,7 @@
 # P15: Hardware interfaces and units
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#20](https://github.com/lucaswewa/microscope/pull/20)
 - ADRs: [ADR-0018](../../adr/0018-hardware-abstraction-through-teta-wot-interfaces.md), [ADR-0019](../../adr/0019-stage-units-integer-steps-with-a-um-scale.md)
 - Spec: [phases.md#p15](../phases.md#p15)
 
