@@ -6,6 +6,8 @@
 
 use std::sync::{Arc, Mutex};
 
+use chrono::{DateTime, Utc};
+
 use image::codecs::jpeg::JpegEncoder;
 use image::{DynamicImage, RgbImage};
 use teta_wot::prelude::*;
@@ -24,11 +26,13 @@ pub struct PreviewFrames {
 }
 
 impl PreviewFrames {
-    /// Publishes `frame` to `main`, and a copy shrunk to [`LORES_SIZE`] to
-    /// `lores`, keeping it as the latest. It works from any thread.
+    /// Publishes `frame`, taken at `taken`, to `main`, and a copy shrunk to
+    /// [`LORES_SIZE`] to `lores`, keeping it as the latest. It works from any
+    /// thread.
     pub fn publish(
         &self,
         frame: RgbImage,
+        taken: DateTime<Utc>,
         main: &MjpegStream,
         lores: &MjpegStream,
     ) -> Result<(), StreamError> {
@@ -41,8 +45,8 @@ impl PreviewFrames {
         let frame = frame.into_rgb8();
         // Kept before it is added, so anyone woken by the new frame finds it.
         *self.latest.lock().expect("not poisoned") = Some(Arc::new(frame));
-        main.add_frame(jpeg)?;
-        lores.add_frame(small_jpeg)?;
+        main.add_frame_at(jpeg, taken)?;
+        lores.add_frame_at(small_jpeg, taken)?;
         Ok(())
     }
 

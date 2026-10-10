@@ -402,10 +402,12 @@ impl SimulatedCamera {
     fn run_preview(&self, stop: &AtomicBool) {
         while !stop.load(Ordering::Relaxed) {
             let started = Instant::now();
+            // Stamped when the stage was read for it, not when it was ready.
+            let taken = chrono::Utc::now();
             let frame = self.draw(self.streaming_mode.get().sensor());
             let published =
                 self.frames
-                    .publish(frame, &self.mjpeg_stream, &self.lores_mjpeg_stream);
+                    .publish(frame, taken, &self.mjpeg_stream, &self.lores_mjpeg_stream);
             if published.is_err() {
                 break;
             }
@@ -551,5 +553,9 @@ impl CameraApi for ThingRef<SimulatedCamera> {
             width,
             height,
         }
+    }
+
+    fn lores_stream(&self) -> MjpegStream {
+        ThingRef::thing(self).lores_mjpeg_stream.clone()
     }
 }

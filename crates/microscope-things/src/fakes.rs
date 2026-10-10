@@ -113,6 +113,8 @@ pub struct FakeCamera {
     #[thing(init = config.height)]
     height: u32,
     captures: AtomicU32,
+    /// Never sends a frame.
+    lores: MjpegStream,
 }
 
 #[thing_impl]
@@ -169,6 +171,10 @@ impl CameraApi for ThingRef<FakeCamera> {
             width,
             height,
         }
+    }
+
+    fn lores_stream(&self) -> MjpegStream {
+        ThingRef::thing(self).lores.clone()
     }
 }
 

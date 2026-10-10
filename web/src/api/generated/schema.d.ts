@@ -2017,6 +2017,141 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/autofocus/fast_autofocus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of fast_autofocus.
+         * @description List all the invocations of fast_autofocus that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_autofocus_fast_autofocus_get"];
+        put?: never;
+        /**
+         * Sweeps `dz` steps up through focus, then moves to the sharpest point,
+         * @description ## Sweeps `dz` steps up through focus, then moves to the sharpest point,
+         *
+         *     Sweeps `dz` steps up through focus, then moves to the sharpest point,
+         *     approaching it from below as the sweep did. With `start` "centre", the
+         *     sweep is centred on where the stage is.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_autofocus_fast_autofocus_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/autofocus/looping_autofocus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of looping_autofocus.
+         * @description List all the invocations of looping_autofocus that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_autofocus_looping_autofocus_get"];
+        put?: never;
+        /**
+         * Autofocuses until the sharpest point is in the middle three fifths of
+         * @description ## Autofocuses until the sharpest point is in the middle three fifths of
+         *
+         *     Autofocuses until the sharpest point is in the middle three fifths of
+         *     a sweep: up to 10 sweeps, each centred on the last one's focus.
+         *     Returns the last sweep.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_autofocus_looping_autofocus_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/autofocus/z_move_and_measure_sharpness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of z_move_and_measure_sharpness.
+         * @description List all the invocations of z_move_and_measure_sharpness that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_autofocus_z_move_and_measure_sharpness_get"];
+        put?: never;
+        /**
+         * Makes each move in `dz` in z, waiting `wait` seconds between them,
+         * @description ## Makes each move in `dz` in z, waiting `wait` seconds between them,
+         *
+         *     Makes each move in `dz` in z, waiting `wait` seconds between them,
+         *     and measures sharpness throughout.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_autofocus_z_move_and_measure_sharpness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/autofocus/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `autofocus`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_autofocus_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/autofocus/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `autofocus`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_autofocus_api_v1_autofocus__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2826,6 +2961,119 @@ export interface components {
             links?: components["schemas"]["LinkElement"][];
             input: components["schemas"]["illumination_set_led_input"];
             output?: components["schemas"]["illumination_set_led_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        autofocus_fast_autofocus_input: {
+            /** @default 2000 */
+            dz?: number;
+            /**
+             * @description Where a sweep starts.
+             * @default centre
+             */
+            start?: "centre" | "base";
+        };
+        /** @description What a focus routine measured, and where it ended. */
+        autofocus_fast_autofocus_output: {
+            /** @description The frames taken while it measured, in order. */
+            points: {
+                /** @description The stage's z, in steps, when the frame was taken. */
+                z: number;
+                /** @description The frame's JPEG size, in bytes: larger is sharper. */
+                sharpness: number;
+            }[];
+            /** @description The z it chose and moved to, if it chose one. */
+            focus_z?: number | null;
+            /** @description How many sweeps it made. */
+            sweeps: number;
+        };
+        autofocus_fast_autofocus_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["autofocus_fast_autofocus_input"];
+            output?: components["schemas"]["autofocus_fast_autofocus_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        autofocus_looping_autofocus_input: {
+            /** @default 2000 */
+            dz?: number;
+            /**
+             * @description Where a sweep starts.
+             * @default centre
+             */
+            start?: "centre" | "base";
+        };
+        /** @description What a focus routine measured, and where it ended. */
+        autofocus_looping_autofocus_output: {
+            /** @description The frames taken while it measured, in order. */
+            points: {
+                /** @description The stage's z, in steps, when the frame was taken. */
+                z: number;
+                /** @description The frame's JPEG size, in bytes: larger is sharper. */
+                sharpness: number;
+            }[];
+            /** @description The z it chose and moved to, if it chose one. */
+            focus_z?: number | null;
+            /** @description How many sweeps it made. */
+            sweeps: number;
+        };
+        autofocus_looping_autofocus_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["autofocus_looping_autofocus_input"];
+            output?: components["schemas"]["autofocus_looping_autofocus_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        autofocus_z_move_and_measure_sharpness_input: {
+            dz: number[];
+            /** @default 0 */
+            wait?: number;
+        };
+        /** @description What a focus routine measured, and where it ended. */
+        autofocus_z_move_and_measure_sharpness_output: {
+            /** @description The frames taken while it measured, in order. */
+            points: {
+                /** @description The stage's z, in steps, when the frame was taken. */
+                z: number;
+                /** @description The frame's JPEG size, in bytes: larger is sharper. */
+                sharpness: number;
+            }[];
+            /** @description The z it chose and moved to, if it chose one. */
+            focus_z?: number | null;
+            /** @description How many sweeps it made. */
+            sweeps: number;
+        };
+        autofocus_z_move_and_measure_sharpness_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["autofocus_z_move_and_measure_sharpness_input"];
+            output?: components["schemas"]["autofocus_z_move_and_measure_sharpness_output"] | null;
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
@@ -5855,6 +6103,234 @@ export interface operations {
         };
     };
     things_illumination_api_v1_illumination__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_autofocus_fast_autofocus_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of fast_autofocus. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_autofocus_fast_autofocus_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["autofocus_fast_autofocus_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_fast_autofocus_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_fast_autofocus_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_autofocus_looping_autofocus_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of looping_autofocus. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_autofocus_looping_autofocus_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["autofocus_looping_autofocus_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_looping_autofocus_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_looping_autofocus_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_autofocus_z_move_and_measure_sharpness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of z_move_and_measure_sharpness. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_autofocus_z_move_and_measure_sharpness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["autofocus_z_move_and_measure_sharpness_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_z_move_and_measure_sharpness_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_z_move_and_measure_sharpness_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_autofocus_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_autofocus_api_v1_autofocus__get: {
         parameters: {
             query?: never;
             header?: never;

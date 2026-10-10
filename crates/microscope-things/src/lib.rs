@@ -11,6 +11,7 @@
 //! The algorithms live in `microscope-core` and the simulator in
 //! `microscope-sim`; this crate connects them to `teta-wot`.
 
+pub mod autofocus;
 pub mod camera;
 pub mod data;
 pub mod fakes;

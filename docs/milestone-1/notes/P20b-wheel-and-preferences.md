@@ -1,6 +1,6 @@
 # P20b: Control tab: wheel focus and navigation preferences
 
-- Status: In review
+- Status: Done
 - Pull request: [#28](https://github.com/lucaswewa/microscope/pull/28)
 - ADRs: none new
 - Spec: [phases.md#p20b](../phases.md#p20b), split from P20 (plan Appendix D)

@@ -30,6 +30,15 @@ const stage: ThingDescription = {
     ]),
   ),
 }
+const autofocus: ThingDescription = {
+  title: 'Autofocus',
+  base: 'http://localhost/',
+  actions: {
+    fast_autofocus: {
+      forms: [{ href: '/api/v1/autofocus/fast_autofocus', op: ['invokeaction'] }],
+    },
+  },
+}
 const system = {
   title: 'MicroscopeSystem',
   properties: { hostname: { forms: [{ href: '/api/v1/system/hostname', op: ['readproperty'] }] } },
@@ -39,6 +48,8 @@ let wrapper: VueWrapper | undefined
 let received: Received[]
 /** The status of the next invocation: `running` until `finish()`. */
 let finished: boolean
+/** Whether the autofocus invocation has been cancelled. */
+let focusCancelled: boolean
 
 /** An invocation record, running or completed. */
 const record = (id: string, status: string) => ({
@@ -52,8 +63,9 @@ beforeEach(() => {
   vi.useFakeTimers()
   window.localStorage.clear()
   finished = false
+  focusCancelled = false
   const server = fakeServer({
-    'GET /api/v1/thing_descriptions/': { system, camera: { title: 'Camera' }, stage },
+    'GET /api/v1/thing_descriptions/': { system, camera: { title: 'Camera' }, stage, autofocus },
     'GET /api/v1/system/hostname': 'lab-pc',
     'GET /api/v1/stage/position': (request: Received) =>
       request.headers.get('Accept') === 'text/event-stream'
@@ -69,6 +81,13 @@ beforeEach(() => {
     'POST /api/v1/stage/move_to_origin': () => json(record('h', 'completed'), 201),
     'POST /api/v1/stage/set_zero_position': () => json(record('z', 'completed'), 201),
     'POST /api/v1/stage/jog': () => json(record('j', 'completed'), 201),
+    'POST /api/v1/autofocus/fast_autofocus': () => json(record('f', 'running'), 201),
+    'GET /api/v1/action_invocations/f': () =>
+      json(record('f', focusCancelled ? 'cancelled' : 'running')),
+    'DELETE /api/v1/action_invocations/f': () => {
+      focusCancelled = true
+      return json(null)
+    },
   })
   received = server.received
   vi.stubGlobal('fetch', server.fetch)
@@ -92,6 +111,11 @@ async function open() {
 const posted = (name: string) =>
   received
     .filter((r) => r.method === 'POST' && r.url.pathname === `/api/v1/stage/${name}`)
+    .map((r) => JSON.parse(r.body ?? 'null'))
+
+const autofocusRuns = () =>
+  received
+    .filter((r) => r.method === 'POST' && r.url.pathname === '/api/v1/autofocus/fast_autofocus')
     .map((r) => JSON.parse(r.body ?? 'null'))
 
 const button = (name: string) =>
@@ -135,6 +159,21 @@ describe('the Control tab', () => {
       await flushPromises()
     }
     expect(posted('move_to_origin')).toEqual([{}])
+  })
+
+  it('autofocuses from the a key or the button, and cancels', async () => {
+    await open()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }))
+    await flushPromises()
+    expect(autofocusRuns()).toEqual([{ dz: 2000 }])
+    // While it runs, the key doesn't start another, and the button cancels it.
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }))
+    await button('Cancel autofocus').trigger('click')
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(received.some((r) => r.method === 'DELETE' && r.url.pathname.endsWith('/f'))).toBe(true)
+    await button('Autofocus').trigger('click')
+    await flushPromises()
+    expect(autofocusRuns()).toHaveLength(2)
   })
 
   it('jogs and focuses as the navigation preferences say', async () => {
