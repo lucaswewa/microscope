@@ -56,6 +56,37 @@ export function eventStream(chunks: string[], request: Received, { open = false 
   return new Response(body, { headers: { 'Content-Type': 'text/event-stream' } })
 }
 
+/** A small JPEG: start-of-image, `n`, a stuffed 0xFF, then end-of-image. */
+export const jpeg = (n: number) => Uint8Array.of(0xff, 0xd8, n, 0xff, 0x00, n, 0xff, 0xd9)
+
+/** One frame of an MJPEG stream, as a teta-wot server writes it. */
+export function mjpegPart(frame: Uint8Array) {
+  const head = new TextEncoder().encode('--frame\r\nContent-Type: image/jpeg\r\n\r\n')
+  const part = new Uint8Array(head.length + frame.length + 2)
+  part.set(head)
+  part.set(frame, head.length)
+  part.set([13, 10], head.length + frame.length)
+  return part
+}
+
+/**
+ * An MJPEG answer that sends `frames`, then each frame given to `push`. It
+ * stays open until the request is aborted, or without `open`, ends at once.
+ */
+export function mjpegStream(request: Received, frames: Uint8Array[] = [], { open = true } = {}) {
+  let push!: (frame: Uint8Array) => void
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      push = (frame) => controller.enqueue(mjpegPart(frame))
+      frames.forEach(push)
+      if (!open) controller.close()
+      request.signal?.addEventListener('abort', () => controller.error(request.signal!.reason))
+    },
+  })
+  const headers = { 'Content-Type': 'multipart/x-mixed-replace; boundary=frame' }
+  return { response: new Response(body, { headers }), push }
+}
+
 /** A stage's description, with the forms a teta-wot server writes. */
 export const stage: ThingDescription = {
   title: 'Stage',

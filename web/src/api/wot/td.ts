@@ -63,6 +63,17 @@ export interface ThingDescription {
   events?: Record<string, EventAffordance>
   /** Forms for the whole Thing, such as `readallproperties`. */
   forms?: Form[]
+  /** Other resources, such as MJPEG streams. */
+  links?: Link[]
+}
+
+/** A link to another resource, such as a Thing's MJPEG stream. */
+export interface Link {
+  /** A URL, or a path resolved against the TD's `base`. */
+  href: string
+  /** Its media type, such as `multipart/x-mixed-replace`. */
+  type?: string
+  rel?: string
 }
 
 /**
