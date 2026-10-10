@@ -1,6 +1,6 @@
 # P14: Simulated stage motion model
 
-- Status: In review
+- Status: Done
 - Pull request: [#18](https://github.com/lucaswewa/microscope/pull/18)
 - ADRs: none
 - Spec: [phases.md#p14](../phases.md#p14)

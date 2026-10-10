@@ -10,15 +10,16 @@ publish.workspace = true
 
 [dependencies]
 gethostname.workspace = true
+image.workspace = true
 microscope-core.workspace = true
 microscope-sim.workspace = true
 os_info.workspace = true
 schemars.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 teta-wot.workspace = true
 
 [dev-dependencies]
-serde_json.workspace = true
 teta-wot = { workspace = true, features = ["testing"] }
 tokio.workspace = true
 

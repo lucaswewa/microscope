@@ -32,5 +32,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0015](0015-connection-model.md) | Connection model | Accepted | P11 |
 | [0016](0016-serving-and-embedding-the-web-app.md) | Serving and embedding the web app | Accepted | P12 |
 | [0017](0017-simulator-architecture.md) | Simulator architecture | Accepted | P13 |
+| [0018](0018-hardware-abstraction-through-teta-wot-interfaces.md) | Hardware abstraction through `teta-wot` interfaces | Accepted | P15 |
+| [0019](0019-stage-units-integer-steps-with-a-um-scale.md) | Stage units: integer steps with a µm scale | Accepted | P15 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

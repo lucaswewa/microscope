@@ -804,6 +804,7 @@ name = "microscope-things"
 version = "0.1.0"
 dependencies = [
  "gethostname",
+ "image",
  "microscope-core",
  "microscope-sim",
  "os_info",
