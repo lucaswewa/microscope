@@ -1,7 +1,7 @@
 # P17: Simulated camera and illumination Things
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#22](https://github.com/lucaswewa/microscope/pull/22)
 - ADRs: [ADR-0020](../../adr/0020-camera-frame-pipeline.md)
 - Spec: [phases.md#p17](../phases.md#p17). P17 was split, at the owner's choice: the capture buffer and settling are now P17b (plan Appendix D).
 
