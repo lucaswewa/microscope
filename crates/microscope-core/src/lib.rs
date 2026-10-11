@@ -9,6 +9,7 @@
 //!
 //! See ADR-0005 for the rules between the workspace's crates.
 
+pub mod background;
 pub mod fft;
 pub mod mapping;
 pub mod registration;

@@ -42,4 +42,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P24 | [Server-described UI elements](P24-server-ui.md) | Done |
 | P24b | [Server-described action and download buttons](P24b-server-buttons.md) | Done |
 | P25 | [Specimens II and optical effects](P25-specimens-and-optics.md) | Done |
-| P26 | [Capture to the data folder](P26-capture.md) | In review |
+| P26 | [Capture to the data folder](P26-capture.md) | Done |
+| P27 | [Background detection and camera calibration](P27-background-calibration.md) | In review |

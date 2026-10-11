@@ -19,6 +19,12 @@
 //!   uneven lighting, all off until set.
 //! - **`manual_camera_settings`**, a custom endpoint, describes these
 //!   settings for the web app's settings panel (ADR-0024).
+//! - **Background detection** (P27): the camera uses one of the server's
+//!   background detectors, named by `background_detector_name`.
+//!   `set_background` and `image_is_sample` give it a frame shrunk to the
+//!   low-resolution stream's size; `full_auto_calibrate` sets the
+//!   background from the empty slide. `calibration_required` says until
+//!   then, and two panels hold the calibration actions.
 //! - **Light:** while an `illumination` Thing's LED is off, frames are black.
 //! - **Captures** are drawn at 1640 × 1232, or at the stream's size.
 //!   `capture` saves one to the data folder's `captures`, with a sidecar of
@@ -34,12 +40,12 @@ use std::fs::File;
 use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::{Arc, Mutex, OnceLock, Weak};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 use image::codecs::jpeg::JpegEncoder;
-use image::{ImageFormat, ImageResult, RgbImage};
+use image::{DynamicImage, ImageFormat, ImageResult, RgbImage};
 use microscope_sim::{
     BlobConfig, BlobSpecimen, Effects, Extent, FocalSurface, ImageSpecimen, Objective, Sensor,
     SimState, Specimen, TissueConfig, TissueSpecimen, render_frame,
@@ -47,7 +53,6 @@ use microscope_sim::{
 use schemars::{JsonSchema, Schema, SchemaGenerator, json_schema};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use teta_wot::ThingHandle;
 use teta_wot::blob::Jpeg;
 use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
@@ -55,11 +60,11 @@ use teta_wot::prelude::*;
 use crate::capture;
 use crate::data;
 use crate::hardware::{
-    CameraApi, Capture, CaptureBuffer, CaptureMetadata, IlluminationApi, PreviewFrames, StageApi,
-    StreamInfo,
+    BackgroundDetector, CameraApi, Capture, CaptureBuffer, CaptureMetadata, IlluminationApi,
+    LORES_SIZE, PreviewFrames, StageApi, StreamInfo,
 };
 use crate::stage::SimulatedStage;
-use crate::ui::{Layout, ThingUi, UiElement};
+use crate::ui::{Layout, OwnEntry, Success, ThingUi, UiElement};
 
 /// How often the preview draws a frame, when drawing is fast enough.
 const FRAME_INTERVAL: Duration = Duration::from_millis(100);
@@ -69,6 +74,10 @@ const REFERENCE_EXPOSURE_US: f64 = 10_000.0;
 
 /// The repeating sample's period, in µm.
 const REPEAT_PERIOD_UM: f64 = 2_000.0;
+
+/// The background detector the camera uses unless told otherwise, if the
+/// server has it.
+const DEFAULT_DETECTOR: &str = "bg_channel_deviations_luv";
 
 /// The colours of `BlobConfig::default()`.
 const DEFAULT_COLOURS: &str = "#965aaa; #d278a0; #6e78be; #be96c8";
@@ -91,6 +100,17 @@ impl Orientation {
         let (sin, cos) = self.rotation_deg.to_radians().sin_cos();
         [cos * x - sin * y, sin * x + cos * y]
     }
+}
+
+/// Whether an image holds sample, as the background detector judges.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct SampleCheck {
+    /// Whether it holds sample.
+    pub sample: bool,
+    /// The percentage of it that does.
+    pub coverage: f64,
+    /// Both, in words: "62.5% sample", or "only 3.1% sample".
+    pub message: String,
 }
 
 /// A picture loaded for the sample: from which file, at which scale, and
@@ -228,6 +248,9 @@ pub struct SimulatedCamera {
     /// The light, if there is one.
     #[slot]
     illumination: OptSlot<dyn IlluminationApi>,
+    /// The background detectors the camera can use, by name.
+    #[slot]
+    background_detectors: SlotMap<dyn BackgroundDetector>,
     /// The live preview.
     #[stream]
     mjpeg_stream: MjpegStream,
@@ -307,9 +330,10 @@ pub struct SimulatedCamera {
     data_folder: OnceLock<PathBuf>,
     /// The picture last loaded.
     picture: Mutex<Option<LoadedPicture>>,
-    /// The camera's registry entry, which its settings panel checks names
-    /// against.
-    handle: OnceLock<Weak<ThingHandle>>,
+    /// The camera's registry entry, which its panels check names against.
+    entry: OwnEntry,
+    /// The background detector named in the setting, if one is.
+    detector_name: Mutex<Option<String>>,
 }
 
 #[thing_impl]
@@ -491,7 +515,7 @@ impl SimulatedCamera {
         let Some(camera) = ctx.server().thing_ref::<SimulatedCamera>(ctx.name()) else {
             return;
         };
-        let _ = self.handle.set(Arc::downgrade(ThingRef::handle(&camera)));
+        self.entry.keep::<Self>(&ctx);
         let _ = self.data_folder.set(data::data_folder(ctx.server()));
         let camera = Arc::clone(ThingRef::thing(&camera));
         let stop = Arc::new(AtomicBool::new(false));
@@ -503,11 +527,115 @@ impl SimulatedCamera {
         *self.preview.lock().expect("not poisoned") = Some(PreviewThread { stop, thread });
     }
 
+    /// Which background detector the camera uses, by its Thing's name:
+    /// `bg_channel_deviations_luv` unless set, if the server has it, or
+    /// else the first.
+    #[setting]
+    async fn background_detector_name(&self) -> Option<String> {
+        self.detector().map(|(name, _)| name)
+    }
+
+    #[setter(background_detector_name)]
+    async fn set_background_detector_name(
+        &self,
+        name: Option<String>,
+    ) -> Result<(), PropertyError> {
+        let detectors = self.background_detectors.get();
+        if let Some(unknown) = name
+            .as_ref()
+            .filter(|n| !detectors.is_some_and(|d| d.contains_key(*n)))
+        {
+            let message = format!("no background detector is called {unknown}");
+            let error =
+                teta_wot::ValidationError::value_error(Vec::new(), &message, json!(unknown));
+            return Err(PropertyError::Invalid(error));
+        }
+        *self.detector_name.lock().expect("not poisoned") = name;
+        Ok(())
+    }
+
+    /// Whether the camera needs calibrating: until the background detector
+    /// in use has its background.
+    #[property]
+    async fn calibration_required(&self) -> bool {
+        self.detector()
+            .is_none_or(|(_, detector)| !detector.ready())
+    }
+
+    /// Sets the background detector's background from a frame of what the
+    /// camera sees now, which should be the empty slide.
+    #[action]
+    async fn set_background(&self) -> Result<(), ActionError> {
+        let (_, detector) = self.detector().ok_or_else(no_detector)?;
+        detector.set_background(&self.small_frame().await?)
+    }
+
+    /// Whether what the camera sees now holds sample, as the background
+    /// detector judges.
+    #[action]
+    async fn image_is_sample(&self) -> Result<SampleCheck, ActionError> {
+        let (_, detector) = self.detector().ok_or_else(no_detector)?;
+        let coverage = detector.sample_coverage(&self.small_frame().await?)?;
+        let sample = coverage > detector.min_sample_coverage();
+        let only = if sample { "" } else { "only " };
+        Ok(SampleCheck {
+            sample,
+            coverage,
+            message: format!("{only}{coverage:.1}% sample"),
+        })
+    }
+
+    /// Calibrates the camera. In the simulator: takes the sample out, sets
+    /// the background from the empty slide, and puts the sample back, even
+    /// if setting the background failed.
+    #[action]
+    async fn full_auto_calibrate(&self) -> Result<(), ActionError> {
+        self.sample_loaded
+            .set(false)
+            .map_err(ActionError::handled)?;
+        let background = self.set_background().await;
+        self.sample_loaded.set(true).map_err(ActionError::handled)?;
+        background
+    }
+
+    /// The calibration actions for the calibration wizard and the settings
+    /// panel (ADR-0024).
+    #[endpoint(get, "primary_calibration_actions")]
+    async fn primary_calibration_actions(&self) -> Json<Vec<UiElement>> {
+        self.entry.panel(|ui| {
+            let calibrate = ui.action("full_auto_calibrate", "Full auto-calibrate");
+            let done = Success::Message("The camera is calibrated.".to_owned());
+            vec![
+                calibrate
+                    .in_dialog(Some(ui_camera(ui)))
+                    .on_success(done)
+                    .into(),
+            ]
+        })
+    }
+
+    /// The calibration actions for the settings panel only (ADR-0024).
+    #[endpoint(get, "secondary_calibration_actions")]
+    async fn secondary_calibration_actions(&self) -> Json<Vec<UiElement>> {
+        self.entry.panel(|ui| {
+            let question = "Is the camera looking at an empty part of the slide?";
+            vec![
+                ui.action("set_background", "Set background")
+                    .confirm(question)
+                    .secondary()
+                    .into(),
+                ui.action("remove_sample", "Remove sample")
+                    .secondary()
+                    .into(),
+                ui.action("load_sample", "Load sample").secondary().into(),
+            ]
+        })
+    }
+
     /// The camera's settings, described for the settings panel (ADR-0024).
     #[endpoint(get, "manual_camera_settings")]
     async fn manual_camera_settings(&self) -> Json<Vec<UiElement>> {
-        let handle = self.handle.get().and_then(Weak::upgrade);
-        Json(handle.map_or_else(Vec::new, |handle| panel(&ThingUi::new(&handle))))
+        self.entry.panel(panel)
     }
 
     /// Stops the preview, and ends both streams.
@@ -584,6 +712,38 @@ impl SimulatedCamera {
                 gain: self.analogue_gain.get(),
             },
         })
+    }
+
+    /// The background detector in use, and its name: the one named, or
+    /// `bg_channel_deviations_luv`, or the first.
+    fn detector(&self) -> Option<(String, Arc<dyn BackgroundDetector>)> {
+        let detectors = self.background_detectors.get()?;
+        let named = self.detector_name.lock().expect("not poisoned").clone();
+        let name = named
+            .filter(|name| detectors.contains_key(name))
+            .or_else(|| {
+                detectors
+                    .contains_key(DEFAULT_DETECTOR)
+                    .then(|| DEFAULT_DETECTOR.to_owned())
+            })
+            .or_else(|| detectors.keys().next().cloned())?;
+        let detector = Arc::clone(&detectors[&name]);
+        Some((name, detector))
+    }
+
+    /// A frame drawn wholly after the call, shrunk to the low-resolution
+    /// stream's size, for background detection.
+    async fn small_frame(&self) -> Result<RgbImage, ActionError> {
+        self.frames
+            .next(&self.mjpeg_stream)
+            .await
+            .map_err(ActionError::handled)?;
+        let frame = self.frames.next(&self.mjpeg_stream).await;
+        let frame = RgbImage::clone(&*frame.map_err(ActionError::handled)?);
+        let (width, height) = LORES_SIZE;
+        Ok(DynamicImage::ImageRgb8(frame)
+            .thumbnail_exact(width, height)
+            .into_rgb8())
     }
 
     /// What's on the slide, as the settings say: the empty slide while the
@@ -692,6 +852,15 @@ impl SimulatedCamera {
             ("noise_level".to_owned(), json!(self.noise_level.get())),
         ])
     }
+}
+
+fn no_detector() -> ActionError {
+    ActionError::handled("there's no background detector")
+}
+
+/// The name of the camera whose panel `ui` builds.
+fn ui_camera<'a>(ui: &'a ThingUi) -> &'a str {
+    ui.thing_name()
 }
 
 /// The camera's settings panel: the sample, the camera's settings, and the

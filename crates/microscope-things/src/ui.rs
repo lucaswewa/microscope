@@ -4,9 +4,13 @@
 //! `settings_ui` endpoint. [`ThingUi`] builds a Thing's controls, checking
 //! the names it's given.
 
+use std::sync::{Arc, OnceLock, Weak};
+
 use serde::Serialize;
 use serde_json::{Map, Value};
 use teta_wot::ThingHandle;
+use teta_wot::http::axum::Json;
+use teta_wot::prelude::*;
 
 /// One element of a panel.
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -420,6 +424,11 @@ impl<'a> ThingUi<'a> {
         ThingUi { thing }
     }
 
+    /// The Thing's name.
+    pub fn thing_name(&self) -> &'a str {
+        self.thing.name()
+    }
+
     /// A control for the property `name`, labelled `label`. If the Thing has
     /// no such property, the control is broken, and a warning is logged.
     pub fn property(&self, name: &str, label: &str) -> PropertyControl {
@@ -508,6 +517,26 @@ impl<'a> ThingUi<'a> {
             tracing::warn!(thing, kind, name, "a panel names something the Thing lacks");
         }
         missing
+    }
+}
+
+/// A Thing's own registry entry, for its panels to check names against.
+/// It's kept weakly, so that it doesn't keep the Thing alive.
+#[derive(Debug, Default)]
+pub struct OwnEntry(OnceLock<Weak<ThingHandle>>);
+
+impl OwnEntry {
+    /// Keeps the entry of the Thing that `ctx` is for, a `T`, as it starts.
+    pub fn keep<T: Thing>(&self, ctx: &ThingCtx) {
+        if let Some(thing) = ctx.server().thing_ref::<T>(ctx.name()) {
+            let _ = self.0.set(Arc::downgrade(ThingRef::handle(&thing)));
+        }
+    }
+
+    /// The panel `build` makes for the Thing; empty before it starts.
+    pub fn panel(&self, build: impl FnOnce(&ThingUi) -> Vec<UiElement>) -> Json<Vec<UiElement>> {
+        let entry = self.0.get().and_then(Weak::upgrade);
+        Json(entry.map_or_else(Vec::new, |entry| build(&ThingUi::new(&entry))))
     }
 }
 

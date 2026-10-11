@@ -5,7 +5,9 @@
         "camera": "microscope.camera:SimulatedCamera",
         "illumination": "microscope.illumination:SimulatedIllumination",
         "autofocus": "microscope.autofocus:Autofocus",
-        "camera_stage_mapping": "microscope.camera_stage_mapping:CameraStageMapping"
+        "camera_stage_mapping": "microscope.camera_stage_mapping:CameraStageMapping",
+        "bg_color_channels_luv": "microscope.background:ColourChannelDetector",
+        "bg_channel_deviations_luv": "microscope.background:ChannelDeviationDetector"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",
