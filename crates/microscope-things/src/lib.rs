@@ -12,6 +12,7 @@
 //! `microscope-sim`; this crate connects them to `teta-wot`.
 
 pub mod autofocus;
+pub mod background;
 pub mod camera;
 pub mod capture;
 pub mod data;

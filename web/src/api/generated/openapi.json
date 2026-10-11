@@ -1571,6 +1571,60 @@
         }
       }
     },
+    "/api/v1/camera/background_detector_name": {
+      "get": {
+        "summary": "Which background detector the camera uses, by its Thing's name:",
+        "description": "## Which background detector the camera uses, by its Thing's name:\n\nWhich background detector the camera uses, by its Thing's name:\n`bg_channel_deviations_luv` unless set, if the server has it, or\nelse the first.",
+        "operationId": "get_property_api_v1_camera_background_detector_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of background_detector_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_background_detector_name_value"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Which background detector the camera uses, by its Thing's name:",
+        "description": "## Which background detector the camera uses, by its Thing's name:\n\nWhich background detector the camera uses, by its Thing's name:\n`bg_channel_deviations_luv` unless set, if the server has it, or\nelse the first.",
+        "operationId": "set_property_api_v1_camera_background_detector_name_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_background_detector_name_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/blob_density": {
       "get": {
         "summary": "How many blobs the sample has, per mm².",
@@ -1642,6 +1696,25 @@
             "content": {
               "application/json": {
                 "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/calibration_required": {
+      "get": {
+        "summary": "Whether the camera needs calibrating: until the background detector",
+        "description": "## Whether the camera needs calibrating: until the background detector\n\nWhether the camera needs calibrating: until the background detector\nin use has its background.",
+        "operationId": "get_property_api_v1_camera_calibration_required_get",
+        "responses": {
+          "200": {
+            "description": "Value of calibration_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_calibration_required_value"
+                }
               }
             }
           }
@@ -2376,6 +2449,74 @@
         }
       }
     },
+    "/api/v1/camera/full_auto_calibrate": {
+      "get": {
+        "summary": "All invocations of full_auto_calibrate.",
+        "description": "List all the invocations of full_auto_calibrate that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_full_auto_calibrate_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of full_auto_calibrate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Calibrates the camera. In the simulator: takes the sample out, sets",
+        "description": "## Calibrates the camera. In the simulator: takes the sample out, sets\n\nCalibrates the camera. In the simulator: takes the sample out, sets\nthe background from the empty slide, and puts the sample back, even\nif setting the background failed.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_full_auto_calibrate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_full_auto_calibrate_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_full_auto_calibrate_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_full_auto_calibrate_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/grab_jpeg": {
       "get": {
         "summary": "All invocations of grab_jpeg.",
@@ -2497,6 +2638,74 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/camera_grab_jpeg_size_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/image_is_sample": {
+      "get": {
+        "summary": "All invocations of image_is_sample.",
+        "description": "List all the invocations of image_is_sample that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_image_is_sample_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of image_is_sample.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Whether what the camera sees now holds sample, as the background",
+        "description": "## Whether what the camera sees now holds sample, as the background\n\nWhether what the camera sees now holds sample, as the background\ndetector judges.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_image_is_sample_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_image_is_sample_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_image_is_sample_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_image_is_sample_output"
                 }
               }
             }
@@ -2897,6 +3106,18 @@
                 "schema": {}
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/primary_calibration_actions": {
+      "get": {
+        "summary": "Primary Calibration Actions",
+        "description": "The calibration actions for the calibration wizard and the settings\npanel (ADR-0024).",
+        "operationId": "primary_calibration_actions_api_v1_camera_primary_calibration_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
           }
         }
       }
@@ -3354,6 +3575,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/camera_save_from_memory_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/secondary_calibration_actions": {
+      "get": {
+        "summary": "Secondary Calibration Actions",
+        "description": "The calibration actions for the settings panel only (ADR-0024).",
+        "operationId": "secondary_calibration_actions_api_v1_camera_secondary_calibration_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/camera/set_background": {
+      "get": {
+        "summary": "All invocations of set_background.",
+        "description": "List all the invocations of set_background that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_set_background_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of set_background.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Sets the background detector's background from a frame of what the",
+        "description": "## Sets the background detector's background from a frame of what the\n\nSets the background detector's background from a frame of what the\ncamera sees now, which should be the empty slide.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_set_background_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_set_background_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_set_background_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_set_background_output"
                 }
               }
             }
@@ -4857,6 +5158,601 @@
         "summary": "Thing Description",
         "description": "The W3C Thing Description of `camera_stage_mapping`: its properties, actions and events, and how to use them.",
         "operationId": "things_camera_stage_mapping_api_v1_camera_stage_mapping__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/background_deviations": {
+      "get": {
+        "summary": "Their standard deviations, once it's set.",
+        "description": "## Their standard deviations, once it's set.\n\nTheir standard deviations, once it's set.",
+        "operationId": "get_property_api_v1_bg_color_channels_luv_background_deviations_get",
+        "responses": {
+          "200": {
+            "description": "Value of background_deviations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_color_channels_luv_background_deviations_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/background_means": {
+      "get": {
+        "summary": "The background's mean L*, u* and v*, once it's set.",
+        "description": "## The background's mean L*, u* and v*, once it's set.\n\nThe background's mean L*, u* and v*, once it's set.",
+        "operationId": "get_property_api_v1_bg_color_channels_luv_background_means_get",
+        "responses": {
+          "200": {
+            "description": "Value of background_means",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_color_channels_luv_background_means_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/channel_tolerance": {
+      "get": {
+        "summary": "How many standard deviations from the background's mean a pixel's",
+        "description": "## How many standard deviations from the background's mean a pixel's\n\nHow many standard deviations from the background's mean a pixel's\nu* or v* must be, to count as sample.",
+        "operationId": "get_property_api_v1_bg_color_channels_luv_channel_tolerance_get",
+        "responses": {
+          "200": {
+            "description": "Value of channel_tolerance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_color_channels_luv_channel_tolerance_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many standard deviations from the background's mean a pixel's",
+        "description": "## How many standard deviations from the background's mean a pixel's\n\nHow many standard deviations from the background's mean a pixel's\nu* or v* must be, to count as sample.",
+        "operationId": "set_property_api_v1_bg_color_channels_luv_channel_tolerance_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/bg_color_channels_luv_channel_tolerance_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/channel_tolerance/reset": {
+      "post": {
+        "summary": "Reset How many standard deviations from the background's mean a pixel's.",
+        "description": "## Reset How many standard deviations from the background's mean a pixel's\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_bg_color_channels_luv_channel_tolerance_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/min_sample_coverage": {
+      "get": {
+        "summary": "The percentage of the image that must be sample for it to hold",
+        "description": "## The percentage of the image that must be sample for it to hold\n\nThe percentage of the image that must be sample for it to hold\nsample.",
+        "operationId": "get_property_api_v1_bg_color_channels_luv_min_sample_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Value of min_sample_coverage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_color_channels_luv_min_sample_coverage_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The percentage of the image that must be sample for it to hold",
+        "description": "## The percentage of the image that must be sample for it to hold\n\nThe percentage of the image that must be sample for it to hold\nsample.",
+        "operationId": "set_property_api_v1_bg_color_channels_luv_min_sample_coverage_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/bg_color_channels_luv_min_sample_coverage_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/min_sample_coverage/reset": {
+      "post": {
+        "summary": "Reset The percentage of the image that must be sample for it to hold.",
+        "description": "## Reset The percentage of the image that must be sample for it to hold\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_bg_color_channels_luv_min_sample_coverage_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/ready": {
+      "get": {
+        "summary": "Whether the background is set.",
+        "description": "## Whether the background is set.\n\nWhether the background is set.",
+        "operationId": "get_property_api_v1_bg_color_channels_luv_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_color_channels_luv_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the settings panel (ADR-0024).",
+        "operationId": "settings_ui_api_v1_bg_color_channels_luv_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `bg_color_channels_luv` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_bg_color_channels_luv_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `bg_color_channels_luv` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_bg_color_channels_luv_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_color_channels_luv/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `bg_color_channels_luv`: its properties, actions and events, and how to use them.",
+        "operationId": "things_bg_color_channels_luv_api_v1_bg_color_channels_luv__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/background_deviations": {
+      "get": {
+        "summary": "The background's median deviations of L*, u* and v*, once it's set.",
+        "description": "## The background's median deviations of L*, u* and v*, once it's set.\n\nThe background's median deviations of L*, u* and v*, once it's set.",
+        "operationId": "get_property_api_v1_bg_channel_deviations_luv_background_deviations_get",
+        "responses": {
+          "200": {
+            "description": "Value of background_deviations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_channel_deviations_luv_background_deviations_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/channel_tolerance": {
+      "get": {
+        "summary": "How many times the background's deviation a region's must be, in any",
+        "description": "## How many times the background's deviation a region's must be, in any\n\nHow many times the background's deviation a region's must be, in any\nchannel, to count as sample.",
+        "operationId": "get_property_api_v1_bg_channel_deviations_luv_channel_tolerance_get",
+        "responses": {
+          "200": {
+            "description": "Value of channel_tolerance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_channel_deviations_luv_channel_tolerance_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many times the background's deviation a region's must be, in any",
+        "description": "## How many times the background's deviation a region's must be, in any\n\nHow many times the background's deviation a region's must be, in any\nchannel, to count as sample.",
+        "operationId": "set_property_api_v1_bg_channel_deviations_luv_channel_tolerance_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/bg_channel_deviations_luv_channel_tolerance_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/channel_tolerance/reset": {
+      "post": {
+        "summary": "Reset How many times the background's deviation a region's must be, in any.",
+        "description": "## Reset How many times the background's deviation a region's must be, in any\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_bg_channel_deviations_luv_channel_tolerance_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/min_sample_coverage": {
+      "get": {
+        "summary": "The percentage of the image that must be sample for it to hold",
+        "description": "## The percentage of the image that must be sample for it to hold\n\nThe percentage of the image that must be sample for it to hold\nsample.",
+        "operationId": "get_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Value of min_sample_coverage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_channel_deviations_luv_min_sample_coverage_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The percentage of the image that must be sample for it to hold",
+        "description": "## The percentage of the image that must be sample for it to hold\n\nThe percentage of the image that must be sample for it to hold\nsample.",
+        "operationId": "set_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/bg_channel_deviations_luv_min_sample_coverage_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/min_sample_coverage/reset": {
+      "post": {
+        "summary": "Reset The percentage of the image that must be sample for it to hold.",
+        "description": "## Reset The percentage of the image that must be sample for it to hold\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_bg_channel_deviations_luv_min_sample_coverage_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/ready": {
+      "get": {
+        "summary": "Whether the background is set.",
+        "description": "## Whether the background is set.\n\nWhether the background is set.",
+        "operationId": "get_property_api_v1_bg_channel_deviations_luv_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/bg_channel_deviations_luv_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the settings panel (ADR-0024).",
+        "operationId": "settings_ui_api_v1_bg_channel_deviations_luv_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `bg_channel_deviations_luv` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_bg_channel_deviations_luv_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `bg_channel_deviations_luv` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_bg_channel_deviations_luv_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bg_channel_deviations_luv/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `bg_channel_deviations_luv`: its properties, actions and events, and how to use them.",
+        "operationId": "things_bg_channel_deviations_luv_api_v1_bg_channel_deviations_luv__get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -6719,10 +7615,23 @@
         "minimum": 1.0,
         "maximum": 16.0
       },
+      "camera_background_detector_name_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "camera_blob_density_value": {
         "type": "number",
         "minimum": 0.0,
         "maximum": 100000.0
+      },
+      "camera_calibration_required_value": {
+        "type": "boolean"
       },
       "camera_capture_input": {
         "type": "object",
@@ -7369,6 +8278,121 @@
         "minimum": 0.0,
         "maximum": 50.0
       },
+      "camera_full_auto_calibrate_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_full_auto_calibrate_output": {
+        "type": "null"
+      },
+      "camera_full_auto_calibrate_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_full_auto_calibrate_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_full_auto_calibrate_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
       "camera_grab_jpeg_input": {
         "type": "object",
         "properties": {
@@ -7609,6 +8633,141 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/camera_grab_jpeg_size_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_image_is_sample_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_image_is_sample_output": {
+        "description": "Whether an image holds sample, as the background detector judges.",
+        "type": "object",
+        "properties": {
+          "sample": {
+            "description": "Whether it holds sample.",
+            "type": "boolean"
+          },
+          "coverage": {
+            "description": "The percentage of it that does.",
+            "type": "number"
+          },
+          "message": {
+            "description": "Both, in words: \"62.5% sample\", or \"only 3.1% sample\".",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sample",
+          "coverage",
+          "message"
+        ]
+      },
+      "camera_image_is_sample_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_image_is_sample_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_image_is_sample_output"
               },
               {
                 "type": "null"
@@ -8031,6 +9190,121 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/camera_save_from_memory_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_set_background_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_set_background_output": {
+        "type": "null"
+      },
+      "camera_set_background_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_set_background_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_set_background_output"
               },
               {
                 "type": "null"
@@ -9746,6 +11020,75 @@
           "input",
           "log"
         ]
+      },
+      "bg_color_channels_luv_background_deviations_value": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "bg_color_channels_luv_background_means_value": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "bg_color_channels_luv_channel_tolerance_value": {
+        "type": "number",
+        "minimum": 0.0
+      },
+      "bg_color_channels_luv_min_sample_coverage_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 100.0
+      },
+      "bg_color_channels_luv_ready_value": {
+        "type": "boolean"
+      },
+      "bg_channel_deviations_luv_background_deviations_value": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "bg_channel_deviations_luv_channel_tolerance_value": {
+        "type": "number",
+        "minimum": 0.0
+      },
+      "bg_channel_deviations_luv_min_sample_coverage_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 100.0
+      },
+      "bg_channel_deviations_luv_ready_value": {
+        "type": "boolean"
       }
     }
   }

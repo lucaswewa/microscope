@@ -262,6 +262,9 @@ const serverPanel = serverPanelFixture as UiElement[]
         <ServerInterface :elements="serverPanel" />
         <p class="gallery__note">The camera's settings panel, as the camera describes it.</p>
         <ServerPanel thing="camera" path="manual_camera_settings" />
+        <p class="gallery__note">The camera's calibration actions, primary and secondary.</p>
+        <ServerPanel thing="camera" path="primary_calibration_actions" />
+        <ServerPanel thing="camera" path="secondary_calibration_actions" />
 
         <h3>Error details</h3>
         <div class="gallery__progress">

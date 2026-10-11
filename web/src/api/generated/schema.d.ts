@@ -983,6 +983,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/background_detector_name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which background detector the camera uses, by its Thing's name:
+         * @description ## Which background detector the camera uses, by its Thing's name:
+         *
+         *     Which background detector the camera uses, by its Thing's name:
+         *     `bg_channel_deviations_luv` unless set, if the server has it, or
+         *     else the first.
+         */
+        get: operations["get_property_api_v1_camera_background_detector_name_get"];
+        /**
+         * Set Which background detector the camera uses, by its Thing's name:
+         * @description ## Which background detector the camera uses, by its Thing's name:
+         *
+         *     Which background detector the camera uses, by its Thing's name:
+         *     `bg_channel_deviations_luv` unless set, if the server has it, or
+         *     else the first.
+         */
+        put: operations["set_property_api_v1_camera_background_detector_name_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/blob_density": {
         parameters: {
             query?: never;
@@ -1027,6 +1059,29 @@ export interface paths {
          *     Resets the property to its default value, which the Thing Description gives.
          */
         post: operations["reset_api_v1_camera_blob_density_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/calibration_required": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether the camera needs calibrating: until the background detector
+         * @description ## Whether the camera needs calibrating: until the background detector
+         *
+         *     Whether the camera needs calibrating: until the background detector
+         *     in use has its background.
+         */
+        get: operations["get_property_api_v1_camera_calibration_required_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1439,6 +1494,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/full_auto_calibrate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of full_auto_calibrate.
+         * @description List all the invocations of full_auto_calibrate that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_full_auto_calibrate_get"];
+        put?: never;
+        /**
+         * Calibrates the camera. In the simulator: takes the sample out, sets
+         * @description ## Calibrates the camera. In the simulator: takes the sample out, sets
+         *
+         *     Calibrates the camera. In the simulator: takes the sample out, sets
+         *     the background from the empty slide, and puts the sample back, even
+         *     if setting the background failed.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_full_auto_calibrate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/grab_jpeg": {
         parameters: {
             query?: never;
@@ -1494,6 +1581,37 @@ export interface paths {
          *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
          */
         post: operations["start_action_api_v1_camera_grab_jpeg_size_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/image_is_sample": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of image_is_sample.
+         * @description List all the invocations of image_is_sample that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_image_is_sample_get"];
+        put?: never;
+        /**
+         * Whether what the camera sees now holds sample, as the background
+         * @description ## Whether what the camera sees now holds sample, as the background
+         *
+         *     Whether what the camera sees now holds sample, as the background
+         *     detector judges.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_image_is_sample_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1780,6 +1898,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/primary_calibration_actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Primary Calibration Actions
+         * @description The calibration actions for the calibration wizard and the settings
+         *     panel (ADR-0024).
+         */
+        get: operations["primary_calibration_actions_api_v1_camera_primary_calibration_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/remove_sample": {
         parameters: {
             query?: never;
@@ -2060,6 +2199,57 @@ export interface paths {
          *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
          */
         post: operations["start_action_api_v1_camera_save_from_memory_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/secondary_calibration_actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Secondary Calibration Actions
+         * @description The calibration actions for the settings panel only (ADR-0024).
+         */
+        get: operations["secondary_calibration_actions_api_v1_camera_secondary_calibration_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/set_background": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of set_background.
+         * @description List all the invocations of set_background that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_set_background_get"];
+        put?: never;
+        /**
+         * Sets the background detector's background from a frame of what the
+         * @description ## Sets the background detector's background from a frame of what the
+         *
+         *     Sets the background detector's background from a frame of what the
+         *     camera sees now, which should be the empty slide.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_set_background_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3021,6 +3211,452 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bg_color_channels_luv/background_deviations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Their standard deviations, once it's set.
+         * @description ## Their standard deviations, once it's set.
+         *
+         *     Their standard deviations, once it's set.
+         */
+        get: operations["get_property_api_v1_bg_color_channels_luv_background_deviations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/background_means": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The background's mean L*, u* and v*, once it's set.
+         * @description ## The background's mean L*, u* and v*, once it's set.
+         *
+         *     The background's mean L*, u* and v*, once it's set.
+         */
+        get: operations["get_property_api_v1_bg_color_channels_luv_background_means_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/channel_tolerance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many standard deviations from the background's mean a pixel's
+         * @description ## How many standard deviations from the background's mean a pixel's
+         *
+         *     How many standard deviations from the background's mean a pixel's
+         *     u* or v* must be, to count as sample.
+         */
+        get: operations["get_property_api_v1_bg_color_channels_luv_channel_tolerance_get"];
+        /**
+         * Set How many standard deviations from the background's mean a pixel's
+         * @description ## How many standard deviations from the background's mean a pixel's
+         *
+         *     How many standard deviations from the background's mean a pixel's
+         *     u* or v* must be, to count as sample.
+         */
+        put: operations["set_property_api_v1_bg_color_channels_luv_channel_tolerance_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/channel_tolerance/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many standard deviations from the background's mean a pixel's.
+         * @description ## Reset How many standard deviations from the background's mean a pixel's
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_bg_color_channels_luv_channel_tolerance_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/min_sample_coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The percentage of the image that must be sample for it to hold
+         * @description ## The percentage of the image that must be sample for it to hold
+         *
+         *     The percentage of the image that must be sample for it to hold
+         *     sample.
+         */
+        get: operations["get_property_api_v1_bg_color_channels_luv_min_sample_coverage_get"];
+        /**
+         * Set The percentage of the image that must be sample for it to hold
+         * @description ## The percentage of the image that must be sample for it to hold
+         *
+         *     The percentage of the image that must be sample for it to hold
+         *     sample.
+         */
+        put: operations["set_property_api_v1_bg_color_channels_luv_min_sample_coverage_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/min_sample_coverage/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The percentage of the image that must be sample for it to hold.
+         * @description ## Reset The percentage of the image that must be sample for it to hold
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_bg_color_channels_luv_min_sample_coverage_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether the background is set.
+         * @description ## Whether the background is set.
+         *
+         *     Whether the background is set.
+         */
+        get: operations["get_property_api_v1_bg_color_channels_luv_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/settings_ui": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Settings Ui
+         * @description The settings, described for the settings panel (ADR-0024).
+         */
+        get: operations["settings_ui_api_v1_bg_color_channels_luv_settings_ui_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `bg_color_channels_luv` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_bg_color_channels_luv_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `bg_color_channels_luv` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_bg_color_channels_luv_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_color_channels_luv/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `bg_color_channels_luv`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_bg_color_channels_luv_api_v1_bg_color_channels_luv__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/background_deviations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The background's median deviations of L*, u* and v*, once it's set.
+         * @description ## The background's median deviations of L*, u* and v*, once it's set.
+         *
+         *     The background's median deviations of L*, u* and v*, once it's set.
+         */
+        get: operations["get_property_api_v1_bg_channel_deviations_luv_background_deviations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/channel_tolerance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many times the background's deviation a region's must be, in any
+         * @description ## How many times the background's deviation a region's must be, in any
+         *
+         *     How many times the background's deviation a region's must be, in any
+         *     channel, to count as sample.
+         */
+        get: operations["get_property_api_v1_bg_channel_deviations_luv_channel_tolerance_get"];
+        /**
+         * Set How many times the background's deviation a region's must be, in any
+         * @description ## How many times the background's deviation a region's must be, in any
+         *
+         *     How many times the background's deviation a region's must be, in any
+         *     channel, to count as sample.
+         */
+        put: operations["set_property_api_v1_bg_channel_deviations_luv_channel_tolerance_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/channel_tolerance/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many times the background's deviation a region's must be, in any.
+         * @description ## Reset How many times the background's deviation a region's must be, in any
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_bg_channel_deviations_luv_channel_tolerance_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/min_sample_coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The percentage of the image that must be sample for it to hold
+         * @description ## The percentage of the image that must be sample for it to hold
+         *
+         *     The percentage of the image that must be sample for it to hold
+         *     sample.
+         */
+        get: operations["get_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_get"];
+        /**
+         * Set The percentage of the image that must be sample for it to hold
+         * @description ## The percentage of the image that must be sample for it to hold
+         *
+         *     The percentage of the image that must be sample for it to hold
+         *     sample.
+         */
+        put: operations["set_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/min_sample_coverage/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The percentage of the image that must be sample for it to hold.
+         * @description ## Reset The percentage of the image that must be sample for it to hold
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_bg_channel_deviations_luv_min_sample_coverage_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether the background is set.
+         * @description ## Whether the background is set.
+         *
+         *     Whether the background is set.
+         */
+        get: operations["get_property_api_v1_bg_channel_deviations_luv_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/settings_ui": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Settings Ui
+         * @description The settings, described for the settings panel (ADR-0024).
+         */
+        get: operations["settings_ui_api_v1_bg_channel_deviations_luv_settings_ui_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `bg_channel_deviations_luv` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_bg_channel_deviations_luv_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `bg_channel_deviations_luv` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_bg_channel_deviations_luv_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bg_channel_deviations_luv/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `bg_channel_deviations_luv`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_bg_channel_deviations_luv_api_v1_bg_channel_deviations_luv__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3507,7 +4143,9 @@ export interface components {
         };
         stage_z_direction_checked_value: boolean;
         camera_analogue_gain_value: number;
+        camera_background_detector_name_value: string | null;
         camera_blob_density_value: number;
+        camera_calibration_required_value: boolean;
         camera_capture_input: {
             /**
              * @description How a capture is taken.
@@ -3660,6 +4298,29 @@ export interface components {
         camera_focal_tilt_x_value: number;
         camera_focal_tilt_y_value: number;
         camera_focal_waviness_value: number;
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        camera_full_auto_calibrate_input: Record<string, never> | null;
+        camera_full_auto_calibrate_output: null;
+        camera_full_auto_calibrate_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_full_auto_calibrate_input"];
+            output?: components["schemas"]["camera_full_auto_calibrate_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         camera_grab_jpeg_input: {
             /**
              * @description One of the camera's two streams.
@@ -3735,6 +4396,37 @@ export interface components {
             links?: components["schemas"]["LinkElement"][];
             input: components["schemas"]["camera_grab_jpeg_size_input"];
             output?: components["schemas"]["camera_grab_jpeg_size_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        camera_image_is_sample_input: Record<string, never> | null;
+        /** @description Whether an image holds sample, as the background detector judges. */
+        camera_image_is_sample_output: {
+            /** @description Whether it holds sample. */
+            sample: boolean;
+            /** @description The percentage of it that does. */
+            coverage: number;
+            /** @description Both, in words: "62.5% sample", or "only 3.1% sample". */
+            message: string;
+        };
+        camera_image_is_sample_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_image_is_sample_input"];
+            output?: components["schemas"]["camera_image_is_sample_output"] | null;
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
@@ -3821,6 +4513,29 @@ export interface components {
             links?: components["schemas"]["LinkElement"][];
             input: components["schemas"]["camera_save_from_memory_input"];
             output?: components["schemas"]["camera_save_from_memory_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        camera_set_background_input: Record<string, never> | null;
+        camera_set_background_output: null;
+        camera_set_background_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_set_background_input"];
+            output?: components["schemas"]["camera_set_background_output"] | null;
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
@@ -4184,6 +4899,15 @@ export interface components {
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
+        bg_color_channels_luv_background_deviations_value: number[] | null;
+        bg_color_channels_luv_background_means_value: number[] | null;
+        bg_color_channels_luv_channel_tolerance_value: number;
+        bg_color_channels_luv_min_sample_coverage_value: number;
+        bg_color_channels_luv_ready_value: boolean;
+        bg_channel_deviations_luv_background_deviations_value: number[] | null;
+        bg_channel_deviations_luv_channel_tolerance_value: number;
+        bg_channel_deviations_luv_min_sample_coverage_value: number;
+        bg_channel_deviations_luv_ready_value: boolean;
     };
     responses: never;
     parameters: never;
@@ -5627,6 +6351,59 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_camera_background_detector_name_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of background_detector_name */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_background_detector_name_value"];
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_background_detector_name_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_background_detector_name_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_property_api_v1_camera_blob_density_get: {
         parameters: {
             query?: never;
@@ -5697,6 +6474,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_calibration_required_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of calibration_required */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_calibration_required_value"];
                 };
             };
         };
@@ -6381,6 +7178,68 @@ export interface operations {
             };
         };
     };
+    list_invocations_api_v1_camera_full_auto_calibrate_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of full_auto_calibrate. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_full_auto_calibrate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["camera_full_auto_calibrate_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_full_auto_calibrate_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_full_auto_calibrate_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_invocations_api_v1_camera_grab_jpeg_get: {
         parameters: {
             query?: never;
@@ -6492,6 +7351,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["camera_grab_jpeg_size_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_image_is_sample_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of image_is_sample. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_image_is_sample_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["camera_image_is_sample_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_image_is_sample_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_image_is_sample_invocation"];
                 };
             };
             /** @description Validation Error */
@@ -6884,6 +7805,24 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    primary_calibration_actions_api_v1_camera_primary_calibration_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -7315,6 +8254,86 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["camera_save_from_memory_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    secondary_calibration_actions_api_v1_camera_secondary_calibration_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_invocations_api_v1_camera_set_background_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of set_background. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_set_background_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["camera_set_background_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_set_background_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_set_background_invocation"];
                 };
             };
             /** @description Validation Error */
@@ -8692,6 +9711,585 @@ export interface operations {
         };
     };
     things_camera_stage_mapping_api_v1_camera_stage_mapping__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_color_channels_luv_background_deviations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of background_deviations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_color_channels_luv_background_deviations_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_color_channels_luv_background_means_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of background_means */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_color_channels_luv_background_means_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_color_channels_luv_channel_tolerance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of channel_tolerance */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_color_channels_luv_channel_tolerance_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_bg_color_channels_luv_channel_tolerance_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["bg_color_channels_luv_channel_tolerance_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_bg_color_channels_luv_channel_tolerance_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_color_channels_luv_min_sample_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of min_sample_coverage */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_color_channels_luv_min_sample_coverage_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_bg_color_channels_luv_min_sample_coverage_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["bg_color_channels_luv_min_sample_coverage_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_bg_color_channels_luv_min_sample_coverage_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_color_channels_luv_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of ready */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_color_channels_luv_ready_value"];
+                };
+            };
+        };
+    };
+    settings_ui_api_v1_bg_color_channels_luv_settings_ui_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_all_properties_api_v1_bg_color_channels_luv_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_bg_color_channels_luv_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    things_bg_color_channels_luv_api_v1_bg_color_channels_luv__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_channel_deviations_luv_background_deviations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of background_deviations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_channel_deviations_luv_background_deviations_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_channel_deviations_luv_channel_tolerance_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of channel_tolerance */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_channel_deviations_luv_channel_tolerance_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_bg_channel_deviations_luv_channel_tolerance_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["bg_channel_deviations_luv_channel_tolerance_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_bg_channel_deviations_luv_channel_tolerance_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of min_sample_coverage */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_channel_deviations_luv_min_sample_coverage_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_bg_channel_deviations_luv_min_sample_coverage_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["bg_channel_deviations_luv_min_sample_coverage_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_bg_channel_deviations_luv_min_sample_coverage_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_bg_channel_deviations_luv_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of ready */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["bg_channel_deviations_luv_ready_value"];
+                };
+            };
+        };
+    };
+    settings_ui_api_v1_bg_channel_deviations_luv_settings_ui_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    read_all_properties_api_v1_bg_channel_deviations_luv_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_bg_channel_deviations_luv_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    things_bg_channel_deviations_luv_api_v1_bg_channel_deviations_luv__get: {
         parameters: {
             query?: never;
             header?: never;
