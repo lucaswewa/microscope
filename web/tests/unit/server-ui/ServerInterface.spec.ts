@@ -9,7 +9,7 @@ import { hostKey } from '@/host'
 import { joinDuration, splitDuration } from '@/server-ui/duration'
 import ServerInterface from '@/server-ui/ServerInterface.vue'
 import type { UiElement } from '@/server-ui/types'
-import { toastKey } from '@/ui/overlays'
+import { confirmKey, toastKey } from '@/ui/overlays'
 
 import panel from '../../fixtures/server-ui/panel.json'
 import { fakeServer, json, type Received } from '../api/fakeServer'
@@ -29,6 +29,11 @@ let received: Received[]
 let putStatus: number
 /** Sends the observed exposure time a new value. */
 let sendExposure: (value: number) => void
+/** The statuses of the settle and capture invocations, which the tests move on. */
+let settled: string
+let captured: string
+/** The answer to the next confirmation. */
+let answer: boolean
 
 const camera: ThingDescription = {
   title: 'SimulatedCamera',
@@ -44,6 +49,38 @@ const camera: ThingDescription = {
     ]),
   ),
   forms: [{ href: '/api/v1/camera/properties', op: ['observeallproperties'], subprotocol: 'sse' }],
+  actions: Object.fromEntries(
+    ['settle', 'capture_to_memory', 'grab_jpeg'].map((name) => [
+      name,
+      { forms: [{ href: `/api/v1/camera/${name}`, op: ['invokeaction'] }] },
+    ]),
+  ),
+}
+
+/** An invocation's record. */
+const record = (id: string, status: string, more: object = {}) => ({
+  id,
+  status,
+  href: `http://microscope.test/api/v1/action_invocations/${id}`,
+  ...more,
+})
+
+/** The routes of the camera's actions, its file, and the blob an action returns. */
+const actionRoutes = {
+  'POST /api/v1/camera/settle': () => json(record('s', 'running'), 201),
+  'GET /api/v1/action_invocations/s': () =>
+    json(record('s', settled, { log: [{ message: 'Waiting for frames' }] })),
+  'DELETE /api/v1/action_invocations/s': () => {
+    settled = 'cancelled'
+    return json(null)
+  },
+  'POST /api/v1/camera/capture_to_memory': () => json(record('c', 'running'), 201),
+  'GET /api/v1/action_invocations/c': () =>
+    json(record('c', captured, { output: 1, error: { detail: 'No camera.' } })),
+  'POST /api/v1/camera/grab_jpeg': () =>
+    json(record('g', 'completed', { output: { href: '/api/v1/blob/b1' } }), 201),
+  'GET /api/v1/blob/b1': () => new Response('jpeg'),
+  'GET /api/v1/camera/settings.json': () => new Response('{"a":1}'),
 }
 
 /** The camera's stream of property changes, which sends the exposure time on demand. */
@@ -59,7 +96,8 @@ function propertyChanges(request: Received) {
 }
 
 const toaster = { success: vi.fn(), info: vi.fn(), error: vi.fn() }
-const host = { openLink: vi.fn() }
+const host = { openLink: vi.fn(), saveFile: vi.fn(async () => {}) }
+const confirm = vi.fn(async () => answer)
 let wrapper: VueWrapper | undefined
 
 beforeEach(() => {
@@ -74,6 +112,7 @@ beforeEach(() => {
     hostname: 'lab-pc',
   }
   putStatus = 201
+  ;[settled, captured, answer] = ['running', 'running', true]
   const routes = Object.fromEntries(
     Object.keys(schemas).flatMap((name) => [
       [`GET /api/v1/camera/${name}`, () => json(values[name])],
@@ -86,7 +125,11 @@ beforeEach(() => {
       ],
     ]),
   )
-  const server = fakeServer({ ...routes, 'GET /api/v1/camera/properties': propertyChanges })
+  const server = fakeServer({
+    ...routes,
+    ...actionRoutes,
+    'GET /api/v1/camera/properties': propertyChanges,
+  })
   received = server.received
   const connection = useConnectionStore()
   connection.client = new WotClient({
@@ -107,7 +150,7 @@ afterEach(() => {
 async function show(elements: UiElement[] = panel as UiElement[]) {
   wrapper = mount(ServerInterface, {
     props: { elements },
-    global: { provide: { [toastKey]: toaster, [hostKey]: host } },
+    global: { provide: { [toastKey]: toaster, [hostKey]: host, [confirmKey]: confirm } },
     attachTo: document.body,
   })
   await flushPromises()
@@ -240,5 +283,106 @@ describe('ServerInterface', () => {
     expect(control('Gain').text()).toContain('camera has no property “gain”')
     expect(wrapper!.find('a').exists()).toBe(false)
     expect(wrapper!.text()).toContain('needs a newer version of the app')
+  })
+})
+
+describe('server-described buttons', () => {
+  const [buttons, downloads] = [panel[6], panel[7]].map(
+    (row) => (row as { children: UiElement[] }).children,
+  ) as [UiElement[], UiElement[]]
+  const button = (label: string) => wrapper!.findAll('button').find((b) => b.text() === label)
+  const posted = (action: string) =>
+    received
+      .filter((r) => r.method === 'POST' && r.url.pathname.endsWith(`/${action}`))
+      .map((r) => JSON.parse(r.body ?? 'null'))
+
+  it('runs an action with its input, and says what it returned', async () => {
+    await show([buttons[1]!])
+    await button('Capture')!.trigger('click')
+    await flushPromises()
+    expect(posted('capture_to_memory')).toEqual([{ buffer_max: 2 }])
+    expect(button('Cancel')).toBeUndefined() // not cancellable
+    captured = 'completed'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(toaster.success).toHaveBeenCalledWith('1')
+  })
+
+  it('asks first, then shows its log and stream in a dialog, and cancels', async () => {
+    answer = false
+    const shown = await show([buttons[0]!])
+    await button('Settle')!.trigger('click')
+    await flushPromises()
+    expect(confirm).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Wait for the camera to settle?' }),
+    )
+    expect(posted('settle')).toEqual([])
+
+    answer = true
+    await button('Settle')!.trigger('click')
+    await vi.advanceTimersByTimeAsync(200)
+    const dialog = document.querySelector('[role="dialog"]')!
+    expect(dialog.textContent).toContain('Waiting for frames')
+    expect(dialog.querySelector('[aria-label="Live image"]')).not.toBeNull()
+    const cancel = [...dialog.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === 'Cancel',
+    )
+    cancel!.click()
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(received.some((r) => r.method === 'DELETE')).toBe(true)
+    expect(document.querySelector('[role="dialog"]')).toBeNull()
+    expect(toaster.error).not.toHaveBeenCalled()
+    expect(shown.emitted('refresh')).toBeUndefined()
+  })
+
+  it('says it succeeded, and asks for the panel to be refreshed', async () => {
+    const shown = await show([panel[6] as UiElement])
+    await button('Settle')!.trigger('click')
+    await flushPromises()
+    settled = 'completed'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(toaster.success).toHaveBeenCalledWith('Settled.')
+    expect(shown.emitted('refresh')).toHaveLength(1)
+  })
+
+  it('shows progress beside the button, and reports a failure', async () => {
+    await show([{ ...buttons[1]!, cancellable: true } as UiElement])
+    await button('Capture')!.trigger('click')
+    await flushPromises()
+    expect(button('Capture')!.attributes('disabled')).toBeDefined()
+    expect(button('Cancel')).toBeDefined()
+    captured = 'error'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(toaster.error).toHaveBeenCalledWith('Capture failed.', expect.anything())
+    expect(button('Capture')!.attributes('disabled')).toBeUndefined()
+  })
+
+  it('downloads an action’s file, and an endpoint’s, and reports a failure', async () => {
+    const gone = { ...downloads[1]!, broken: false, path: 'gone.json', label: 'Gone' }
+    await show([downloads[0]!, { ...downloads[1]!, broken: false } as UiElement, gone as UiElement])
+    await button('Gone')!.trigger('click')
+    await flushPromises()
+    expect(toaster.error).toHaveBeenCalledWith("Couldn't download camera.json.", expect.anything())
+    await button('Download a frame')!.trigger('click')
+    await flushPromises()
+    expect(posted('grab_jpeg')).toEqual([{ stream_name: 'lores' }])
+    await button('Download settings')!.trigger('click')
+    await flushPromises()
+    const saved = host.saveFile.mock.calls as unknown as [string, Blob][]
+    const files = await Promise.all(saved.map(async ([name, blob]) => [name, await blob.text()]))
+    expect(files).toEqual([
+      ['frame.jpg', 'jpeg'],
+      ['camera.json', '{"a":1}'],
+    ])
+  })
+
+  it('says which buttons aren’t available', async () => {
+    const zap = { kind: 'action_button', thing: 'camera', action: 'zap', label: 'Zap' }
+    await show([...buttons, ...downloads, zap as UiElement])
+    const notes = wrapper!.findAll('[class$="__broken"]').map((note) => note.text())
+    expect(notes).toEqual([
+      "Missing isn't available: camera has no action “no_such_action”.",
+      "Download settings isn't available: camera has no file “settings.json”.",
+      "Zap isn't available: camera has no action “zap”.",
+    ])
   })
 })

@@ -1,6 +1,6 @@
 # P24: Server-described UI elements
 
-- Status: In review
+- Status: Done
 - Pull request: [#33](https://github.com/lucaswewa/microscope/pull/33)
 - ADRs: [ADR-0024](../../adr/0024-server-described-ui-elements.md)
 - Spec: [phases.md#p24](../phases.md#p24). P24 was split, at the owner's choice: the action and download buttons are now P24b (plan Appendix D).

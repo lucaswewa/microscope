@@ -429,8 +429,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P22 | Image registration core | P13 | M | 0023 | Done |
 | P23 | Camera–stage mapping | P21, P22 | L | — | Done |
 | P23b | Click-to-move | P20, P23 | S | — | Done |
-| P24 | Server-described UI elements | P09b, P10 | L | 0024 | In review |
-| P24b | Server-described action and download buttons | P24 | M | — | Planned |
+| P24 | Server-described UI elements | P09b, P10 | L | 0024 | Done |
+| P24b | Server-described action and download buttons | P24 | L | — | In review |
 | P25 | Specimens II and optical effects | P17, P24b | L | — | Planned |
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Planned |
 | P27 | Background detection and camera calibration | P24b, P25 | L | — | Planned |
@@ -664,3 +664,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-10 | P20 split in two, at the project owner's choice, since it was estimated at 1,050–1,250 lines against its L budget. P20 keeps the Control layout, the live position, the Position section, the d-pad and focus buttons, and keyboard jog. The new P20b, sized S, has wheel focus and the navigation preferences (step sizes and inversion), and closes Checkpoint A |
 | 2026-10-10 | P23 split in two, at the project owner's choice, since it was estimated at 1,000–1,200 lines against its L budget. P23 keeps the camera–stage mapping Thing and the simulator's camera rotation and flip. The new P23b, sized S, has double-click-to-move in the web app |
 | 2026-10-11 | P24 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P24 keeps ADR-0024, the Rust model's blocks, `PropertyControl`, `Accordion` and `Container`, sanitised text, and the web's `ServerInterface` and `PropertyControl`. The new P24b, sized M, has `ActionButton` and `DownloadButton`, in the model and the web. P25, P27, P28, P40 and P42 now depend on P24b |
+| 2026-10-11 | P24b re-sized from M to L, at the project owner's choice, since it was estimated at 750–880 lines. Its two buttons share the invocation handling, so it stays one phase |

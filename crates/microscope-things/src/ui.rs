@@ -5,7 +5,7 @@
 //! the names it's given.
 
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{Map, Value};
 use teta_wot::ThingHandle;
 
 /// One element of a panel.
@@ -43,6 +43,10 @@ pub enum UiElement {
         /// The elements.
         children: Vec<UiElement>,
     },
+    /// A button that runs an action.
+    ActionButton(ActionButton),
+    /// A button that downloads a file.
+    DownloadButton(DownloadButton),
 }
 
 /// How a container lays out its elements.
@@ -229,6 +233,181 @@ impl From<PropertyControl> for UiElement {
     }
 }
 
+/// A button that runs an action.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ActionButton {
+    /// The Thing's name.
+    pub thing: String,
+    /// The action's name.
+    pub action: String,
+    /// What the button says.
+    pub label: String,
+    /// The action's input.
+    #[serde(skip_serializing_if = "is_empty_input")]
+    pub input: Value,
+    /// A question to answer before it runs.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confirm: Option<String>,
+    /// Where its progress shows.
+    #[serde(skip_serializing_if = "is_default")]
+    pub progress: Progress,
+    /// The camera whose small live stream the progress dialog shows.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stream: Option<String>,
+    /// Whether it can be cancelled while it runs.
+    #[serde(skip_serializing_if = "is_true")]
+    pub cancellable: bool,
+    /// What to say when it succeeds: nothing, unless set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub success: Option<Success>,
+    /// Whether the panel should be described again once it succeeds,
+    /// because the action changes what it shows.
+    #[serde(skip_serializing_if = "is_default")]
+    pub refresh: bool,
+    /// Shown as a secondary button, rather than a primary one.
+    #[serde(skip_serializing_if = "is_default")]
+    pub secondary: bool,
+    /// Whether the Thing lacks the action.
+    #[serde(skip_serializing_if = "is_default")]
+    pub broken: bool,
+}
+
+/// Where an action's progress shows.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Progress {
+    /// Beside the button.
+    #[default]
+    Inline,
+    /// In a dialog, for a long action to watch.
+    Dialog,
+}
+
+/// What a button says when its action succeeds.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Success {
+    /// This message.
+    Message(String),
+    /// The action's output.
+    Output,
+}
+
+impl ActionButton {
+    /// Runs the action with `input`.
+    pub fn input(mut self, input: Value) -> Self {
+        self.input = input;
+        self
+    }
+
+    /// Asks `question` before running it.
+    pub fn confirm(mut self, question: &str) -> Self {
+        self.confirm = Some(question.to_owned());
+        self
+    }
+
+    /// Shows its progress in a dialog, with the small live stream of the
+    /// camera `stream`, if given.
+    pub fn in_dialog(mut self, stream: Option<&str>) -> Self {
+        self.progress = Progress::Dialog;
+        self.stream = stream.map(str::to_owned);
+        self
+    }
+
+    /// Doesn't offer to cancel it.
+    pub fn not_cancellable(mut self) -> Self {
+        self.cancellable = false;
+        self
+    }
+
+    /// Says `success` when it succeeds.
+    pub fn on_success(mut self, success: Success) -> Self {
+        self.success = Some(success);
+        self
+    }
+
+    /// Asks for the panel to be described again when it succeeds.
+    pub fn refresh(mut self) -> Self {
+        self.refresh = true;
+        self
+    }
+
+    /// Shows it as a secondary button.
+    pub fn secondary(mut self) -> Self {
+        self.secondary = true;
+        self
+    }
+}
+
+/// A button that downloads a file.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct DownloadButton {
+    /// What the button says.
+    pub label: String,
+    /// Where the file comes from.
+    #[serde(flatten)]
+    pub source: DownloadSource,
+    /// The name it's saved under.
+    pub filename: String,
+    /// Shown as a secondary button, rather than a primary one.
+    #[serde(skip_serializing_if = "is_default")]
+    pub secondary: bool,
+    /// Whether the Thing lacks the endpoint or the action.
+    #[serde(skip_serializing_if = "is_default")]
+    pub broken: bool,
+}
+
+/// Where a download comes from.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(tag = "source", rename_all = "snake_case")]
+pub enum DownloadSource {
+    /// A Thing's endpoint: `GET /{thing}/{path}`.
+    Endpoint {
+        /// The Thing's name.
+        thing: String,
+        /// The endpoint's path.
+        path: String,
+    },
+    /// The file an action returns.
+    Action {
+        /// The Thing's name.
+        thing: String,
+        /// The action's name.
+        action: String,
+        /// The action's input.
+        #[serde(skip_serializing_if = "is_empty_input")]
+        input: Value,
+    },
+}
+
+impl DownloadButton {
+    /// Runs the action with `input`, if the file comes from an action.
+    pub fn input(mut self, value: Value) -> Self {
+        if let DownloadSource::Action { input, .. } = &mut self.source {
+            *input = value;
+        }
+        self
+    }
+
+    /// Shows it as a secondary button.
+    pub fn secondary(mut self) -> Self {
+        self.secondary = true;
+        self
+    }
+}
+
+impl From<ActionButton> for UiElement {
+    fn from(button: ActionButton) -> Self {
+        UiElement::ActionButton(button)
+    }
+}
+
+impl From<DownloadButton> for UiElement {
+    fn from(button: DownloadButton) -> Self {
+        UiElement::DownloadButton(button)
+    }
+}
+
 /// Builds the controls of one Thing's panel, checking the names it's given
 /// against the Thing.
 pub struct ThingUi<'a> {
@@ -244,15 +423,7 @@ impl<'a> ThingUi<'a> {
     /// A control for the property `name`, labelled `label`. If the Thing has
     /// no such property, the control is broken, and a warning is logged.
     pub fn property(&self, name: &str, label: &str) -> PropertyControl {
-        let broken = self.thing.property(name).is_none();
-        if broken {
-            let thing = self.thing.name();
-            tracing::warn!(
-                thing,
-                property = name,
-                "a panel names a property the Thing lacks"
-            );
-        }
+        let broken = self.lacks(self.thing.property(name).is_none(), "property", name);
         PropertyControl {
             thing: self.thing.name().to_owned(),
             property: name.to_owned(),
@@ -264,10 +435,92 @@ impl<'a> ThingUi<'a> {
             broken,
         }
     }
+
+    /// A button that runs the action `name`, labelled `label`. If the Thing
+    /// has no such action, the button is broken, and a warning is logged.
+    pub fn action(&self, name: &str, label: &str) -> ActionButton {
+        ActionButton {
+            thing: self.thing.name().to_owned(),
+            action: name.to_owned(),
+            label: label.to_owned(),
+            input: Value::Object(Map::new()),
+            confirm: None,
+            progress: Progress::Inline,
+            stream: None,
+            cancellable: true,
+            success: None,
+            refresh: false,
+            secondary: false,
+            broken: self.lacks(self.thing.action(name).is_none(), "action", name),
+        }
+    }
+
+    /// A button that downloads what the Thing's endpoint at `path` answers
+    /// to `GET`, as `filename`. Without such an endpoint, it's broken.
+    pub fn download_endpoint(&self, path: &str, label: &str, filename: &str) -> DownloadButton {
+        let mut endpoints = self.thing.endpoints();
+        let found = endpoints.any(|endpoint| endpoint.method() == "GET" && endpoint.path() == path);
+        let source = DownloadSource::Endpoint {
+            thing: self.thing.name().to_owned(),
+            path: path.to_owned(),
+        };
+        self.download(
+            source,
+            label,
+            filename,
+            self.lacks(!found, "endpoint", path),
+        )
+    }
+
+    /// A button that downloads the file the action `name` returns, as
+    /// `filename`. Without such an action, it's broken.
+    pub fn download_action(&self, name: &str, label: &str, filename: &str) -> DownloadButton {
+        let source = DownloadSource::Action {
+            thing: self.thing.name().to_owned(),
+            action: name.to_owned(),
+            input: Value::Object(Map::new()),
+        };
+        let broken = self.lacks(self.thing.action(name).is_none(), "action", name);
+        self.download(source, label, filename, broken)
+    }
+
+    fn download(
+        &self,
+        source: DownloadSource,
+        label: &str,
+        filename: &str,
+        broken: bool,
+    ) -> DownloadButton {
+        DownloadButton {
+            label: label.to_owned(),
+            source,
+            filename: filename.to_owned(),
+            secondary: false,
+            broken,
+        }
+    }
+
+    /// `missing`, after logging a warning if the Thing lacks the `kind`
+    /// called `name`.
+    fn lacks(&self, missing: bool, kind: &str, name: &str) -> bool {
+        if missing {
+            let thing = self.thing.name();
+            tracing::warn!(thing, kind, name, "a panel names something the Thing lacks");
+        }
+        missing
+    }
 }
 
 fn is_default<T: Default + PartialEq>(value: &T) -> bool {
     *value == T::default()
+}
+
+fn is_true(value: &bool) -> bool {
+    *value
+}
+
+fn is_empty_input(input: &Value) -> bool {
+    input.as_object().is_some_and(Map::is_empty)
 }
 
 #[cfg(test)]
