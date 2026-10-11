@@ -71,7 +71,15 @@ ADR-0025 records the layout, names and sidecar. The details:
 - **Checked in a browser,** against my own server:
   - a capture saved to the gallery, with its sidecar (including the mapping the end-to-end run had calibrated);
   - a download with `c`: a 405 KB JPEG, with nothing added to `captures/`.
-- **Size:** 636 changed lines of hand-written code (about 255 of them tests) against M's budget of 600, a little over my estimate of 550–600.
+- **A fix to the simulated stage, found by this PR's CI:** a race between threads crashed the stage, and with it the camera's preview.
+  - **What happened:** on CI's end-to-end run, a server thread panicked with "overflow when subtracting durations". It poisoned the stage's lock; the camera's preview thread then panicked on it, and frames stopped. Autofocus ended at the wrong height, and the live image stayed "connecting".
+  - **The cause:** the stage read the time before taking its lock. So a thread could read the time, wait for the lock while another thread started a move, and then ask the model for the position at a time before that move began. `Motion::at` subtracted the move's start from that time and underflowed.
+  - **Two fixes:**
+    - the stage now reads the time only once it holds the lock (`state_now`);
+    - the model takes a time before a move's start as its start (`saturating_sub`).
+  - **The test:** a new test in `microscope-sim/tests/stage.rs` reproduces the panic without the fix.
+  - **It's older than this phase** (the stage is P14 and P16); this PR's timing exposed it.
+- **Size:** 636 changed lines of hand-written code (about 255 of them tests) against M's budget of 600, a little over my estimate of 550–600. The stage fix adds 45 more, 9 of them its test.
 
 ## Tests
 
