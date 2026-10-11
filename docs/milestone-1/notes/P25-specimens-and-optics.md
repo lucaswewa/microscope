@@ -1,7 +1,7 @@
 # P25: Specimens II and optical effects
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#35](https://github.com/lucaswewa/microscope/pull/35)
 - ADRs: none new; it serves its settings as ADR-0024 describes
 - Spec: [phases.md#p25](../phases.md#p25)
 
