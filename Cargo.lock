@@ -816,6 +816,7 @@ dependencies = [
  "serde_json",
  "teta-wot",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

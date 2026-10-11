@@ -4,7 +4,7 @@
 //! `stage`, `autofocus`, `camera_stage_mapping`, `smart_scan`, `gallery`, …),
 //! the [`hardware`] interfaces through which Things use one another (so a
 //! configuration can swap the simulator for real drivers), and the model for
-//! server-described UI elements. [`registry()`] lists the Things a
+//! server-described UI elements ([`ui`]). [`registry()`] lists the Things a
 //! configuration can name; [`fakes`] has a test Thing for each interface.
 //! The Things' names mirror the OpenFlexure Microscope's where practical.
 //!
@@ -21,5 +21,6 @@ pub mod mapping;
 pub mod registry;
 pub mod stage;
 pub mod system;
+pub mod ui;
 
 pub use registry::registry;
