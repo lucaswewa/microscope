@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 
+import CalibrationWizard from '@/calibration/CalibrationWizard.vue'
 import OfflineOverlay from '@/connection/OfflineOverlay.vue'
 
 import { useAvailableDestinations } from './availability'
@@ -24,6 +25,7 @@ useTabCycling(destinations)
       <OfflineOverlay />
     </div>
     <ShortcutHelp />
+    <CalibrationWizard />
   </div>
 </template>
 

@@ -7,12 +7,12 @@
 //
 // `title` names it. Escape, the close button and a click outside close it,
 // unless `dismissible` is false, for work that mustn't be interrupted;
-// `closeOnOutsideClick` turns off the click outside alone. With `alert` it is
+// `closeOnOutsideClick` turns off the click outside alone, and `beforeClose`
+// can ask first, closing only if it answers true. With `alert` it is
 // announced as an alert dialog, which needs a response. The default slot is
 // the body and `footer` holds the buttons.
-import close from '@material-symbols/svg-400/outlined/close.svg?raw'
+import closeIcon from '@material-symbols/svg-400/outlined/close.svg?raw'
 import {
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogOverlay,
@@ -33,8 +33,15 @@ const props = withDefaults(
     dismissible?: boolean
     closeOnOutsideClick?: boolean
     alert?: boolean
+    beforeClose?: () => Promise<boolean>
   }>(),
-  { description: undefined, size: 'md', dismissible: true, closeOnOutsideClick: true },
+  {
+    description: undefined,
+    size: 'md',
+    dismissible: true,
+    closeOnOutsideClick: true,
+    beforeClose: undefined,
+  },
 )
 
 // Without a description, Reka UI would point aria-describedby at nothing.
@@ -43,12 +50,14 @@ const contentAttributes = computed(() => ({
   ...(props.alert ? { role: 'alertdialog' } : {}),
 }))
 
-function onEscape(event: KeyboardEvent) {
-  if (!props.dismissible) event.preventDefault()
+async function close() {
+  if (!props.beforeClose || (await props.beforeClose())) open.value = false
 }
 
-function onOutside(event: Event) {
-  if (!props.dismissible || !props.closeOnOutsideClick) event.preventDefault()
+// Escape and a click outside close it here, so that `beforeClose` can ask.
+function dismiss(event: Event, allowed = true) {
+  event.preventDefault()
+  if (props.dismissible && allowed) void close()
 }
 
 // Reka UI would start on the close button, the first thing in the dialog.
@@ -76,15 +85,20 @@ function onOpenAutoFocus(event: Event) {
         class="app-dialog"
         :class="`app-dialog--${size}`"
         v-bind="contentAttributes"
-        @escape-key-down="onEscape"
-        @pointer-down-outside="onOutside"
+        @escape-key-down="dismiss"
+        @pointer-down-outside="dismiss($event, closeOnOutsideClick)"
         @open-auto-focus="onOpenAutoFocus"
       >
         <header class="app-dialog__header">
           <DialogTitle class="app-dialog__title">{{ title }}</DialogTitle>
-          <DialogClose v-if="dismissible" as-child>
-            <IconButton :icon="close" label="Close" variant="ghost" size="sm" />
-          </DialogClose>
+          <IconButton
+            v-if="dismissible"
+            :icon="closeIcon"
+            label="Close"
+            variant="ghost"
+            size="sm"
+            @click="close"
+          />
         </header>
         <DialogDescription v-if="description" class="app-dialog__description">
           {{ description }}

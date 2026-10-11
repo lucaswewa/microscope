@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // A panel a Thing serves (ADR-0024) from one of its endpoints, such as the
 // camera's `manual_camera_settings`, drawn by ServerInterface. It's fetched
-// again when one of its actions asks for a refresh, and when the
-// connection changes.
+// again when one of its actions asks for a refresh, which it passes on, and
+// when the connection changes.
 import { ref, watchEffect } from 'vue'
 
 import { ApiError } from '@/api/wot/errors'
@@ -13,6 +13,7 @@ import ServerInterface from './ServerInterface.vue'
 import type { UiElement } from './types'
 
 const props = defineProps<{ thing: string; path: string }>()
+const emit = defineEmits<{ refresh: [] }>()
 const connection = useConnectionStore()
 const elements = ref<UiElement[]>()
 const failure = ref<string>()
@@ -33,11 +34,16 @@ watchEffect(async (onCleanup) => {
     failure.value = error instanceof ApiError ? error.message : String(error)
   }
 })
+
+function refresh() {
+  refreshes.value += 1
+  emit('refresh')
+}
 </script>
 
 <template>
   <p v-if="failure" class="server-panel__failure">This panel isn't available. {{ failure }}</p>
-  <ServerInterface v-else-if="elements" :elements="elements" @refresh="refreshes++" />
+  <ServerInterface v-else-if="elements" :elements="elements" @refresh="refresh" />
   <AppSpinner v-else label="Loading the panel" />
 </template>
 

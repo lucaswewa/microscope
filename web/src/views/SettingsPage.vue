@@ -2,10 +2,11 @@
 // The Settings tab: its sections listed in the control pane, by Application
 // and Microscope, and the chosen one beside them. The section is in the
 // address (`/#/settings/camera`); without one, or with one it doesn't know,
-// it's Display. The calibration wizard's button waits for P29.
+// it's Display. The calibration wizard opens with every task it can do.
 import { computed, type Component } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
+import { useCalibrationWizard } from '@/calibration/wizard'
 import ConnectView from '@/connection/ConnectView.vue'
 import NavigationSection from '@/control/NavigationSection.vue'
 import CameraSettings from '@/settings/CameraSettings.vue'
@@ -44,6 +45,7 @@ const GROUPS: { title: string; sections: Section[] }[] = [
 ]
 
 const route = useRoute()
+const wizard = useCalibrationWizard()
 const section = computed(() => {
   const sections = GROUPS.flatMap((group) => group.sections)
   return sections.find((s) => s.id === route.params.section) ?? sections[0]!
@@ -57,7 +59,7 @@ const section = computed(() => {
       <nav aria-label="Settings sections" class="settings-page__nav">
         <template v-for="group in GROUPS" :key="group.title">
           <h2 class="settings-page__group">{{ group.title }}</h2>
-          <AppButton v-if="group.title === 'Microscope'" size="sm" disabled>
+          <AppButton v-if="group.title === 'Microscope'" size="sm" @click="wizard.openAll()">
             Calibration wizard
           </AppButton>
           <ul class="settings-page__list">

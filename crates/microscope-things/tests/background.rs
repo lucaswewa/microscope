@@ -141,6 +141,8 @@ async fn the_calibration_panels_name_what_the_things_have() {
         .get("/camera/primary_calibration_actions")
         .await
         .json();
+    // The calibration wizard checks the camera again after it.
+    assert_eq!(primary[0]["refresh"], true);
     assert_eq!(named(primary, "action"), ["full_auto_calibrate"]);
     let secondary = client
         .get("/camera/secondary_calibration_actions")

@@ -609,6 +609,7 @@ impl SimulatedCamera {
                 calibrate
                     .in_dialog(Some(ui_camera(ui)))
                     .on_success(done)
+                    .refresh()
                     .into(),
             ]
         })

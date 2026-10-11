@@ -44,4 +44,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P25 | [Specimens II and optical effects](P25-specimens-and-optics.md) | Done |
 | P26 | [Capture to the data folder](P26-capture.md) | Done |
 | P27 | [Background detection and camera calibration](P27-background-calibration.md) | Done |
-| P28 | [Settings tab](P28-settings-tab.md) | In review |
+| P28 | [Settings tab](P28-settings-tab.md) | Done |
+| P29 | [Calibration wizard](P29-calibration-wizard.md) | In review |
