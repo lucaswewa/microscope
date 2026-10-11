@@ -524,7 +524,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P24b: Server-described action and download buttons
 
 **Goal.** Server-described buttons that run actions and download files. Split from P24 (Appendix D of the plan).
-**Depends on** P24 · **Size** M · **ADRs** —
+**Depends on** P24 · **Size** L · **ADRs** —
 
 **Scope**
 - In the Rust model:

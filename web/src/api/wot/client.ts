@@ -71,6 +71,13 @@ export class WotClient {
     return text ? JSON.parse(text) : null
   }
 
+  /** Downloads `url`, such as an action's file output, or throws an ApiError. */
+  async download(url: URL, init: { signal?: AbortSignal } = {}): Promise<Blob> {
+    const response = await this.fetch(url, { headers: this.headers(), signal: init.signal })
+    if (!response.ok) throw await ApiError.fromResponse(response)
+    return response.blob()
+  }
+
   /**
    * Follows a server-sent event stream, calling `onMessage` with each event,
    * until the returned function is called or `signal` aborts. A stream that

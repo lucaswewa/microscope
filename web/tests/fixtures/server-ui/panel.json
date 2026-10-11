@@ -109,5 +109,70 @@
         "broken": true
       }
     ]
+  },
+  {
+    "kind": "container",
+    "layout": "row",
+    "children": [
+      {
+        "kind": "action_button",
+        "thing": "camera",
+        "action": "settle",
+        "label": "Settle",
+        "confirm": "Wait for the camera to settle?",
+        "progress": "dialog",
+        "stream": "camera",
+        "success": {
+          "message": "Settled."
+        },
+        "refresh": true
+      },
+      {
+        "kind": "action_button",
+        "thing": "camera",
+        "action": "capture_to_memory",
+        "label": "Capture",
+        "input": {
+          "buffer_max": 2
+        },
+        "cancellable": false,
+        "success": "output",
+        "secondary": true
+      },
+      {
+        "kind": "action_button",
+        "thing": "camera",
+        "action": "no_such_action",
+        "label": "Missing",
+        "broken": true
+      }
+    ]
+  },
+  {
+    "kind": "container",
+    "layout": "row",
+    "children": [
+      {
+        "kind": "download_button",
+        "label": "Download a frame",
+        "source": "action",
+        "thing": "camera",
+        "action": "grab_jpeg",
+        "input": {
+          "stream_name": "lores"
+        },
+        "filename": "frame.jpg"
+      },
+      {
+        "kind": "download_button",
+        "label": "Download settings",
+        "source": "endpoint",
+        "thing": "camera",
+        "path": "settings.json",
+        "filename": "camera.json",
+        "secondary": true,
+        "broken": true
+      }
+    ]
   }
 ]
