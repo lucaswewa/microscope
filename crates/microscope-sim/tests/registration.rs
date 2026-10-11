@@ -5,7 +5,9 @@
 use std::sync::Arc;
 
 use microscope_core::registration::{Gray, Options, register};
-use microscope_sim::{BlobConfig, BlobSpecimen, Objective, Sensor, SimState, render_frame};
+use microscope_sim::{
+    BlobConfig, BlobSpecimen, Effects, Objective, Sensor, SimState, render_frame,
+};
 
 fn frame(specimen: &Arc<BlobSpecimen>, x_um: f64, y_um: f64, number: u64) -> Gray {
     let frame = render_frame(&SimState {
@@ -16,6 +18,7 @@ fn frame(specimen: &Arc<BlobSpecimen>, x_um: f64, y_um: f64, number: u64) -> Gra
         focus_z_um: 0.0,
         noise: 2.0,
         frame: number,
+        effects: Effects::default(),
     });
     Gray::from_rgb8(
         frame.width() as usize,

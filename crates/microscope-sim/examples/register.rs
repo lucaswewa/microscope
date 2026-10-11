@@ -9,7 +9,9 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use microscope_core::registration::{Gray, Options, register};
-use microscope_sim::{BlobConfig, BlobSpecimen, Objective, Sensor, SimState, render_frame};
+use microscope_sim::{
+    BlobConfig, BlobSpecimen, Effects, Objective, Sensor, SimState, render_frame,
+};
 
 fn main() {
     let objective = Objective::with_magnification(40.0).expect("40× is offered");
@@ -21,6 +23,7 @@ fn main() {
         focus_z_um: 0.0,
         noise: 2.0,
         frame: 0,
+        effects: Effects::default(),
     };
     let um_per_px = Sensor::PREVIEW.pixel_pitch_um / objective.magnification;
     let gray = |state: &SimState| {

@@ -9,8 +9,8 @@ use std::time::Instant;
 use image::RgbImage;
 use microscope_sim::units::um_per_px;
 use microscope_sim::{
-    BlobConfig, BlobSpecimen, Extent, OBJECTIVES, Objective, Point, Sensor, SimState, Specimen,
-    StageScale, render_frame,
+    BlobConfig, BlobSpecimen, Effects, Extent, OBJECTIVES, Objective, Point, Sensor, SimState,
+    Specimen, StageScale, render_frame,
 };
 
 const SMALL: Sensor = Sensor {
@@ -32,6 +32,7 @@ fn state(specimen: Arc<dyn Specimen>, magnification: f64, stage_um: [f64; 3]) ->
         focus_z_um: 0.0,
         noise: 0.0,
         frame: 0,
+        effects: Effects::default(),
     }
 }
 

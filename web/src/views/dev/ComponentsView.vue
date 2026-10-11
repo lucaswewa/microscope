@@ -27,6 +27,7 @@ import AppToggle from '@/ui/AppToggle.vue'
 import AppTooltip from '@/ui/AppTooltip.vue'
 import ButtonMenu from '@/ui/ButtonMenu.vue'
 import ServerInterface from '@/server-ui/ServerInterface.vue'
+import ServerPanel from '@/server-ui/ServerPanel.vue'
 import type { UiElement } from '@/server-ui/types'
 import ErrorDetails from '@/ui/ErrorDetails.vue'
 import FormField from '@/ui/FormField.vue'
@@ -259,6 +260,8 @@ const serverPanel = serverPanelFixture as UiElement[]
           The renderers' test panel, for the camera of the microscope the app is connected to.
         </p>
         <ServerInterface :elements="serverPanel" />
+        <p class="gallery__note">The camera's settings panel, as the camera describes it.</p>
+        <ServerPanel thing="camera" path="manual_camera_settings" />
 
         <h3>Error details</h3>
         <div class="gallery__progress">

@@ -1256,6 +1256,156 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/focal_tilt_x": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How much the focal surface rises in x, in µm per mm.
+         * @description ## How much the focal surface rises in x, in µm per mm.
+         *
+         *     How much the focal surface rises in x, in µm per mm.
+         */
+        get: operations["get_property_api_v1_camera_focal_tilt_x_get"];
+        /**
+         * Set How much the focal surface rises in x, in µm per mm.
+         * @description ## How much the focal surface rises in x, in µm per mm.
+         *
+         *     How much the focal surface rises in x, in µm per mm.
+         */
+        put: operations["set_property_api_v1_camera_focal_tilt_x_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/focal_tilt_x/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How much the focal surface rises in x, in µm per mm..
+         * @description ## Reset How much the focal surface rises in x, in µm per mm.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_focal_tilt_x_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/focal_tilt_y": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How much the focal surface rises in y, in µm per mm.
+         * @description ## How much the focal surface rises in y, in µm per mm.
+         *
+         *     How much the focal surface rises in y, in µm per mm.
+         */
+        get: operations["get_property_api_v1_camera_focal_tilt_y_get"];
+        /**
+         * Set How much the focal surface rises in y, in µm per mm.
+         * @description ## How much the focal surface rises in y, in µm per mm.
+         *
+         *     How much the focal surface rises in y, in µm per mm.
+         */
+        put: operations["set_property_api_v1_camera_focal_tilt_y_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/focal_tilt_y/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How much the focal surface rises in y, in µm per mm..
+         * @description ## Reset How much the focal surface rises in y, in µm per mm.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_focal_tilt_y_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/focal_waviness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How far the focal surface waves up and down, in µm.
+         * @description ## How far the focal surface waves up and down, in µm.
+         *
+         *     How far the focal surface waves up and down, in µm.
+         */
+        get: operations["get_property_api_v1_camera_focal_waviness_get"];
+        /**
+         * Set How far the focal surface waves up and down, in µm.
+         * @description ## How far the focal surface waves up and down, in µm.
+         *
+         *     How far the focal surface waves up and down, in µm.
+         */
+        put: operations["set_property_api_v1_camera_focal_waviness_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/focal_waviness/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How far the focal surface waves up and down, in µm..
+         * @description ## Reset How far the focal surface waves up and down, in µm.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_focal_waviness_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/grab_jpeg": {
         parameters: {
             query?: never;
@@ -1379,6 +1529,26 @@ export interface paths {
          * @description A page that shows the stream.
          */
         get: operations["viewer_page_api_v1_camera_lores_mjpeg_stream_viewer_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/manual_camera_settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Manual Camera Settings
+         * @description The camera's settings, described for the settings panel (ADR-0024).
+         */
+        get: operations["manual_camera_settings_api_v1_camera_manual_camera_settings_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1659,6 +1829,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/sample_image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         * @description ## The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         *
+         *     The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         */
+        get: operations["get_property_api_v1_camera_sample_image_get"];
+        /**
+         * Set The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         * @description ## The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         *
+         *     The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         */
+        put: operations["set_property_api_v1_camera_sample_image_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/sample_image/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The picture on the slide: a PNG, JPEG or TIFF file in the data folder..
+         * @description ## Reset The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_sample_image_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/sample_image_scale": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The size of the picture's pixels on the slide, in µm.
+         * @description ## The size of the picture's pixels on the slide, in µm.
+         *
+         *     The size of the picture's pixels on the slide, in µm.
+         */
+        get: operations["get_property_api_v1_camera_sample_image_scale_get"];
+        /**
+         * Set The size of the picture's pixels on the slide, in µm.
+         * @description ## The size of the picture's pixels on the slide, in µm.
+         *
+         *     The size of the picture's pixels on the slide, in µm.
+         */
+        put: operations["set_property_api_v1_camera_sample_image_scale_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/sample_image_scale/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The size of the picture's pixels on the slide, in µm..
+         * @description ## Reset The size of the picture's pixels on the slide, in µm.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_sample_image_scale_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/sample_loaded": {
         parameters: {
             query?: never;
@@ -1675,6 +1945,56 @@ export interface paths {
         get: operations["get_property_api_v1_camera_sample_loaded_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/sample_type": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What's on the slide: blobs, tissue or a picture.
+         * @description ## What's on the slide: blobs, tissue or a picture.
+         *
+         *     What's on the slide: blobs, tissue or a picture.
+         */
+        get: operations["get_property_api_v1_camera_sample_type_get"];
+        /**
+         * Set What's on the slide: blobs, tissue or a picture.
+         * @description ## What's on the slide: blobs, tissue or a picture.
+         *
+         *     What's on the slide: blobs, tissue or a picture.
+         */
+        put: operations["set_property_api_v1_camera_sample_type_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/sample_type/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset What's on the slide: blobs, tissue or a picture..
+         * @description ## Reset What's on the slide: blobs, tissue or a picture.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_sample_type_reset_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1854,6 +2174,156 @@ export interface paths {
         get: operations["get_property_api_v1_camera_streaming_modes_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/tissue_coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The share of the slide the tissue covers.
+         * @description ## The share of the slide the tissue covers.
+         *
+         *     The share of the slide the tissue covers.
+         */
+        get: operations["get_property_api_v1_camera_tissue_coverage_get"];
+        /**
+         * Set The share of the slide the tissue covers.
+         * @description ## The share of the slide the tissue covers.
+         *
+         *     The share of the slide the tissue covers.
+         */
+        put: operations["set_property_api_v1_camera_tissue_coverage_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/tissue_coverage/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The share of the slide the tissue covers..
+         * @description ## Reset The share of the slide the tissue covers.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_tissue_coverage_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/uneven_illumination": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The share of the light lost at the frame's most dimly lit corner.
+         * @description ## The share of the light lost at the frame's most dimly lit corner.
+         *
+         *     The share of the light lost at the frame's most dimly lit corner.
+         */
+        get: operations["get_property_api_v1_camera_uneven_illumination_get"];
+        /**
+         * Set The share of the light lost at the frame's most dimly lit corner.
+         * @description ## The share of the light lost at the frame's most dimly lit corner.
+         *
+         *     The share of the light lost at the frame's most dimly lit corner.
+         */
+        put: operations["set_property_api_v1_camera_uneven_illumination_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/uneven_illumination/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The share of the light lost at the frame's most dimly lit corner..
+         * @description ## Reset The share of the light lost at the frame's most dimly lit corner.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_uneven_illumination_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/vignetting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The share of the light lost in the frame's corners.
+         * @description ## The share of the light lost in the frame's corners.
+         *
+         *     The share of the light lost in the frame's corners.
+         */
+        get: operations["get_property_api_v1_camera_vignetting_get"];
+        /**
+         * Set The share of the light lost in the frame's corners.
+         * @description ## The share of the light lost in the frame's corners.
+         *
+         *     The share of the light lost in the frame's corners.
+         */
+        put: operations["set_property_api_v1_camera_vignetting_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/vignetting/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The share of the light lost in the frame's corners..
+         * @description ## Reset The share of the light lost in the frame's corners.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_vignetting_reset_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3098,6 +3568,9 @@ export interface components {
             error?: components["schemas"]["ProblemDetails"] | null;
         };
         camera_exposure_time_value: number;
+        camera_focal_tilt_x_value: number;
+        camera_focal_tilt_y_value: number;
+        camera_focal_waviness_value: number;
         camera_grab_jpeg_input: {
             /**
              * @description One of the camera's two streams.
@@ -3236,7 +3709,11 @@ export interface components {
             error?: components["schemas"]["ProblemDetails"] | null;
         };
         camera_repeating_value: boolean;
+        camera_sample_image_value: string;
+        camera_sample_image_scale_value: number;
         camera_sample_loaded_value: boolean;
+        /** @description What's on the slide. */
+        camera_sample_type_value: "blobs" | "tissue" | "image";
         camera_save_from_memory_input: {
             path: string;
             buffer_id?: number | null;
@@ -3295,6 +3772,9 @@ export interface components {
                 height: number;
             };
         };
+        camera_tissue_coverage_value: number;
+        camera_uneven_illumination_value: number;
+        camera_vignetting_value: number;
         illumination_flash_input: {
             /** @default 10 */
             number_of_flashes?: number;
@@ -5528,6 +6008,228 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_camera_focal_tilt_x_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of focal_tilt_x */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_focal_tilt_x_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_focal_tilt_x_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_focal_tilt_x_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_focal_tilt_x_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_focal_tilt_y_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of focal_tilt_y */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_focal_tilt_y_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_focal_tilt_y_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_focal_tilt_y_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_focal_tilt_y_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_focal_waviness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of focal_waviness */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_focal_waviness_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_focal_waviness_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_focal_waviness_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_focal_waviness_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     list_invocations_api_v1_camera_grab_jpeg_get: {
         parameters: {
             query?: never;
@@ -5751,6 +6453,24 @@ export interface operations {
                 content: {
                     "text/html": string;
                 };
+            };
+        };
+    };
+    manual_camera_settings_api_v1_camera_manual_camera_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -6152,6 +6872,154 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_camera_sample_image_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of sample_image */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_sample_image_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_sample_image_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_sample_image_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_sample_image_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_sample_image_scale_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of sample_image_scale */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_sample_image_scale_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_sample_image_scale_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_sample_image_scale_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_sample_image_scale_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     get_property_api_v1_camera_sample_loaded_get: {
         parameters: {
             query?: never;
@@ -6169,6 +7037,80 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["camera_sample_loaded_value"];
                     "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_sample_type_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of sample_type */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_sample_type_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_sample_type_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_sample_type_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_sample_type_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
@@ -6428,6 +7370,228 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["camera_streaming_modes_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_tissue_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of tissue_coverage */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_tissue_coverage_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_tissue_coverage_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_tissue_coverage_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_tissue_coverage_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_uneven_illumination_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of uneven_illumination */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_uneven_illumination_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_uneven_illumination_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_uneven_illumination_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_uneven_illumination_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_vignetting_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of vignetting */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_vignetting_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_vignetting_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_vignetting_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_vignetting_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };

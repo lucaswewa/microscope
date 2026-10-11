@@ -197,7 +197,14 @@ impl Specimen for BlobSpecimen {
 /// Darkens the pixels a blob covers. A blob smaller than half a pixel is the
 /// level of detail for low magnification: it darkens the pixel its centre is
 /// in by the share of the pixel it covers.
-fn draw(light: &mut [f32], w: usize, h: usize, centre: (f64, f64), r: f64, transmits: [f32; 3]) {
+pub(crate) fn draw(
+    light: &mut [f32],
+    w: usize,
+    h: usize,
+    centre: (f64, f64),
+    r: f64,
+    transmits: [f32; 3],
+) {
     let mut absorb = |x: usize, y: usize, coverage: f32| {
         let p = (y * w + x) * 3;
         for c in 0..3 {
@@ -232,7 +239,7 @@ fn draw(light: &mut [f32], w: usize, h: usize, centre: (f64, f64), r: f64, trans
 }
 
 /// A Poisson-distributed count with mean `mean`, from a uniform number `u`.
-fn poisson(mean: f64, u: f64) -> u64 {
+pub(crate) fn poisson(mean: f64, u: f64) -> u64 {
     let (mut k, mut p) = (0, (-mean).exp());
     let mut cumulative = p;
     while u > cumulative && k < 1000 {

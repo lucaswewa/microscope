@@ -8,6 +8,7 @@ import { useConnectionStore } from '@/connection/store'
 import { hostKey } from '@/host'
 import { joinDuration, splitDuration } from '@/server-ui/duration'
 import ServerInterface from '@/server-ui/ServerInterface.vue'
+import ServerPanel from '@/server-ui/ServerPanel.vue'
 import type { UiElement } from '@/server-ui/types'
 import { confirmKey, toastKey } from '@/ui/overlays'
 
@@ -34,6 +35,9 @@ let settled: string
 let captured: string
 /** The answer to the next confirmation. */
 let answer: boolean
+/** How often the camera's panel has been fetched, and whether it's there. */
+let panelFetches: number
+let panelServed: boolean
 
 const camera: ThingDescription = {
   title: 'SimulatedCamera',
@@ -81,6 +85,15 @@ const actionRoutes = {
     json(record('g', 'completed', { output: { href: '/api/v1/blob/b1' } }), 201),
   'GET /api/v1/blob/b1': () => new Response('jpeg'),
   'GET /api/v1/camera/settings.json': () => new Response('{"a":1}'),
+  'GET /api/v1/camera/manual_camera_settings': () => {
+    panelFetches += 1
+    if (!panelServed) return json({ detail: 'Not Found' }, 404)
+    const settle = { kind: 'action_button', thing: 'camera', action: 'settle', label: 'Settle' }
+    return json([
+      { kind: 'header', text: [{ text: 'Camera' }] },
+      { ...settle, refresh: true },
+    ])
+  },
 }
 
 /** The camera's stream of property changes, which sends the exposure time on demand. */
@@ -113,6 +126,7 @@ beforeEach(() => {
   }
   putStatus = 201
   ;[settled, captured, answer] = ['running', 'running', true]
+  ;[panelFetches, panelServed] = [0, true]
   const routes = Object.fromEntries(
     Object.keys(schemas).flatMap((name) => [
       [`GET /api/v1/camera/${name}`, () => json(values[name])],
@@ -384,5 +398,33 @@ describe('server-described buttons', () => {
       "Download settings isn't available: camera has no file “settings.json”.",
       "Zap isn't available: camera has no action “zap”.",
     ])
+  })
+})
+
+describe('ServerPanel', () => {
+  const showPanel = async () => {
+    wrapper = mount(ServerPanel, {
+      props: { thing: 'camera', path: 'manual_camera_settings' },
+      global: { provide: { [toastKey]: toaster, [hostKey]: host, [confirmKey]: confirm } },
+      attachTo: document.body,
+    })
+    await flushPromises()
+  }
+
+  it('fetches a Thing’s panel, and fetches it again when an action asks', async () => {
+    await showPanel()
+    expect(wrapper!.find('h3').text()).toBe('Camera')
+    expect(panelFetches).toBe(1)
+    await wrapper!.get('button').trigger('click')
+    await flushPromises()
+    settled = 'completed'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(panelFetches).toBe(2)
+  })
+
+  it('says when the Thing has no such panel', async () => {
+    panelServed = false
+    await showPanel()
+    expect(wrapper!.text()).toContain("This panel isn't available.")
   })
 })

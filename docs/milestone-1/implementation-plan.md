@@ -430,8 +430,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P23 | Camera–stage mapping | P21, P22 | L | — | Done |
 | P23b | Click-to-move | P20, P23 | S | — | Done |
 | P24 | Server-described UI elements | P09b, P10 | L | 0024 | Done |
-| P24b | Server-described action and download buttons | P24 | L | — | In review |
-| P25 | Specimens II and optical effects | P17, P24b | L | — | Planned |
+| P24b | Server-described action and download buttons | P24 | L | — | Done |
+| P25 | Specimens II and optical effects | P17, P24b | L | — | In review |
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Planned |
 | P27 | Background detection and camera calibration | P24b, P25 | L | — | Planned |
 | P28 | Settings tab | P23, P24b, P27 | L | — | Planned |
