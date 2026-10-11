@@ -1,7 +1,7 @@
 # P23b: Click-to-move
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#32](https://github.com/lucaswewa/microscope/pull/32)
 - ADRs: none new
 - Spec: [phases.md#p23b](../phases.md#p23b), split from P23 (plan Appendix D)
 
