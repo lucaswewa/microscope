@@ -17,6 +17,7 @@ pub mod data;
 pub mod fakes;
 pub mod hardware;
 pub mod illumination;
+pub mod mapping;
 pub mod registry;
 pub mod stage;
 pub mod system;

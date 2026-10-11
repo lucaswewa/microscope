@@ -309,7 +309,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | View | Full-window live stream, option to disable the stream, flash on capture | Yes | P18b, P26 |
 | Control | Position fields, Move, Set Home, Move Home with confirmation | Yes | P20 |
 | Control | D-pad and focus jog, keyboard jog, scroll to focus | Yes | P20, P20b |
-| Control | Double-click to move (camera–stage mapping) | Yes | P23 |
+| Control | Double-click to move (camera–stage mapping) | Yes | P23b |
 | Control | Autofocus (`a`), capture to gallery or download (`c`), `?` shortcut help | Yes | P21, P26, P09b |
 | Slide Scan | Workflow choice with blurb and workflow-specific settings | Yes | P40 |
 | Slide Scan | Histo, Snake, Raster and C-Chip workflows | Yes | P35, P37 |
@@ -426,8 +426,9 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P21 | Autofocus | P17b, P20 | M | 0022 | Done |
-| P22 | Image registration core | P13 | M | 0023 | In review |
-| P23 | Camera–stage mapping and click-to-move | P21, P22 | L | — | Planned |
+| P22 | Image registration core | P13 | M | 0023 | Done |
+| P23 | Camera–stage mapping | P21, P22 | L | — | In review |
+| P23b | Click-to-move | P20, P23 | S | — | Planned |
 | P24 | Server-described UI elements | P09b, P10 | L | 0024 | Planned |
 | P25 | Specimens II and optical effects | P17, P24 | L | — | Planned |
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Planned |
@@ -660,3 +661,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-09 | P17 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P17 keeps the illumination and the camera's preview pipeline, streams, settings and samples. The new P17b, sized M, has the capture buffer (`capture_to_memory`, `save_from_memory`, `clear_buffers`) and settling (`settle`, `discard_frames`). P21 and P26 now depend on P17b |
 | 2026-10-10 | P18 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its M budget. P18 is now MJPEG streaming in the client: the multipart parser, `WotClient.frames()` and shared, reference-counted streams. The new P18b, sized M, has `LiveImage`, the View tab and the "Disable stream" preference. P20 now depends on P18b |
 | 2026-10-10 | P20 split in two, at the project owner's choice, since it was estimated at 1,050–1,250 lines against its L budget. P20 keeps the Control layout, the live position, the Position section, the d-pad and focus buttons, and keyboard jog. The new P20b, sized S, has wheel focus and the navigation preferences (step sizes and inversion), and closes Checkpoint A |
+| 2026-10-10 | P23 split in two, at the project owner's choice, since it was estimated at 1,000–1,200 lines against its L budget. P23 keeps the camera–stage mapping Thing and the simulator's camera rotation and flip. The new P23b, sized S, has double-click-to-move in the web app |

@@ -56,6 +56,26 @@ const REPEAT_PERIOD_UM: f64 = 2_000.0;
 /// The colours of `BlobConfig::default()`.
 const DEFAULT_COLOURS: &str = "#965aaa; #d278a0; #6e78be; #be96c8";
 
+/// How the simulated camera is turned relative to the stage, which makes
+/// camera–stage mapping more than a scale (P23).
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize, JsonSchema)]
+pub struct Orientation {
+    /// Turned by this many degrees.
+    pub rotation_deg: f64,
+    /// Mirrored left to right.
+    pub flipped: bool,
+}
+
+impl Orientation {
+    /// Where a point of the stage (x and y, in µm) is in the camera's view:
+    /// mirrored if flipped, then turned.
+    pub fn apply(self, [x, y]: [f64; 2]) -> [f64; 2] {
+        let x = if self.flipped { -x } else { x };
+        let (sin, cos) = self.rotation_deg.to_radians().sin_cos();
+        [cos * x - sin * y, sin * x + cos * y]
+    }
+}
+
 /// A camera's streaming mode.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default, Serialize, Deserialize, JsonSchema,
@@ -196,6 +216,9 @@ pub struct SimulatedCamera {
     /// The sensor's gain.
     #[setting(default = 1.0, ge = 1.0, le = 16.0)]
     analogue_gain: Prop<f64>,
+    /// How the camera is turned relative to the stage.
+    #[setting(default = Orientation::default())]
+    orientation: Prop<Orientation>,
     /// How long `settle` waits, in seconds.
     #[setting(default = 0.2, ge = 0.0, le = 60.0)]
     settling_time: Prop<f64>,
@@ -443,7 +466,11 @@ impl SimulatedCamera {
             specimen: Arc::new(specimen),
             objective: self.objective.get().objective(),
             sensor,
-            stage_um: ThingRef::thing(&self.stage).true_position_um(),
+            stage_um: {
+                let [x, y, z] = ThingRef::thing(&self.stage).true_position_um();
+                let [x, y] = self.orientation.get().apply([x, y]);
+                [x, y, z]
+            },
             focus_z_um: 0.0,
             noise: self.noise_level.get() as f32,
             frame: number,
