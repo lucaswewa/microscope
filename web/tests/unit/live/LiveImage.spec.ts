@@ -140,6 +140,22 @@ describe('LiveImage', () => {
     expect(requests).toHaveLength(3)
   })
 
+  it('says where its image is double-clicked, once it has one', async () => {
+    connect()
+    await show()
+    const canvas = wrapper!.find('canvas')
+    const box = { left: 10, top: 20, width: 1000, height: 1000 }
+    vi.spyOn(canvas.element, 'getBoundingClientRect').mockReturnValue(box as DOMRect)
+    // 820 × 616 frames are drawn 1000 × 751 here: 124 px of letterboxing above.
+    const at = (x: number, y: number) => canvas.trigger('dblclick', { clientX: x, clientY: y })
+    await at(760, 520)
+    send(1)
+    await vi.advanceTimersByTimeAsync(0)
+    await at(760, 520)
+    await at(760, 140)
+    expect(wrapper!.emitted('doubleClick')).toEqual([[{ x: 0.25, y: 0 }]])
+  })
+
   it('flashes when a capture is taken', async () => {
     await show()
     expect(wrapper!.find('.live-image__flash').exists()).toBe(false)

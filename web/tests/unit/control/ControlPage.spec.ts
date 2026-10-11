@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ThingDescription } from '@/api/wot/td'
 import { useConnectionStore } from '@/connection/store'
+import LiveImage from '@/live/LiveImage.vue'
 
 import { eventStream, fakeServer, json, type Received } from '../api/fakeServer'
 import { mountApp } from '../mountApp'
@@ -39,6 +40,22 @@ const autofocus: ThingDescription = {
     },
   },
 }
+const mapping: ThingDescription = {
+  title: 'CameraStageMapping',
+  base: 'http://localhost/',
+  properties: {
+    image_resolution: {
+      forms: [{ href: '/api/v1/camera_stage_mapping/image_resolution', op: ['readproperty'] }],
+    },
+  },
+  actions: {
+    move_in_image_coordinates: {
+      forms: [
+        { href: '/api/v1/camera_stage_mapping/move_in_image_coordinates', op: ['invokeaction'] },
+      ],
+    },
+  },
+}
 const system = {
   title: 'MicroscopeSystem',
   properties: { hostname: { forms: [{ href: '/api/v1/system/hostname', op: ['readproperty'] }] } },
@@ -50,6 +67,8 @@ let received: Received[]
 let finished: boolean
 /** Whether the autofocus invocation has been cancelled. */
 let focusCancelled: boolean
+/** The frames' size when the mapping was calibrated, if it was. */
+let resolution: number[] | null
 
 /** An invocation record, running or completed. */
 const record = (id: string, status: string) => ({
@@ -64,8 +83,15 @@ beforeEach(() => {
   window.localStorage.clear()
   finished = false
   focusCancelled = false
+  resolution = [820, 616]
   const server = fakeServer({
-    'GET /api/v1/thing_descriptions/': { system, camera: { title: 'Camera' }, stage, autofocus },
+    'GET /api/v1/thing_descriptions/': {
+      system,
+      camera: { title: 'Camera' },
+      stage,
+      autofocus,
+      camera_stage_mapping: mapping,
+    },
     'GET /api/v1/system/hostname': 'lab-pc',
     'GET /api/v1/stage/position': (request: Received) =>
       request.headers.get('Accept') === 'text/event-stream'
@@ -88,6 +114,10 @@ beforeEach(() => {
       focusCancelled = true
       return json(null)
     },
+    'GET /api/v1/camera_stage_mapping/image_resolution': () => json(resolution),
+    'POST /api/v1/camera_stage_mapping/move_in_image_coordinates': () =>
+      json(record('c', 'running'), 201),
+    'GET /api/v1/action_invocations/c': () => json(record('c', finished ? 'completed' : 'running')),
   })
   received = server.received
   vi.stubGlobal('fetch', server.fetch)
@@ -117,6 +147,17 @@ const autofocusRuns = () =>
   received
     .filter((r) => r.method === 'POST' && r.url.pathname === '/api/v1/autofocus/fast_autofocus')
     .map((r) => JSON.parse(r.body ?? 'null'))
+
+const clickMoves = () =>
+  received
+    .filter((r) => r.method === 'POST' && r.url.pathname.endsWith('/move_in_image_coordinates'))
+    .map((r) => JSON.parse(r.body ?? 'null'))
+
+/** Double-clicks the live image at `point`, as shares of its size from its centre. */
+async function doubleClick(point: { x: number; y: number }) {
+  wrapper!.findComponent(LiveImage).vm.$emit('doubleClick', point)
+  await flushPromises()
+}
 
 const button = (name: string) =>
   wrapper!.findAll('button').find((b) => (b.attributes('aria-label') ?? b.text()) === name)!
@@ -224,5 +265,28 @@ describe('the Control tab', () => {
       { x: 200, y: 0, z: 0 },
       { x: 200, y: 0, z: 0 },
     ])
+  })
+
+  it('moves to a double-clicked point, in the calibration’s pixels, one move at a time', async () => {
+    await open()
+    await doubleClick({ x: 0.25, y: -0.125 })
+    await doubleClick({ x: 0.5, y: 0 }) // ignored: the first is still moving
+    expect(clickMoves()).toEqual([{ x: 205, y: -77 }])
+    finished = true
+    await vi.advanceTimersByTimeAsync(1000)
+    await doubleClick({ x: 0.5, y: 0 })
+    expect(clickMoves()).toEqual([
+      { x: 205, y: -77 },
+      { x: 410, y: 0 },
+    ])
+  })
+
+  it('asks for the mapping to be calibrated before moving by double-click', async () => {
+    resolution = null
+    await open()
+    await doubleClick({ x: 0.25, y: 0 })
+    expect(clickMoves()).toEqual([])
+    const toast = document.querySelector('.overlay-toast__text')
+    expect(toast?.textContent).toContain('Calibrate the camera–stage mapping first')
   })
 })

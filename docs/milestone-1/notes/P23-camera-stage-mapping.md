@@ -1,6 +1,6 @@
 # P23: Camera–stage mapping
 
-- Status: In review
+- Status: Done
 - Pull request: [#31](https://github.com/lucaswewa/microscope/pull/31)
 - ADRs: none new; it uses [ADR-0023](../../adr/0023-image-registration-by-phase-correlation.md)'s registration
 - Spec: [phases.md#p23](../phases.md#p23). P23 was split, at the owner's choice: double-click-to-move is now P23b (plan Appendix D).

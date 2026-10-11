@@ -37,4 +37,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P20b | [Control tab: wheel focus and navigation preferences](P20b-wheel-and-preferences.md) | Done |
 | P21 | [Autofocus](P21-autofocus.md) | Done |
 | P22 | [Image registration core](P22-image-registration.md) | Done |
-| P23 | [Camera–stage mapping](P23-camera-stage-mapping.md) | In review |
+| P23 | [Camera–stage mapping](P23-camera-stage-mapping.md) | Done |
+| P23b | [Click-to-move](P23b-click-to-move.md) | In review |
