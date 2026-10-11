@@ -433,8 +433,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P24b | Server-described action and download buttons | P24 | L | — | Done |
 | P25 | Specimens II and optical effects | P17, P24b | L | — | Done |
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Done |
-| P27 | Background detection and camera calibration | P24b, P25 | L | — | In review |
-| P28 | Settings tab | P23, P24b, P27 | L | — | Planned |
+| P27 | Background detection and camera calibration | P24b, P25 | L | — | Done |
+| P28 | Settings tab | P23, P24b, P27 | L | — | In review |
 | P29 | Calibration wizard | P28 | L | — | Planned |
 | P30 | Stage measurement tools | P22, P23, P28 | M | — | Planned |
 

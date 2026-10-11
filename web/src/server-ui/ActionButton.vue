@@ -11,7 +11,7 @@ import { computed, ref, shallowRef } from 'vue'
 import { ApiError } from '@/api/wot/errors'
 import type { Invocation, InvocationRecord } from '@/api/wot/invocation'
 import { useConnectionStore } from '@/connection/store'
-import LiveImage from '@/live/LiveImage.vue'
+import MiniStream from '@/live/MiniStream.vue'
 import AppButton from '@/ui/AppButton.vue'
 import AppDialog from '@/ui/AppDialog.vue'
 import AppSpinner from '@/ui/AppSpinner.vue'
@@ -86,12 +86,7 @@ const cancel = () => void running.value?.cancel().catch(() => {})
       {{ log.at(-1) }}
     </p>
     <AppDialog :open="!!running && inDialog" :title="button.label" :dismissible="false">
-      <LiveImage
-        v-if="button.stream"
-        :thing="button.stream"
-        stream="lores_mjpeg_stream"
-        class="action-button__stream"
-      />
+      <MiniStream v-if="button.stream" :thing="button.stream" class="action-button__stream" />
       <ProgressBar :label="`${button.label} is running`" />
       <ul v-if="log.length" class="action-button__log" role="log">
         <li v-for="(message, index) in log" :key="index">{{ message }}</li>
@@ -128,7 +123,7 @@ const cancel = () => void running.value?.cancel().catch(() => {})
 }
 
 .action-button__stream {
-  aspect-ratio: 4 / 3;
+  max-width: none;
   margin-bottom: var(--space-3);
 }
 

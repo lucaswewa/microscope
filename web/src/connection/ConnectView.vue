@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The Connect screen (/#/connect): this server, another microscope by its
 // address, or a recent one. A successful connection goes to the View tab.
+// `embedded`, it's the Settings tab's Connection section, and stays put.
 import close from '@material-symbols/svg-400/outlined/close.svg?raw'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -17,6 +18,7 @@ import TextField from '@/ui/TextField.vue'
 import { displayOrigin, parseAddress, type Profile } from './profiles'
 import { useConnectionStore } from './store'
 
+const props = defineProps<{ embedded?: boolean }>()
 const connection = useConnectionStore()
 const router = useRouter()
 
@@ -41,7 +43,7 @@ const status = computed(() => {
 
 async function go(profile: Profile) {
   await connection.connect(profile)
-  if (connection.state === 'connected') await router.push({ name: 'view' })
+  if (connection.state === 'connected' && !props.embedded) await router.push({ name: 'view' })
 }
 
 function connectToAddress() {
@@ -56,9 +58,9 @@ function connectToAddress() {
 </script>
 
 <template>
-  <MainView>
+  <component :is="embedded ? 'div' : MainView">
     <div class="connect">
-      <h1>Connect to a microscope</h1>
+      <h1 v-if="!embedded">Connect to a microscope</h1>
       <p class="connect__status" role="status">{{ status }}</p>
       <ErrorDetails
         v-if="connection.state === 'lost' && connection.error"
@@ -103,7 +105,7 @@ function connectToAddress() {
         </ul>
       </AppCard>
     </div>
-  </MainView>
+  </component>
 </template>
 
 <style scoped>

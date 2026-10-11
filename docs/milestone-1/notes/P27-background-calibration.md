@@ -1,6 +1,6 @@
 # P27: Background detection and camera calibration
 
-- Status: In review
+- Status: Done
 - Pull request: [#37](https://github.com/lucaswewa/microscope/pull/37)
 - ADRs: none new
 - Spec: [phases.md#p27](../phases.md#p27)

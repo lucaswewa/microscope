@@ -43,7 +43,8 @@ describe('the app', () => {
     expect(wrapper.find('.live-image').exists()).toBe(true)
   })
 
-  for (const destination of DESTINATIONS.filter(({ id }) => !['view', 'control'].includes(id))) {
+  const built = ['view', 'control', 'settings']
+  for (const destination of DESTINATIONS.filter(({ id }) => !built.includes(id))) {
     it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
       const app = await mountApp(`/${destination.id}`)
       wrapper = app.wrapper
@@ -56,7 +57,8 @@ describe('the app', () => {
     const app = await mountApp('/settings/camera')
     wrapper = app.wrapper
     expect(app.router.currentRoute.value.name).toBe('settings')
-    expect(wrapper.text()).toContain('Section: camera')
+    expect(wrapper.get('h1').text()).toBe('Settings')
+    expect(wrapper.get('.settings-page__section h2').text()).toBe('Camera')
   })
 
   it('has a gallery of the UI components in both themes, in development', async () => {

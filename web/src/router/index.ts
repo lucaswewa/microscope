@@ -10,17 +10,21 @@ import { DESTINATIONS } from '@/app/navigation'
 import ConnectView from '@/connection/ConnectView.vue'
 import ControlPage from '@/views/ControlPage.vue'
 import PlaceholderPage from '@/views/PlaceholderPage.vue'
+import SettingsPage from '@/views/SettingsPage.vue'
 import ViewPage from '@/views/ViewPage.vue'
 
 /** The layout each destination's page will have, which its placeholder shows. */
 const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }> = {
   'slide-scan': { pane: 'wide', liveImage: true },
   sequence: { pane: 'wide', liveImage: true },
-  settings: { pane: 'narrow' },
 }
 
 /** The pages built so far; the other destinations show a placeholder. */
-const PAGES: Record<string, Component> = { view: ViewPage, control: ControlPage }
+const PAGES: Record<string, Component> = {
+  view: ViewPage,
+  control: ControlPage,
+  settings: SettingsPage,
+}
 
 /** One route per destination in the rail. Settings has sections: `/#/settings/camera`. */
 const destinationRoutes: RouteRecordRaw[] = DESTINATIONS.map((destination) => ({

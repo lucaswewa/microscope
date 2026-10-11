@@ -48,4 +48,32 @@ describe('the browser host', () => {
     vi.advanceTimersByTime(1)
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:capture')
   })
+
+  it('fills the screen, leaves it, and says when it changes', async () => {
+    let element: Element | null = null
+    // jsdom has no full screen: the test gives the document one.
+    Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => element })
+    const enter = vi.fn(async () => {
+      element = document.documentElement
+      document.dispatchEvent(new Event('fullscreenchange'))
+    })
+    const leave = vi.fn(async () => {
+      element = null
+      document.dispatchEvent(new Event('fullscreenchange'))
+    })
+    document.documentElement.requestFullscreen = enter
+    document.exitFullscreen = leave
+    const { fullscreen } = createBrowserHost()
+    const seen: boolean[] = []
+    const stop = fullscreen.watch((on) => seen.push(on))
+
+    await fullscreen.set(true)
+    await fullscreen.set(true) // already: nothing to do
+    expect(fullscreen.active()).toBe(true)
+    await fullscreen.set(false)
+    stop()
+    await fullscreen.set(true)
+    expect([enter.mock.calls.length, leave.mock.calls.length, seen]).toEqual([2, 1, [true, false]])
+    Reflect.deleteProperty(document, 'fullscreenElement')
+  })
 })
