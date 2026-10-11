@@ -24,6 +24,16 @@ const glance = (page: Page) =>
 const difference = (a: number[], b: number[]) =>
   a.reduce((sum, value, i) => sum + Math.abs(value - b[i]!), 0) / a.length
 
+/** Runs an action through the API, and waits for it to end. */
+async function run(page: Page, path: string) {
+  let invocation = await (await page.request.post(`/api/v1/${path}`, { data: {} })).json()
+  while (['pending', 'running'].includes(invocation.status)) {
+    await page.waitForTimeout(200)
+    invocation = await (await page.request.get(invocation.href)).json()
+  }
+  return invocation
+}
+
 async function openControl(page: Page) {
   await page.goto('/#/control')
   await expect(page.locator('.live-image')).toHaveAttribute('data-status', 'live')
@@ -92,4 +102,25 @@ test('typed coordinates move the stage, and Move Home brings it back', async ({ 
   await page.getByRole('button', { name: 'Move Home' }).click()
   await page.getByRole('alertdialog').getByRole('button', { name: 'Move Home' }).click()
   await expect.poll(() => position(page), { timeout: 10_000 }).toEqual({ x: 0, y: 0, z: 0 })
+})
+
+test('a double-click on the image moves there, by the camera–stage mapping', async ({ page }) => {
+  test.setTimeout(120_000)
+  await openControl(page)
+  expect((await run(page, 'camera_stage_mapping/calibrate_xy')).status).toBe('completed')
+  const matrix: number[][] = await (
+    await page.request.get('/api/v1/camera_stage_mapping/image_to_stage_displacement_matrix')
+  ).json()
+  const image = page.getByRole('img', { name: 'Live image' })
+  const box = (await image.boundingBox())!
+  const frame = await image.evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])
+  // 100 and 50 CSS pixels right of and below the centre, in the frame's pixels.
+  const scale = Math.max(frame[0]! / box.width, frame[1]! / box.height)
+  const [dx, dy] = [100 * scale, 50 * scale]
+  const before = await position(page)
+  await image.dblclick({ position: { x: box.width / 2 + 100, y: box.height / 2 + 50 } })
+  const [[a, b], [c, d]] = matrix as [[number, number], [number, number]]
+  const expected = { x: before.x + a * dx + b * dy, y: before.y + c * dx + d * dy }
+  const error = (p: Position) => Math.max(Math.abs(p.x - expected.x), Math.abs(p.y - expected.y))
+  await expect.poll(async () => error(await position(page))).toBeLessThanOrEqual(1)
 })

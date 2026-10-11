@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // The Control tab: navigation in a narrow pane beside the live image. The
-// arrow keys and PgUp/PgDn move the stage while it is open, and the mouse
-// wheel over the image focuses.
+// arrow keys and PgUp/PgDn move the stage while it is open, the mouse wheel
+// over the image focuses, and a double-click on it moves there.
 import { ref } from 'vue'
 
 import { useThing } from '@/api/things'
 import AutofocusControl from '@/control/AutofocusControl.vue'
+import { useClickToMove } from '@/control/clickToMove'
 import DirectionPad from '@/control/DirectionPad.vue'
 import NavigationSection from '@/control/NavigationSection.vue'
 import { useNavigationPreferences } from '@/control/navigation'
@@ -25,6 +26,7 @@ const onWheel = wheelFocus(
   (z) => void stage.value?.invoke('jog', { z }).catch(() => {}),
   () => preferences.signedSteps().z,
 )
+const moveTo = useClickToMove()
 </script>
 
 <template>
@@ -42,7 +44,7 @@ const onWheel = wheelFocus(
       <AutofocusControl />
       <DirectionPad class="control-page__pad" :controller="jog" />
     </ControlPane>
-    <LiveImage @wheel="onWheel" />
+    <LiveImage @wheel="onWheel" @double-click="moveTo" />
   </div>
 </template>
 

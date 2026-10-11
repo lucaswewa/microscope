@@ -2,7 +2,8 @@
 // The live image: a camera's MJPEG stream drawn to a canvas, contain-fit
 // with letterboxing. It watches a shared stream (P18) only while it is on
 // screen, the page is visible, the app is connected and the stream isn't
-// disabled, and it says why when there is no image.
+// disabled, and it says why when there is no image. It reports where the
+// image is double-clicked.
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 
 import type { ApiError } from '@/api/wot/errors'
@@ -10,6 +11,7 @@ import { useConnectionStore } from '@/connection/store'
 import AppButton from '@/ui/AppButton.vue'
 import AppSpinner from '@/ui/AppSpinner.vue'
 
+import { containPoint, type Point } from './contain'
 import { useCaptureFlashes } from './flash'
 import { useLiveImagePreferences } from './preferences'
 import { watchStream, type StreamState } from './streams'
@@ -23,6 +25,11 @@ const props = withDefaults(
   }>(),
   { thing: 'camera', stream: 'mjpeg_stream' },
 )
+
+const emit = defineEmits<{
+  /** A double-click on the image: where, from its centre, as shares of its width and height. */
+  doubleClick: [point: Point]
+}>()
 
 const connection = useConnectionStore()
 const preferences = useLiveImagePreferences()
@@ -74,6 +81,15 @@ function draw(frame: ImageBitmap) {
   hasFrame.value = true
 }
 
+function onDoubleClick(event: MouseEvent) {
+  const target = canvas.value
+  if (!target || !hasFrame.value) return
+  const box = target.getBoundingClientRect()
+  const at = { x: event.clientX - box.left, y: event.clientY - box.top }
+  const point = containPoint(at, box, target)
+  if (point) emit('doubleClick', point)
+}
+
 const status = computed(() => {
   if (preferences.streamDisabled) return 'disabled'
   if (connection.state !== 'connected') return 'offline'
@@ -116,6 +132,7 @@ watch(useCaptureFlashes(), (count) => (flash.value = count))
       class="live-image__canvas"
       role="img"
       aria-label="Live image"
+      @dblclick="onDoubleClick"
     />
     <div v-if="status !== 'live'" class="live-image__status" role="status">
       <div class="live-image__message">

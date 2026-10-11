@@ -88,7 +88,8 @@ export class TypedThing<T extends string> {
 }
 
 /** The Things the app knows, by the names `configs/simulation.json` gives them. */
-export type ThingName = 'system' | 'stage' | 'camera' | 'illumination' | 'autofocus'
+export type ThingName =
+  'system' | 'stage' | 'camera' | 'illumination' | 'autofocus' | 'camera_stage_mapping'
 
 /** Thing `name` as a typed facade, while the app has a client and the Thing's description. */
 export function useThing<T extends ThingName>(name: T) {
