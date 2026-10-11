@@ -10,7 +10,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
 - [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20) [P20b](#p20b)
-- [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
+- [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P23b](#p23b) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
 - [Stage 7: Sequence](#stage-7-sequence): [P41](#p41) [P42](#p42)
@@ -475,9 +475,9 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - Synthetic shifts, including sub-pixel accuracy; robustness to noise; the ambiguity of periodic patterns, documented.
 
 <a id="p23"></a>
-### P23: Camera–stage mapping and click-to-move
+### P23: Camera–stage mapping
 
-**Goal.** Calibrate the camera-to-stage relationship and double-click to move. **Spec-first.**
+**Goal.** Calibrate the camera-to-stage relationship. **Spec-first.**
 **Depends on** P21, P22 · **Size** L · **ADRs** —
 
 **Scope**
@@ -487,10 +487,21 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
   - properties `last_calibration`, `calibration_required` and `can_calibrate`;
   - actions `move_in_image_coordinates`, `convert_image_to_stage_coordinates` and `convert_stage_to_image_coordinates`.
 - In the simulator, a camera rotation and flip relative to the stage (a setting), so the matrix is not trivial.
+
+**Tests**
+- The recovered matrix matches the simulator's ground truth for several rotations and flips; moving in image coordinates centres a feature within tolerance.
+
+<a id="p23b"></a>
+### P23b: Click-to-move
+
+**Goal.** Double-click the live image to move there. Split from P23 (Appendix D of the plan).
+**Depends on** P20, P23 · **Size** S · **ADRs** —
+
+**Scope**
 - In the web app, double-clicking the live image moves there, accounting for contain-fit scaling, with a move lock.
 
 **Tests**
-- The recovered matrix matches the simulator's ground truth for several rotations and flips; click-to-move centres a feature within tolerance.
+- The click's position in image pixels, letterboxed either way; end to end, a double-click moves the stage by the mapping.
 
 <a id="p24"></a>
 ### P24: Server-described UI elements

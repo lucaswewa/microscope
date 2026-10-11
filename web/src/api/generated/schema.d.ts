@@ -1527,6 +1527,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/orientation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How the camera is turned relative to the stage.
+         * @description ## How the camera is turned relative to the stage.
+         *
+         *     How the camera is turned relative to the stage.
+         */
+        get: operations["get_property_api_v1_camera_orientation_get"];
+        /**
+         * Set How the camera is turned relative to the stage.
+         * @description ## How the camera is turned relative to the stage.
+         *
+         *     How the camera is turned relative to the stage.
+         */
+        put: operations["set_property_api_v1_camera_orientation_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera/orientation/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How the camera is turned relative to the stage..
+         * @description ## Reset How the camera is turned relative to the stage.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_camera_orientation_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/remove_sample": {
         parameters: {
             query?: never;
@@ -2144,6 +2194,322 @@ export interface paths {
          * @description The W3C Thing Description of `autofocus`: its properties, actions and events, and how to use them.
          */
         get: operations["things_autofocus_api_v1_autofocus__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/calibrate_xy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of calibrate_xy.
+         * @description List all the invocations of calibrate_xy that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_stage_mapping_calibrate_xy_get"];
+        put?: never;
+        /**
+         * Measures how stage moves move the image, and keeps the matrix.
+         * @description ## Measures how stage moves move the image, and keeps the matrix.
+         *
+         *     Measures how stage moves move the image, and keeps the matrix.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_stage_mapping_calibrate_xy_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/calibration_required": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether it needs calibrating: until it has a matrix.
+         * @description ## Whether it needs calibrating: until it has a matrix.
+         *
+         *     Whether it needs calibrating: until it has a matrix.
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_calibration_required_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/can_calibrate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether it can be calibrated.
+         * @description ## Whether it can be calibrated.
+         *
+         *     Whether it can be calibrated.
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_can_calibrate_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/convert_image_to_stage_coordinates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of convert_image_to_stage_coordinates.
+         * @description List all the invocations of convert_image_to_stage_coordinates that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_get"];
+        put?: never;
+        /**
+         * The stage move, in steps, that moves the field of view by (`x`, `y`)
+         * @description ## The stage move, in steps, that moves the field of view by (`x`, `y`)
+         *
+         *     The stage move, in steps, that moves the field of view by (`x`, `y`)
+         *     pixels.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/convert_stage_to_image_coordinates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of convert_stage_to_image_coordinates.
+         * @description List all the invocations of convert_stage_to_image_coordinates that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_get"];
+        put?: never;
+        /**
+         * How far the field of view moves, in pixels, when the stage moves by
+         * @description ## How far the field of view moves, in pixels, when the stage moves by
+         *
+         *     How far the field of view moves, in pixels, when the stage moves by
+         *     (`x`, `y`) steps.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/image_resolution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The frames' size when it was calibrated: (width, height).
+         * @description ## The frames' size when it was calibrated: (width, height).
+         *
+         *     The frames' size when it was calibrated: (width, height).
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_image_resolution_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/image_to_stage_displacement_matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The image-to-stage displacement matrix, by rows: moving the stage by
+         * @description ## The image-to-stage displacement matrix, by rows: moving the stage by
+         *
+         *     The image-to-stage displacement matrix, by rows: moving the stage by
+         *     A·(dx, dy) steps moves the field of view by (dx, dy) pixels.
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_image_to_stage_displacement_matrix_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/last_cal_timestamp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * When it was last calibrated, which names the saved data.
+         * @description ## When it was last calibrated, which names the saved data.
+         *
+         *     When it was last calibrated, which names the saved data.
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_last_cal_timestamp_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/last_calibration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The data saved by the last calibration, if any.
+         * @description ## The data saved by the last calibration, if any.
+         *
+         *     The data saved by the last calibration, if any.
+         */
+        get: operations["get_property_api_v1_camera_stage_mapping_last_calibration_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/move_in_image_coordinates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of move_in_image_coordinates.
+         * @description List all the invocations of move_in_image_coordinates that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_stage_mapping_move_in_image_coordinates_get"];
+        put?: never;
+        /**
+         * Moves the field of view by (`x`, `y`) pixels: the point that far from
+         * @description ## Moves the field of view by (`x`, `y`) pixels: the point that far from
+         *
+         *     Moves the field of view by (`x`, `y`) pixels: the point that far from
+         *     the image's centre comes to the centre.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_stage_mapping_move_in_image_coordinates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `camera_stage_mapping` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_camera_stage_mapping_properties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `camera_stage_mapping`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_camera_stage_mapping_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/camera_stage_mapping/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `camera_stage_mapping`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_camera_stage_mapping_api_v1_camera_stage_mapping__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2837,6 +3203,16 @@ export interface components {
         /** @enum {integer} */
         camera_objective_value: 4 | 10 | 20 | 40 | 60 | 100;
         /**
+         * @description How the simulated camera is turned relative to the stage, which makes
+         *     camera–stage mapping more than a scale (P23).
+         */
+        camera_orientation_value: {
+            /** @description Turned by this many degrees. */
+            rotation_deg: number;
+            /** @description Mirrored left to right. */
+            flipped: boolean;
+        };
+        /**
          * @description Represent the input of an action that never takes parameters.
          *
          *     This may be either an empty dictionary or ``None``.
@@ -3074,6 +3450,168 @@ export interface components {
             links?: components["schemas"]["LinkElement"][];
             input: components["schemas"]["autofocus_z_move_and_measure_sharpness_input"];
             output?: components["schemas"]["autofocus_z_move_and_measure_sharpness_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        camera_stage_mapping_calibrate_xy_input: Record<string, never> | null;
+        /** @description What a calibration measured and found, as saved in the data folder. */
+        camera_stage_mapping_calibrate_xy_output: {
+            /** @description When it was made (UTC), which names its file. */
+            timestamp: string;
+            /** @description The frames' size: (width, height). */
+            image_resolution: number[];
+            /** @description The image-to-stage displacement matrix, unless the fit failed. */
+            matrix?: number[][] | null;
+            /** @description The backlash it estimated, in steps. */
+            backlash_steps: number;
+            /** @description Every move it made. */
+            moves: {
+                /** @description The stage's move, in steps (x, y). */
+                stage: number[];
+                /** @description The field of view's move, in pixels (right, down). */
+                image: number[];
+                /** @description How far the registration that measured it can be trusted (0–1). */
+                confidence: number;
+                /**
+                 * @description Whether the fit used it: moves it couldn't track, and moves taking
+                 *     up backlash, are left out.
+                 */
+                kept: boolean;
+            }[];
+        };
+        camera_stage_mapping_calibrate_xy_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_stage_mapping_calibrate_xy_input"];
+            output?: components["schemas"]["camera_stage_mapping_calibrate_xy_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        camera_stage_mapping_calibration_required_value: boolean;
+        camera_stage_mapping_can_calibrate_value: boolean;
+        camera_stage_mapping_convert_image_to_stage_coordinates_input: {
+            x: number;
+            y: number;
+        };
+        /** @description A stage displacement, in steps. */
+        camera_stage_mapping_convert_image_to_stage_coordinates_output: {
+            /** @description In x. */
+            x: number;
+            /** @description In y. */
+            y: number;
+        };
+        camera_stage_mapping_convert_image_to_stage_coordinates_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_stage_mapping_convert_image_to_stage_coordinates_input"];
+            output?: components["schemas"]["camera_stage_mapping_convert_image_to_stage_coordinates_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        camera_stage_mapping_convert_stage_to_image_coordinates_input: {
+            x: number;
+            y: number;
+        };
+        /** @description An image displacement, in pixels. */
+        camera_stage_mapping_convert_stage_to_image_coordinates_output: {
+            /** @description Rightwards. */
+            x: number;
+            /** @description Downwards. */
+            y: number;
+        };
+        camera_stage_mapping_convert_stage_to_image_coordinates_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_stage_mapping_convert_stage_to_image_coordinates_input"];
+            output?: components["schemas"]["camera_stage_mapping_convert_stage_to_image_coordinates_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        camera_stage_mapping_image_resolution_value: number[] | null;
+        camera_stage_mapping_image_to_stage_displacement_matrix_value: number[][] | null;
+        camera_stage_mapping_last_cal_timestamp_value: string | null;
+        camera_stage_mapping_last_calibration_value: {
+            /** @description When it was made (UTC), which names its file. */
+            timestamp: string;
+            /** @description The frames' size: (width, height). */
+            image_resolution: number[];
+            /** @description The image-to-stage displacement matrix, unless the fit failed. */
+            matrix?: number[][] | null;
+            /** @description The backlash it estimated, in steps. */
+            backlash_steps: number;
+            /** @description Every move it made. */
+            moves: {
+                /** @description The stage's move, in steps (x, y). */
+                stage: number[];
+                /** @description The field of view's move, in pixels (right, down). */
+                image: number[];
+                /** @description How far the registration that measured it can be trusted (0–1). */
+                confidence: number;
+                /**
+                 * @description Whether the fit used it: moves it couldn't track, and moves taking
+                 *     up backlash, are left out.
+                 */
+                kept: boolean;
+            }[];
+        } | null;
+        camera_stage_mapping_move_in_image_coordinates_input: {
+            x: number;
+            y: number;
+        };
+        /**
+         * @description A stage position or displacement, in whole steps per axis: motor steps
+         *     for a stepper stage, the native resolution for a µm-native one.
+         */
+        camera_stage_mapping_move_in_image_coordinates_output: {
+            /** @description Steps in x. */
+            x: number;
+            /** @description Steps in y. */
+            y: number;
+            /** @description Steps in z, the focus. */
+            z: number;
+        };
+        camera_stage_mapping_move_in_image_coordinates_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_stage_mapping_move_in_image_coordinates_input"];
+            output?: components["schemas"]["camera_stage_mapping_move_in_image_coordinates_output"] | null;
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
@@ -5404,6 +5942,80 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_camera_orientation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of orientation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_orientation_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_camera_orientation_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_orientation_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_camera_orientation_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     list_invocations_api_v1_camera_remove_sample_get: {
         parameters: {
             query?: never;
@@ -6331,6 +6943,440 @@ export interface operations {
         };
     };
     things_autofocus_api_v1_autofocus__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_stage_mapping_calibrate_xy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of calibrate_xy. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_stage_mapping_calibrate_xy_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["camera_stage_mapping_calibrate_xy_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_calibrate_xy_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_calibrate_xy_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_calibration_required_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of calibration_required */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_calibration_required_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_can_calibrate_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of can_calibrate */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_can_calibrate_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of convert_image_to_stage_coordinates. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_stage_mapping_convert_image_to_stage_coordinates_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_convert_image_to_stage_coordinates_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_convert_image_to_stage_coordinates_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of convert_stage_to_image_coordinates. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_stage_mapping_convert_stage_to_image_coordinates_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_convert_stage_to_image_coordinates_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_convert_stage_to_image_coordinates_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_image_resolution_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of image_resolution */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_image_resolution_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_image_to_stage_displacement_matrix_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of image_to_stage_displacement_matrix */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_image_to_stage_displacement_matrix_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_last_cal_timestamp_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of last_cal_timestamp */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_last_cal_timestamp_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    get_property_api_v1_camera_stage_mapping_last_calibration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of last_calibration */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_last_calibration_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_stage_mapping_move_in_image_coordinates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of move_in_image_coordinates. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_stage_mapping_move_in_image_coordinates_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_stage_mapping_move_in_image_coordinates_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_move_in_image_coordinates_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_stage_mapping_move_in_image_coordinates_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_camera_stage_mapping_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_camera_stage_mapping_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_camera_stage_mapping_api_v1_camera_stage_mapping__get: {
         parameters: {
             query?: never;
             header?: never;

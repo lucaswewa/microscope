@@ -4,7 +4,8 @@
         "stage": "microscope.stage:SimulatedStage",
         "camera": "microscope.camera:SimulatedCamera",
         "illumination": "microscope.illumination:SimulatedIllumination",
-        "autofocus": "microscope.autofocus:Autofocus"
+        "autofocus": "microscope.autofocus:Autofocus",
+        "camera_stage_mapping": "microscope.camera_stage_mapping:CameraStageMapping"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",

@@ -2512,6 +2512,83 @@
         }
       }
     },
+    "/api/v1/camera/orientation": {
+      "get": {
+        "summary": "How the camera is turned relative to the stage.",
+        "description": "## How the camera is turned relative to the stage.\n\nHow the camera is turned relative to the stage.",
+        "operationId": "get_property_api_v1_camera_orientation_get",
+        "responses": {
+          "200": {
+            "description": "Value of orientation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_orientation_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How the camera is turned relative to the stage.",
+        "description": "## How the camera is turned relative to the stage.\n\nHow the camera is turned relative to the stage.",
+        "operationId": "set_property_api_v1_camera_orientation_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_orientation_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/orientation/reset": {
+      "post": {
+        "summary": "Reset How the camera is turned relative to the stage..",
+        "description": "## Reset How the camera is turned relative to the stage.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_orientation_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/remove_sample": {
       "get": {
         "summary": "All invocations of remove_sample.",
@@ -3529,6 +3606,483 @@
         "summary": "Thing Description",
         "description": "The W3C Thing Description of `autofocus`: its properties, actions and events, and how to use them.",
         "operationId": "things_autofocus_api_v1_autofocus__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/calibrate_xy": {
+      "get": {
+        "summary": "All invocations of calibrate_xy.",
+        "description": "List all the invocations of calibrate_xy that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_stage_mapping_calibrate_xy_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of calibrate_xy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Measures how stage moves move the image, and keeps the matrix.",
+        "description": "## Measures how stage moves move the image, and keeps the matrix.\n\nMeasures how stage moves move the image, and keeps the matrix.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_stage_mapping_calibrate_xy_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_stage_mapping_calibrate_xy_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_calibrate_xy_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_calibrate_xy_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/calibration_required": {
+      "get": {
+        "summary": "Whether it needs calibrating: until it has a matrix.",
+        "description": "## Whether it needs calibrating: until it has a matrix.\n\nWhether it needs calibrating: until it has a matrix.",
+        "operationId": "get_property_api_v1_camera_stage_mapping_calibration_required_get",
+        "responses": {
+          "200": {
+            "description": "Value of calibration_required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_calibration_required_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/can_calibrate": {
+      "get": {
+        "summary": "Whether it can be calibrated.",
+        "description": "## Whether it can be calibrated.\n\nWhether it can be calibrated.",
+        "operationId": "get_property_api_v1_camera_stage_mapping_can_calibrate_get",
+        "responses": {
+          "200": {
+            "description": "Value of can_calibrate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_can_calibrate_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/convert_image_to_stage_coordinates": {
+      "get": {
+        "summary": "All invocations of convert_image_to_stage_coordinates.",
+        "description": "List all the invocations of convert_image_to_stage_coordinates that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of convert_image_to_stage_coordinates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "The stage move, in steps, that moves the field of view by (`x`, `y`)",
+        "description": "## The stage move, in steps, that moves the field of view by (`x`, `y`)\n\nThe stage move, in steps, that moves the field of view by (`x`, `y`)\npixels.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_stage_mapping_convert_image_to_stage_coordinates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_stage_mapping_convert_image_to_stage_coordinates_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_convert_image_to_stage_coordinates_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_convert_image_to_stage_coordinates_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/convert_stage_to_image_coordinates": {
+      "get": {
+        "summary": "All invocations of convert_stage_to_image_coordinates.",
+        "description": "List all the invocations of convert_stage_to_image_coordinates that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of convert_stage_to_image_coordinates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "How far the field of view moves, in pixels, when the stage moves by",
+        "description": "## How far the field of view moves, in pixels, when the stage moves by\n\nHow far the field of view moves, in pixels, when the stage moves by\n(`x`, `y`) steps.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_stage_mapping_convert_stage_to_image_coordinates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_stage_mapping_convert_stage_to_image_coordinates_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_convert_stage_to_image_coordinates_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_convert_stage_to_image_coordinates_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/image_resolution": {
+      "get": {
+        "summary": "The frames' size when it was calibrated: (width, height).",
+        "description": "## The frames' size when it was calibrated: (width, height).\n\nThe frames' size when it was calibrated: (width, height).",
+        "operationId": "get_property_api_v1_camera_stage_mapping_image_resolution_get",
+        "responses": {
+          "200": {
+            "description": "Value of image_resolution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_image_resolution_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/image_to_stage_displacement_matrix": {
+      "get": {
+        "summary": "The image-to-stage displacement matrix, by rows: moving the stage by",
+        "description": "## The image-to-stage displacement matrix, by rows: moving the stage by\n\nThe image-to-stage displacement matrix, by rows: moving the stage by\nA·(dx, dy) steps moves the field of view by (dx, dy) pixels.",
+        "operationId": "get_property_api_v1_camera_stage_mapping_image_to_stage_displacement_matrix_get",
+        "responses": {
+          "200": {
+            "description": "Value of image_to_stage_displacement_matrix",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_image_to_stage_displacement_matrix_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/last_cal_timestamp": {
+      "get": {
+        "summary": "When it was last calibrated, which names the saved data.",
+        "description": "## When it was last calibrated, which names the saved data.\n\nWhen it was last calibrated, which names the saved data.",
+        "operationId": "get_property_api_v1_camera_stage_mapping_last_cal_timestamp_get",
+        "responses": {
+          "200": {
+            "description": "Value of last_cal_timestamp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_last_cal_timestamp_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/last_calibration": {
+      "get": {
+        "summary": "The data saved by the last calibration, if any.",
+        "description": "## The data saved by the last calibration, if any.\n\nThe data saved by the last calibration, if any.",
+        "operationId": "get_property_api_v1_camera_stage_mapping_last_calibration_get",
+        "responses": {
+          "200": {
+            "description": "Value of last_calibration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_last_calibration_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/move_in_image_coordinates": {
+      "get": {
+        "summary": "All invocations of move_in_image_coordinates.",
+        "description": "List all the invocations of move_in_image_coordinates that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_stage_mapping_move_in_image_coordinates_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of move_in_image_coordinates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Moves the field of view by (`x`, `y`) pixels: the point that far from",
+        "description": "## Moves the field of view by (`x`, `y`) pixels: the point that far from\n\nMoves the field of view by (`x`, `y`) pixels: the point that far from\nthe image's centre comes to the centre.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_stage_mapping_move_in_image_coordinates_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_stage_mapping_move_in_image_coordinates_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_move_in_image_coordinates_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_stage_mapping_move_in_image_coordinates_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `camera_stage_mapping` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_camera_stage_mapping_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `camera_stage_mapping`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_camera_stage_mapping_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera_stage_mapping/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `camera_stage_mapping`: its properties, actions and events, and how to use them.",
+        "operationId": "things_camera_stage_mapping_api_v1_camera_stage_mapping__get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -6277,6 +6831,24 @@
         ],
         "type": "integer"
       },
+      "camera_orientation_value": {
+        "description": "How the simulated camera is turned relative to the stage, which makes\ncamera–stage mapping more than a scale (P23).",
+        "type": "object",
+        "properties": {
+          "rotation_deg": {
+            "description": "Turned by this many degrees.",
+            "type": "number"
+          },
+          "flipped": {
+            "description": "Mirrored left to right.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rotation_deg",
+          "flipped"
+        ]
+      },
       "camera_remove_sample_input": {
         "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
         "oneOf": [
@@ -7395,6 +7967,764 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/autofocus_z_move_and_measure_sharpness_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_stage_mapping_calibrate_xy_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_stage_mapping_calibrate_xy_output": {
+        "description": "What a calibration measured and found, as saved in the data folder.",
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "description": "When it was made (UTC), which names its file.",
+            "type": "string"
+          },
+          "image_resolution": {
+            "description": "The frames' size: (width, height).",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxItems": 2,
+            "minItems": 2
+          },
+          "matrix": {
+            "description": "The image-to-stage displacement matrix, unless the fit failed.",
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "backlash_steps": {
+            "description": "The backlash it estimated, in steps.",
+            "type": "number"
+          },
+          "moves": {
+            "description": "Every move it made.",
+            "type": "array",
+            "items": {
+              "description": "One measured move.",
+              "type": "object",
+              "properties": {
+                "stage": {
+                  "description": "The stage's move, in steps (x, y).",
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "image": {
+                  "description": "The field of view's move, in pixels (right, down).",
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "confidence": {
+                  "description": "How far the registration that measured it can be trusted (0–1).",
+                  "type": "number"
+                },
+                "kept": {
+                  "description": "Whether the fit used it: moves it couldn't track, and moves taking\nup backlash, are left out.",
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "stage",
+                "image",
+                "confidence",
+                "kept"
+              ]
+            }
+          }
+        },
+        "required": [
+          "timestamp",
+          "image_resolution",
+          "backlash_steps",
+          "moves"
+        ]
+      },
+      "camera_stage_mapping_calibrate_xy_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_stage_mapping_calibrate_xy_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_stage_mapping_calibrate_xy_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_stage_mapping_calibration_required_value": {
+        "type": "boolean"
+      },
+      "camera_stage_mapping_can_calibrate_value": {
+        "type": "boolean"
+      },
+      "camera_stage_mapping_convert_image_to_stage_coordinates_input": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "camera_stage_mapping_convert_image_to_stage_coordinates_output": {
+        "description": "A stage displacement, in steps.",
+        "type": "object",
+        "properties": {
+          "x": {
+            "description": "In x.",
+            "type": "integer"
+          },
+          "y": {
+            "description": "In y.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      },
+      "camera_stage_mapping_convert_image_to_stage_coordinates_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_stage_mapping_convert_image_to_stage_coordinates_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_stage_mapping_convert_image_to_stage_coordinates_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_stage_mapping_convert_stage_to_image_coordinates_input": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "camera_stage_mapping_convert_stage_to_image_coordinates_output": {
+        "description": "An image displacement, in pixels.",
+        "type": "object",
+        "properties": {
+          "x": {
+            "description": "Rightwards.",
+            "type": "number"
+          },
+          "y": {
+            "description": "Downwards.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      },
+      "camera_stage_mapping_convert_stage_to_image_coordinates_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_stage_mapping_convert_stage_to_image_coordinates_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_stage_mapping_convert_stage_to_image_coordinates_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "camera_stage_mapping_image_resolution_value": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxItems": 2,
+            "minItems": 2
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_stage_mapping_image_to_stage_displacement_matrix_value": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "maxItems": 2,
+            "minItems": 2
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_stage_mapping_last_cal_timestamp_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_stage_mapping_last_calibration_value": {
+        "oneOf": [
+          {
+            "description": "What a calibration measured and found, as saved in the data folder.",
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "description": "When it was made (UTC), which names its file.",
+                "type": "string"
+              },
+              "image_resolution": {
+                "description": "The frames' size: (width, height).",
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "matrix": {
+                "description": "The image-to-stage displacement matrix, unless the fit failed.",
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "backlash_steps": {
+                "description": "The backlash it estimated, in steps.",
+                "type": "number"
+              },
+              "moves": {
+                "description": "Every move it made.",
+                "type": "array",
+                "items": {
+                  "description": "One measured move.",
+                  "type": "object",
+                  "properties": {
+                    "stage": {
+                      "description": "The stage's move, in steps (x, y).",
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "image": {
+                      "description": "The field of view's move, in pixels (right, down).",
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "confidence": {
+                      "description": "How far the registration that measured it can be trusted (0–1).",
+                      "type": "number"
+                    },
+                    "kept": {
+                      "description": "Whether the fit used it: moves it couldn't track, and moves taking\nup backlash, are left out.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "stage",
+                    "image",
+                    "confidence",
+                    "kept"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "timestamp",
+              "image_resolution",
+              "backlash_steps",
+              "moves"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "camera_stage_mapping_move_in_image_coordinates_input": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "camera_stage_mapping_move_in_image_coordinates_output": {
+        "description": "A stage position or displacement, in whole steps per axis: motor steps\nfor a stepper stage, the native resolution for a µm-native one.",
+        "type": "object",
+        "properties": {
+          "x": {
+            "description": "Steps in x.",
+            "type": "integer"
+          },
+          "y": {
+            "description": "Steps in y.",
+            "type": "integer"
+          },
+          "z": {
+            "description": "Steps in z, the focus.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z"
+        ]
+      },
+      "camera_stage_mapping_move_in_image_coordinates_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_stage_mapping_move_in_image_coordinates_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_stage_mapping_move_in_image_coordinates_output"
               },
               {
                 "type": "null"

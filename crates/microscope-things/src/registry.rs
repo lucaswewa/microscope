@@ -13,7 +13,7 @@
 //! | `stage` | `microscope.stage:SimulatedStage` | P16 (here) |
 //! | `camera`, `illumination` | `microscope.camera:SimulatedCamera`, `microscope.illumination:SimulatedIllumination` | P17 (here) |
 //! | `autofocus` | `microscope.autofocus:Autofocus` | P21 (here) |
-//! | `camera_stage_mapping` | `microscope.camera_stage_mapping:CameraStageMapping` | P23 |
+//! | `camera_stage_mapping` | `microscope.camera_stage_mapping:CameraStageMapping` | P23 (here) |
 //!
 //! and later the background detectors (P27), `stage_measure` (P30),
 //! `gallery` (P31), `smart_scan` and the scan workflows (P35, P37) and
@@ -24,6 +24,7 @@ use teta_wot::server::ThingRegistry;
 use crate::autofocus::Autofocus;
 use crate::camera::SimulatedCamera;
 use crate::illumination::SimulatedIllumination;
+use crate::mapping::CameraStageMapping;
 use crate::stage::SimulatedStage;
 use crate::system::MicroscopeSystem;
 
@@ -35,4 +36,5 @@ pub fn registry() -> ThingRegistry {
         .register::<SimulatedCamera>("microscope.camera:SimulatedCamera")
         .register::<SimulatedIllumination>("microscope.illumination:SimulatedIllumination")
         .register::<Autofocus>("microscope.autofocus:Autofocus")
+        .register::<CameraStageMapping>("microscope.camera_stage_mapping:CameraStageMapping")
 }
