@@ -37,5 +37,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0020](0020-camera-frame-pipeline.md) | Camera frame pipeline | Accepted | P17 |
 | [0021](0021-generated-api-types.md) | Generated API types | Accepted | P19 |
 | [0022](0022-sharpness-metric-and-fast-autofocus.md) | Sharpness metric and fast autofocus | Accepted | P21 |
+| [0023](0023-image-registration-by-phase-correlation.md) | Image registration by phase correlation | Accepted | P22 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

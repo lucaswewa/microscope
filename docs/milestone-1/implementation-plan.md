@@ -425,8 +425,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P21 | Autofocus | P17b, P20 | M | 0022 | In review |
-| P22 | Image registration core | P13 | M | 0023 | Planned |
+| P21 | Autofocus | P17b, P20 | M | 0022 | Done |
+| P22 | Image registration core | P13 | M | 0023 | In review |
 | P23 | Camera–stage mapping and click-to-move | P21, P22 | L | — | Planned |
 | P24 | Server-described UI elements | P09b, P10 | L | 0024 | Planned |
 | P25 | Specimens II and optical effects | P17, P24 | L | — | Planned |

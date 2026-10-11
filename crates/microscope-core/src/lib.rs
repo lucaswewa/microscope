@@ -8,3 +8,6 @@
 //! milestone 2 can reuse it unchanged with real hardware.
 //!
 //! See ADR-0005 for the rules between the workspace's crates.
+
+pub mod fft;
+pub mod registration;
