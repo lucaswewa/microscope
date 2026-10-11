@@ -1,7 +1,7 @@
 # P28: Settings tab
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#38](https://github.com/lucaswewa/microscope/pull/38)
 - ADRs: none new
 - Spec: [phases.md#p28](../phases.md#p28)
 
