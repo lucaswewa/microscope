@@ -1,7 +1,7 @@
 # P29: Calibration wizard
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#39](https://github.com/lucaswewa/microscope/pull/39)
 - ADRs: none new
 - Spec: [phases.md#p29](../phases.md#p29)
 
