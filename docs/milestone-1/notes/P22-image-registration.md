@@ -1,7 +1,7 @@
 # P22: Image registration core
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#30](https://github.com/lucaswewa/microscope/pull/30)
 - ADRs: [ADR-0023](../../adr/0023-image-registration-by-phase-correlation.md)
 - Spec: [phases.md#p22](../phases.md#p22)
 
