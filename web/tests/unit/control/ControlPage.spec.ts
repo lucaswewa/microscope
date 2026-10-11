@@ -3,6 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ThingDescription } from '@/api/wot/td'
 import { useConnectionStore } from '@/connection/store'
+import { hostKey } from '@/host'
+import { createBrowserHost } from '@/host/browser'
+import { useCaptureFlashes } from '@/live/flash'
 import LiveImage from '@/live/LiveImage.vue'
 
 import { eventStream, fakeServer, json, type Received } from '../api/fakeServer'
@@ -56,6 +59,13 @@ const mapping: ThingDescription = {
     },
   },
 }
+const camera: ThingDescription = {
+  title: 'Camera',
+  base: 'http://localhost/',
+  actions: {
+    capture: { forms: [{ href: '/api/v1/camera/capture', op: ['invokeaction'] }] },
+  },
+}
 const system = {
   title: 'MicroscopeSystem',
   properties: { hostname: { forms: [{ href: '/api/v1/system/hostname', op: ['readproperty'] }] } },
@@ -87,7 +97,7 @@ beforeEach(() => {
   const server = fakeServer({
     'GET /api/v1/thing_descriptions/': {
       system,
-      camera: { title: 'Camera' },
+      camera,
       stage,
       autofocus,
       camera_stage_mapping: mapping,
@@ -118,6 +128,12 @@ beforeEach(() => {
     'POST /api/v1/camera_stage_mapping/move_in_image_coordinates': () =>
       json(record('c', 'running'), 201),
     'GET /api/v1/action_invocations/c': () => json(record('c', finished ? 'completed' : 'running')),
+    'POST /api/v1/camera/capture': () =>
+      json(
+        { ...record('p', 'completed'), output: { href: 'http://localhost/api/v1/blob/p1' } },
+        201,
+      ),
+    'GET /api/v1/blob/p1': () => new Response('jpeg'),
   })
   received = server.received
   vi.stubGlobal('fetch', server.fetch)
@@ -130,8 +146,11 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
+const saveFile = vi.fn(async () => {})
+
 async function open() {
-  wrapper = (await mountApp('/control')).wrapper
+  const host = { ...createBrowserHost(), saveFile }
+  wrapper = (await mountApp('/control', { [hostKey]: host })).wrapper
   await useConnectionStore().connect({ kind: 'local' })
   await vi.advanceTimersByTimeAsync(0)
   await flushPromises()
@@ -146,6 +165,11 @@ const posted = (name: string) =>
 const autofocusRuns = () =>
   received
     .filter((r) => r.method === 'POST' && r.url.pathname === '/api/v1/autofocus/fast_autofocus')
+    .map((r) => JSON.parse(r.body ?? 'null'))
+
+const captures = () =>
+  received
+    .filter((r) => r.method === 'POST' && r.url.pathname === '/api/v1/camera/capture')
     .map((r) => JSON.parse(r.body ?? 'null'))
 
 const clickMoves = () =>
@@ -288,5 +312,29 @@ describe('the Control tab', () => {
     expect(clickMoves()).toEqual([])
     const toast = document.querySelector('.overlay-toast__text')
     expect(toast?.textContent).toContain('Calibrate the camera–stage mapping first')
+  })
+
+  it('captures to the gallery or downloads, from the button or the c key', async () => {
+    const flashes = useCaptureFlashes()
+    await open()
+    const before = flashes.value
+    await button('Capture').trigger('click')
+    await flushPromises()
+    expect(captures()).toEqual([{ capture_mode: 'standard', retain_image: true }])
+    expect(flashes.value).toBe(before + 1)
+
+    // Download instead: the choice is kept, and the file saved.
+    await wrapper!.get('.capture-control [role="combobox"]').trigger('keydown', { key: 'Enter' })
+    await flushPromises()
+    const download = [...document.querySelectorAll<HTMLElement>('[role="option"]')].at(-1)!
+    download.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    await flushPromises()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', bubbles: true }))
+    await flushPromises()
+    expect(captures()[1]).toEqual({ capture_mode: 'standard', retain_image: false })
+    const [[name, file]] = saveFile.mock.calls as unknown as [string, Blob][]
+    expect(name).toMatch(/^capture-\d{4}-\d\d-\d\dT\d\d-\d\d-\d\dZ\.jpeg$/)
+    expect(await file.text()).toBe('jpeg')
+    expect(window.localStorage.getItem('microscope.capture-to')).toBe('download')
   })
 })

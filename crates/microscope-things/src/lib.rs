@@ -13,6 +13,7 @@
 
 pub mod autofocus;
 pub mod camera;
+pub mod capture;
 pub mod data;
 pub mod fakes;
 pub mod hardware;

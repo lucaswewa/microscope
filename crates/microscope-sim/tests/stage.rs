@@ -36,6 +36,15 @@ fn moves_take_their_distance_over_the_speed_in_a_straight_line() {
 }
 
 #[test]
+fn a_time_from_before_a_move_began_is_its_start() {
+    // A thread can read the time, then wait while another starts a move.
+    let mut stage = StageModel::new(StageConfig::default());
+    stage.move_to(ms(100), [1000, 0, 0]);
+    assert_eq!(stage.true_position(ms(50)), [0.0, 0.0, 0.0]);
+    assert_eq!(stage.reported(ms(50)), [0, 0, 0]);
+}
+
+#[test]
 fn the_latest_command_wins() {
     let mut stage = StageModel::new(StageConfig::default());
     stage.move_to(Duration::ZERO, [1000, 0, 0]);

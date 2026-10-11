@@ -293,9 +293,8 @@ impl SimulatedStage {
     /// Makes where the stage is (0, 0, 0), without moving it.
     #[action]
     async fn set_zero_position(&self) -> Position {
-        let now = self.clock.now();
         {
-            let mut state = self.state();
+            let (mut state, now) = self.state_now();
             let here = Position::from_array(state.model.reported(now));
             state.model.set_zero(now);
             // A jog in progress keeps its start in the new frame.
@@ -390,8 +389,7 @@ impl SimulatedStage {
     /// simulated camera draws. It differs from the position by the zero
     /// offset and the backlash.
     pub fn true_position_um(&self) -> [f64; 3] {
-        let now = self.clock.now();
-        let mut state = self.state();
+        let (mut state, now) = self.state_now();
         self.update(&mut state, now);
         let steps = state.model.true_position(now);
         let scale = self.simulation.get().um_per_step.to_array();
@@ -409,6 +407,13 @@ impl SimulatedStage {
 
     fn state(&self) -> MutexGuard<'_, State> {
         self.state.lock().expect("not poisoned")
+    }
+
+    /// The state, and the time, read once the state is locked: no other
+    /// thread can then have changed the state at a later time.
+    fn state_now(&self) -> (MutexGuard<'_, State>, Duration) {
+        let state = self.state();
+        (state, self.clock.now())
     }
 
     /// Between the program's frame and the hardware's: inverted axes change
@@ -456,11 +461,8 @@ impl SimulatedStage {
                     return Err(cancelled.into());
                 }
             }
-            let now = self.clock.now();
-            self.state()
-                .model
-                .outcome(now)
-                .map_err(ActionError::handled)?;
+            let (mut state, now) = self.state_now();
+            state.model.outcome(now).map_err(ActionError::handled)?;
         }
         Ok(self.position.get())
     }
@@ -468,9 +470,8 @@ impl SimulatedStage {
     /// Starts a move by `displacement`, in the hardware's frame, replacing
     /// any move in progress.
     fn begin_move(&self, displacement: Position) {
-        let now = self.clock.now();
         {
-            let mut state = self.state();
+            let (mut state, now) = self.state_now();
             if self.update(&mut state, now) {
                 // The move it replaces went part of the way.
                 let made = Position::from_array(state.model.reported(now)) - state.move_start;
@@ -486,8 +487,7 @@ impl SimulatedStage {
 
     /// Stops the stage where it is.
     fn stop_motion(&self) {
-        let now = self.clock.now();
-        let mut state = self.state();
+        let (mut state, now) = self.state_now();
         state.model.stop(now);
         self.update(&mut state, now);
     }
@@ -495,8 +495,8 @@ impl SimulatedStage {
     /// Brings the Thing up to date with the model. Returns whether the stage
     /// is moving.
     fn refresh(&self) -> bool {
-        let now = self.clock.now();
-        self.update(&mut self.state(), now)
+        let (mut state, now) = self.state_now();
+        self.update(&mut state, now)
     }
 
     /// Applies changed simulation settings once the stage is at rest; brings

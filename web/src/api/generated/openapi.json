@@ -1648,6 +1648,75 @@
         }
       }
     },
+    "/api/v1/camera/capture": {
+      "get": {
+        "summary": "All invocations of capture.",
+        "description": "List all the invocations of capture that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_camera_capture_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of capture.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Captures an image: at full resolution (`standard`), or at the",
+        "description": "## Captures an image: at full resolution (`standard`), or at the\n\nCaptures an image: at full resolution (`standard`), or at the\nstream's size (`quick`). With `retain_image`, it's saved to the data\nfolder's `captures`, with a sidecar of how it was taken (ADR-0025).\nEither way, it's returned, to download.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_camera_capture_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_capture_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_capture_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_capture_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/capture_to_memory": {
       "get": {
         "summary": "All invocations of capture_to_memory.",
@@ -6654,6 +6723,161 @@
         "type": "number",
         "minimum": 0.0,
         "maximum": 100000.0
+      },
+      "camera_capture_input": {
+        "type": "object",
+        "properties": {
+          "capture_mode": {
+            "description": "How a capture is taken.",
+            "oneOf": [
+              {
+                "description": "At full resolution: 1640 × 1232.",
+                "const": "standard",
+                "type": "string"
+              },
+              {
+                "description": "At the stream's size, without changing the stream.",
+                "const": "quick",
+                "type": "string"
+              }
+            ],
+            "default": "standard"
+          },
+          "retain_image": {
+            "default": true,
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "camera_capture_output": {
+        "description": "A model for JSON-serialised `.Blob` objects.\n\nThis model describes the JSON representation of a `.Blob`\nand is used to describe the `.Blob` object in JSON responses.\n\nThe binary data may be retrieved with a ``GET`` request to the URL\nspecified in ``href`` which should return it directly in the body of\nthe response.",
+        "type": "object",
+        "properties": {
+          "href": {
+            "title": "Href",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "const": "image/jpeg",
+            "default": "image/jpeg",
+            "type": "string"
+          },
+          "rel": {
+            "title": "Rel",
+            "const": "output",
+            "default": "output",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "default": "The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "href",
+          "media_type"
+        ]
+      },
+      "camera_capture_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/camera_capture_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/camera_capture_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
       },
       "camera_capture_to_memory_input": {
         "type": "object",

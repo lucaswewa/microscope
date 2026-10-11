@@ -86,12 +86,14 @@ struct Motion {
 }
 
 impl Motion {
-    /// The motors' position at `time`, which is no later than `end`.
+    /// The motors' position at `time`, which is no later than `end`. A time
+    /// before the motion started, such as one read just before another thread
+    /// started it, is its start.
     fn at(&self, time: Duration) -> [f64; 3] {
         let fraction = if self.duration.is_zero() {
             1.0
         } else {
-            (time - self.start).as_secs_f64() / self.duration.as_secs_f64()
+            time.saturating_sub(self.start).as_secs_f64() / self.duration.as_secs_f64()
         };
         std::array::from_fn(|axis| self.from[axis] + (self.to[axis] - self.from[axis]) * fraction)
     }
