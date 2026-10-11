@@ -20,8 +20,11 @@
 //! - **`manual_camera_settings`**, a custom endpoint, describes these
 //!   settings for the web app's settings panel (ADR-0024).
 //! - **Light:** while an `illumination` Thing's LED is off, frames are black.
-//! - **Captures** are drawn at 1640 × 1232. `capture_to_memory` keeps them
-//!   in memory, and `save_from_memory` saves them to the data folder later.
+//! - **Captures** are drawn at 1640 × 1232, or at the stream's size.
+//!   `capture` saves one to the data folder's `captures`, with a sidecar of
+//!   how it was taken, and returns it to download (P26, ADR-0025).
+//!   `capture_to_memory` keeps them in memory, and `save_from_memory` saves
+//!   them to the data folder later.
 //! - **Settling:** after a move, `settle` waits `settling_time`, then
 //!   `discard_frames` makes sure the next frame is drawn after it.
 
@@ -49,6 +52,7 @@ use teta_wot::blob::Jpeg;
 use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
 
+use crate::capture;
 use crate::data;
 use crate::hardware::{
     CameraApi, Capture, CaptureBuffer, CaptureMetadata, IlluminationApi, PreviewFrames, StageApi,
@@ -108,6 +112,17 @@ pub enum SampleType {
     Tissue,
     /// A picture from the data folder.
     Image,
+}
+
+/// How a capture is taken.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum CaptureMode {
+    /// At full resolution: 1640 × 1232.
+    #[default]
+    Standard,
+    /// At the stream's size, without changing the stream.
+    Quick,
 }
 
 /// A camera's streaming mode.
@@ -390,7 +405,31 @@ impl SimulatedCamera {
     /// captures: the oldest go first.
     #[action(blocking)]
     fn capture_to_memory(&self, #[param(default = 1)] buffer_max: usize) -> u64 {
-        self.captures.add(self.capture(), buffer_max)
+        self.captures.add(self.take(Sensor::CAPTURE), buffer_max)
+    }
+
+    /// Captures an image: at full resolution (`standard`), or at the
+    /// stream's size (`quick`). With `retain_image`, it's saved to the data
+    /// folder's `captures`, with a sidecar of how it was taken (ADR-0025).
+    /// Either way, it's returned, to download.
+    #[action(blocking)]
+    fn capture(
+        &self,
+        server: Server,
+        #[param(default)] capture_mode: CaptureMode,
+        #[param(default = true)] retain_image: bool,
+    ) -> Result<Blob<Jpeg>, ActionError> {
+        let sensor = match capture_mode {
+            CaptureMode::Standard => Sensor::CAPTURE,
+            CaptureMode::Quick => self.streaming_mode.get().sensor(),
+        };
+        let taken = self.take(sensor);
+        if !retain_image {
+            return Ok(Blob::from_bytes(capture::jpeg(&taken.image)?));
+        }
+        let folder = data::data_folder(&server);
+        let path = capture::save(&folder, &taken, capture::mapping(&server))?;
+        Blob::from_file(path).map_err(ActionError::handled)
     }
 
     /// Saves a capture from memory to `path` in the data folder, as a JPEG
@@ -604,10 +643,9 @@ impl SimulatedCamera {
         Some(picture)
     }
 
-    /// A capture: a frame at 1640 × 1232, and how it was taken. Drawing it
+    /// A capture: a frame for `sensor`, and how it was taken. Drawing it
     /// takes a while, so it isn't for the async threads.
-    fn capture(&self) -> Capture {
-        let sensor = Sensor::CAPTURE;
+    fn take(&self, sensor: Sensor) -> Capture {
         let magnification = self.objective.get().objective().magnification;
         let metadata = CaptureMetadata {
             acquired: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
@@ -617,11 +655,32 @@ impl SimulatedCamera {
             axis_scale: Some(StageApi::axis_scale(&*self.stage)),
             um_per_pixel: Some(sensor.pixel_pitch_um / magnification),
             camera_settings: self.settings(),
+            simulation: Some(self.simulation()),
         };
         Capture {
             image: self.draw(sensor),
             metadata,
         }
+    }
+
+    /// What decides a simulated frame, for a capture's sidecar.
+    fn simulation(&self) -> Value {
+        json!({
+            "sample_type": self.sample_type.get(),
+            "sample_loaded": self.sample_loaded.get(),
+            "blob_density": self.blob_density.get(),
+            "colour": self.colour.get(),
+            "repeating": self.repeating.get(),
+            "tissue_coverage": self.tissue_coverage.get(),
+            "sample_image": self.sample_image.get(),
+            "sample_image_scale": self.sample_image_scale.get(),
+            "focal_tilt": [self.focal_tilt_x.get(), self.focal_tilt_y.get()],
+            "focal_waviness": self.focal_waviness.get(),
+            "vignetting": self.vignetting.get(),
+            "uneven_illumination": self.uneven_illumination.get(),
+            "orientation": self.orientation.get(),
+            "true_position_um": ThingRef::thing(&self.stage).true_position_um(),
+        })
     }
 
     /// What a capture records about the camera.
@@ -748,7 +807,7 @@ impl CameraApi for ThingRef<SimulatedCamera> {
     fn capture_to_memory(&self) -> BoxFuture<'_, Result<Capture, ActionError>> {
         let camera = Arc::clone(ThingRef::thing(self));
         Box::pin(async move {
-            let capture = tokio::task::spawn_blocking(move || camera.capture()).await;
+            let capture = tokio::task::spawn_blocking(move || camera.take(Sensor::CAPTURE)).await;
             capture.map_err(ActionError::handled)
         })
     }

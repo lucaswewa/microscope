@@ -6,6 +6,7 @@ import { ref } from 'vue'
 
 import { useThing } from '@/api/things'
 import AutofocusControl from '@/control/AutofocusControl.vue'
+import CaptureControl from '@/control/CaptureControl.vue'
 import { useClickToMove } from '@/control/clickToMove'
 import DirectionPad from '@/control/DirectionPad.vue'
 import NavigationSection from '@/control/NavigationSection.vue'
@@ -42,6 +43,7 @@ const moveTo = useClickToMove()
         </AccordionSection>
       </AppAccordion>
       <AutofocusControl />
+      <CaptureControl />
       <DirectionPad class="control-page__pad" :controller="jog" />
     </ControlPane>
     <LiveImage @wheel="onWheel" @double-click="moveTo" />

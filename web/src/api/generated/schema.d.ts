@@ -1033,6 +1033,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/camera/capture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of capture.
+         * @description List all the invocations of capture that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_camera_capture_get"];
+        put?: never;
+        /**
+         * Captures an image: at full resolution (`standard`), or at the
+         * @description ## Captures an image: at full resolution (`standard`), or at the
+         *
+         *     Captures an image: at full resolution (`standard`), or at the
+         *     stream's size (`quick`). With `retain_image`, it's saved to the data
+         *     folder's `captures`, with a sidecar of how it was taken (ADR-0025).
+         *     Either way, it's returned, to download.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_camera_capture_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/camera/capture_to_memory": {
         parameters: {
             query?: never;
@@ -3475,6 +3508,62 @@ export interface components {
         stage_z_direction_checked_value: boolean;
         camera_analogue_gain_value: number;
         camera_blob_density_value: number;
+        camera_capture_input: {
+            /**
+             * @description How a capture is taken.
+             * @default standard
+             */
+            capture_mode?: "standard" | "quick";
+            /** @default true */
+            retain_image?: boolean;
+        };
+        /**
+         * @description A model for JSON-serialised `.Blob` objects.
+         *
+         *     This model describes the JSON representation of a `.Blob`
+         *     and is used to describe the `.Blob` object in JSON responses.
+         *
+         *     The binary data may be retrieved with a ``GET`` request to the URL
+         *     specified in ``href`` which should return it directly in the body of
+         *     the response.
+         */
+        camera_capture_output: {
+            /** Href */
+            href: string;
+            /**
+             * Media Type
+             * @default image/jpeg
+             * @constant
+             */
+            media_type: "image/jpeg";
+            /**
+             * Rel
+             * @default output
+             * @constant
+             */
+            rel?: "output";
+            /**
+             * Description
+             * @default The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.
+             */
+            description?: string;
+        };
+        camera_capture_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["camera_capture_input"];
+            output?: components["schemas"]["camera_capture_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         camera_capture_to_memory_input: {
             /** @default 1 */
             buffer_max?: number;
@@ -5608,6 +5697,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_camera_capture_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of capture. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_camera_capture_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["camera_capture_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_capture_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["camera_capture_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

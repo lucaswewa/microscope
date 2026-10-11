@@ -201,6 +201,13 @@ impl CameraStageMapping {
 }
 
 impl CameraStageMapping {
+    /// The matrix and the frames' size it was calibrated at, once it's
+    /// calibrated.
+    pub fn calibrated(&self) -> Option<(Matrix2, [u32; 2])> {
+        let matrix = self.image_to_stage_displacement_matrix.get()?;
+        Some((matrix, self.image_resolution.get()?))
+    }
+
     fn matrix(&self) -> Result<Matrix2, ActionError> {
         self.image_to_stage_displacement_matrix
             .get()

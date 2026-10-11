@@ -28,6 +28,8 @@ pub struct CaptureMetadata {
     /// The camera's settings at the time, by name: exposure, gain, and
     /// whatever else the driver reports.
     pub camera_settings: BTreeMap<String, Value>,
+    /// What decided the image, for a simulated camera (ADR-0025).
+    pub simulation: Option<Value>,
 }
 
 /// A full-resolution image held in memory, with its metadata.
