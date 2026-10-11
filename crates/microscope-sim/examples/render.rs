@@ -13,7 +13,8 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use microscope_sim::{
-    BlobConfig, BlobSpecimen, Extent, OBJECTIVES, Objective, Sensor, SimState, render_frame,
+    BlobConfig, BlobSpecimen, Effects, Extent, OBJECTIVES, Objective, Sensor, SimState,
+    render_frame,
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -32,6 +33,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         focus_z_um: 0.0,
         noise: 0.0,
         frame: 0,
+        effects: Effects::default(),
     };
 
     let mut frames: Vec<(String, SimState)> = OBJECTIVES

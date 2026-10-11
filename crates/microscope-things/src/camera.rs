@@ -8,10 +8,17 @@
 //! - **Streaming modes:** `default` streams 820 × 616 frames;
 //!   `full_resolution` streams 1640 × 1232, the size of a capture, more
 //!   slowly.
-//! - **Settings** choose the objective, the sample (its density and colours,
-//!   and whether it repeats), the noise, and the exposure and gain. They
-//!   apply from the next frame. `remove_sample` and `load_sample` take the
-//!   slide out and put it back.
+//! - **Settings** choose the objective, the sample, the noise, and the
+//!   exposure and gain, and the optics' imperfections (P25). They apply from
+//!   the next frame. `remove_sample` and `load_sample` take the slide out and
+//!   put it back.
+//! - **Samples** (P25): coloured blobs (their density and colours, and
+//!   whether they repeat), H&E-like tissue (its coverage), or a picture from
+//!   the data folder (its scale).
+//! - **Optics** (P25): a focal surface that tilts and waves, vignetting, and
+//!   uneven lighting, all off until set.
+//! - **`manual_camera_settings`**, a custom endpoint, describes these
+//!   settings for the web app's settings panel (ADR-0024).
 //! - **Light:** while an `illumination` Thing's LED is off, frames are black.
 //! - **Captures** are drawn at 1640 × 1232. `capture_to_memory` keeps them
 //!   in memory, and `save_from_memory` saves them to the data folder later.
@@ -22,19 +29,24 @@ use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::BufWriter;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, OnceLock, Weak};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
 use image::codecs::jpeg::JpegEncoder;
 use image::{ImageFormat, ImageResult, RgbImage};
-use microscope_sim::{BlobConfig, BlobSpecimen, Extent, Objective, Sensor, SimState, render_frame};
+use microscope_sim::{
+    BlobConfig, BlobSpecimen, Effects, Extent, FocalSurface, ImageSpecimen, Objective, Sensor,
+    SimState, Specimen, TissueConfig, TissueSpecimen, render_frame,
+};
 use schemars::{JsonSchema, Schema, SchemaGenerator, json_schema};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use teta_wot::ThingHandle;
 use teta_wot::blob::Jpeg;
+use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
 
 use crate::data;
@@ -43,6 +55,7 @@ use crate::hardware::{
     StreamInfo,
 };
 use crate::stage::SimulatedStage;
+use crate::ui::{Layout, ThingUi, UiElement};
 
 /// How often the preview draws a frame, when drawing is fast enough.
 const FRAME_INTERVAL: Duration = Duration::from_millis(100);
@@ -74,6 +87,27 @@ impl Orientation {
         let (sin, cos) = self.rotation_deg.to_radians().sin_cos();
         [cos * x - sin * y, sin * x + cos * y]
     }
+}
+
+/// A picture loaded for the sample: from which file, at which scale, and
+/// the picture, unless it couldn't be loaded.
+struct LoadedPicture {
+    path: PathBuf,
+    scale: f64,
+    picture: Option<Arc<ImageSpecimen>>,
+}
+
+/// What's on the slide.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum SampleType {
+    /// Coloured blobs.
+    #[default]
+    Blobs,
+    /// H&E-like tissue.
+    Tissue,
+    /// A picture from the data folder.
+    Image,
 }
 
 /// A camera's streaming mode.
@@ -207,6 +241,33 @@ pub struct SimulatedCamera {
     /// across.
     #[setting(default = false)]
     repeating: Prop<bool>,
+    /// What's on the slide: blobs, tissue or a picture.
+    #[setting(default = SampleType::Blobs)]
+    sample_type: Prop<SampleType>,
+    /// The share of the slide the tissue covers.
+    #[setting(default = 0.7, ge = 0.0, le = 1.0)]
+    tissue_coverage: Prop<f64>,
+    /// The picture on the slide: a PNG, JPEG or TIFF file in the data folder.
+    #[setting(default = String::new())]
+    sample_image: Prop<String>,
+    /// The size of the picture's pixels on the slide, in µm.
+    #[setting(default = 0.25, ge = 0.001, le = 100.0)]
+    sample_image_scale: Prop<f64>,
+    /// How much the focal surface rises in x, in µm per mm.
+    #[setting(default = 0.0, ge = -100.0, le = 100.0)]
+    focal_tilt_x: Prop<f64>,
+    /// How much the focal surface rises in y, in µm per mm.
+    #[setting(default = 0.0, ge = -100.0, le = 100.0)]
+    focal_tilt_y: Prop<f64>,
+    /// How far the focal surface waves up and down, in µm.
+    #[setting(default = 0.0, ge = 0.0, le = 50.0)]
+    focal_waviness: Prop<f64>,
+    /// The share of the light lost in the frame's corners.
+    #[setting(default = 0.0, ge = 0.0, le = 0.9)]
+    vignetting: Prop<f64>,
+    /// The share of the light lost at the frame's most dimly lit corner.
+    #[setting(default = 0.0, ge = 0.0, le = 0.9)]
+    uneven_illumination: Prop<f64>,
     /// The sensor's noise, as a standard deviation in grey levels.
     #[setting(default = 2.0, ge = 0.0, le = 50.0)]
     noise_level: Prop<f64>,
@@ -227,6 +288,13 @@ pub struct SimulatedCamera {
     preview: Mutex<Option<PreviewThread>>,
     /// The number of frames drawn, which seeds each one's noise.
     drawn: AtomicU64,
+    /// The data folder, where the picture is.
+    data_folder: OnceLock<PathBuf>,
+    /// The picture last loaded.
+    picture: Mutex<Option<LoadedPicture>>,
+    /// The camera's registry entry, which its settings panel checks names
+    /// against.
+    handle: OnceLock<Weak<ThingHandle>>,
 }
 
 #[thing_impl]
@@ -384,6 +452,8 @@ impl SimulatedCamera {
         let Some(camera) = ctx.server().thing_ref::<SimulatedCamera>(ctx.name()) else {
             return;
         };
+        let _ = self.handle.set(Arc::downgrade(ThingRef::handle(&camera)));
+        let _ = self.data_folder.set(data::data_folder(ctx.server()));
         let camera = Arc::clone(ThingRef::thing(&camera));
         let stop = Arc::new(AtomicBool::new(false));
         let stopped = Arc::clone(&stop);
@@ -392,6 +462,13 @@ impl SimulatedCamera {
             .spawn(move || camera.run_preview(&stopped))
             .expect("the preview thread starts");
         *self.preview.lock().expect("not poisoned") = Some(PreviewThread { stop, thread });
+    }
+
+    /// The camera's settings, described for the settings panel (ADR-0024).
+    #[endpoint(get, "manual_camera_settings")]
+    async fn manual_camera_settings(&self) -> Json<Vec<UiElement>> {
+        let handle = self.handle.get().and_then(Weak::upgrade);
+        Json(handle.map_or_else(Vec::new, |handle| panel(&ThingUi::new(&handle))))
     }
 
     /// Stops the preview, and ends both streams.
@@ -445,25 +522,8 @@ impl SimulatedCamera {
         if self.illumination.get().is_some_and(|light| !light.led_on()) {
             return RgbImage::new(sensor.width, sensor.height);
         }
-        let defaults = BlobConfig::default();
-        let specimen = BlobSpecimen::new(BlobConfig {
-            density_per_mm2: if self.sample_loaded.get() {
-                self.blob_density.get()
-            } else {
-                0.0
-            },
-            colours: parse_colours(&self.colour.get()),
-            extent: if self.repeating.get() {
-                Extent::Repeating {
-                    period_um: REPEAT_PERIOD_UM,
-                }
-            } else {
-                defaults.extent
-            },
-            ..defaults
-        });
-        let mut frame = render_frame(&SimState {
-            specimen: Arc::new(specimen),
+        render_frame(&SimState {
+            specimen: self.specimen(),
             objective: self.objective.get().objective(),
             sensor,
             stage_um: {
@@ -474,15 +534,74 @@ impl SimulatedCamera {
             focus_z_um: 0.0,
             noise: self.noise_level.get() as f32,
             frame: number,
-        });
-        let brightness =
-            f64::from(self.exposure_time.get()) / REFERENCE_EXPOSURE_US * self.analogue_gain.get();
-        if brightness != 1.0 {
-            for value in frame.iter_mut() {
-                *value = (f64::from(*value) * brightness).round().min(255.0) as u8;
-            }
+            effects: Effects {
+                focal_surface: FocalSurface {
+                    tilt_um_per_mm: [self.focal_tilt_x.get(), self.focal_tilt_y.get()],
+                    waviness_um: self.focal_waviness.get(),
+                },
+                vignetting: self.vignetting.get(),
+                uneven_illumination: self.uneven_illumination.get(),
+                exposure: f64::from(self.exposure_time.get()) / REFERENCE_EXPOSURE_US,
+                gain: self.analogue_gain.get(),
+            },
+        })
+    }
+
+    /// What's on the slide, as the settings say: the empty slide while the
+    /// sample is out, or if the picture can't be loaded.
+    fn specimen(&self) -> Arc<dyn Specimen> {
+        let blobs = BlobConfig::default();
+        let loaded = self.sample_loaded.get();
+        match self.sample_type.get() {
+            SampleType::Tissue if loaded => Arc::new(TissueSpecimen::new(TissueConfig {
+                coverage: self.tissue_coverage.get(),
+                ..TissueConfig::default()
+            })),
+            SampleType::Image if loaded => match self.picture() {
+                Some(picture) => picture,
+                None => Arc::new(BlobSpecimen::new(BlobConfig {
+                    density_per_mm2: 0.0,
+                    ..blobs
+                })),
+            },
+            _ => Arc::new(BlobSpecimen::new(BlobConfig {
+                density_per_mm2: if loaded { self.blob_density.get() } else { 0.0 },
+                colours: parse_colours(&self.colour.get()),
+                extent: if self.repeating.get() {
+                    Extent::Repeating {
+                        period_um: REPEAT_PERIOD_UM,
+                    }
+                } else {
+                    blobs.extent
+                },
+                ..blobs
+            })),
         }
-        frame
+    }
+
+    /// The picture the settings name, loaded once for each file and scale.
+    fn picture(&self) -> Option<Arc<dyn Specimen>> {
+        let folder = self.data_folder.get()?;
+        let path = data::resolve(folder, &self.sample_image.get()).ok()?;
+        let scale = self.sample_image_scale.get();
+        let mut cached = self.picture.lock().expect("not poisoned");
+        if !cached
+            .as_ref()
+            .is_some_and(|c| c.path == path && c.scale == scale)
+        {
+            let picture = ImageSpecimen::open(&path, scale);
+            if let Err(error) = &picture {
+                tracing::warn!(path = %path.display(), %error, "the sample's picture can't be loaded");
+            }
+            let picture = picture.ok().map(Arc::new);
+            *cached = Some(LoadedPicture {
+                path,
+                scale,
+                picture,
+            });
+        }
+        let picture: Arc<dyn Specimen> = cached.as_ref()?.picture.clone()?;
+        Some(picture)
     }
 
     /// A capture: a frame at 1640 × 1232, and how it was taken. Drawing it
@@ -514,6 +633,67 @@ impl SimulatedCamera {
             ("noise_level".to_owned(), json!(self.noise_level.get())),
         ])
     }
+}
+
+/// The camera's settings panel: the sample, the camera's settings, and the
+/// optics.
+fn panel(ui: &ThingUi) -> Vec<UiElement> {
+    let row = |children: Vec<UiElement>| UiElement::Container {
+        layout: Layout::Row,
+        children,
+    };
+    let objectives = [4, 10, 20, 40, 60, 100].map(|m| (format!("{m}×"), m));
+    vec![
+        ui.property("sample_type", "Sample")
+            .options([
+                ("Blobs", "blobs"),
+                ("Tissue", "tissue"),
+                ("Picture", "image"),
+            ])
+            .into(),
+        row(vec![
+            ui.property("blob_density", "Blobs per mm²").into(),
+            ui.property("colour", "Blob colours").into(),
+            ui.property("repeating", "Repeating blobs").into(),
+        ]),
+        ui.property("tissue_coverage", "Tissue coverage")
+            .step(0.05)
+            .into(),
+        row(vec![
+            ui.property("sample_image", "Picture, in the data folder")
+                .into(),
+            ui.property("sample_image_scale", "Picture's scale (µm per pixel)")
+                .into(),
+        ]),
+        ui.property("objective", "Objective")
+            .options(objectives.iter().map(|(label, m)| (label.as_str(), *m)))
+            .into(),
+        row(vec![
+            ui.property("exposure_time", "Exposure (µs)")
+                .step(100.0)
+                .into(),
+            ui.property("analogue_gain", "Gain").into(),
+            ui.property("noise_level", "Noise").into(),
+        ]),
+        UiElement::Accordion {
+            title: "Optics".to_owned(),
+            children: vec![
+                row(vec![
+                    ui.property("focal_tilt_x", "Focal tilt in x (µm per mm)")
+                        .into(),
+                    ui.property("focal_tilt_y", "Focal tilt in y (µm per mm)")
+                        .into(),
+                ]),
+                ui.property("focal_waviness", "Focal waviness (µm)").into(),
+                row(vec![
+                    ui.property("vignetting", "Vignetting").step(0.05).into(),
+                    ui.property("uneven_illumination", "Uneven lighting")
+                        .step(0.05)
+                        .into(),
+                ]),
+            ],
+        },
+    ]
 }
 
 /// Saves `image` to `path` as `format`: a JPEG at quality 95, or a PNG.

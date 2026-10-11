@@ -2076,6 +2076,237 @@
         }
       }
     },
+    "/api/v1/camera/focal_tilt_x": {
+      "get": {
+        "summary": "How much the focal surface rises in x, in µm per mm.",
+        "description": "## How much the focal surface rises in x, in µm per mm.\n\nHow much the focal surface rises in x, in µm per mm.",
+        "operationId": "get_property_api_v1_camera_focal_tilt_x_get",
+        "responses": {
+          "200": {
+            "description": "Value of focal_tilt_x",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_focal_tilt_x_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How much the focal surface rises in x, in µm per mm.",
+        "description": "## How much the focal surface rises in x, in µm per mm.\n\nHow much the focal surface rises in x, in µm per mm.",
+        "operationId": "set_property_api_v1_camera_focal_tilt_x_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_focal_tilt_x_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/focal_tilt_x/reset": {
+      "post": {
+        "summary": "Reset How much the focal surface rises in x, in µm per mm..",
+        "description": "## Reset How much the focal surface rises in x, in µm per mm.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_focal_tilt_x_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/focal_tilt_y": {
+      "get": {
+        "summary": "How much the focal surface rises in y, in µm per mm.",
+        "description": "## How much the focal surface rises in y, in µm per mm.\n\nHow much the focal surface rises in y, in µm per mm.",
+        "operationId": "get_property_api_v1_camera_focal_tilt_y_get",
+        "responses": {
+          "200": {
+            "description": "Value of focal_tilt_y",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_focal_tilt_y_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How much the focal surface rises in y, in µm per mm.",
+        "description": "## How much the focal surface rises in y, in µm per mm.\n\nHow much the focal surface rises in y, in µm per mm.",
+        "operationId": "set_property_api_v1_camera_focal_tilt_y_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_focal_tilt_y_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/focal_tilt_y/reset": {
+      "post": {
+        "summary": "Reset How much the focal surface rises in y, in µm per mm..",
+        "description": "## Reset How much the focal surface rises in y, in µm per mm.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_focal_tilt_y_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/focal_waviness": {
+      "get": {
+        "summary": "How far the focal surface waves up and down, in µm.",
+        "description": "## How far the focal surface waves up and down, in µm.\n\nHow far the focal surface waves up and down, in µm.",
+        "operationId": "get_property_api_v1_camera_focal_waviness_get",
+        "responses": {
+          "200": {
+            "description": "Value of focal_waviness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_focal_waviness_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far the focal surface waves up and down, in µm.",
+        "description": "## How far the focal surface waves up and down, in µm.\n\nHow far the focal surface waves up and down, in µm.",
+        "operationId": "set_property_api_v1_camera_focal_waviness_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_focal_waviness_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/focal_waviness/reset": {
+      "post": {
+        "summary": "Reset How far the focal surface waves up and down, in µm..",
+        "description": "## Reset How far the focal surface waves up and down, in µm.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_focal_waviness_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/grab_jpeg": {
       "get": {
         "summary": "All invocations of grab_jpeg.",
@@ -2316,6 +2547,18 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/manual_camera_settings": {
+      "get": {
+        "summary": "Manual Camera Settings",
+        "description": "The camera's settings, described for the settings panel (ADR-0024).",
+        "operationId": "manual_camera_settings_api_v1_camera_manual_camera_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
           }
         }
       }
@@ -2734,6 +2977,160 @@
         }
       }
     },
+    "/api/v1/camera/sample_image": {
+      "get": {
+        "summary": "The picture on the slide: a PNG, JPEG or TIFF file in the data folder.",
+        "description": "## The picture on the slide: a PNG, JPEG or TIFF file in the data folder.\n\nThe picture on the slide: a PNG, JPEG or TIFF file in the data folder.",
+        "operationId": "get_property_api_v1_camera_sample_image_get",
+        "responses": {
+          "200": {
+            "description": "Value of sample_image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_sample_image_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The picture on the slide: a PNG, JPEG or TIFF file in the data folder.",
+        "description": "## The picture on the slide: a PNG, JPEG or TIFF file in the data folder.\n\nThe picture on the slide: a PNG, JPEG or TIFF file in the data folder.",
+        "operationId": "set_property_api_v1_camera_sample_image_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_sample_image_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/sample_image/reset": {
+      "post": {
+        "summary": "Reset The picture on the slide: a PNG, JPEG or TIFF file in the data folder..",
+        "description": "## Reset The picture on the slide: a PNG, JPEG or TIFF file in the data folder.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_sample_image_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/sample_image_scale": {
+      "get": {
+        "summary": "The size of the picture's pixels on the slide, in µm.",
+        "description": "## The size of the picture's pixels on the slide, in µm.\n\nThe size of the picture's pixels on the slide, in µm.",
+        "operationId": "get_property_api_v1_camera_sample_image_scale_get",
+        "responses": {
+          "200": {
+            "description": "Value of sample_image_scale",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_sample_image_scale_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The size of the picture's pixels on the slide, in µm.",
+        "description": "## The size of the picture's pixels on the slide, in µm.\n\nThe size of the picture's pixels on the slide, in µm.",
+        "operationId": "set_property_api_v1_camera_sample_image_scale_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_sample_image_scale_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/sample_image_scale/reset": {
+      "post": {
+        "summary": "Reset The size of the picture's pixels on the slide, in µm..",
+        "description": "## Reset The size of the picture's pixels on the slide, in µm.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_sample_image_scale_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/camera/sample_loaded": {
       "get": {
         "summary": "Whether the sample is in place.",
@@ -2753,6 +3150,83 @@
                   "type": "string",
                   "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/sample_type": {
+      "get": {
+        "summary": "What's on the slide: blobs, tissue or a picture.",
+        "description": "## What's on the slide: blobs, tissue or a picture.\n\nWhat's on the slide: blobs, tissue or a picture.",
+        "operationId": "get_property_api_v1_camera_sample_type_get",
+        "responses": {
+          "200": {
+            "description": "Value of sample_type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_sample_type_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set What's on the slide: blobs, tissue or a picture.",
+        "description": "## What's on the slide: blobs, tissue or a picture.\n\nWhat's on the slide: blobs, tissue or a picture.",
+        "operationId": "set_property_api_v1_camera_sample_type_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_sample_type_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/sample_type/reset": {
+      "post": {
+        "summary": "Reset What's on the slide: blobs, tissue or a picture..",
+        "description": "## Reset What's on the slide: blobs, tissue or a picture.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_sample_type_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -3030,6 +3504,237 @@
                 "schema": {
                   "$ref": "#/components/schemas/camera_streaming_modes_value"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/tissue_coverage": {
+      "get": {
+        "summary": "The share of the slide the tissue covers.",
+        "description": "## The share of the slide the tissue covers.\n\nThe share of the slide the tissue covers.",
+        "operationId": "get_property_api_v1_camera_tissue_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Value of tissue_coverage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_tissue_coverage_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of the slide the tissue covers.",
+        "description": "## The share of the slide the tissue covers.\n\nThe share of the slide the tissue covers.",
+        "operationId": "set_property_api_v1_camera_tissue_coverage_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_tissue_coverage_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/tissue_coverage/reset": {
+      "post": {
+        "summary": "Reset The share of the slide the tissue covers..",
+        "description": "## Reset The share of the slide the tissue covers.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_tissue_coverage_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/uneven_illumination": {
+      "get": {
+        "summary": "The share of the light lost at the frame's most dimly lit corner.",
+        "description": "## The share of the light lost at the frame's most dimly lit corner.\n\nThe share of the light lost at the frame's most dimly lit corner.",
+        "operationId": "get_property_api_v1_camera_uneven_illumination_get",
+        "responses": {
+          "200": {
+            "description": "Value of uneven_illumination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_uneven_illumination_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of the light lost at the frame's most dimly lit corner.",
+        "description": "## The share of the light lost at the frame's most dimly lit corner.\n\nThe share of the light lost at the frame's most dimly lit corner.",
+        "operationId": "set_property_api_v1_camera_uneven_illumination_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_uneven_illumination_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/uneven_illumination/reset": {
+      "post": {
+        "summary": "Reset The share of the light lost at the frame's most dimly lit corner..",
+        "description": "## Reset The share of the light lost at the frame's most dimly lit corner.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_uneven_illumination_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/vignetting": {
+      "get": {
+        "summary": "The share of the light lost in the frame's corners.",
+        "description": "## The share of the light lost in the frame's corners.\n\nThe share of the light lost in the frame's corners.",
+        "operationId": "get_property_api_v1_camera_vignetting_get",
+        "responses": {
+          "200": {
+            "description": "Value of vignetting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/camera_vignetting_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of the light lost in the frame's corners.",
+        "description": "## The share of the light lost in the frame's corners.\n\nThe share of the light lost in the frame's corners.",
+        "operationId": "set_property_api_v1_camera_vignetting_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/camera_vignetting_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/camera/vignetting/reset": {
+      "post": {
+        "summary": "Reset The share of the light lost in the frame's corners..",
+        "description": "## Reset The share of the light lost in the frame's corners.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_camera_vignetting_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -6425,6 +7130,21 @@
         "minimum": 100,
         "maximum": 1000000
       },
+      "camera_focal_tilt_x_value": {
+        "type": "number",
+        "minimum": -100.0,
+        "maximum": 100.0
+      },
+      "camera_focal_tilt_y_value": {
+        "type": "number",
+        "minimum": -100.0,
+        "maximum": 100.0
+      },
+      "camera_focal_waviness_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 50.0
+      },
       "camera_grab_jpeg_input": {
         "type": "object",
         "properties": {
@@ -6967,8 +7687,36 @@
       "camera_repeating_value": {
         "type": "boolean"
       },
+      "camera_sample_image_value": {
+        "type": "string"
+      },
+      "camera_sample_image_scale_value": {
+        "type": "number",
+        "minimum": 0.001,
+        "maximum": 100.0
+      },
       "camera_sample_loaded_value": {
         "type": "boolean"
+      },
+      "camera_sample_type_value": {
+        "description": "What's on the slide.",
+        "oneOf": [
+          {
+            "description": "Coloured blobs.",
+            "const": "blobs",
+            "type": "string"
+          },
+          {
+            "description": "H&E-like tissue.",
+            "const": "tissue",
+            "type": "string"
+          },
+          {
+            "description": "A picture from the data folder.",
+            "const": "image",
+            "type": "string"
+          }
+        ]
       },
       "camera_save_from_memory_input": {
         "type": "object",
@@ -7259,6 +8007,21 @@
           ],
           "type": "object"
         }
+      },
+      "camera_tissue_coverage_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 1.0
+      },
+      "camera_uneven_illumination_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 0.9
+      },
+      "camera_vignetting_value": {
+        "type": "number",
+        "minimum": 0.0,
+        "maximum": 0.9
       },
       "illumination_flash_input": {
         "type": "object",

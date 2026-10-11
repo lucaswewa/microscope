@@ -29,7 +29,7 @@ clap = { version = "4.6", features = ["derive"] }
 gethostname = "1"
 http-body-util = "0.1.5"
 # Images: PNG for the simulator's examples, JPEG for the camera's streams.
-image = { version = "0.25.10", default-features = false, features = ["jpeg", "png"] }
+image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "tiff"] }
 os_info = { version = "3", default-features = false }
 # 8.12, not 8.13: dependencies must be at least two weeks old (CLAUDE.md).
 rust-embed = "8.12"
