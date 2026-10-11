@@ -11,6 +11,8 @@ import photoCamera from '@material-symbols/svg-400/outlined/photo_camera.svg?raw
 import refresh from '@material-symbols/svg-400/outlined/refresh.svg?raw'
 import { computed, h, ref } from 'vue'
 
+import serverPanelFixture from '../../../tests/fixtures/server-ui/panel.json'
+
 import AccordionSection from '@/ui/AccordionSection.vue'
 import AppAccordion from '@/ui/AppAccordion.vue'
 import AppButton from '@/ui/AppButton.vue'
@@ -24,6 +26,8 @@ import AppSpinner from '@/ui/AppSpinner.vue'
 import AppToggle from '@/ui/AppToggle.vue'
 import AppTooltip from '@/ui/AppTooltip.vue'
 import ButtonMenu from '@/ui/ButtonMenu.vue'
+import ServerInterface from '@/server-ui/ServerInterface.vue'
+import type { UiElement } from '@/server-ui/types'
 import ErrorDetails from '@/ui/ErrorDetails.vue'
 import FormField from '@/ui/FormField.vue'
 import MultiSelect from '@/ui/MultiSelect.vue'
@@ -130,6 +134,9 @@ const state = computed(() =>
     page: page.value,
   }),
 )
+
+// The panel the server-described UI's tests use (ADR-0024).
+const serverPanel = serverPanelFixture as UiElement[]
 </script>
 
 <template>
@@ -246,6 +253,12 @@ const state = computed(() =>
           <SectionHeading :level="3">Capture</SectionHeading>
           <p class="gallery__note">A card holds a block of related content.</p>
         </AppCard>
+
+        <h3>Server-described UI</h3>
+        <p class="gallery__note">
+          The renderers' test panel, for the camera of the microscope the app is connected to.
+        </p>
+        <ServerInterface :elements="serverPanel" />
 
         <h3>Error details</h3>
         <div class="gallery__progress">

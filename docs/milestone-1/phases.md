@@ -10,7 +10,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 1: Web foundations](#stage-1-web-foundations): [P04](#p04) [P05](#p05) [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09) [P09b](#p09b)
 - [Stage 2: Client–server plumbing](#stage-2-clientserver-plumbing): [P10](#p10) [P11](#p11) [P12](#p12)
 - [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20) [P20b](#p20b)
-- [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P23b](#p23b) [P24](#p24) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
+- [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P23b](#p23b) [P24](#p24) [P24b](#p24b) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
 - [Stage 7: Sequence](#stage-7-sequence): [P41](#p41) [P42](#p42)
@@ -513,10 +513,25 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - A Rust model of our own design, informed by OpenFlexure's idea:
   - header, text and bullet blocks;
   - `PropertyControl` (label, options, step, read-back, and an input style that includes duration as H:M:S);
+  - `Accordion` and `Container`;
+  - helpers that check property names when the description is built, and sanitised text (an allow-list).
+- Web renderers: `ServerInterface`, and `PropertyControl` (inputs that follow the schema, with a changed highlight). A control shows a "broken" state when its property is missing.
+
+**Tests**
+- Rust serialisation snapshots, and renderer component tests against fixtures.
+
+<a id="p24b"></a>
+### P24b: Server-described action and download buttons
+
+**Goal.** Server-described buttons that run actions and download files. Split from P24 (Appendix D of the plan).
+**Depends on** P24 · **Size** M · **ADRs** —
+
+**Scope**
+- In the Rust model:
   - `ActionButton` (label, confirmation, progress inline or in a dialog, the stream inside the dialog, cancel, a success message, refresh-on-response);
-  - `DownloadButton`, `Accordion` and `Container`;
-  - helpers that check affordance names when the description is built, and sanitised text (an allow-list).
-- Web renderers: `ServerInterface`; `PropertyControl` (inputs that follow the schema, with a changed highlight); `ActionButton` (the invocation lifecycle, its log, cancel, and a dialog with a mini stream); `DownloadButton`. Each shows a "broken" state when an affordance is missing.
+  - `DownloadButton`;
+  - helpers that check action names when the description is built.
+- Web renderers: `ActionButton` (the invocation lifecycle, its log, cancel, and a dialog with a mini stream), and `DownloadButton`. Each shows a "broken" state when its affordance is missing.
 
 **Tests**
 - Rust serialisation snapshots, and renderer component tests against fixtures.
@@ -525,7 +540,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P25: Specimens II and optical effects
 
 **Goal.** A realistic sample and realistic optics.
-**Depends on** P17, P24 · **Size** L · **ADRs** —
+**Depends on** P17, P24b · **Size** L · **ADRs** —
 
 **Scope**
 - A procedural tissue specimen: H&E-like stroma, nuclei and gaps, with control over coverage.
@@ -555,7 +570,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P27: Background detection and camera calibration
 
 **Goal.** Telling sample from empty background, and calibrating the camera. **Spec-first.**
-**Depends on** P24, P25 · **Size** L · **ADRs** —
+**Depends on** P24b, P25 · **Size** L · **ADRs** —
 
 **Scope**
 - LUV colour conversion and sample-coverage computation (`microscope-core`).
@@ -572,7 +587,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P28: Settings tab
 
 **Goal.** Every Settings section from OpenFlexure, plus Connection.
-**Depends on** P23, P24, P27 · **Size** L · **ADRs** —
+**Depends on** P23, P24b, P27 · **Size** L · **ADRs** —
 
 **Scope**
 - Navigation between sections.
@@ -769,7 +784,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P40: Slide Scan tab
 
 **Goal.** OpenFlexure's Slide Scan workflow in our UI.
-**Depends on** P24, P33, P37, P39 · **Size** L · **ADRs** —
+**Depends on** P24b, P33, P37, P39 · **Size** L · **ADRs** —
 
 **Scope**
 - The control pane: a workflow select with its blurb, the workflow's server-described settings, Stitching settings with a changed highlight, Sample ID, and Start Smart Scan.
@@ -804,7 +819,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P42: Sequence tab
 
 **Goal.** Set up, run and follow a sequence.
-**Depends on** P24, P41 · **Size** M · **ADRs** —
+**Depends on** P24b, P41 · **Size** M · **ADRs** —
 
 **Scope**
 - A form: total duration as H:M:S, the interval, and an autofocus toggle with its range.

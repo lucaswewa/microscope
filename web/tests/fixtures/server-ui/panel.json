@@ -1,0 +1,113 @@
+[
+  {
+    "kind": "header",
+    "text": [
+      {
+        "text": "Simulation"
+      }
+    ]
+  },
+  {
+    "kind": "text",
+    "text": [
+      {
+        "text": "What the "
+      },
+      {
+        "text": "simulated",
+        "italic": true
+      },
+      {
+        "text": " camera sees. See "
+      },
+      {
+        "text": "the guide",
+        "href": "https://example.org/guide"
+      },
+      {
+        "text": "."
+      }
+    ]
+  },
+  {
+    "kind": "bullets",
+    "items": [
+      [
+        {
+          "text": "Changes apply at once."
+        }
+      ],
+      [
+        {
+          "text": "Defaults",
+          "bold": true
+        },
+        {
+          "text": " aren't highlighted."
+        }
+      ]
+    ]
+  },
+  {
+    "kind": "property_control",
+    "thing": "camera",
+    "property": "exposure_time",
+    "label": "Exposure (µs)",
+    "step": 100.0,
+    "read_back_ms": 500
+  },
+  {
+    "kind": "container",
+    "layout": "row",
+    "children": [
+      {
+        "kind": "property_control",
+        "thing": "camera",
+        "property": "repeating",
+        "label": "Repeating sample"
+      },
+      {
+        "kind": "property_control",
+        "thing": "camera",
+        "property": "objective",
+        "label": "Objective",
+        "options": [
+          {
+            "label": "10×",
+            "value": 10
+          },
+          {
+            "label": "40×",
+            "value": 40
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "accordion",
+    "title": "More",
+    "children": [
+      {
+        "kind": "property_control",
+        "thing": "camera",
+        "property": "settling_time",
+        "label": "Settling time",
+        "input": "duration_hms"
+      },
+      {
+        "kind": "property_control",
+        "thing": "camera",
+        "property": "colour",
+        "label": "Colours"
+      },
+      {
+        "kind": "property_control",
+        "thing": "camera",
+        "property": "no_such_property",
+        "label": "Missing",
+        "broken": true
+      }
+    ]
+  }
+]
