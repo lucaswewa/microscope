@@ -53,7 +53,12 @@ ADR-0023 records the method and its numbers. The details:
 - **Shrinking:** shrinking by 2 (the default) costs little. At 4×, a fine texture loses detail, and the error grows to a fraction of a shrunk pixel (up to 2 camera pixels), which the test allows.
 - **Range:** the shift must be less than half the compared square, and the images must overlap well. At the defaults, that's 128 shrunk pixels, or 256 camera pixels, about 29 µm at 40×.
 - **The example lives in `microscope-sim`,** since `microscope-core` can't depend on the simulator (ADR-0005).
-- **Size:** 645 changed lines of hand-written code (about 280 of them tests and the example) against M's budget of 600.
+- **A fix to P21's tests, found by this PR's CI:** one autofocus test failed on CI's slower runner. It draws frames less often, so frames fall further apart in z, and the measured moves' frames stopped at −132 steps where the test wanted below −150.
+  - **The bounds** now ask for frames beyond ±100 steps.
+  - **The z speed:** the autofocus tests run the stage at half its z speed, so their frames stay close together on any machine.
+
+  The autofocus tests now take about 44 s locally.
+- **Size:** 645 changed lines of hand-written code (about 280 of them tests and the example) against M's budget of 600, before the P21 test fix (6 lines).
 
 ## Tests
 
