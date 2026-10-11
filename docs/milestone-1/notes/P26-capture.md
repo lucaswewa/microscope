@@ -1,7 +1,7 @@
 # P26: Capture to the data folder
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#36](https://github.com/lucaswewa/microscope/pull/36)
 - ADRs: [ADR-0025](../../adr/0025-data-folder-layout-and-capture-metadata.md)
 - Spec: [phases.md#p26](../phases.md#p26)
 
