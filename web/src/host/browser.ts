@@ -26,5 +26,21 @@ export function createBrowserHost(win: Window & typeof globalThis = window): Hos
       link.remove()
       win.setTimeout(() => win.URL.revokeObjectURL(url), REVOKE_AFTER_MS)
     },
+
+    fullscreen: {
+      active: () => win.document.fullscreenElement !== null,
+      async set(on) {
+        if (on && !win.document.fullscreenElement) {
+          await win.document.documentElement.requestFullscreen()
+        } else if (!on && win.document.fullscreenElement) {
+          await win.document.exitFullscreen()
+        }
+      },
+      watch(onChange) {
+        const changed = () => onChange(win.document.fullscreenElement !== null)
+        win.document.addEventListener('fullscreenchange', changed)
+        return () => win.document.removeEventListener('fullscreenchange', changed)
+      },
+    },
   }
 }

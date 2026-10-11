@@ -2,7 +2,7 @@ import { inject, type InjectionKey } from 'vue'
 
 import type { HostAdapter } from './types'
 
-export type { AppInfo, HostAdapter, ServiceControl, ServiceState } from './types'
+export type { AppInfo, FullscreenControl, HostAdapter, ServiceControl, ServiceState } from './types'
 
 /** The key under which the app's host is provided (`main.ts` provides the browser's). */
 export const hostKey: InjectionKey<HostAdapter> = Symbol('host')

@@ -30,6 +30,16 @@ export interface ServiceControl {
  * in a browser tab now and in the Tauri desktop app later. Only the host
  * implementation differs.
  */
+/** Whether the app fills the screen, and switching it. */
+export interface FullscreenControl {
+  /** Whether it fills the screen now. */
+  active(): boolean
+  /** Fills the screen, or stops. */
+  set(on: boolean): Promise<void>
+  /** Calls `onChange` each time that changes, until the returned function is called. */
+  watch(onChange: (active: boolean) => void): () => void
+}
+
 export interface HostAdapter {
   /** What the app knows about itself and where it runs. */
   readonly info: AppInfo
@@ -37,6 +47,8 @@ export interface HostAdapter {
   openLink(url: string): void
   /** Saves `data` as a file called `name`: as a download, or through a save dialog. */
   saveFile(name: string, data: Blob): Promise<void>
+  /** The app filling the screen: a browser's full screen, or the window's. */
+  readonly fullscreen: FullscreenControl
   /**
    * Control of a local microscope service, if this host manages one. A
    * browser tab doesn't: the launcher manages the service (P45), and the
