@@ -31,7 +31,11 @@ export default defineConfig({
     baseURL: `http://127.0.0.1:${port}`,
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    // Calibrates the server first, so the calibration wizard stays shut.
+    { name: 'setup', testMatch: /e2e\/calibrate\.setup\.ts$/ },
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, dependencies: ['setup'] },
+  ],
   webServer: {
     command: serverCommand,
     cwd: root,

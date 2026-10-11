@@ -17,6 +17,9 @@
 //! - **Simulation:** the `simulation` setting switches backlash and travel
 //!   limits on and off, and sets the speed and the µm per step, which the
 //!   simulated camera uses to draw where the sample really is.
+//! - **Calibration:** `calibration_required` until the z direction is
+//!   checked; `z_direction_check` describes the check for the calibration
+//!   wizard (P29).
 
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::{Duration, Instant};
@@ -25,11 +28,14 @@ use microscope_sim::clock::Clock;
 use microscope_sim::{StageConfig, StageModel};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
 use tokio::sync::Notify;
 use tokio::task::JoinHandle;
 
 use crate::hardware::{AxisScale, BacklashCompensation, Position, StageApi};
+use crate::ui::{OwnEntry, Success, UiElement};
 
 /// How often the position is refreshed while the stage moves.
 const POLL: Duration = Duration::from_millis(20);
@@ -216,6 +222,7 @@ pub struct SimulatedStage {
     clock: SystemClock,
     started: Notify,
     tracker: Mutex<Option<JoinHandle<()>>>,
+    entry: OwnEntry,
 }
 
 #[thing_impl]
@@ -357,9 +364,31 @@ impl SimulatedStage {
         Ok(())
     }
 
+    /// The z direction's check, for the calibration wizard (ADR-0024). A
+    /// simulated stage has no gear to watch, so it's confirmed as it is.
+    #[endpoint(get, "z_direction_check")]
+    async fn z_direction_check(&self) -> Json<Vec<UiElement>> {
+        let z_inverted = self.axis_inverted.get().z;
+        self.entry.panel(|ui| {
+            let text = "A real stage's z motor can be fitted either way round, so its \
+                        direction is checked once. This simulated stage has no motor to \
+                        watch: confirm its direction as it is.";
+            let confirmed = Success::Message("The z direction is confirmed.".to_owned());
+            vec![
+                UiElement::Text { text: text.into() },
+                ui.action("calibrate_z_direction", "Confirm the z direction")
+                    .input(json!({ "z_inverted": z_inverted }))
+                    .on_success(confirmed)
+                    .refresh()
+                    .into(),
+            ]
+        })
+    }
+
     /// Starts the task that tracks moves.
     #[on_start]
     async fn start_tracking(&self, ctx: ThingCtx) {
+        self.entry.keep::<Self>(&ctx);
         let Some(stage) = ctx.server().thing_ref::<SimulatedStage>(ctx.name()) else {
             return;
         };

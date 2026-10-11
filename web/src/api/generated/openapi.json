@@ -1350,6 +1350,18 @@
         }
       }
     },
+    "/api/v1/stage/z_direction_check": {
+      "get": {
+        "summary": "Z Direction Check",
+        "description": "The z direction's check, for the calibration wizard (ADR-0024). A\nsimulated stage has no gear to watch, so it's confirmed as it is.",
+        "operationId": "z_direction_check_api_v1_stage_z_direction_check_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/v1/stage/z_direction_checked": {
       "get": {
         "summary": "Whether the z axis's direction has been checked.",

@@ -169,7 +169,7 @@ The names mirror OpenFlexure's (D7). `teta-wot` Things can't be generic, so each
 | Thing name | Milestone-1 type | Main affordances | Phases |
 |---|---|---|---|
 | `system` | `MicroscopeSystem` | `hostname`, `version_data`, `os_version`, `managed`; `shutdown`, `restart` | P02, P44 |
-| `stage` | `SimulatedStage` (`StageApi`) | `position` (observable), `moving`, `axis_names`, `um_per_step`, `backlash_steps`, `axis_inverted`; `move_relative`, `move_absolute`, `move_to_origin`, `set_zero_position`, `jog`, `halt` (`teta-wot` reserves `stop`), `invert_axis_direction`, `calibrate_z_direction`; the event `arrived` | P16 |
+| `stage` | `SimulatedStage` (`StageApi`) | `position` (observable), `moving`, `axis_names`, `um_per_step`, `backlash_steps`, `axis_inverted`; `move_relative`, `move_absolute`, `move_to_origin`, `set_zero_position`, `jog`, `halt` (`teta-wot` reserves `stop`), `invert_axis_direction`, `calibrate_z_direction`; the event `arrived`; the panel `z_direction_check` | P16, P29 |
 | `camera` | `SimulatedCamera` (`CameraApi`) | `mjpeg_stream`, `lores_mjpeg_stream`, streaming modes, manual settings, calibration properties; `capture`, `grab_jpeg`, `capture_to_memory`, `save_from_memory`, `settle`, `full_auto_calibrate`, `set_background`, `image_is_sample`, `load_sample`, `remove_sample` | P17, P17b, P25–P27 |
 | `illumination` | `SimulatedIllumination` | `set_led`, `flash` | P17 |
 | `autofocus` | `Autofocus` | `fast_autofocus`, `looping_autofocus`, `z_move_and_measure_sharpness`, `run_smart_stack`, `run_basic_stack` | P21, P36 |
@@ -434,8 +434,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P25 | Specimens II and optical effects | P17, P24b | L | — | Done |
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Done |
 | P27 | Background detection and camera calibration | P24b, P25 | L | — | Done |
-| P28 | Settings tab | P23, P24b, P27 | L | — | In review |
-| P29 | Calibration wizard | P28 | L | — | Planned |
+| P28 | Settings tab | P23, P24b, P27 | L | — | Done |
+| P29 | Calibration wizard | P28 | L | — | In review |
 | P30 | Stage measurement tools | P22, P23, P28 | M | — | Planned |
 
 **Checkpoint B, "Calibrated microscope":** on a fresh settings folder the wizard runs. After it, autofocus, click-to-move and capture work, and every Settings panel is live.

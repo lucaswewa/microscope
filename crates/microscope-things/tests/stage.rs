@@ -141,6 +141,27 @@ async fn properties_describe_the_stage_and_calibration_checks_z() {
 }
 
 #[tokio::test]
+async fn the_z_check_confirms_the_direction_as_it_is() {
+    let harness = start().await;
+    let client = harness.client();
+    run(client, "invert_axis_direction", json!({"axis": "z"})).await;
+    let panel = client.get("/stage/z_direction_check").await.json();
+    let button = &panel[1];
+    assert_eq!(panel[0]["kind"], "text");
+    assert_eq!(button["action"], "calibrate_z_direction");
+    assert_eq!(button["input"], json!({"z_inverted": true}));
+    assert_eq!(button["refresh"], true);
+
+    run(client, "calibrate_z_direction", button["input"].clone()).await;
+    assert_eq!(
+        client.get("/stage/calibration_required").await.json(),
+        json!(false)
+    );
+    assert_eq!(client.get("/stage/axis_inverted").await.json()["z"], true);
+    harness.stop().await;
+}
+
+#[tokio::test]
 async fn an_inverted_axis_counts_the_other_way() {
     let harness = start().await;
     let client = harness.client();

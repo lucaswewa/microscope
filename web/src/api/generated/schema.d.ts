@@ -827,6 +827,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stage/z_direction_check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Z Direction Check
+         * @description The z direction's check, for the calibration wizard (ADR-0024). A
+         *     simulated stage has no gear to watch, so it's confirmed as it is.
+         */
+        get: operations["z_direction_check_api_v1_stage_z_direction_check_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stage/z_direction_checked": {
         parameters: {
             query?: never;
@@ -6139,6 +6160,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["stage_um_per_step_value"];
                 };
+            };
+        };
+    };
+    z_direction_check_api_v1_stage_z_direction_check_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

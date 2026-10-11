@@ -24,16 +24,6 @@ const glance = (page: Page) =>
 const difference = (a: number[], b: number[]) =>
   a.reduce((sum, value, i) => sum + Math.abs(value - b[i]!), 0) / a.length
 
-/** Runs an action through the API, and waits for it to end. */
-async function run(page: Page, path: string) {
-  let invocation = await (await page.request.post(`/api/v1/${path}`, { data: {} })).json()
-  while (['pending', 'running'].includes(invocation.status)) {
-    await page.waitForTimeout(200)
-    invocation = await (await page.request.get(invocation.href)).json()
-  }
-  return invocation
-}
-
 async function openControl(page: Page) {
   await page.goto('/#/control')
   await expect(page.locator('.live-image')).toHaveAttribute('data-status', 'live')
@@ -104,10 +94,9 @@ test('typed coordinates move the stage, and Move Home brings it back', async ({ 
   await expect.poll(() => position(page), { timeout: 10_000 }).toEqual({ x: 0, y: 0, z: 0 })
 })
 
+// The setup has calibrated the mapping.
 test('a double-click on the image moves there, by the camera–stage mapping', async ({ page }) => {
-  test.setTimeout(120_000)
   await openControl(page)
-  expect((await run(page, 'camera_stage_mapping/calibrate_xy')).status).toBe('completed')
   const matrix: number[][] = await (
     await page.request.get('/api/v1/camera_stage_mapping/image_to_stage_displacement_matrix')
   ).json()
