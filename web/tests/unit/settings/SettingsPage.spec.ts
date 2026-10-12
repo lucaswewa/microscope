@@ -51,6 +51,11 @@ const descriptions = {
     ['calibrate_xy'],
   ),
   bg_channel_deviations_luv: thing('bg_channel_deviations_luv', []),
+  stage_measure: thing(
+    'stage_measure',
+    ['calibrated_range'],
+    ['perform_rom_test', 'perform_recentre'],
+  ),
 }
 
 let values: Record<string, unknown>
@@ -78,6 +83,7 @@ beforeEach(() => {
     'camera_stage_mapping/image_resolution': [820, 616],
     'camera_stage_mapping/last_cal_timestamp': '2026-10-11T07-35-12Z',
     'camera_stage_mapping/last_calibration': { timestamp: '2026-10-11T07-35-12Z', moves: [] },
+    'stage_measure/calibrated_range': null,
   }
   const panel = (text: string) => [{ kind: 'text', text: [{ text }] }]
   const server = fakeServer({
@@ -98,6 +104,11 @@ beforeEach(() => {
     'POST /api/v1/stage/invert_axis_direction': () =>
       json(
         { id: 'i', status: 'completed', href: 'http://localhost/api/v1/action_invocations/i' },
+        201,
+      ),
+    'POST /api/v1/stage_measure/perform_recentre': () =>
+      json(
+        { id: 'r', status: 'completed', href: 'http://localhost/api/v1/action_invocations/r' },
         201,
       ),
   })
@@ -193,6 +204,32 @@ describe('the Settings tab', () => {
     await flushPromises()
     const posted = received.filter((r) => r.url.pathname.endsWith('/invert_axis_direction'))
     expect(posted.map((r) => JSON.parse(r.body ?? 'null'))).toEqual([{ axis: 'z' }])
+    expect(wrapper!.text()).toContain("It isn't measured yet.")
+    expect(button('Measure the range of motion').exists()).toBe(true)
+    expect(button('Recentre')).toBeUndefined()
+  })
+
+  it('shows the measured range of motion, and recentres on it, in Stage', async () => {
+    values['stage_measure/calibrated_range'] = {
+      x: { min: -2500, max: 3500, focus_shift: [185, -197] },
+      y: { min: -3000, max: 2000, focus_shift: null },
+    }
+    await open('/settings/stage')
+    const items = wrapper!.findAll('.stage-measure li').map((li) => li.text())
+    expect(items).toEqual([
+      'x: 6000 steps, from -2500 to 3500; the focus moves 185 and -197 z steps at the ends',
+      'y: 5000 steps, from -3000 to 2000',
+    ])
+    await button('Recentre').trigger('click')
+    await flushPromises()
+    const question = document.querySelector<HTMLElement>('[role="alertdialog"]')!
+    expect(question.textContent).toContain('Move the stage to the middle of its measured range')
+    const confirm = [...question.querySelectorAll('button')].find(
+      (b) => b.textContent!.trim() === 'Recentre',
+    )!
+    confirm.click()
+    await flushPromises()
+    expect(received.some((r) => r.url.pathname.endsWith('/perform_recentre'))).toBe(true)
   })
 
   it('shows the mapping’s matrix and scale, and saves its data', async () => {

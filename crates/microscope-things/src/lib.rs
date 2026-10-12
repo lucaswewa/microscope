@@ -22,6 +22,7 @@ pub mod illumination;
 pub mod mapping;
 pub mod registry;
 pub mod stage;
+pub mod stage_measure;
 pub mod system;
 pub mod ui;
 

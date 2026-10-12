@@ -20,7 +20,7 @@ const RUNS: usize = 4;
 /// Moves in each run.
 const MOVES_PER_RUN: usize = 5;
 /// Below this, a registration can't be trusted.
-const MIN_CONFIDENCE: f64 = 0.3;
+pub(crate) const MIN_CONFIDENCE: f64 = 0.3;
 /// The fewest moves on each axis the fit can use.
 const MIN_KEPT_MOVES: usize = MOVES_PER_RUN;
 /// The largest RMS residual of the fit, as a share of the mean stage move.
@@ -331,12 +331,12 @@ impl CameraStageMapping {
 }
 
 /// A frame drawn wholly after the call.
-async fn fresh(camera: &dyn CameraApi) -> Result<RgbImage, ActionError> {
+pub(crate) async fn fresh(camera: &dyn CameraApi) -> Result<RgbImage, ActionError> {
     camera.grab_frame().await?;
     camera.grab_frame().await
 }
 
-fn gray(frame: &RgbImage) -> Gray {
+pub(crate) fn gray(frame: &RgbImage) -> Gray {
     Gray::from_rgb8(
         frame.width() as usize,
         frame.height() as usize,
@@ -346,19 +346,19 @@ fn gray(frame: &RgbImage) -> Gray {
 
 /// How far the field of view moved from `before` to `after`, in pixels
 /// (against the content's shift), and the registration's confidence.
-fn field_shift(before: &Gray, after: &Gray) -> ([f64; 2], f64) {
+pub(crate) fn field_shift(before: &Gray, after: &Gray) -> ([f64; 2], f64) {
     let shift = register(before, after, &Options::default());
     ([-shift.dx, -shift.dy], shift.confidence)
 }
 
-fn too_little_detail() -> ActionError {
+pub(crate) fn too_little_detail() -> ActionError {
     ActionError::handled(
         "the image has too little detail to track: check there's a sample in focus",
     )
 }
 
 /// A move of `steps` along `axis` (0 for x, 1 for y).
-fn along(axis: usize, steps: i64) -> Position {
+pub(crate) fn along(axis: usize, steps: i64) -> Position {
     if axis == 0 {
         Position::new(steps, 0, 0)
     } else {

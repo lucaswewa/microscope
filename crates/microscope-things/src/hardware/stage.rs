@@ -115,6 +115,9 @@ pub trait StageApi: Send + Sync {
     /// Stops any move at once, where the stage is.
     fn stop(&self) -> BoxFuture<'_, Result<(), ActionError>>;
 
+    /// Makes where the stage is (0, 0, 0), without moving it.
+    fn set_zero(&self) -> BoxFuture<'_, Result<(), ActionError>>;
+
     /// How far a step moves each axis, where the stage knows.
     fn axis_scale(&self) -> AxisScale;
 }

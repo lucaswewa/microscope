@@ -435,8 +435,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P26 | Capture to the data folder | P17b, P20 | M | 0025 | Done |
 | P27 | Background detection and camera calibration | P24b, P25 | L | — | Done |
 | P28 | Settings tab | P23, P24b, P27 | L | — | Done |
-| P29 | Calibration wizard | P28 | L | — | In review |
-| P30 | Stage measurement tools | P22, P23, P28 | M | — | Planned |
+| P29 | Calibration wizard | P28 | L | — | Done |
+| P30 | Stage measurement tools | P22, P23, P28 | M | — | Done |
 
 **Checkpoint B, "Calibrated microscope":** on a fresh settings folder the wizard runs. After it, autofocus, click-to-move and capture work, and every Settings panel is live.
 
