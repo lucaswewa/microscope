@@ -5778,6 +5778,237 @@
           }
         }
       }
+    },
+    "/api/v1/stage_measure/calibrated_range": {
+      "get": {
+        "summary": "The range the last test measured, in the stage's steps.",
+        "description": "## The range the last test measured, in the stage's steps.\n\nThe range the last test measured, in the stage's steps.",
+        "operationId": "get_property_api_v1_stage_measure_calibrated_range_get",
+        "responses": {
+          "200": {
+            "description": "Value of calibrated_range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stage_measure_calibrated_range_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stage_measure/perform_recentre": {
+      "get": {
+        "summary": "All invocations of perform_recentre.",
+        "description": "List all the invocations of perform_recentre that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_stage_measure_perform_recentre_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of perform_recentre.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Moves x and y to the middle of the measured range and makes that the",
+        "description": "## Moves x and y to the middle of the measured range and makes that the\n\nMoves x and y to the middle of the measured range and makes that the\nstage's zero, shifting the range to match. Returns where the middle\nwas.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_stage_measure_perform_recentre_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/stage_measure_perform_recentre_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stage_measure_perform_recentre_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stage_measure_perform_recentre_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stage_measure/perform_rom_test": {
+      "get": {
+        "summary": "All invocations of perform_rom_test.",
+        "description": "List all the invocations of perform_rom_test that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_stage_measure_perform_rom_test_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of perform_rom_test.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Finds both ends of x and of y by watching the image, keeps the range",
+        "description": "## Finds both ends of x and of y by watching the image, keeps the range\n\nFinds both ends of x and of y by watching the image, keeps the range\nas `calibrated_range`, and returns it. The sample must have detail\nover the whole range.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_stage_measure_perform_rom_test_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/stage_measure_perform_rom_test_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stage_measure_perform_rom_test_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stage_measure_perform_rom_test_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stage_measure/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `stage_measure` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_stage_measure_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stage_measure/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `stage_measure`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_stage_measure_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stage_measure/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `stage_measure`: its properties, actions and events, and how to use them.",
+        "operationId": "things_stage_measure_api_v1_stage_measure__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11101,6 +11332,416 @@
       },
       "bg_channel_deviations_luv_ready_value": {
         "type": "boolean"
+      },
+      "stage_measure_calibrated_range_value": {
+        "oneOf": [
+          {
+            "description": "How far the stage travels in x and y.",
+            "type": "object",
+            "properties": {
+              "x": {
+                "description": "In x.",
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "description": "Its lowest position, in steps.",
+                    "type": "integer"
+                  },
+                  "max": {
+                    "description": "Its highest position, in steps.",
+                    "type": "integer"
+                  },
+                  "focus_shift": {
+                    "description": "How far the focus moved in z at the lowest and highest positions,\nfrom where the test started, when autofocus could measure it.",
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "min",
+                  "max"
+                ]
+              },
+              "y": {
+                "description": "In y.",
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "description": "Its lowest position, in steps.",
+                    "type": "integer"
+                  },
+                  "max": {
+                    "description": "Its highest position, in steps.",
+                    "type": "integer"
+                  },
+                  "focus_shift": {
+                    "description": "How far the focus moved in z at the lowest and highest positions,\nfrom where the test started, when autofocus could measure it.",
+                    "oneOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "min",
+                  "max"
+                ]
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "stage_measure_perform_recentre_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "stage_measure_perform_recentre_output": {
+        "description": "A stage position or displacement, in whole steps per axis: motor steps\nfor a stepper stage, the native resolution for a µm-native one.",
+        "type": "object",
+        "properties": {
+          "x": {
+            "description": "Steps in x.",
+            "type": "integer"
+          },
+          "y": {
+            "description": "Steps in y.",
+            "type": "integer"
+          },
+          "z": {
+            "description": "Steps in z, the focus.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "z"
+        ]
+      },
+      "stage_measure_perform_recentre_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/stage_measure_perform_recentre_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/stage_measure_perform_recentre_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "stage_measure_perform_rom_test_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "stage_measure_perform_rom_test_output": {
+        "description": "How far the stage travels in x and y.",
+        "type": "object",
+        "properties": {
+          "x": {
+            "description": "In x.",
+            "type": "object",
+            "properties": {
+              "min": {
+                "description": "Its lowest position, in steps.",
+                "type": "integer"
+              },
+              "max": {
+                "description": "Its highest position, in steps.",
+                "type": "integer"
+              },
+              "focus_shift": {
+                "description": "How far the focus moved in z at the lowest and highest positions,\nfrom where the test started, when autofocus could measure it.",
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ]
+          },
+          "y": {
+            "description": "In y.",
+            "type": "object",
+            "properties": {
+              "min": {
+                "description": "Its lowest position, in steps.",
+                "type": "integer"
+              },
+              "max": {
+                "description": "Its highest position, in steps.",
+                "type": "integer"
+              },
+              "focus_shift": {
+                "description": "How far the focus moved in z at the lowest and highest positions,\nfrom where the test started, when autofocus could measure it.",
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ]
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ]
+      },
+      "stage_measure_perform_rom_test_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/stage_measure_perform_rom_test_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/stage_measure_perform_rom_test_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
       }
     }
   }

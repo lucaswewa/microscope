@@ -6,6 +6,7 @@ import { ref, watchEffect } from 'vue'
 
 import { useThing } from '@/api/things'
 import MiniStream from '@/live/MiniStream.vue'
+import { followProperty } from '@/server-ui/follow'
 import ServerPanel from '@/server-ui/ServerPanel.vue'
 import SectionHeading from '@/ui/SectionHeading.vue'
 
@@ -17,7 +18,10 @@ watchEffect((onCleanup) => {
   if (!thing) return
   const show = (name: string | null) => (detector.value = name)
   void thing.read('background_detector_name').then(show, () => {})
-  onCleanup(thing.observe('background_detector_name', show))
+  // Followed, not observed: a camera may not offer it to observe.
+  onCleanup(
+    followProperty(thing.thing, 'background_detector_name', (n) => show(n as string | null)),
+  )
 })
 </script>
 

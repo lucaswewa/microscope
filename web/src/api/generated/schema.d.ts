@@ -3678,6 +3678,152 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/stage_measure/calibrated_range": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The range the last test measured, in the stage's steps.
+         * @description ## The range the last test measured, in the stage's steps.
+         *
+         *     The range the last test measured, in the stage's steps.
+         */
+        get: operations["get_property_api_v1_stage_measure_calibrated_range_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stage_measure/perform_recentre": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of perform_recentre.
+         * @description List all the invocations of perform_recentre that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_stage_measure_perform_recentre_get"];
+        put?: never;
+        /**
+         * Moves x and y to the middle of the measured range and makes that the
+         * @description ## Moves x and y to the middle of the measured range and makes that the
+         *
+         *     Moves x and y to the middle of the measured range and makes that the
+         *     stage's zero, shifting the range to match. Returns where the middle
+         *     was.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_stage_measure_perform_recentre_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stage_measure/perform_rom_test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of perform_rom_test.
+         * @description List all the invocations of perform_rom_test that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_stage_measure_perform_rom_test_get"];
+        put?: never;
+        /**
+         * Finds both ends of x and of y by watching the image, keeps the range
+         * @description ## Finds both ends of x and of y by watching the image, keeps the range
+         *
+         *     Finds both ends of x and of y by watching the image, keeps the range
+         *     as `calibrated_range`, and returns it. The sample must have detail
+         *     over the whole range.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_stage_measure_perform_rom_test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stage_measure/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `stage_measure` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_stage_measure_properties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stage_measure/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `stage_measure`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_stage_measure_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/stage_measure/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `stage_measure`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_stage_measure_api_v1_stage_measure__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -4929,6 +5075,115 @@ export interface components {
         bg_channel_deviations_luv_channel_tolerance_value: number;
         bg_channel_deviations_luv_min_sample_coverage_value: number;
         bg_channel_deviations_luv_ready_value: boolean;
+        stage_measure_calibrated_range_value: {
+            /** @description In x. */
+            x: {
+                /** @description Its lowest position, in steps. */
+                min: number;
+                /** @description Its highest position, in steps. */
+                max: number;
+                /**
+                 * @description How far the focus moved in z at the lowest and highest positions,
+                 *     from where the test started, when autofocus could measure it.
+                 */
+                focus_shift?: number[] | null;
+            };
+            /** @description In y. */
+            y: {
+                /** @description Its lowest position, in steps. */
+                min: number;
+                /** @description Its highest position, in steps. */
+                max: number;
+                /**
+                 * @description How far the focus moved in z at the lowest and highest positions,
+                 *     from where the test started, when autofocus could measure it.
+                 */
+                focus_shift?: number[] | null;
+            };
+        } | null;
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        stage_measure_perform_recentre_input: Record<string, never> | null;
+        /**
+         * @description A stage position or displacement, in whole steps per axis: motor steps
+         *     for a stepper stage, the native resolution for a µm-native one.
+         */
+        stage_measure_perform_recentre_output: {
+            /** @description Steps in x. */
+            x: number;
+            /** @description Steps in y. */
+            y: number;
+            /** @description Steps in z, the focus. */
+            z: number;
+        };
+        stage_measure_perform_recentre_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["stage_measure_perform_recentre_input"];
+            output?: components["schemas"]["stage_measure_perform_recentre_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        stage_measure_perform_rom_test_input: Record<string, never> | null;
+        /** @description How far the stage travels in x and y. */
+        stage_measure_perform_rom_test_output: {
+            /** @description In x. */
+            x: {
+                /** @description Its lowest position, in steps. */
+                min: number;
+                /** @description Its highest position, in steps. */
+                max: number;
+                /**
+                 * @description How far the focus moved in z at the lowest and highest positions,
+                 *     from where the test started, when autofocus could measure it.
+                 */
+                focus_shift?: number[] | null;
+            };
+            /** @description In y. */
+            y: {
+                /** @description Its lowest position, in steps. */
+                min: number;
+                /** @description Its highest position, in steps. */
+                max: number;
+                /**
+                 * @description How far the focus moved in z at the lowest and highest positions,
+                 *     from where the test started, when autofocus could measure it.
+                 */
+                focus_shift?: number[] | null;
+            };
+        };
+        stage_measure_perform_rom_test_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["stage_measure_perform_rom_test_input"];
+            output?: components["schemas"]["stage_measure_perform_rom_test_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -10329,6 +10584,214 @@ export interface operations {
         };
     };
     things_bg_channel_deviations_luv_api_v1_bg_channel_deviations_luv__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_stage_measure_calibrated_range_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of calibrated_range */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["stage_measure_calibrated_range_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_stage_measure_perform_recentre_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of perform_recentre. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_stage_measure_perform_recentre_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["stage_measure_perform_recentre_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["stage_measure_perform_recentre_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["stage_measure_perform_recentre_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_stage_measure_perform_rom_test_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of perform_rom_test. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_stage_measure_perform_rom_test_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["stage_measure_perform_rom_test_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["stage_measure_perform_rom_test_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["stage_measure_perform_rom_test_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_stage_measure_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_stage_measure_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_stage_measure_api_v1_stage_measure__get: {
         parameters: {
             query?: never;
             header?: never;

@@ -79,6 +79,11 @@ impl StageApi for ThingRef<FakeStage> {
         Box::pin(async { Ok(()) })
     }
 
+    fn set_zero(&self) -> BoxFuture<'_, Result<(), ActionError>> {
+        let zeroed = ThingRef::thing(self).position.set(Position::default());
+        Box::pin(async move { zeroed.map_err(ActionError::handled) })
+    }
+
     fn axis_scale(&self) -> AxisScale {
         AxisScale::uniform(0.1)
     }

@@ -583,6 +583,14 @@ impl StageApi for ThingRef<SimulatedStage> {
         Box::pin(async move { SimulatedStageActions::halt(self).await.map(|_| ()) })
     }
 
+    fn set_zero(&self) -> BoxFuture<'_, Result<(), ActionError>> {
+        Box::pin(async move {
+            SimulatedStageActions::set_zero_position(self)
+                .await
+                .map(|_| ())
+        })
+    }
+
     fn axis_scale(&self) -> AxisScale {
         ThingRef::thing(self).scale()
     }
