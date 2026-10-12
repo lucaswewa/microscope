@@ -1,7 +1,7 @@
 # P30: Stage measurement tools
 
 - Status: In review
-- Pull request: (added once opened)
+- Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40)
 - ADRs: none new
 - Spec: [phases.md#p30](../phases.md#p30)
 
