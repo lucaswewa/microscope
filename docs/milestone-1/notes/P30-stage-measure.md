@@ -130,7 +130,7 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
     - every Settings section loaded its panels, with no errors.
   - **The new tools:** with limits on (x −4000 to 6000, y −5000 to 3000) and the default sample, the test found exactly those ends, with focus shifts within 20 steps. Recentring centred them.
   - **Both themes:** the Stage section in each.
-- **Size:** 630 changed lines of hand-written code (about 210 of them tests) against M's budget of 600: 5% over.
+- **Size:** 631 changed lines of hand-written code (about 210 of them tests) against M's budget of 600: 5% over.
 
 ## Tests
 
@@ -143,7 +143,9 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
     - recentring moves to the middle, (500, −500), and makes it (0, 0, 0);
     - the kept range is shifted;
     - x then ends 3000 steps away;
-  - **the focus shift:** a test with the zero moved to x 2000 and the sample tilted 30 µm per mm in x, with autofocus. It finds the ends to within 5 steps, and the focus 180 z steps up and down at the ends of x, within 60, and unmoved at the ends of y. It takes about 75 seconds, mostly autofocus.
+  - **the focus shift:** a test with the zero moved to x 2000 and the sample tilted 60 µm per mm in x, with autofocus. It finds the ends to within 5 steps, and the focus 360 z steps up and down at the ends of x, within 120, and unmoved at the ends of y.
+    - **Time:** it takes about 90 seconds here and 2 minutes in CI, mostly autofocus.
+    - **The first CI run:** with a 30 µm per mm tilt and a tolerance of 60, it failed. Autofocus on CI's slower machine was 83 steps (4 µm) off at an end of y. The larger tilt and tolerance keep the signal clear of that noise, and of the mutation that reports z instead of its shift (240 steps off).
 - **`stage_measure`'s unit test:** a registration is trusted when sure, or when it found the move asked for, on the axis and off it.
 - **`SettingsPage.spec.ts`** (1 new test, 1 extended):
   - before a test, "It isn't measured yet." and no Recentre;

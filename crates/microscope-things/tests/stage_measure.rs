@@ -143,16 +143,17 @@ async fn measures_how_far_the_focus_moves_at_the_ends() {
     let client = harness.client();
     run(client, "/stage/move_absolute", json!({"x": 2000})).await;
     run(client, "/stage/set_zero_position", json!({})).await;
-    // The sample's surface rises 30 µm per mm in x, so 0.3 mm along, the
-    // stage must come down 180 z steps more to keep it in focus.
-    put(client, "/camera/focal_tilt_x", json!(30.0)).await;
+    // The sample's surface rises 60 µm per mm in x, so 0.3 mm along, the
+    // stage must come down 360 z steps more to keep it in focus. Autofocus
+    // finds focus to within a few µm (about 80 steps on a slow machine).
+    put(client, "/camera/focal_tilt_x", json!(60.0)).await;
     let record = run(client, "/stage_measure/perform_rom_test", json!({})).await;
     assert_eq!(record["status"], "completed", "{record}");
     let range = &record["output"];
-    assert_near(&range["x"]["focus_shift"][0], 180, 60);
-    assert_near(&range["x"]["focus_shift"][1], -180, 60);
-    assert_near(&range["y"]["focus_shift"][0], 0, 60);
-    assert_near(&range["y"]["focus_shift"][1], 0, 60);
+    assert_near(&range["x"]["focus_shift"][0], 360, 120);
+    assert_near(&range["x"]["focus_shift"][1], -360, 120);
+    assert_near(&range["y"]["focus_shift"][0], 0, 120);
+    assert_near(&range["y"]["focus_shift"][1], 0, 120);
     assert_near(&range["x"]["min"], -3000, 5);
     assert_near(&range["x"]["max"], 3000, 5);
     harness.stop().await;
