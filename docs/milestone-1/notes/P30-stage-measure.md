@@ -1,6 +1,6 @@
 # P30: Stage measurement tools
 
-- Status: In review
+- Status: Done
 - Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40)
 - ADRs: none new
 - Spec: [phases.md#p30](../phases.md#p30)
@@ -181,6 +181,12 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
 
 ## Follow-ups and known gaps
 
+- **A known failure, not yet investigated.** When the owner tried "Measure the range of motion" while reviewing, it failed with "the image has too little detail to track: the sample must cover the whole range, in focus". My own runs and the tests passed, so something about that setup differs. These are guesses, none of them confirmed:
+  - **The sample's edge:** with the travel limits off, or a travel wider than the sample, the stage goes past where the default blobs end (20 mm across), and the image is empty.
+  - **Sparse blobs:** the default sample's sparse blobs make some registrations unsure, and only a move that matched the one asked for is trusted without that.
+  - **Out of focus:** the sample may have been out of focus, without autofocus to recover it.
+
+  It needs reproducing with the owner's settings before P31 builds on it. A clearer error, saying where the stage was and which registration failed, would also help.
 - **Untested:** giving up after 500 big steps, which would take minutes in the simulator.
 - **Saving the data:** the test's data isn't saved to the data folder, as OpenFlexure's is.
 - **Recentring by the arc:** a real flexure stage could recentre on the top of its z arc, as OpenFlexure does, once there's hardware to try it on.
