@@ -13,3 +13,4 @@ pub mod background;
 pub mod fft;
 pub mod mapping;
 pub mod registration;
+pub mod scan;

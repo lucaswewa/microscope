@@ -1,6 +1,6 @@
 # P33: Image and deep-zoom viewer
 
-- Status: In review
+- Status: Done
 - Pull request: [#44](https://github.com/lucaswewa/microscope/pull/44)
 - ADRs: [ADR-0027](../../adr/0027-deep-zoom-viewer.md)
 - Spec: [phases.md#p33](../phases.md#p33)
