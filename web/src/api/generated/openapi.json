@@ -12251,6 +12251,51 @@
                     "type",
                     "path"
                   ]
+                },
+                {
+                  "description": "As a deep-zoom image, such as a stitched scan (P38).",
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "description": "The path of its `.dzi` file, with its tiles beside it in\n`<name>_files/`.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "const": "dzi",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "path"
+                  ]
+                },
+                {
+                  "description": "As images shown one at a time, such as a timelapse's (P41).",
+                  "type": "object",
+                  "properties": {
+                    "paths": {
+                      "description": "The images' paths, in order.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "start": {
+                      "description": "The one shown first, from 0.",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "const": "directory",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "paths",
+                    "start"
+                  ]
                 }
               ]
             },

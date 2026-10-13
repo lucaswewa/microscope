@@ -1,6 +1,6 @@
 # P32: Gallery tab
 
-- Status: In review
+- Status: Done
 - Pull request: [#43](https://github.com/lucaswewa/microscope/pull/43)
 - ADRs: none new
 - Spec: [phases.md#p32](../phases.md#p32)

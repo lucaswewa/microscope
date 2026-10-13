@@ -21,6 +21,7 @@ import AppCheckbox from '@/ui/AppCheckbox.vue'
 import AppDialog from '@/ui/AppDialog.vue'
 import AppMenu, { type MenuItems } from '@/ui/AppMenu.vue'
 import AppPagination from '@/ui/AppPagination.vue'
+import AppSlider from '@/ui/AppSlider.vue'
 import AppSelect from '@/ui/AppSelect.vue'
 import AppSpinner from '@/ui/AppSpinner.vue'
 import AppToggle from '@/ui/AppToggle.vue'
@@ -55,6 +56,7 @@ const resolutions = [
 ]
 const saveToGallery = ref(true)
 const autoExposure = ref(false)
+const brightness = ref(120)
 const openSections = ref(['move'])
 const progress = ref(35)
 const lastEvent = ref('none')
@@ -203,6 +205,10 @@ const serverPanel = serverPanelFixture as UiElement[]
           <AppCheckbox :model-value="true" label="Disabled" disabled />
           <AppToggle v-model="autoExposure" label="Auto exposure" />
           <AppToggle :model-value="false" label="Disabled" disabled />
+        </div>
+        <div class="gallery__row">
+          <AppSlider v-model="brightness" label="Brightness" :max="200" />
+          <AppSlider :model-value="50" label="Disabled" disabled />
         </div>
 
         <h3>Accordion</h3>

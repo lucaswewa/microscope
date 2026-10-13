@@ -41,5 +41,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0024](0024-server-described-ui-elements.md) | Server-described UI elements | Accepted | P24 |
 | [0025](0025-data-folder-layout-and-capture-metadata.md) | Data folder layout and capture metadata | Accepted | P26 |
 | [0026](0026-gallery-index-and-data-route.md) | Gallery index and data route | Accepted | P31 |
+| [0027](0027-deep-zoom-viewer.md) | Deep-zoom viewer | Accepted | P33 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

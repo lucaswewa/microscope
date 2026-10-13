@@ -10,6 +10,33 @@ import { createBrowserHost } from '@/host/browser'
 import { fakeServer, json, type Received } from '../api/fakeServer'
 import { mountApp } from '../mountApp'
 
+// OpenSeadragon draws with WebGL, which the tests' DOM lacks: a fake records
+// what it's asked.
+const osd = vi.hoisted(() => {
+  const viewers: {
+    options: { tileSources: unknown; sequenceMode: boolean; initialPage: number }
+    viewport: Record<'zoomBy' | 'applyConstraints' | 'goHome', ReturnType<typeof vi.fn>>
+    goToPage: ReturnType<typeof vi.fn>
+    destroy: ReturnType<typeof vi.fn>
+    fire: (event: string) => void
+  }[] = []
+  const create = vi.fn((options: (typeof viewers)[number]['options']) => {
+    const handlers: Record<string, () => void> = {}
+    const viewer = {
+      options,
+      viewport: { zoomBy: vi.fn(), applyConstraints: vi.fn(), goHome: vi.fn() },
+      goToPage: vi.fn(),
+      destroy: vi.fn(),
+      addHandler: (event: string, handler: () => void) => (handlers[event] = handler),
+      fire: (event: string) => handlers[event]?.(),
+    }
+    viewers.push(viewer)
+    return viewer
+  })
+  return { create, viewers }
+})
+vi.mock('openseadragon', () => ({ default: osd.create }))
+
 /** A Thing's description, with readable properties and actions. */
 function thing(name: string, properties: string[], actions: string[] = []): ThingDescription {
   const href = (affordance: string) => `/api/v1/${name}/${affordance}`
@@ -49,6 +76,8 @@ const done = (id: string) =>
   json({ id, status: 'completed', href: `http://localhost/api/v1/action_invocations/${id}` }, 201)
 
 let list: GalleryEntry[]
+let fullScreen: (active: boolean) => void
+const setFullScreen = vi.fn(async () => {})
 let received: Received[]
 let wrapper: VueWrapper | undefined
 const saveFile = vi.fn(async () => {})
@@ -91,7 +120,12 @@ afterEach(() => {
 })
 
 async function open() {
-  const host = { ...createBrowserHost(), saveFile }
+  const fullscreen = {
+    active: () => false,
+    set: setFullScreen,
+    watch: (onChange: (active: boolean) => void) => ((fullScreen = onChange), () => {}),
+  }
+  const host = { ...createBrowserHost(), saveFile, fullscreen }
   ;({ wrapper } = await mountApp('/gallery', { [hostKey]: host }))
   await useConnectionStore().connect({ kind: 'local' })
   await vi.advanceTimersByTimeAsync(0)
@@ -227,19 +261,12 @@ describe('the Gallery tab', () => {
     expect(posted.map((r) => JSON.parse(r.body!))).toEqual([{ card_types: ['Scan'] }])
   })
 
-  it('reads the gallery again on Refresh, and shows an image with View', async () => {
+  it('reads the gallery again on Refresh', async () => {
     await open()
     expect(reads()).toBe(1)
     await button('Refresh')!.trigger('click')
     await flushPromises()
     expect(reads()).toBe(2)
-    await button('View', wrapper!.findAll('.gallery-card')[1])!.trigger('click')
-    await flushPromises()
-    const viewer = document.querySelector('[role="dialog"]')!
-    expect(viewer.textContent).toContain('capture-2')
-    expect(new URL(viewer.querySelector('img')!.src).pathname).toBe(
-      '/api/v1/data/captures/capture-2.jpeg',
-    )
   })
 
   it('says when nothing has been saved', async () => {
@@ -247,5 +274,107 @@ describe('the Gallery tab', () => {
     await open()
     expect(wrapper!.text()).toContain('Nothing has been saved yet.')
     expect(showing()).toBe('')
+  })
+})
+
+describe('the viewer', () => {
+  /** Opens card `index`'s viewer: the dialog, and its fake OpenSeadragon. */
+  async function view(index: number) {
+    await button('View', wrapper!.findAll('.gallery-card')[index])!.trigger('click')
+    await flushPromises()
+    const dialog = document.querySelector<HTMLElement>('[role="dialog"]')!
+    return { dialog, viewer: osd.viewers.at(-1)! }
+  }
+  const press = (label: string) =>
+    document.querySelector<HTMLElement>(`[role="dialog"] button[aria-label="${label}"]`)!.click()
+  const path = (url: unknown) => new URL(url as string).pathname
+
+  it('shows an image to zoom and pan, and closes', async () => {
+    await open()
+    const { dialog, viewer } = await view(1)
+    expect(dialog.querySelector('h2')!.textContent).toBe('capture-2')
+    const [source] = viewer.options.tileSources as { type: string; url: string }[]
+    expect([source!.type, path(source!.url)]).toEqual([
+      'image',
+      '/api/v1/data/captures/capture-2.jpeg',
+    ])
+    expect(viewer.options.sequenceMode).toBe(false)
+    const status = () => dialog.querySelector('.deep-zoom')!.getAttribute('data-status')
+    expect(status()).toBe('loading')
+    viewer.fire('open')
+    await flushPromises()
+    expect(status()).toBe('shown')
+    press('Zoom in')
+    press('Zoom out')
+    press('Show it all')
+    expect(viewer.viewport.zoomBy.mock.calls).toEqual([[1.5], [1 / 1.5]])
+    expect(viewer.viewport.goHome).toHaveBeenCalledOnce()
+    press('Close')
+    await flushPromises()
+    expect(viewer.destroy).toHaveBeenCalledOnce()
+    expect(document.querySelector('[role="dialog"]')).toBeNull()
+  })
+
+  it('shows a deep-zoom image, and a sequence with a slider', async () => {
+    const paths = ['a.jpeg', 'b.jpeg', 'c.jpeg']
+    list = [
+      capture(1, { viewer: { type: 'dzi', path: 'scans/s/stitched.dzi' } }),
+      capture(2, { viewer: { type: 'directory', paths, start: 1 } }),
+    ]
+    await open()
+    const first = await view(0)
+    const dzi = first.viewer.options.tileSources as string[]
+    expect(dzi.map(path)).toEqual(['/api/v1/data/scans/s/stitched.dzi'])
+    first.viewer.fire('open-failed')
+    await flushPromises()
+    expect(first.dialog.textContent).toContain("It couldn't be shown.")
+    expect(first.dialog.querySelector('[aria-label="Image"]')).toBeNull()
+    press('Close')
+    await flushPromises()
+
+    const { dialog, viewer } = await view(1)
+    const sources = viewer.options.tileSources as { url: string }[]
+    expect(sources.map((source) => path(source.url))).toEqual(
+      paths.map((name) => `/api/v1/data/${name}`),
+    )
+    expect([viewer.options.sequenceMode, viewer.options.initialPage]).toEqual([true, 1])
+    expect(dialog.textContent).toContain('2 of 3')
+    await key(dialog.querySelector('[aria-label="Image"]')!, 'ArrowRight')
+    expect(viewer.goToPage).toHaveBeenCalledWith(2)
+    expect(dialog.textContent).toContain('3 of 3')
+  })
+
+  it('changes the brightness, contrast and saturation, and resets them', async () => {
+    await open()
+    const { dialog } = await view(0)
+    const filter = () => dialog.querySelector<HTMLElement>('.deep-zoom__view')!.style.filter
+    expect(filter()).toBe('brightness(100%) contrast(100%) saturate(100%)')
+    await key(dialog.querySelector('[aria-label="Brightness"]')!, 'PageUp')
+    await key(dialog.querySelector('[aria-label="Contrast"]')!, 'ArrowLeft')
+    await key(dialog.querySelector('[aria-label="Saturation"]')!, 'Home')
+    expect(filter()).toBe('brightness(110%) contrast(99%) saturate(0%)')
+    const reset = [...dialog.querySelectorAll('button')].find(
+      (b) => b.textContent!.trim() === 'Reset',
+    )
+    reset!.click()
+    await flushPromises()
+    expect(filter()).toBe('brightness(100%) contrast(100%) saturate(100%)')
+  })
+
+  it('fills the screen, and leaves it when the screen does', async () => {
+    await open()
+    const { dialog } = await view(0)
+    press('Full screen')
+    await flushPromises()
+    expect(setFullScreen).toHaveBeenLastCalledWith(true)
+    expect(dialog.classList).toContain('app-dialog--full')
+    fullScreen(false)
+    await flushPromises()
+    expect(dialog.classList).not.toContain('app-dialog--full')
+    press('Full screen')
+    await flushPromises()
+    press('Close')
+    await flushPromises()
+    expect(setFullScreen).toHaveBeenLastCalledWith(false)
   })
 })
