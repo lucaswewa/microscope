@@ -3824,6 +3824,205 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/gallery/bulk_actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Actions on many items at once, for the gallery's sidebar. Captures
+         * @description ## Actions on many items at once, for the gallery's sidebar. Captures
+         *
+         *     Actions on many items at once, for the gallery's sidebar. Captures
+         *     have none.
+         */
+        get: operations["get_property_api_v1_gallery_bulk_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/captures/{id}/zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Capture Zip
+         * @description The capture named by the path's second-last part, with its sidecar,
+         *     as a ZIP archive.
+         */
+        get: operations["capture_zip_api_v1_gallery_captures__id__zip_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/card_types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The kinds of item it shows.
+         * @description ## The kinds of item it shows.
+         *
+         *     The kinds of item it shows.
+         */
+        get: operations["get_property_api_v1_gallery_card_types_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/delete_all_data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of delete_all_data.
+         * @description List all the invocations of delete_all_data that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_gallery_delete_all_data_get"];
+        put?: never;
+        /**
+         * Deletes every item of the given card types.
+         * @description ## Deletes every item of the given card types.
+         *
+         *     Deletes every item of the given card types.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_gallery_delete_all_data_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/captures/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Capture
+         * @description Deletes the capture named by the path's last part, with its sidecar
+         *     and its thumbnail.
+         */
+        delete: operations["delete_capture_api_v1_gallery_captures__id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/list_data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Everything in the gallery, newest first.
+         * @description ## Everything in the gallery, newest first.
+         *
+         *     Everything in the gallery, newest first.
+         */
+        get: operations["get_property_api_v1_gallery_list_data_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `gallery` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_gallery_properties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `gallery`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_gallery_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/gallery/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `gallery`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_gallery_api_v1_gallery__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5184,6 +5383,160 @@ export interface components {
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
+        gallery_bulk_actions_value: {
+            /** @description The Thing's name. */
+            thing: string;
+            /** @description The action's name. */
+            action: string;
+            /** @description What the button says. */
+            label: string;
+            /** @description The action's input. */
+            input?: unknown;
+            /** @description A question to answer before it runs. */
+            confirm?: string | null;
+            /** @description Where its progress shows. */
+            progress?: "inline" | "dialog";
+            /** @description The camera whose small live stream the progress dialog shows. */
+            stream?: string | null;
+            /** @description Whether it can be cancelled while it runs. */
+            cancellable?: boolean;
+            /** @description What to say when it succeeds: nothing, unless set. */
+            success?: ({
+                message: string;
+            } | "output") | null;
+            /**
+             * @description Whether the panel should be described again once it succeeds,
+             *     because the action changes what it shows.
+             */
+            refresh?: boolean;
+            /** @description Shown as a secondary button, rather than a primary one. */
+            secondary?: boolean;
+            /** @description Whether the Thing lacks the action. */
+            broken?: boolean;
+        }[];
+        gallery_card_types_value: string[];
+        gallery_delete_all_data_input: {
+            card_types: string[];
+        };
+        gallery_delete_all_data_output: null;
+        gallery_delete_all_data_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["gallery_delete_all_data_input"];
+            output?: components["schemas"]["gallery_delete_all_data_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        gallery_list_data_value: {
+            /** @description What the card is called. */
+            name: string;
+            /**
+             * @description Where the item is in the data folder, as `GET {prefix}/data/{path}`
+             *     serves it.
+             */
+            path: string;
+            /** @description What kind of item it is: one of `card_types`. */
+            card_type: string;
+            /** @description When it was made: RFC 3339, in UTC, to the millisecond. */
+            created: string;
+            /** @description Its thumbnail's path in the data folder, if it has one. */
+            thumbnail?: string | null;
+            /** @description How the viewer shows it. */
+            viewer: {
+                /** @description The image's path in the data folder. */
+                path: string;
+                /** @constant */
+                type: "image";
+            };
+            /** @description Lines that describe it. */
+            info: {
+                /** @description What it's about. */
+                label: string;
+                /** @description What it says. */
+                value: string;
+            }[];
+            /** @description The ways to download it. */
+            download_buttons: ({
+                /** @description What the button says. */
+                label: string;
+                /** @description The name it's saved under. */
+                filename: string;
+                /** @description Shown as a secondary button, rather than a primary one. */
+                secondary?: boolean;
+                /** @description Whether the Thing lacks the endpoint or the action. */
+                broken?: boolean;
+            } & ({
+                /** @description The Thing's name. */
+                thing: string;
+                /** @description The endpoint's path. */
+                path: string;
+                /** @constant */
+                source: "endpoint";
+            } | {
+                /** @description The Thing's name. */
+                thing: string;
+                /** @description The action's name. */
+                action: string;
+                /** @description The action's input. */
+                input?: unknown;
+                /** @constant */
+                source: "action";
+            } | {
+                /** @description Its path in the data folder. */
+                path: string;
+                /** @constant */
+                source: "data";
+            }))[];
+            /** @description What can be done with it. */
+            card_actions: {
+                /** @description The Thing's name. */
+                thing: string;
+                /** @description The action's name. */
+                action: string;
+                /** @description What the button says. */
+                label: string;
+                /** @description The action's input. */
+                input?: unknown;
+                /** @description A question to answer before it runs. */
+                confirm?: string | null;
+                /** @description Where its progress shows. */
+                progress?: "inline" | "dialog";
+                /** @description The camera whose small live stream the progress dialog shows. */
+                stream?: string | null;
+                /** @description Whether it can be cancelled while it runs. */
+                cancellable?: boolean;
+                /** @description What to say when it succeeds: nothing, unless set. */
+                success?: ({
+                    message: string;
+                } | "output") | null;
+                /**
+                 * @description Whether the panel should be described again once it succeeds,
+                 *     because the action changes what it shows.
+                 */
+                refresh?: boolean;
+                /** @description Shown as a secondary button, rather than a primary one. */
+                secondary?: boolean;
+                /** @description Whether the Thing lacks the action. */
+                broken?: boolean;
+            }[];
+            /** @description What the card warns of. */
+            card_messages: {
+                /** @description How serious it is. */
+                level: "warning" | "alert";
+                /** @description What it says. */
+                message: string;
+            }[];
+            /** @description Where to send `DELETE` to delete it, relative to the API prefix. */
+            delete_endpoint: string;
+        }[];
     };
     responses: never;
     parameters: never;
@@ -10792,6 +11145,227 @@ export interface operations {
         };
     };
     things_stage_measure_api_v1_stage_measure__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_gallery_bulk_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of bulk_actions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["gallery_bulk_actions_value"];
+                };
+            };
+        };
+    };
+    capture_zip_api_v1_gallery_captures__id__zip_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_property_api_v1_gallery_card_types_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of card_types */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["gallery_card_types_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_gallery_delete_all_data_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of delete_all_data. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_gallery_delete_all_data_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["gallery_delete_all_data_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["gallery_delete_all_data_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["gallery_delete_all_data_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_capture_api_v1_gallery_captures__id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_property_api_v1_gallery_list_data_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of list_data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["gallery_list_data_value"];
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_gallery_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_gallery_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_gallery_api_v1_gallery__get: {
         parameters: {
             query?: never;
             header?: never;

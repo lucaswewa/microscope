@@ -1,9 +1,14 @@
-//! The data folder, where captures and other data are saved. P26 lays it
-//! out; for now, Things find it and resolve paths in it safely.
+//! The data folder, where captures and other data are saved (ADR-0025):
+//! Things find it here, resolve paths in it safely, and pack its files into
+//! ZIP downloads.
 
+use std::fs::File;
+use std::io::{Seek, Write};
 use std::path::{Component, Path, PathBuf};
 
 use teta_wot::prelude::*;
+use zip::write::SimpleFileOptions;
+use zip::{CompressionMethod, ZipWriter};
 
 /// The data folder when the configuration doesn't name one.
 pub const DEFAULT_DATA_FOLDER: &str = ".microscope/data";
@@ -31,6 +36,19 @@ pub fn resolve(folder: &Path, relative: &str) -> Result<PathBuf, String> {
         ));
     }
     Ok(folder.join(path))
+}
+
+/// Writes a ZIP archive of `files`, each a name in the archive and the file
+/// to put there, to `out`, which it returns. The files are stored as they
+/// are, since images are compressed already.
+pub fn zip<W: Write + Seek>(files: &[(String, PathBuf)], out: W) -> zip::result::ZipResult<W> {
+    let mut archive = ZipWriter::new(out);
+    let stored = SimpleFileOptions::default().compression_method(CompressionMethod::Stored);
+    for (name, path) in files {
+        archive.start_file(name.as_str(), stored)?;
+        std::io::copy(&mut File::open(path)?, &mut archive)?;
+    }
+    archive.finish()
 }
 
 #[cfg(test)]

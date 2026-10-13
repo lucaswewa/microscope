@@ -47,3 +47,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P28 | [Settings tab](P28-settings-tab.md) | Done |
 | P29 | [Calibration wizard](P29-calibration-wizard.md) | Done |
 | P30 | [Stage measurement tools](P30-stage-measure.md) | Done |
+| P31 | [Gallery backend and data route](P31-gallery-backend.md) | In review |

@@ -31,6 +31,7 @@ http-body-util = "0.1.5"
 # Images: PNG for the simulator's examples, JPEG for the camera's streams.
 image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "tiff"] }
 os_info = { version = "3", default-features = false }
+percent-encoding = "2.3"
 # 8.12, not 8.13: dependencies must be at least two weeks old (CLAUDE.md).
 rust-embed = "8.12"
 schemars = "1.2"
@@ -44,6 +45,9 @@ tracing = "0.1.41"
 tracing-appender = "0.2"
 tracing-subscriber = { version = "0.3.20", default-features = false, features = ["std", "registry", "fmt", "ansi", "env-filter"] }
 uuid = { version = "1.18", features = ["serde"] }
+# ZIP downloads, stored without compression (images are compressed already),
+# so no codecs. 8.6, not 9: dependencies must be at least two weeks old.
+zip = { version = "8.6", default-features = false }
 
 [workspace.lints.rust]
 missing_docs = "warn"

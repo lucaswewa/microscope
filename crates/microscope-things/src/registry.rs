@@ -16,8 +16,9 @@
 //! | `camera_stage_mapping` | `microscope.camera_stage_mapping:CameraStageMapping` | P23 (here) |
 //! | `bg_color_channels_luv`, `bg_channel_deviations_luv` | `microscope.background:ColourChannelDetector`, `microscope.background:ChannelDeviationDetector` | P27 (here) |
 //! | `stage_measure` | `microscope.stage_measure:StageMeasure` | P30 (here) |
+//! | `gallery` | `microscope.gallery:Gallery` | P31 (here) |
 //!
-//! and later `gallery` (P31), `smart_scan` and the scan workflows (P35, P37) and
+//! and later `smart_scan` and the scan workflows (P35, P37) and
 //! `sequence` (P41). The test fakes ([`crate::fakes`]) are never here.
 
 use teta_wot::server::ThingRegistry;
@@ -25,6 +26,7 @@ use teta_wot::server::ThingRegistry;
 use crate::autofocus::Autofocus;
 use crate::background::{ChannelDeviationDetector, ColourChannelDetector};
 use crate::camera::SimulatedCamera;
+use crate::gallery::Gallery;
 use crate::illumination::SimulatedIllumination;
 use crate::mapping::CameraStageMapping;
 use crate::stage::SimulatedStage;
@@ -43,4 +45,5 @@ pub fn registry() -> ThingRegistry {
         .register::<ColourChannelDetector>("microscope.background:ColourChannelDetector")
         .register::<ChannelDeviationDetector>("microscope.background:ChannelDeviationDetector")
         .register::<StageMeasure>("microscope.stage_measure:StageMeasure")
+        .register::<Gallery>("microscope.gallery:Gallery")
 }
