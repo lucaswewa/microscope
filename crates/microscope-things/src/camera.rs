@@ -59,6 +59,7 @@ use teta_wot::prelude::*;
 
 use crate::capture;
 use crate::data;
+pub use crate::hardware::CaptureMode;
 use crate::hardware::{
     BackgroundDetector, CameraApi, Capture, CaptureBuffer, CaptureMetadata, IlluminationApi,
     LORES_SIZE, PreviewFrames, StageApi, StreamInfo,
@@ -132,17 +133,6 @@ pub enum SampleType {
     Tissue,
     /// A picture from the data folder.
     Image,
-}
-
-/// How a capture is taken.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-pub enum CaptureMode {
-    /// At full resolution: 1640 × 1232.
-    #[default]
-    Standard,
-    /// At the stream's size, without changing the stream.
-    Quick,
 }
 
 /// A camera's streaming mode.
@@ -443,11 +433,7 @@ impl SimulatedCamera {
         #[param(default)] capture_mode: CaptureMode,
         #[param(default = true)] retain_image: bool,
     ) -> Result<Blob<Jpeg>, ActionError> {
-        let sensor = match capture_mode {
-            CaptureMode::Standard => Sensor::CAPTURE,
-            CaptureMode::Quick => self.streaming_mode.get().sensor(),
-        };
-        let taken = self.take(sensor);
+        let taken = self.take(self.sensor(capture_mode));
         if !retain_image {
             return Ok(Blob::from_bytes(capture::jpeg(&taken.image)?));
         }
@@ -806,6 +792,14 @@ impl SimulatedCamera {
 
     /// A capture: a frame for `sensor`, and how it was taken. Drawing it
     /// takes a while, so it isn't for the async threads.
+    /// The sensor's size for a capture in `mode`.
+    fn sensor(&self, mode: CaptureMode) -> Sensor {
+        match mode {
+            CaptureMode::Standard => Sensor::CAPTURE,
+            CaptureMode::Quick => self.streaming_mode.get().sensor(),
+        }
+    }
+
     fn take(&self, sensor: Sensor) -> Capture {
         let magnification = self.objective.get().objective().magnification;
         let metadata = CaptureMetadata {
@@ -974,10 +968,11 @@ impl CameraApi for ThingRef<SimulatedCamera> {
         (sensor.width, sensor.height)
     }
 
-    fn capture_to_memory(&self) -> BoxFuture<'_, Result<Capture, ActionError>> {
+    fn capture_to_memory(&self, mode: CaptureMode) -> BoxFuture<'_, Result<Capture, ActionError>> {
         let camera = Arc::clone(ThingRef::thing(self));
         Box::pin(async move {
-            let capture = tokio::task::spawn_blocking(move || camera.take(Sensor::CAPTURE)).await;
+            let sensor = camera.sensor(mode);
+            let capture = tokio::task::spawn_blocking(move || camera.take(sensor)).await;
             capture.map_err(ActionError::handled)
         })
     }

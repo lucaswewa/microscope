@@ -33,7 +33,7 @@ mod stage;
 
 pub use background::BackgroundDetector;
 pub use backlash::BacklashCompensation;
-pub use camera::{CameraApi, Capture, CaptureMetadata, StreamInfo};
+pub use camera::{CameraApi, Capture, CaptureMetadata, CaptureMode, StreamInfo};
 pub use capture_buffer::CaptureBuffer;
 pub use illumination::IlluminationApi;
 pub use preview::{LORES_SIZE, PreviewFrames, encode_jpeg};

@@ -1,6 +1,6 @@
 # P34: Scan planners
 
-- Status: In review
+- Status: Done
 - Pull request: [#46](https://github.com/lucaswewa/microscope/pull/46)
 - ADRs: [ADR-0028](../../adr/0028-scan-planning-model.md)
 - Spec: [phases.md#p34](../phases.md#p34)

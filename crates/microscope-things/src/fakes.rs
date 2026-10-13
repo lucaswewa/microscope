@@ -17,7 +17,8 @@ use teta_wot::prelude::*;
 use teta_wot::server::ThingRegistry;
 
 use crate::hardware::{
-    AxisScale, CameraApi, Capture, CaptureMetadata, IlluminationApi, Position, StageApi, StreamInfo,
+    AxisScale, CameraApi, Capture, CaptureMetadata, CaptureMode, IlluminationApi, Position,
+    StageApi, StreamInfo,
 };
 
 /// `registry` with the fakes added, under `microscope.fakes:<Type>`.
@@ -156,7 +157,7 @@ impl CameraApi for ThingRef<FakeCamera> {
         (camera.width, camera.height)
     }
 
-    fn capture_to_memory(&self) -> BoxFuture<'_, Result<Capture, ActionError>> {
+    fn capture_to_memory(&self, _mode: CaptureMode) -> BoxFuture<'_, Result<Capture, ActionError>> {
         let camera = ThingRef::thing(self);
         camera.captures.fetch_add(1, Ordering::SeqCst);
         let image = camera.frame(2);

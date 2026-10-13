@@ -4,7 +4,7 @@
 //! camera driver saves its captures through here.
 
 use std::collections::BTreeMap;
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, ErrorKind};
 use std::path::{Path, PathBuf};
 
@@ -143,21 +143,43 @@ pub fn save(
             Err(error) => return Err(ActionError::handled(error)),
         }
     };
-    let mut encoder = JpegEncoder::new_with_quality(BufWriter::new(file), QUALITY);
-    encoder
-        .encode_image(&capture.image)
-        .map_err(ActionError::handled)?;
+    write(file, &path, capture, mapping)?;
     // The gallery makes a thumbnail that's missing, so the capture stands without one.
     if let Err(error) = save_thumbnail(&capture.image, &thumbnail_path(folder, &name)) {
         tracing::warn!(%error, "the capture's thumbnail couldn't be saved");
     }
+    Ok(path)
+}
+
+/// Saves `capture` as a JPEG at `path`, with its sidecar beside it, for an
+/// image whose name its caller chooses, such as a scan's.
+pub fn save_to(
+    path: &Path,
+    capture: &Capture,
+    mapping: Option<MappingRecord>,
+) -> Result<(), ActionError> {
+    let file = File::create(path).map_err(ActionError::handled)?;
+    write(file, path, capture, mapping)
+}
+
+/// Writes `capture` to `file`, the JPEG at `path`, and its sidecar beside it.
+fn write(
+    file: File,
+    path: &Path,
+    capture: &Capture,
+    mapping: Option<MappingRecord>,
+) -> Result<(), ActionError> {
+    let mut encoder = JpegEncoder::new_with_quality(BufWriter::new(file), QUALITY);
+    encoder
+        .encode_image(&capture.image)
+        .map_err(ActionError::handled)?;
+    let name = path.file_name().unwrap_or_default().to_string_lossy();
     let sidecar = serde_json::to_vec_pretty(&Sidecar::of(capture, &name, mapping));
     std::fs::write(
         path.with_extension("json"),
         sidecar.map_err(ActionError::handled)?,
     )
-    .map_err(ActionError::handled)?;
-    Ok(path)
+    .map_err(ActionError::handled)
 }
 
 /// Where the thumbnail of the capture called `name` is, in the data folder
@@ -192,7 +214,12 @@ pub fn mapping(server: &Server) -> Option<MappingRecord> {
         .things_of_type::<CameraStageMapping>()
         .into_iter()
         .next()?;
-    let (matrix, resolution) = ThingRef::thing(&mapping).calibrated()?;
+    mapping_of(&mapping)
+}
+
+/// `mapping`'s record, if it's calibrated.
+pub fn mapping_of(mapping: &ThingRef<CameraStageMapping>) -> Option<MappingRecord> {
+    let (matrix, resolution) = ThingRef::thing(mapping).calibrated()?;
     Some(MappingRecord {
         image_to_stage_displacement_matrix: matrix,
         image_resolution: resolution,

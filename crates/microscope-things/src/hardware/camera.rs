@@ -32,7 +32,18 @@ pub struct CaptureMetadata {
     pub simulation: Option<Value>,
 }
 
-/// A full-resolution image held in memory, with its metadata.
+/// How a capture is taken.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "snake_case")]
+pub enum CaptureMode {
+    /// At the camera's full resolution.
+    #[default]
+    Standard,
+    /// At the stream's size, without changing the stream.
+    Quick,
+}
+
+/// A captured image held in memory, with its metadata.
 #[derive(Debug, Clone)]
 pub struct Capture {
     /// The image.
@@ -67,8 +78,8 @@ pub trait CameraApi: Send + Sync {
     /// The size of the frames `grab_frame` will return next: (width, height).
     fn frame_size(&self) -> (u32, u32);
 
-    /// A full-resolution image, kept in memory, with its metadata.
-    fn capture_to_memory(&self) -> BoxFuture<'_, Result<Capture, ActionError>>;
+    /// An image taken in `mode`, kept in memory, with its metadata.
+    fn capture_to_memory(&self, mode: CaptureMode) -> BoxFuture<'_, Result<Capture, ActionError>>;
 
     /// The live stream, as it is now.
     fn stream_info(&self) -> StreamInfo;

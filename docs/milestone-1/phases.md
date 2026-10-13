@@ -12,7 +12,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 3: Simulator and live microscope](#stage-3-simulator-and-live-microscope): [P13](#p13) [P14](#p14) [P15](#p15) [P16](#p16) [P17](#p17) [P17b](#p17b) [P18](#p18) [P18b](#p18b) [P19](#p19) [P20](#p20) [P20b](#p20b)
 - [Stage 4: Focus, calibration and capture](#stage-4-focus-calibration-and-capture): [P21](#p21) [P22](#p22) [P23](#p23) [P23b](#p23b) [P24](#p24) [P24b](#p24b) [P25](#p25) [P26](#p26) [P27](#p27) [P28](#p28) [P29](#p29) [P30](#p30)
 - [Stage 5: Gallery](#stage-5-gallery): [P31](#p31) [P32](#p32) [P33](#p33)
-- [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
+- [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P35b](#p35b) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
 - [Stage 7: Sequence](#stage-7-sequence): [P41](#p41) [P42](#p42)
 - [Stage 8: System, launcher and delivery](#stage-8-system-launcher-and-delivery): [P43](#p43) [P44](#p44) [P45](#p45) [P46](#p46) [P47](#p47) [P48](#p48) [P49](#p49)
 
@@ -707,7 +707,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 <a id="p35"></a>
 ### P35: Scan engine with snake and raster workflows
 
-**Goal.** Run a scan end to end on the simulator.
+**Goal.** Run a scan end to end on the simulator. Managing scans afterwards is P35b (split, Appendix D of the plan).
 **Depends on** P21, P23, P31, P34 · **Size** L · **ADRs** 0029
 
 **Scope**
@@ -717,11 +717,23 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
   - `sample_scan(scan_name)`, under a scan lock with unique names. For each tile it moves, autofocuses (using the z estimate) and captures;
   - a scan folder holding the images, per-image metadata, a snapshot of the settings and the scan log;
   - a return to the start position on error or cancel;
-  - `latest_scan_live_details`, `purge_empty_scans`, `download_zip` and a delete endpoint.
-- A scan gallery provider, using the directory viewer until the scan is stitched.
+  - `latest_scan_live_details`.
 
 **Tests**
 - An in-process scan on the simulator; cancelling mid-scan; an error mid-scan returns the stage to the start.
+
+<a id="p35b"></a>
+### P35b: Scans in the gallery
+
+**Goal.** List, view, download and delete finished scans. Split from P35 (Appendix D of the plan).
+**Depends on** P33, P35 · **Size** M · **ADRs** —
+
+**Scope**
+- `smart_scan`: `purge_empty_scans`, `download_zip` and a delete endpoint.
+- A scan gallery provider, using the directory viewer until the scan is stitched.
+
+**Tests**
+- Scans listed in the gallery with the directory viewer; deleting one; purging empty scans; the ZIP's contents.
 
 <a id="p36"></a>
 ### P36: Smart z-stacks
@@ -772,7 +784,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P39: Live and final stitching
 
 **Goal.** Show the mosaic grow during a scan, and finish it afterwards.
-**Depends on** P35, P38 · **Size** M · **ADRs** —
+**Depends on** P35b, P38 · **Size** M · **ADRs** —
 
 **Scope**
 - A preview stitcher updated after each tile. It serves the `smart_scan/latest_preview_stitch.jpg` endpoint, and its timestamp appears in the live details.
