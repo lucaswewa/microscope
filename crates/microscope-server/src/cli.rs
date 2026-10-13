@@ -34,6 +34,7 @@ use tokio::sync::watch;
 use tower::ServiceExt;
 
 use crate::config::{self, ConfigError};
+use crate::data::data_routes;
 use crate::logging::{self, Logs};
 use crate::webapp::{self, WebApp};
 use crate::{lifecycle, routes};
@@ -222,6 +223,10 @@ async fn serve(
         Err(_) => println!("listening"),
     }
     let app_routes = routes::app_routes(&config.server.api_prefix, server_log.clone())
+        .merge(data_routes(
+            &config.server.api_prefix,
+            config.app.data_folder.clone(),
+        ))
         .merge(webapp::webapp_routes(webapp));
     match lifecycle::serve(server, app_routes, listener, stop.wait()).await {
         Ok(()) => Ok(()),

@@ -10,6 +10,8 @@
 //! | `GET {prefix}/log/` | The server log as JSON, oldest first; `?level=WARNING` keeps that level and above |
 //! | `GET {prefix}/logfile/` | Today's log file, as a text download |
 //!
+//! The data folder's files are served beside them ([`crate::data`]).
+//!
 //! Errors answer `{"detail": …}`, as `teta-wot`'s do.
 
 use std::sync::Arc;
@@ -122,12 +124,12 @@ async fn log_file(State(state): State<Arc<AppState>>) -> Response {
     }
 }
 
-fn detail(status: StatusCode, message: String) -> Response {
+pub(crate) fn detail(status: StatusCode, message: String) -> Response {
     (status, Json(json!({ "detail": message }))).into_response()
 }
 
 /// The same policy as `teta-wot`'s routes: every origin, method and header,
 /// with credentials, including Private Network Access preflights.
-fn cors() -> CorsLayer {
+pub(crate) fn cors() -> CorsLayer {
     CorsLayer::very_permissive().allow_private_network(true)
 }

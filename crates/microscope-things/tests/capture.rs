@@ -75,13 +75,9 @@ fn captures(data: &Path) -> Vec<String> {
         return Vec::new();
     };
     let mut names: Vec<String> = entries
-        .map(|entry| {
-            entry
-                .expect("listed")
-                .file_name()
-                .to_string_lossy()
-                .into_owned()
-        })
+        .map(|entry| entry.expect("listed"))
+        .filter(|entry| entry.path().is_file())
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
         .collect();
     names.sort();
     names
@@ -110,6 +106,12 @@ async fn a_capture_is_saved_with_how_it_was_taken() {
     assert_eq!(*sidecar, image.replace(".jpeg", ".json"));
     let saved = std::fs::read(data.join("captures").join(image)).expect("read");
     assert_eq!(download(client, &blob).await, saved);
+    // And a thumbnail for the gallery (P31).
+    let thumbnail = data.join("captures/thumbnails").join(image);
+    assert_eq!(
+        image::image_dimensions(thumbnail).expect("saved"),
+        (320, 240)
+    );
 
     let read = |name: &str| -> Value {
         serde_json::from_slice(&std::fs::read(data.join("captures").join(name)).expect("read"))

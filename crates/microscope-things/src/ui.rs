@@ -6,7 +6,8 @@
 
 use std::sync::{Arc, OnceLock, Weak};
 
-use serde::Serialize;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use teta_wot::ThingHandle;
 use teta_wot::http::axum::Json;
@@ -238,7 +239,7 @@ impl From<PropertyControl> for UiElement {
 }
 
 /// A button that runs an action.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct ActionButton {
     /// The Thing's name.
     pub thing: String,
@@ -247,37 +248,37 @@ pub struct ActionButton {
     /// What the button says.
     pub label: String,
     /// The action's input.
-    #[serde(skip_serializing_if = "is_empty_input")]
+    #[serde(default = "empty_input", skip_serializing_if = "is_empty_input")]
     pub input: Value,
     /// A question to answer before it runs.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub confirm: Option<String>,
     /// Where its progress shows.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub progress: Progress,
     /// The camera whose small live stream the progress dialog shows.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stream: Option<String>,
     /// Whether it can be cancelled while it runs.
-    #[serde(skip_serializing_if = "is_true")]
+    #[serde(default = "yes", skip_serializing_if = "is_true")]
     pub cancellable: bool,
     /// What to say when it succeeds: nothing, unless set.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub success: Option<Success>,
     /// Whether the panel should be described again once it succeeds,
     /// because the action changes what it shows.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub refresh: bool,
     /// Shown as a secondary button, rather than a primary one.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub secondary: bool,
     /// Whether the Thing lacks the action.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub broken: bool,
 }
 
 /// Where an action's progress shows.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum Progress {
     /// Beside the button.
@@ -288,7 +289,7 @@ pub enum Progress {
 }
 
 /// What a button says when its action succeeds.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum Success {
     /// This message.
@@ -344,7 +345,7 @@ impl ActionButton {
 }
 
 /// A button that downloads a file.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 pub struct DownloadButton {
     /// What the button says.
     pub label: String,
@@ -354,15 +355,15 @@ pub struct DownloadButton {
     /// The name it's saved under.
     pub filename: String,
     /// Shown as a secondary button, rather than a primary one.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub secondary: bool,
     /// Whether the Thing lacks the endpoint or the action.
-    #[serde(skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub broken: bool,
 }
 
 /// Where a download comes from.
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "source", rename_all = "snake_case")]
 pub enum DownloadSource {
     /// A Thing's endpoint: `GET /{thing}/{path}`.
@@ -379,8 +380,13 @@ pub enum DownloadSource {
         /// The action's name.
         action: String,
         /// The action's input.
-        #[serde(skip_serializing_if = "is_empty_input")]
+        #[serde(default = "empty_input", skip_serializing_if = "is_empty_input")]
         input: Value,
+    },
+    /// A file in the data folder: `GET /data/{path}` (ADR-0026).
+    Data {
+        /// Its path in the data folder.
+        path: String,
     },
 }
 
@@ -550,6 +556,14 @@ fn is_true(value: &bool) -> bool {
 
 fn is_empty_input(input: &Value) -> bool {
     input.as_object().is_some_and(Map::is_empty)
+}
+
+fn yes() -> bool {
+    true
+}
+
+fn empty_input() -> Value {
+    Value::Object(Map::new())
 }
 
 #[cfg(test)]

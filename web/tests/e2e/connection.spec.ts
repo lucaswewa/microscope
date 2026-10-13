@@ -69,8 +69,10 @@ test('connects to a microscope on another origin, and recovers after it restarts
     await page.keyboard.press('Escape')
     await page.getByRole('button', { name: 'Close the wizard' }).click()
     await expect(page.getByRole('dialog')).toBeHidden()
-    // Only the tabs whose Things the server has: it has no gallery yet.
-    await expect(page.getByRole('link', { name: 'Gallery' })).toHaveCount(0)
+    // Only the tabs whose Things the server has: it has a gallery, but no
+    // sequence yet.
+    await expect(page.getByRole('link', { name: 'Gallery' })).toHaveCount(1)
+    await expect(page.getByRole('link', { name: 'Sequence' })).toHaveCount(0)
 
     server.kill()
     await expect(page.getByRole('alert')).toContainText('Connection lost', { timeout: 15_000 })

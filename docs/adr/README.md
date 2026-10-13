@@ -40,5 +40,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0023](0023-image-registration-by-phase-correlation.md) | Image registration by phase correlation | Accepted | P22 |
 | [0024](0024-server-described-ui-elements.md) | Server-described UI elements | Accepted | P24 |
 | [0025](0025-data-folder-layout-and-capture-metadata.md) | Data folder layout and capture metadata | Accepted | P26 |
+| [0026](0026-gallery-index-and-data-route.md) | Gallery index and data route | Accepted | P31 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

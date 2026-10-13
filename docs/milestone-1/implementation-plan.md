@@ -176,7 +176,7 @@ The names mirror OpenFlexure's (D7). `teta-wot` Things can't be generic, so each
 | `camera_stage_mapping` | `CameraStageMapping` | `image_to_stage_displacement_matrix`, `image_resolution`, `last_calibration`; `calibrate_xy`, `move_in_image_coordinates`, `convert_*` | P23 |
 | `bg_color_channels_luv`, `bg_channel_deviations_luv` | background detectors | tolerance, minimum sample coverage, `settings_ui` | P27 |
 | `stage_measure` | `StageMeasure` | `calibrated_range`; `perform_rom_test`, `perform_recentre` | P30 |
-| `gallery` | `Gallery` | `card_types`, `list_data`, `bulk_actions`; `delete_all_data` | P31 |
+| `gallery` | `Gallery` | `card_types`, `list_data`, `bulk_actions`; `delete_all_data`; the endpoints `captures/{name}` (`DELETE`) and `captures/{name}/zip` | P31 |
 | `smart_scan` | `SmartScan` | `workflow_name`, `workflow_display_names`, `latest_scan_live_details`, `stitch_automatically`; `sample_scan`, `stitch_scan`, `stitch_all_scans`, `download_zip`, `purge_empty_scans` | P35, P39 |
 | `snake_workflow`, `raster_workflow`, `histo_scan_workflow`, `c_chip_workflow` | workflow Things (`ScanWorkflow`) | overlap, autofocus range, counts, stack settings, `ready`, `settings_ui` | P35, P37 |
 | `sequence` | `Sequence` | `dt`, `duration`, `autofocus_enabled`, `autofocus_dz`; `run_sequence`, `download_zip` | P41 |
@@ -260,7 +260,7 @@ ADR-0025 (P26) and ADR-0026 (P31) cover this.
 └─ logs\microscope.<date>.log
 ```
 
-The file system is the source of truth. At start-up the gallery builds an in-memory index from the metadata sidecars, then updates it on every write. Unlike OpenFlexure there is no SQLite; ADR-0026 explains the trade-off.
+The file system is the source of truth. At start-up the gallery builds an in-memory index from the metadata sidecars, then brings it up to date from the folders whenever it's read, so it follows every write. Unlike OpenFlexure there is no SQLite; ADR-0026 explains the trade-off.
 
 ### 5.10 Web app
 
@@ -444,7 +444,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P31 | Gallery backend and data route | P26 | L | 0026 | Planned |
+| P31 | Gallery backend and data route | P26 | L | 0026 | In review |
 | P32 | Gallery tab | P09b, P31 | L | — | Planned |
 | P33 | Image and deep-zoom viewer | P32 | M | 0027 | Planned |
 
@@ -665,3 +665,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-10 | P23 split in two, at the project owner's choice, since it was estimated at 1,000–1,200 lines against its L budget. P23 keeps the camera–stage mapping Thing and the simulator's camera rotation and flip. The new P23b, sized S, has double-click-to-move in the web app |
 | 2026-10-11 | P24 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P24 keeps ADR-0024, the Rust model's blocks, `PropertyControl`, `Accordion` and `Container`, sanitised text, and the web's `ServerInterface` and `PropertyControl`. The new P24b, sized M, has `ActionButton` and `DownloadButton`, in the model and the web. P25, P27, P28, P40 and P42 now depend on P24b |
 | 2026-10-11 | P24b re-sized from M to L, at the project owner's choice, since it was estimated at 750–880 lines. Its two buttons share the invocation handling, so it stays one phase |
+| 2026-10-13 | §5.9: the gallery's index is brought up to date from the folders whenever it's read, rather than told of each write, so it also follows changes made by hand (ADR-0026, P31) |

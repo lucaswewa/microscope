@@ -1,5 +1,6 @@
 //! Captures saved to the data folder (ADR-0025): a JPEG in `captures/`,
-//! named by when it was taken, and beside it a JSON sidecar of how. Every
+//! named by when it was taken, and beside it a JSON sidecar of how, with a
+//! thumbnail for the gallery in `captures/thumbnails/` (ADR-0026). Every
 //! camera driver saves its captures through here.
 
 use std::collections::BTreeMap;
@@ -7,8 +8,8 @@ use std::fs::OpenOptions;
 use std::io::{BufWriter, ErrorKind};
 use std::path::{Path, PathBuf};
 
-use image::RgbImage;
 use image::codecs::jpeg::JpegEncoder;
+use image::{DynamicImage, ImageFormat, ImageResult, RgbImage};
 use microscope_core::mapping::Matrix2;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -24,6 +25,10 @@ pub const CAPTURES: &str = "captures";
 pub const FORMAT: u32 = 1;
 /// The quality captures are saved at.
 const QUALITY: u8 = 95;
+/// The folder, in `captures`, of the captures' thumbnails.
+pub const THUMBNAILS: &str = "thumbnails";
+/// The longest side of a thumbnail, in pixels.
+const THUMBNAIL_SIZE: u32 = 320;
 
 /// What a capture's sidecar records (ADR-0025).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
@@ -142,6 +147,10 @@ pub fn save(
     encoder
         .encode_image(&capture.image)
         .map_err(ActionError::handled)?;
+    // The gallery makes a thumbnail that's missing, so the capture stands without one.
+    if let Err(error) = save_thumbnail(&capture.image, &thumbnail_path(folder, &name)) {
+        tracing::warn!(%error, "the capture's thumbnail couldn't be saved");
+    }
     let sidecar = serde_json::to_vec_pretty(&Sidecar::of(capture, &name, mapping));
     std::fs::write(
         path.with_extension("json"),
@@ -149,6 +158,24 @@ pub fn save(
     )
     .map_err(ActionError::handled)?;
     Ok(path)
+}
+
+/// Where the thumbnail of the capture called `name` is, in the data folder
+/// `folder`.
+pub fn thumbnail_path(folder: &Path, name: &str) -> PathBuf {
+    folder.join(CAPTURES).join(THUMBNAILS).join(name)
+}
+
+/// Saves a copy of `image`, shrunk to at most `THUMBNAIL_SIZE` pixels on a
+/// side, as a JPEG at `path`.
+pub fn save_thumbnail(image: &RgbImage, path: &Path) -> ImageResult<()> {
+    if let Some(folder) = path.parent() {
+        std::fs::create_dir_all(folder)?;
+    }
+    let (width, height) = image.dimensions();
+    let small = DynamicImage::ImageRgb8(image.clone())
+        .thumbnail(THUMBNAIL_SIZE.min(width), THUMBNAIL_SIZE.min(height));
+    small.save_with_format(path, ImageFormat::Jpeg)
 }
 
 /// `image` as a JPEG, at the quality captures are saved at.

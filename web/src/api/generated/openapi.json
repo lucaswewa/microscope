@@ -6009,6 +6009,226 @@
           }
         }
       }
+    },
+    "/api/v1/gallery/bulk_actions": {
+      "get": {
+        "summary": "Actions on many items at once, for the gallery's sidebar. Captures",
+        "description": "## Actions on many items at once, for the gallery's sidebar. Captures\n\nActions on many items at once, for the gallery's sidebar. Captures\nhave none.",
+        "operationId": "get_property_api_v1_gallery_bulk_actions_get",
+        "responses": {
+          "200": {
+            "description": "Value of bulk_actions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gallery_bulk_actions_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/captures/{id}/zip": {
+      "get": {
+        "summary": "Capture Zip",
+        "description": "The capture named by the path's second-last part, with its sidecar,\nas a ZIP archive.",
+        "operationId": "capture_zip_api_v1_gallery_captures__id__zip_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/card_types": {
+      "get": {
+        "summary": "The kinds of item it shows.",
+        "description": "## The kinds of item it shows.\n\nThe kinds of item it shows.",
+        "operationId": "get_property_api_v1_gallery_card_types_get",
+        "responses": {
+          "200": {
+            "description": "Value of card_types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gallery_card_types_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/delete_all_data": {
+      "get": {
+        "summary": "All invocations of delete_all_data.",
+        "description": "List all the invocations of delete_all_data that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_gallery_delete_all_data_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of delete_all_data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Deletes every item of the given card types.",
+        "description": "## Deletes every item of the given card types.\n\nDeletes every item of the given card types.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_gallery_delete_all_data_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/gallery_delete_all_data_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gallery_delete_all_data_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gallery_delete_all_data_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/captures/{id}": {
+      "delete": {
+        "summary": "Delete Capture",
+        "description": "Deletes the capture named by the path's last part, with its sidecar\nand its thumbnail.",
+        "operationId": "delete_capture_api_v1_gallery_captures__id__delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/list_data": {
+      "get": {
+        "summary": "Everything in the gallery, newest first.",
+        "description": "## Everything in the gallery, newest first.\n\nEverything in the gallery, newest first.",
+        "operationId": "get_property_api_v1_gallery_list_data_get",
+        "responses": {
+          "200": {
+            "description": "Value of list_data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/gallery_list_data_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `gallery` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_gallery_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `gallery`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_gallery_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gallery/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `gallery`: its properties, actions and events, and how to use them.",
+        "operationId": "things_gallery_api_v1_gallery__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11742,6 +11962,584 @@
           "input",
           "log"
         ]
+      },
+      "gallery_bulk_actions_value": {
+        "type": "array",
+        "items": {
+          "description": "A button that runs an action.",
+          "type": "object",
+          "properties": {
+            "thing": {
+              "description": "The Thing's name.",
+              "type": "string"
+            },
+            "action": {
+              "description": "The action's name.",
+              "type": "string"
+            },
+            "label": {
+              "description": "What the button says.",
+              "type": "string"
+            },
+            "input": {
+              "description": "The action's input."
+            },
+            "confirm": {
+              "description": "A question to answer before it runs.",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "progress": {
+              "description": "Where its progress shows.",
+              "oneOf": [
+                {
+                  "description": "Beside the button.",
+                  "const": "inline",
+                  "type": "string"
+                },
+                {
+                  "description": "In a dialog, for a long action to watch.",
+                  "const": "dialog",
+                  "type": "string"
+                }
+              ]
+            },
+            "stream": {
+              "description": "The camera whose small live stream the progress dialog shows.",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cancellable": {
+              "description": "Whether it can be cancelled while it runs.",
+              "type": "boolean"
+            },
+            "success": {
+              "description": "What to say when it succeeds: nothing, unless set.",
+              "oneOf": [
+                {
+                  "description": "What a button says when its action succeeds.",
+                  "oneOf": [
+                    {
+                      "description": "This message.",
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "description": "The action's output.",
+                      "const": "output",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "refresh": {
+              "description": "Whether the panel should be described again once it succeeds,\nbecause the action changes what it shows.",
+              "type": "boolean"
+            },
+            "secondary": {
+              "description": "Shown as a secondary button, rather than a primary one.",
+              "type": "boolean"
+            },
+            "broken": {
+              "description": "Whether the Thing lacks the action.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "thing",
+            "action",
+            "label"
+          ]
+        }
+      },
+      "gallery_card_types_value": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "gallery_delete_all_data_input": {
+        "type": "object",
+        "properties": {
+          "card_types": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "card_types"
+        ],
+        "additionalProperties": false
+      },
+      "gallery_delete_all_data_output": {
+        "type": "null"
+      },
+      "gallery_delete_all_data_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/gallery_delete_all_data_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/gallery_delete_all_data_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "gallery_list_data_value": {
+        "type": "array",
+        "items": {
+          "description": "One item in the gallery, as its card shows it.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "What the card is called.",
+              "type": "string"
+            },
+            "path": {
+              "description": "Where the item is in the data folder, as `GET {prefix}/data/{path}`\nserves it.",
+              "type": "string"
+            },
+            "card_type": {
+              "description": "What kind of item it is: one of `card_types`.",
+              "type": "string"
+            },
+            "created": {
+              "description": "When it was made: RFC 3339, in UTC, to the millisecond.",
+              "type": "string"
+            },
+            "thumbnail": {
+              "description": "Its thumbnail's path in the data folder, if it has one.",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "viewer": {
+              "description": "How the viewer shows it.",
+              "oneOf": [
+                {
+                  "description": "As one image.",
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "description": "The image's path in the data folder.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "const": "image",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "path"
+                  ]
+                }
+              ]
+            },
+            "info": {
+              "description": "Lines that describe it.",
+              "type": "array",
+              "items": {
+                "description": "A line that describes an item, such as \"Size: 1640 × 1232 px\".",
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "description": "What it's about.",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "What it says.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ]
+              }
+            },
+            "download_buttons": {
+              "description": "The ways to download it.",
+              "type": "array",
+              "items": {
+                "description": "A button that downloads a file.",
+                "oneOf": [
+                  {
+                    "description": "A Thing's endpoint: `GET /{thing}/{path}`.",
+                    "type": "object",
+                    "properties": {
+                      "thing": {
+                        "description": "The Thing's name.",
+                        "type": "string"
+                      },
+                      "path": {
+                        "description": "The endpoint's path.",
+                        "type": "string"
+                      },
+                      "source": {
+                        "const": "endpoint",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "thing",
+                      "path"
+                    ]
+                  },
+                  {
+                    "description": "The file an action returns.",
+                    "type": "object",
+                    "properties": {
+                      "thing": {
+                        "description": "The Thing's name.",
+                        "type": "string"
+                      },
+                      "action": {
+                        "description": "The action's name.",
+                        "type": "string"
+                      },
+                      "input": {
+                        "description": "The action's input."
+                      },
+                      "source": {
+                        "const": "action",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "thing",
+                      "action"
+                    ]
+                  },
+                  {
+                    "description": "A file in the data folder: `GET /data/{path}` (ADR-0026).",
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "description": "Its path in the data folder.",
+                        "type": "string"
+                      },
+                      "source": {
+                        "const": "data",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "path"
+                    ]
+                  }
+                ],
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "description": "What the button says.",
+                    "type": "string"
+                  },
+                  "filename": {
+                    "description": "The name it's saved under.",
+                    "type": "string"
+                  },
+                  "secondary": {
+                    "description": "Shown as a secondary button, rather than a primary one.",
+                    "type": "boolean"
+                  },
+                  "broken": {
+                    "description": "Whether the Thing lacks the endpoint or the action.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "label",
+                  "filename"
+                ]
+              }
+            },
+            "card_actions": {
+              "description": "What can be done with it.",
+              "type": "array",
+              "items": {
+                "description": "A button that runs an action.",
+                "type": "object",
+                "properties": {
+                  "thing": {
+                    "description": "The Thing's name.",
+                    "type": "string"
+                  },
+                  "action": {
+                    "description": "The action's name.",
+                    "type": "string"
+                  },
+                  "label": {
+                    "description": "What the button says.",
+                    "type": "string"
+                  },
+                  "input": {
+                    "description": "The action's input."
+                  },
+                  "confirm": {
+                    "description": "A question to answer before it runs.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "progress": {
+                    "description": "Where its progress shows.",
+                    "oneOf": [
+                      {
+                        "description": "Beside the button.",
+                        "const": "inline",
+                        "type": "string"
+                      },
+                      {
+                        "description": "In a dialog, for a long action to watch.",
+                        "const": "dialog",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "stream": {
+                    "description": "The camera whose small live stream the progress dialog shows.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "cancellable": {
+                    "description": "Whether it can be cancelled while it runs.",
+                    "type": "boolean"
+                  },
+                  "success": {
+                    "description": "What to say when it succeeds: nothing, unless set.",
+                    "oneOf": [
+                      {
+                        "description": "What a button says when its action succeeds.",
+                        "oneOf": [
+                          {
+                            "description": "This message.",
+                            "type": "object",
+                            "properties": {
+                              "message": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "message"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "description": "The action's output.",
+                            "const": "output",
+                            "type": "string"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "refresh": {
+                    "description": "Whether the panel should be described again once it succeeds,\nbecause the action changes what it shows.",
+                    "type": "boolean"
+                  },
+                  "secondary": {
+                    "description": "Shown as a secondary button, rather than a primary one.",
+                    "type": "boolean"
+                  },
+                  "broken": {
+                    "description": "Whether the Thing lacks the action.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "thing",
+                  "action",
+                  "label"
+                ]
+              }
+            },
+            "card_messages": {
+              "description": "What the card warns of.",
+              "type": "array",
+              "items": {
+                "description": "A message on a card.",
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "description": "How serious it is.",
+                    "oneOf": [
+                      {
+                        "description": "Something to know.",
+                        "const": "warning",
+                        "type": "string"
+                      },
+                      {
+                        "description": "Something wrong.",
+                        "const": "alert",
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "message": {
+                    "description": "What it says.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "level",
+                  "message"
+                ]
+              }
+            },
+            "delete_endpoint": {
+              "description": "Where to send `DELETE` to delete it, relative to the API prefix.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "card_type",
+            "created",
+            "viewer",
+            "info",
+            "download_buttons",
+            "card_actions",
+            "card_messages",
+            "delete_endpoint"
+          ]
+        }
       }
     }
   }

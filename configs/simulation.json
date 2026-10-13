@@ -8,7 +8,8 @@
         "camera_stage_mapping": "microscope.camera_stage_mapping:CameraStageMapping",
         "bg_color_channels_luv": "microscope.background:ColourChannelDetector",
         "bg_channel_deviations_luv": "microscope.background:ChannelDeviationDetector",
-        "stage_measure": "microscope.stage_measure:StageMeasure"
+        "stage_measure": "microscope.stage_measure:StageMeasure",
+        "gallery": "microscope.gallery:Gallery"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",
