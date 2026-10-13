@@ -1,7 +1,7 @@
 # P30: Stage measurement tools
 
 - Status: Done
-- Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40)
+- Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40); a fix after the merge, for sparse samples, in [#41](https://github.com/lucaswewa/microscope/pull/41)
 - ADRs: none new
 - Spec: [phases.md#p30](../phases.md#p30)
 
@@ -46,10 +46,13 @@ Written before the code, in our own words, from what OpenFlexure's stage measure
    - **The end of travel** is where the stage is after that step back, plus the motion the step made. That's exact both for a stage that stops counting at its end, as the simulator's does, and for one that counts on without moving.
 7. **The focus at each end:** with autofocus, it autofocuses where it stepped back to, a check step from the end, and notes how far the focus moved in z from the start. That's the parasitic z motion.
 8. **Then it goes back to the start.**
-9. **It stops with an error when:**
-   - **a registration can't be trusted,** even after autofocusing and making the move again once. A registration is trusted when its confidence is at least 0.3, or when it found just the move that was asked for, to within a fifth of a check step. The sample must have detail over the whole range;
-   - **no end is reached within 500 big steps.**
-10. **The result** is each axis's lowest and highest positions, with the focus's shift at each end when it was measured. It's returned, and kept as the read-only `calibrated_range` setting.
+9. **Where a registration can't be trusted,** even after autofocusing and making the move again once, it steps aside, across the axis, to a fresh field. A registration is trusted when its confidence is at least 0.3, or when it found just the move that was asked for, to within a fifth of a check step. *(Changed after the merge, in #41: it used to stop with an error here.)*
+   - **Where it steps to:** a frame's shorter side to one side of where the first step aside began, then to the other side, then two frames to each side, and so on.
+   - **Then:** towards an end, it carries on with the next big step. Stepping back, it goes back to the end and steps back again from there.
+10. **It stops with an error,** saying where the stage is, when:
+    - **it has stepped aside 10 times** for one end. The sample must have detail over the whole range;
+    - **no end is reached within 500 big steps.**
+11. **The result** is each axis's lowest and highest positions, with the focus's shift at each end when it was measured. It's returned, and kept as the read-only `calibrated_range` setting.
 
 ### Recentring, `perform_recentre`
 
@@ -134,7 +137,7 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
 
 ## Tests
 
-- **`tests/stage_measure.rs`** (2 tests), against the simulator, with its limits on and a calibrated mapping:
+- **`tests/stage_measure.rs`** (3 tests), against the simulator, with its limits on and a calibrated mapping:
   - **the range and recentring:**
     - recentring refuses to start before a test;
     - the test refuses frames of another size than the mapping's;
@@ -146,6 +149,7 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
   - **the focus shift:** a test with the zero moved to x 2000 and the sample tilted 60 µm per mm in x, with autofocus. It finds the ends to within 5 steps, and the focus 360 z steps up and down at the ends of x, within 120, and unmoved at the ends of y.
     - **Time:** it takes about 90 seconds here and 2 minutes in CI, mostly autofocus.
     - **The first CI run:** with a 30 µm per mm tilt and a tolerance of 60, it failed. Autofocus on CI's slower machine was 83 steps (4 µm) off at an end of y. The larger tilt and tolerance keep the signal clear of that noise, and of the mutation that reports z instead of its shift (240 steps off).
+  - **Stepping aside** (#41): a picture of dense blobs with an empty patch at each end of x, and the stage starting at the top of y's travel, so the first step aside goes nowhere. It still finds x from −2000 to 2000 and y from −1000 to 0, to within 3 steps, and goes back to the start. The code before #41 fails it, with "too little detail".
 - **`stage_measure`'s unit test:** a registration is trusted when sure, or when it found the move asked for, on the axis and off it.
 - **`SettingsPage.spec.ts`** (1 new test, 1 extended):
   - before a test, "It isn't measured yet." and no Recentre;
@@ -179,14 +183,22 @@ cargo run -p microscope-server -- -c configs/simulation.json --port 5090 --webap
   - Recentre running the test;
   - not saying it isn't measured.
 
+For #41, I broke 3 more behaviours, and the new test failed each time:
+
+- the step aside not moving;
+- going on to the next big step instead of stepping aside: it never found the end, and gave up after 500 big steps;
+- stepping aside always to the same side.
+
 ## Follow-ups and known gaps
 
-- **A known failure, not yet investigated.** When the owner tried "Measure the range of motion" while reviewing, it failed with "the image has too little detail to track: the sample must cover the whole range, in focus". My own runs and the tests passed, so something about that setup differs. These are guesses, none of them confirmed:
-  - **The sample's edge:** with the travel limits off, or a travel wider than the sample, the stage goes past where the default blobs end (20 mm across), and the image is empty.
-  - **Sparse blobs:** the default sample's sparse blobs make some registrations unsure, and only a move that matched the one asked for is trusted without that.
-  - **Out of focus:** the sample may have been out of focus, without autofocus to recover it.
-
-  It needs reproducing with the owner's settings before P31 builds on it. A clearer error, saying where the stage was and which registration failed, would also help.
+- **The owner's failure, found and fixed after the merge** (#41). When the owner tried "Measure the range of motion" while reviewing, it failed with "the image has too little detail to track: the sample must cover the whole range, in focus".
+  - **Reproduced:** with a copy of the owner's settings, on my own server, it failed the same way at x 18,128, 1.8 mm out. The frame there has blobs only at its edges, and registration compares the frame's middle.
+  - **The cause:** on the default sample (1,500 blobs per mm²), about 1 check step in 65 can't be measured (3 of 194 in a sweep along x and y). A test makes a few hundred, and one used to end it. The tests used 10,000 blobs per mm², so they never met one. A larger registration square didn't help (4 of 194).
+  - **The fix:** it steps aside to a fresh field and carries on (behaviour spec, step 9). Its errors say where the stage was.
+  - **Checked** with the owner's settings: with the limits on and a travel of ±20,000 steps, it passed the spot that failed and found both ends of x and y exactly, in 2 minutes.
+  - **The travel limits were off,** as they are by default, so without the sparse spot it would still have failed, at the sample's edge, 10 mm out. Now the error shows that: "…too little detail to track at x 110416, y -3445…", past the edge at 100,000. The owner chose to keep the default (limits off), as "How to try it" turns them on.
+- **Untested:** a step back from the end that can't be measured, after which it steps aside, goes back to the end, and steps back again. I couldn't make a sample where the step back fails but the check step just before it doesn't, since their frames overlap almost entirely.
+- **The focus at a sparse end:** with the owner's settings, the focus's shift at one end of y was −150 z steps (7.5 µm), on a sample without tilt. Autofocus is less sure on a field with little in it.
 - **Untested:** giving up after 500 big steps, which would take minutes in the simulator.
 - **Saving the data:** the test's data isn't saved to the data folder, as OpenFlexure's is.
 - **Recentring by the arc:** a real flexure stage could recentre on the top of its z arc, as OpenFlexure does, once there's hardware to try it on.

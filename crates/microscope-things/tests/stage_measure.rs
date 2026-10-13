@@ -1,9 +1,13 @@
 //! Stage measurement (P30) against the simulator, with its travel limits on:
-//! the range of motion is found from the image to within a few steps, the
-//! focus's shift at the ends is measured with autofocus, and recentring
-//! makes the middle of the range the stage's zero.
+//! the range of motion is found from the image to within a few steps, even
+//! past patches without detail; the focus's shift at the ends is measured
+//! with autofocus; and recentring makes the middle of the range the stage's
+//! zero.
 
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
+
+use microscope_sim::{BlobConfig, BlobSpecimen, Point, Specimen};
 
 use serde_json::{Value, json};
 use teta_wot::testing::{Harness, TestClient};
@@ -16,8 +20,9 @@ use microscope_things::stage::SimulatedStage;
 use microscope_things::stage_measure::StageMeasure;
 
 /// A quick stage that ends at `x` and `y` (min, max), and a calibrated
-/// mapping; with autofocus if asked, when z moves at its usual speed.
-async fn start(x: [i64; 2], y: [i64; 2], autofocus: bool) -> Harness<StageMeasure> {
+/// mapping; with autofocus if asked, when z moves at its usual speed. Also
+/// the data folder.
+async fn start(x: [i64; 2], y: [i64; 2], autofocus: bool) -> (Harness<StageMeasure>, PathBuf) {
     static NEXT: AtomicU32 = AtomicU32::new(0);
     let n = NEXT.fetch_add(1, Ordering::Relaxed);
     let data = std::env::temp_dir().join(format!("microscope-measure-{}-{n}", std::process::id()));
@@ -43,7 +48,7 @@ async fn start(x: [i64; 2], y: [i64; 2], autofocus: bool) -> Harness<StageMeasur
     put(client, "/camera/blob_density", json!(10_000.0)).await;
     let calibrated = run(client, "/camera_stage_mapping/calibrate_xy", json!({})).await;
     assert_eq!(calibrated["status"], "completed", "{calibrated}");
-    harness
+    (harness, data)
 }
 
 async fn put(client: &TestClient, path: &str, value: Value) {
@@ -78,7 +83,7 @@ fn assert_near(found: &Value, expected: i64, within: i64) {
 
 #[tokio::test]
 async fn finds_the_range_from_the_image_and_recentres_on_it() {
-    let harness = start([-2500, 3500], [-3000, 2000], false).await;
+    let (harness, _) = start([-2500, 3500], [-3000, 2000], false).await;
     let client = harness.client();
     let early = run(client, "/stage_measure/perform_recentre", json!({})).await;
     assert!(
@@ -139,7 +144,7 @@ async fn finds_the_range_from_the_image_and_recentres_on_it() {
 #[tokio::test]
 async fn measures_how_far_the_focus_moves_at_the_ends() {
     // From x 2000, made the zero, the stage goes 3000 steps either way.
-    let harness = start([-1000, 5000], [-1000, 1000], true).await;
+    let (harness, _) = start([-1000, 5000], [-1000, 1000], true).await;
     let client = harness.client();
     run(client, "/stage/move_absolute", json!({"x": 2000})).await;
     run(client, "/stage/set_zero_position", json!({})).await;
@@ -157,4 +162,50 @@ async fn measures_how_far_the_focus_moves_at_the_ends() {
     assert_near(&range["x"]["min"], -3000, 5);
     assert_near(&range["x"]["max"], 3000, 5);
     harness.stop().await;
+}
+
+/// Dense blobs 640 × 300 µm, at 0.5 µm a pixel, with an empty patch on each
+/// side of the origin along x, from 165 to 240 µm out and 70 µm high.
+fn save_holed_picture(path: &Path) {
+    let blobs = BlobSpecimen::new(BlobConfig {
+        density_per_mm2: 10_000.0,
+        ..BlobConfig::default()
+    });
+    let mut picture = blobs.render(Point::new(-320.0, -150.0), 0.5, 1280, 600);
+    for (i, j, pixel) in picture.enumerate_pixels_mut() {
+        let (x, y) = (f64::from(i) * 0.5 - 320.0, f64::from(j) * 0.5 - 150.0);
+        if (165.0..240.0).contains(&x.abs()) && y.abs() < 35.0 {
+            *pixel = image::Rgb([246, 244, 240]);
+        }
+    }
+    std::fs::create_dir_all(path.parent().expect("a folder")).expect("created");
+    picture.save(path).expect("saved");
+}
+
+#[tokio::test]
+async fn steps_aside_where_the_image_has_no_detail() {
+    let (harness, data) = start([-2000, 2000], [-1000, 1000], false).await;
+    let client = harness.client();
+    // Both ends of x (200 µm out) are in empty patches. The stage starts at
+    // the top of y, so the first step aside, up, goes nowhere.
+    let mut simulation = client.get("/stage/simulation").await.json();
+    simulation["travel"]["y"]["max"] = json!(0);
+    put(client, "/stage/simulation", simulation).await;
+    save_holed_picture(&data.join("pictures/holed.png"));
+    put(client, "/camera/sample_type", json!("image")).await;
+    put(client, "/camera/sample_image_scale", json!(0.5)).await;
+    put(client, "/camera/sample_image", json!("pictures/holed.png")).await;
+    let record = run(client, "/stage_measure/perform_rom_test", json!({})).await;
+    assert_eq!(record["status"], "completed", "{record}");
+    let range = &record["output"];
+    for (axis, [min, max]) in [("x", [-2000, 2000]), ("y", [-1000, 0])] {
+        assert_near(&range[axis]["min"], min, 3);
+        assert_near(&range[axis]["max"], max, 3);
+    }
+    assert_eq!(
+        client.get("/stage/position").await.json(),
+        json!({"x": 0, "y": 0, "z": 0})
+    );
+    harness.stop().await;
+    std::fs::remove_dir_all(&data).expect("removed");
 }

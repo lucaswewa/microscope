@@ -24,6 +24,8 @@ const MOVING_AGAIN: f64 = 0.1;
 const MAX_STEPS_BACK: usize = 15;
 /// The most big steps towards an end.
 const MAX_BIG_STEPS: usize = 500;
+/// The most steps aside, past fields without detail, while finding an end.
+const MAX_SIDESTEPS: i64 = 10;
 /// How far autofocus sweeps, in steps.
 const FOCUS_DZ: i64 = 1000;
 
@@ -119,11 +121,12 @@ impl StageMeasure {
     }
 }
 
-/// What measuring needs: the mapping's matrix, and the check step in stage
-/// steps.
+/// What measuring needs: the mapping's matrix, and the check step and the
+/// frame's shorter side, in stage steps.
 struct Probe {
     matrix: Matrix2,
     check: i64,
+    frame: i64,
 }
 
 impl StageMeasure {
@@ -140,10 +143,11 @@ impl StageMeasure {
         let scale = (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0])
             .abs()
             .sqrt();
-        let check = (CHECK_SHARE * f64::from(w.min(h)) * scale).round().max(1.0);
+        let frame = f64::from(w.min(h)) * scale;
         Ok(Probe {
             matrix,
-            check: check as i64,
+            check: (CHECK_SHARE * frame).round().max(1.0) as i64,
+            frame: frame.round() as i64,
         })
     }
 
@@ -166,7 +170,8 @@ impl StageMeasure {
 
     /// Finds the end of `axis` in `direction` (±1) from `start`, then goes
     /// back there: the end's position on the axis, and how far the focus
-    /// moved in z there from `focus`.
+    /// moved in z there from `focus`. Where a check step can't be measured,
+    /// it steps aside to a fresh field and carries on.
     async fn find_end(
         &self,
         probe: &Probe,
@@ -177,40 +182,54 @@ impl StageMeasure {
     ) -> Result<(i64, Option<i64>), ActionError> {
         let stage = &**self.stage;
         let check = probe.check as f64;
-        let mut big_steps = 0;
-        loop {
-            // A move the stage refuses at its end isn't an error: the image decides.
-            let _ = stage
-                .move_relative(along(axis, direction * BIG_STEP * probe.check))
-                .await;
-            let moved = self
-                .measured_move(probe, axis, direction * probe.check)
-                .await?;
-            if moved * (direction as f64) < STILL_MOVING * check {
-                break;
+        let (mut big_steps, mut sidesteps) = (0, 0);
+        let end = 'search: loop {
+            loop {
+                // A move the stage refuses at its end isn't an error: the image decides.
+                let _ = stage
+                    .move_relative(along(axis, direction * BIG_STEP * probe.check))
+                    .await;
+                match self
+                    .measured_move(probe, axis, direction * probe.check)
+                    .await?
+                {
+                    Some(moved) if moved * (direction as f64) < STILL_MOVING * check => break,
+                    Some(_) => {}
+                    None => self.sidestep(probe, axis, &mut sidesteps).await?,
+                }
+                big_steps += 1;
+                if big_steps == MAX_BIG_STEPS {
+                    let here = stage.position().await?;
+                    return Err(ActionError::handled(format!(
+                        "no end of travel within {MAX_BIG_STEPS} big steps, at {}",
+                        at(here)
+                    )));
+                }
             }
-            big_steps += 1;
-            if big_steps == MAX_BIG_STEPS {
-                return Err(ActionError::handled(format!(
-                    "no end of travel within {MAX_BIG_STEPS} big steps"
-                )));
+            // Back until it moves again: the end is where that step started from.
+            for _ in 0..MAX_STEPS_BACK {
+                match self
+                    .measured_move(probe, axis, -direction * probe.check)
+                    .await?
+                {
+                    Some(moved) if -moved * (direction as f64) > MOVING_AGAIN * check => {
+                        let here = stage.position().await?.to_array()[axis];
+                        break 'search here - moved.round() as i64;
+                    }
+                    Some(_) => {}
+                    // From a fresh field: back to the end, and step back again.
+                    None => {
+                        self.sidestep(probe, axis, &mut sidesteps).await?;
+                        continue 'search;
+                    }
+                }
             }
-        }
-        // Back until it moves again: the end is where that step started from.
-        let mut end = None;
-        for _ in 0..MAX_STEPS_BACK {
-            let moved = self
-                .measured_move(probe, axis, -direction * probe.check)
-                .await?;
-            if -moved * (direction as f64) > MOVING_AGAIN * check {
-                let here = stage.position().await?.to_array()[axis];
-                end = Some(here - moved.round() as i64);
-                break;
-            }
-        }
-        let end = end.ok_or_else(|| {
-            ActionError::handled("the stage didn't move again after reaching the end of its travel")
-        })?;
+            let here = stage.position().await?;
+            return Err(ActionError::handled(format!(
+                "the stage didn't move again after reaching the end of its travel, at {}",
+                at(here)
+            )));
+        };
         let shift = self.focus().await?.zip(focus).map(|(z, z0)| z - z0);
         stage.move_absolute(start).await?;
         Ok((end, shift))
@@ -219,13 +238,13 @@ impl StageMeasure {
     /// Moves `steps` along `axis`, and measures from the image how far the
     /// stage really moved along it. A registration is trusted if it's sure,
     /// or if it found just the move asked for. If it isn't, the move is made
-    /// again once, after autofocusing.
+    /// again once, after autofocusing; if that isn't either, it's `None`.
     async fn measured_move(
         &self,
         probe: &Probe,
         axis: usize,
         steps: i64,
-    ) -> Result<f64, ActionError> {
+    ) -> Result<Option<f64>, ActionError> {
         let camera = &**self.camera;
         for attempt in 0..2 {
             if attempt == 1 && self.focus().await?.is_none() {
@@ -235,12 +254,38 @@ impl StageMeasure {
             let _ = self.stage.move_relative(along(axis, steps)).await;
             let found = field_shift(&before, &gray(&fresh(camera).await?));
             if let Some(moved) = trusted(probe, axis, steps, found) {
-                return Ok(moved);
+                return Ok(Some(moved));
             }
         }
-        Err(ActionError::handled(
-            "the image has too little detail to track: the sample must cover the whole range, in focus",
-        ))
+        Ok(None)
+    }
+
+    /// Steps across `axis` to a field that may have more detail: a frame to
+    /// one side of where the first step aside began, then a frame to the
+    /// other, then two frames, and so on. After `MAX_SIDESTEPS`, it's an
+    /// error.
+    async fn sidestep(
+        &self,
+        probe: &Probe,
+        axis: usize,
+        sidesteps: &mut i64,
+    ) -> Result<(), ActionError> {
+        if *sidesteps == MAX_SIDESTEPS {
+            let here = self.stage.position().await?;
+            return Err(ActionError::handled(format!(
+                "the image has too little detail to track at {}: the sample must cover the whole range, in focus",
+                at(here)
+            )));
+        }
+        // The k-th step aside ends 1, −1, 2, −2, … frames from the start.
+        let offset = |k: i64| if k % 2 == 1 { (k + 1) / 2 } else { -k / 2 };
+        *sidesteps += 1;
+        let frames = offset(*sidesteps) - offset(*sidesteps - 1);
+        let _ = self
+            .stage
+            .move_relative(along(1 - axis, frames * probe.frame))
+            .await;
+        Ok(())
     }
 
     /// Autofocuses, if there's autofocus: the focus's z.
@@ -251,6 +296,11 @@ impl StageMeasure {
         AutofocusActions::looping_autofocus(autofocus, FOCUS_DZ, SweepStart::Centre).await?;
         Ok(Some(self.stage.position().await?.z))
     }
+}
+
+/// Where the stage is in x and y, for an error.
+fn at(here: Position) -> String {
+    format!("x {}, y {}", here.x, here.y)
 }
 
 /// How far the stage moved along `axis`, in steps, from a registration of a
@@ -277,6 +327,7 @@ mod tests {
         let probe = Probe {
             matrix: [[2.0, 0.0], [0.0, 2.0]],
             check: 100,
+            frame: 600,
         };
         assert_eq!(trusted(&probe, 0, 100, ([30.0, 0.0], 0.9)), Some(60.0));
         assert_eq!(trusted(&probe, 0, 100, ([30.0, 0.0], 0.1)), None);
