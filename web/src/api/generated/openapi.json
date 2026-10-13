@@ -6141,6 +6141,18 @@
         }
       }
     },
+    "/api/v1/gallery/scans/{id}": {
+      "delete": {
+        "summary": "Delete Scan",
+        "description": "Deletes the scan named by the path's last part, unless it's being\nscanned.",
+        "operationId": "delete_scan_api_v1_gallery_scans__id__delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/v1/gallery/list_data": {
       "get": {
         "summary": "Everything in the gallery, newest first.",
@@ -7269,6 +7281,75 @@
         }
       }
     },
+    "/api/v1/smart_scan/download_zip": {
+      "get": {
+        "summary": "All invocations of download_zip.",
+        "description": "List all the invocations of download_zip that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_smart_scan_download_zip_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of download_zip.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "The scan `scan_name` as a ZIP archive: its images with their",
+        "description": "## The scan `scan_name` as a ZIP archive: its images with their\n\nThe scan `scan_name` as a ZIP archive: its images with their\nsidecars, its record and its log.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_smart_scan_download_zip_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_download_zip_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_download_zip_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_download_zip_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/smart_scan/latest_scan_live_details": {
       "get": {
         "summary": "The latest scan's details, while it runs and after it ends.",
@@ -7281,6 +7362,74 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/smart_scan_latest_scan_live_details_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/purge_empty_scans": {
+      "get": {
+        "summary": "All invocations of purge_empty_scans.",
+        "description": "List all the invocations of purge_empty_scans that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_smart_scan_purge_empty_scans_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of purge_empty_scans.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Removes every scan folder without an image, but the one being",
+        "description": "## Removes every scan folder without an image, but the one being\n\nRemoves every scan folder without an image, but the one being\nscanned. Returns how many it removed.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_smart_scan_purge_empty_scans_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_purge_empty_scans_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_purge_empty_scans_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_purge_empty_scans_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -13993,6 +14142,147 @@
           "type": "string"
         }
       },
+      "smart_scan_download_zip_input": {
+        "type": "object",
+        "properties": {
+          "scan_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "scan_name"
+        ],
+        "additionalProperties": false
+      },
+      "smart_scan_download_zip_output": {
+        "description": "A model for JSON-serialised `.Blob` objects.\n\nThis model describes the JSON representation of a `.Blob`\nand is used to describe the `.Blob` object in JSON responses.\n\nThe binary data may be retrieved with a ``GET`` request to the URL\nspecified in ``href`` which should return it directly in the body of\nthe response.",
+        "type": "object",
+        "properties": {
+          "href": {
+            "title": "Href",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "const": "application/zip",
+            "default": "application/zip",
+            "type": "string"
+          },
+          "rel": {
+            "title": "Rel",
+            "const": "output",
+            "default": "output",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "default": "The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "href",
+          "media_type"
+        ]
+      },
+      "smart_scan_download_zip_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/smart_scan_download_zip_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/smart_scan_download_zip_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
       "smart_scan_latest_scan_live_details_value": {
         "oneOf": [
           {
@@ -14062,6 +14352,122 @@
           {
             "type": "null"
           }
+        ]
+      },
+      "smart_scan_purge_empty_scans_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "smart_scan_purge_empty_scans_output": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "smart_scan_purge_empty_scans_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/smart_scan_purge_empty_scans_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/smart_scan_purge_empty_scans_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
         ]
       },
       "smart_scan_sample_scan_input": {

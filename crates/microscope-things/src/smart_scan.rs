@@ -2,12 +2,13 @@
 //! one scan at a time. Each scan has a folder in the data folder's `scans/`:
 //! its images in `images/`, each with its sidecar (ADR-0025), its record in
 //! `scan.json`, and its log in `scan.log`. However a scan ends, the stage
-//! goes back to where it started.
+//! goes back to where it started, and folders without an image are removed.
+//! A scan can be downloaded as a ZIP archive (P35b).
 
 use std::collections::BTreeMap;
 use std::fs::OpenOptions;
-use std::io::{ErrorKind, Write};
-use std::path::{Path, PathBuf};
+use std::io::{Cursor, ErrorKind, Write};
+use std::path::{Component, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
@@ -16,6 +17,7 @@ use microscope_core::scan::Finished;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use teta_wot::MediaType;
 use teta_wot::prelude::*;
 
 use crate::data;
@@ -26,6 +28,15 @@ use crate::workflow::{Begun, ScanWorkflow};
 pub const SCANS: &str = "scans";
 /// The record's layout version.
 const FORMAT: u32 = 1;
+
+/// ZIP archives (`application/zip`).
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Zip;
+
+impl MediaType for Zip {
+    const MEDIA_TYPE: &'static str = "application/zip";
+    const TITLE: &'static str = "ZIPBlob";
+}
 
 /// Where a scan is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -171,13 +182,65 @@ impl SmartScan {
             details.result = Some(result);
         });
         self.record(&folder, start)?;
+        purge(&scans, None)?;
         outcome?;
         back?;
         Ok(name)
     }
+
+    /// Removes every scan folder without an image, but the one being
+    /// scanned. Returns how many it removed.
+    #[action(blocking)]
+    fn purge_empty_scans(&self, server: Server) -> Result<u32, ActionError> {
+        let scans = data::data_folder(&server).join(SCANS);
+        purge(&scans, self.scanning().as_deref())
+    }
+
+    /// The scan `scan_name` as a ZIP archive: its images with their
+    /// sidecars, its record and its log.
+    #[action(blocking, global_lock = false)]
+    fn download_zip(&self, server: Server, scan_name: String) -> Result<Blob<Zip>, ActionError> {
+        let scan = data::data_folder(&server).join(SCANS).join(&scan_name);
+        let mut parts = Path::new(&scan_name).components();
+        let plain = matches!(
+            (parts.next(), parts.next()),
+            (Some(Component::Normal(_)), None)
+        );
+        if !plain || !scan.is_dir() {
+            return Err(ActionError::handled(format!(
+                "there's no scan `{scan_name}`"
+            )));
+        }
+        let mut files: Vec<(String, PathBuf)> = ["scan.json", "scan.log"]
+            .into_iter()
+            .map(|name| (name.to_owned(), scan.join(name)))
+            .filter(|(_, path)| path.is_file())
+            .collect();
+        let images = std::fs::read_dir(scan.join("images")).map_err(ActionError::handled)?;
+        let mut images: Vec<String> = (images.flatten())
+            .filter_map(|file| file.file_name().into_string().ok())
+            .collect();
+        images.sort();
+        files.extend(
+            images
+                .into_iter()
+                .map(|image| (format!("images/{image}"), scan.join("images").join(image))),
+        );
+        let archive = data::zip(&files, Cursor::new(Vec::new())).map_err(ActionError::handled)?;
+        Ok(Blob::from_bytes(archive.into_inner()))
+    }
 }
 
 impl SmartScan {
+    /// The name of the scan being run, if one is.
+    pub fn scanning(&self) -> Option<String> {
+        let latest = self.latest.lock().expect("not poisoned");
+        let running = latest
+            .as_ref()
+            .filter(|l| l.details.scan_phase != ScanPhase::Complete);
+        running.map(|latest| latest.details.name.clone())
+    }
+
     /// Visits every site the workflow's planner gives, until it finishes.
     async fn scan(
         &self,
@@ -281,6 +344,33 @@ fn new_folder(scans: &Path, requested: &str) -> Result<(String, PathBuf), Action
             Err(error) => return Err(ActionError::handled(error)),
         }
     }
+}
+
+/// Removes each scan folder in `scans` without an image in its `images/`,
+/// but `except`. Returns how many it removed.
+fn purge(scans: &Path, except: Option<&str>) -> Result<u32, ActionError> {
+    let Ok(folders) = std::fs::read_dir(scans) else {
+        return Ok(0);
+    };
+    let has_image = |scan: &Path| {
+        let images = std::fs::read_dir(scan.join("images"))
+            .into_iter()
+            .flatten()
+            .flatten();
+        images
+            .into_iter()
+            .any(|file| file.path().extension().is_some_and(|e| e == "jpeg"))
+    };
+    let mut removed = 0;
+    for folder in folders.flatten() {
+        let (name, path) = (folder.file_name(), folder.path());
+        if except.is_some_and(|except| name == except) || !path.is_dir() || has_image(&path) {
+            continue;
+        }
+        std::fs::remove_dir_all(&path).map_err(ActionError::handled)?;
+        removed += 1;
+    }
+    Ok(removed)
 }
 
 /// A scan's log, `scan.log`: each line timed. Each also goes to the

@@ -1,6 +1,6 @@
 # P35: Scan engine with snake and raster workflows
 
-- Status: In review
+- Status: Done
 - Pull request: [#47](https://github.com/lucaswewa/microscope/pull/47)
 - ADRs: [ADR-0029](../../adr/0029-scan-engine-and-workflow-things.md)
 - Spec: [phases.md#p35](../phases.md#p35)
