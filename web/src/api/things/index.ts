@@ -96,6 +96,7 @@ export type ThingName =
   | 'autofocus'
   | 'camera_stage_mapping'
   | 'stage_measure'
+  | 'gallery'
 
 /** Thing `name` as a typed facade, while the app has a client and the Thing's description. */
 export function useThing<T extends ThingName>(name: T) {
@@ -112,3 +113,5 @@ export type Position = Schemas['stage_position_value']
 export type AxisScale = Schemas['stage_um_per_step_value']
 /** A camera's streaming mode. */
 export type StreamingMode = Schemas['camera_streaming_mode_value']
+/** One item in the gallery, as its card shows it (ADR-0026). */
+export type GalleryEntry = Schemas['gallery_list_data_value'][number]

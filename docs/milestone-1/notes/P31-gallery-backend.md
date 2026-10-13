@@ -1,6 +1,6 @@
 # P31: Gallery backend and data route
 
-- Status: In review
+- Status: Done
 - Pull request: [#42](https://github.com/lucaswewa/microscope/pull/42)
 - ADRs: [ADR-0026](../../adr/0026-gallery-index-and-data-route.md)
 - Spec: [phases.md#p31](../phases.md#p31)
