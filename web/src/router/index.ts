@@ -8,6 +8,7 @@ import {
 
 import { DESTINATIONS } from '@/app/navigation'
 import ConnectView from '@/connection/ConnectView.vue'
+import GalleryPage from '@/gallery/GalleryPage.vue'
 import ControlPage from '@/views/ControlPage.vue'
 import PlaceholderPage from '@/views/PlaceholderPage.vue'
 import SettingsPage from '@/views/SettingsPage.vue'
@@ -23,6 +24,7 @@ const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }>
 const PAGES: Record<string, Component> = {
   view: ViewPage,
   control: ControlPage,
+  gallery: GalleryPage,
   settings: SettingsPage,
 }
 

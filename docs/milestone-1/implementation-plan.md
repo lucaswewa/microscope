@@ -444,8 +444,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P31 | Gallery backend and data route | P26 | L | 0026 | In review |
-| P32 | Gallery tab | P09b, P31 | L | — | Planned |
+| P31 | Gallery backend and data route | P26 | L | 0026 | Done |
+| P32 | Gallery tab | P09b, P31 | L | — | In review |
 | P33 | Image and deep-zoom viewer | P32 | M | 0027 | Planned |
 
 **Checkpoint C, "Gallery":** captures appear as cards that you can filter, page through, download, delete and open in the viewer.

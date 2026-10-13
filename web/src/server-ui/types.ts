@@ -59,10 +59,14 @@ export interface ActionButtonElement {
   broken?: boolean
 }
 
-/** A button that downloads a file: what a Thing's endpoint answers, or an action's file output. */
+/**
+ * A button that downloads a file: what a Thing's endpoint answers, an
+ * action's file output, or a file in the data folder (ADR-0026).
+ */
 export type DownloadButtonElement = (
   | { source: 'endpoint'; thing: string; path: string }
   | { source: 'action'; thing: string; action: string; input?: Record<string, unknown> }
+  | { source: 'data'; path: string }
 ) & {
   kind: 'download_button'
   label: string
