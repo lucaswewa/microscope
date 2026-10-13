@@ -190,7 +190,7 @@ impl StageMeasure {
                     .move_relative(along(axis, direction * BIG_STEP * probe.check))
                     .await;
                 match self
-                    .measured_move(probe, axis, direction * probe.check)
+                    .measured_move(probe, axis, direction * probe.check, true)
                     .await?
                 {
                     Some(moved) if moved * (direction as f64) < STILL_MOVING * check => break,
@@ -209,7 +209,7 @@ impl StageMeasure {
             // Back until it moves again: the end is where that step started from.
             for _ in 0..MAX_STEPS_BACK {
                 match self
-                    .measured_move(probe, axis, -direction * probe.check)
+                    .measured_move(probe, axis, -direction * probe.check, false)
                     .await?
                 {
                     Some(moved) if -moved * (direction as f64) > MOVING_AGAIN * check => {
@@ -217,8 +217,11 @@ impl StageMeasure {
                         break 'search here - moved.round() as i64;
                     }
                     Some(_) => {}
-                    // From a fresh field: back to the end, and step back again.
+                    // A step back that moved can't be told from one that didn't,
+                    // so it isn't made again here. Refocused, and from a fresh
+                    // field: back to the end, and step back again.
                     None => {
+                        self.focus().await?;
                         self.sidestep(probe, axis, &mut sidesteps).await?;
                         continue 'search;
                     }
@@ -237,17 +240,19 @@ impl StageMeasure {
 
     /// Moves `steps` along `axis`, and measures from the image how far the
     /// stage really moved along it. A registration is trusted if it's sure,
-    /// or if it found just the move asked for. If it isn't, the move is made
-    /// again once, after autofocusing; if that isn't either, it's `None`.
+    /// or if it found just the move asked for. If it isn't, and `again`, the
+    /// move is made again once, after autofocusing. If none is trusted, it's
+    /// `None`.
     async fn measured_move(
         &self,
         probe: &Probe,
         axis: usize,
         steps: i64,
+        again: bool,
     ) -> Result<Option<f64>, ActionError> {
         let camera = &**self.camera;
         for attempt in 0..2 {
-            if attempt == 1 && self.focus().await?.is_none() {
+            if attempt == 1 && (!again || self.focus().await?.is_none()) {
                 break;
             }
             let before = gray(&fresh(camera).await?);

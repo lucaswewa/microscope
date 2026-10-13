@@ -1,7 +1,7 @@
 # P30: Stage measurement tools
 
 - Status: Done
-- Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40); a fix after the merge, for sparse samples, in [#41](https://github.com/lucaswewa/microscope/pull/41)
+- Pull request: [#40](https://github.com/lucaswewa/microscope/pull/40); fixes after the merge, for sparse samples in [#41](https://github.com/lucaswewa/microscope/pull/41), and for a step back that can't be measured in [#45](https://github.com/lucaswewa/microscope/pull/45)
 - ADRs: none new
 - Spec: [phases.md#p30](../phases.md#p30)
 
@@ -49,6 +49,7 @@ Written before the code, in our own words, from what OpenFlexure's stage measure
 9. **Where a registration can't be trusted,** even after autofocusing and making the move again once, it steps aside, across the axis, to a fresh field. A registration is trusted when its confidence is at least 0.3, or when it found just the move that was asked for, to within a fifth of a check step. *(Changed after the merge, in #41: it used to stop with an error here.)*
    - **Where it steps to:** a frame's shorter side to one side of where the first step aside began, then to the other side, then two frames to each side, and so on.
    - **Then:** towards an end, it carries on with the next big step. Stepping back, it goes back to the end and steps back again from there.
+   - **A step back isn't made again** when it can't be measured. A step back that moved can't be told from one that didn't, and making it again would put the end a step out. So it autofocuses, then steps aside and goes back to the end. *(Changed in #45.)*
 10. **It stops with an error,** saying where the stage is, when:
     - **it has stepped aside 10 times** for one end. The sample must have detail over the whole range;
     - **no end is reached within 500 big steps.**
@@ -198,6 +199,11 @@ For #41, I broke 3 more behaviours, and the new test failed each time:
   - **Checked** with the owner's settings: with the limits on and a travel of ±20,000 steps, it passed the spot that failed and found both ends of x and y exactly, in 2 minutes.
   - **The travel limits were off,** as they are by default, so without the sparse spot it would still have failed, at the sample's edge, 10 mm out. Now the error shows that: "…too little detail to track at x 110416, y -3445…", past the edge at 100,000. The owner chose to keep the default (limits off), as "How to try it" turns them on.
 - **Untested:** a step back from the end that can't be measured, after which it steps aside, goes back to the end, and steps back again. I couldn't make a sample where the step back fails but the check step just before it doesn't, since their frames overlap almost entirely.
+- **The end a step out, found on CI and fixed in #45.** CI's run of the focus-shift test found x's lower end at −2897 against −3000: exactly one check step short.
+  - **The cause:** with autofocus, a step back that couldn't be measured was made again after autofocusing. But the first step back had already moved, and the end was worked out from the second alone.
+  - **Why it was rare:** it needs a step back's registration to fail first and then succeed, which only autofocus makes possible.
+  - **The fix:** a step back is never made again in place. It autofocuses, steps aside and goes back to the end (spec, step 9).
+  - **Still untested** for the reason above. A fake camera that fails on cue would make it testable.
 - **The focus at a sparse end:** with the owner's settings, the focus's shift at one end of y was −150 z steps (7.5 µm), on a sample without tilt. Autofocus is less sure on a field with little in it.
 - **Untested:** giving up after 500 big steps, which would take minutes in the simulator.
 - **Saving the data:** the test's data isn't saved to the data folder, as OpenFlexure's is.
