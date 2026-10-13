@@ -17,8 +17,9 @@
 //! | `bg_color_channels_luv`, `bg_channel_deviations_luv` | `microscope.background:ColourChannelDetector`, `microscope.background:ChannelDeviationDetector` | P27 (here) |
 //! | `stage_measure` | `microscope.stage_measure:StageMeasure` | P30 (here) |
 //! | `gallery` | `microscope.gallery:Gallery` | P31 (here) |
+//! | `smart_scan`, `snake_workflow`, `raster_workflow` | `microscope.smart_scan:SmartScan`, `microscope.workflows:GridWorkflow` (with its `order`) | P35 (here) |
 //!
-//! and later `smart_scan` and the scan workflows (P35, P37) and
+//! and later the other scan workflows (P37) and
 //! `sequence` (P41). The test fakes ([`crate::fakes`]) are never here.
 
 use teta_wot::server::ThingRegistry;
@@ -29,9 +30,11 @@ use crate::camera::SimulatedCamera;
 use crate::gallery::Gallery;
 use crate::illumination::SimulatedIllumination;
 use crate::mapping::CameraStageMapping;
+use crate::smart_scan::SmartScan;
 use crate::stage::SimulatedStage;
 use crate::stage_measure::StageMeasure;
 use crate::system::MicroscopeSystem;
+use crate::workflow::GridWorkflow;
 
 /// Every Thing type a configuration file can name, under its class name.
 pub fn registry() -> ThingRegistry {
@@ -46,4 +49,6 @@ pub fn registry() -> ThingRegistry {
         .register::<ChannelDeviationDetector>("microscope.background:ChannelDeviationDetector")
         .register::<StageMeasure>("microscope.stage_measure:StageMeasure")
         .register::<Gallery>("microscope.gallery:Gallery")
+        .register::<GridWorkflow>("microscope.workflows:GridWorkflow")
+        .register::<SmartScan>("microscope.smart_scan:SmartScan")
 }

@@ -22,9 +22,11 @@ pub mod hardware;
 pub mod illumination;
 pub mod mapping;
 pub mod registry;
+pub mod smart_scan;
 pub mod stage;
 pub mod stage_measure;
 pub mod system;
 pub mod ui;
+pub mod workflow;
 
 pub use registry::registry;

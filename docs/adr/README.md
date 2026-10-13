@@ -43,5 +43,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0026](0026-gallery-index-and-data-route.md) | Gallery index and data route | Accepted | P31 |
 | [0027](0027-deep-zoom-viewer.md) | Deep-zoom viewer | Accepted | P33 |
 | [0028](0028-scan-planning-model.md) | Scan planning model | Accepted | P34 |
+| [0029](0029-scan-engine-and-workflow-things.md) | Scan engine and workflow Things | Accepted | P35 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

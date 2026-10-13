@@ -177,7 +177,7 @@ The names mirror OpenFlexure's (D7). `teta-wot` Things can't be generic, so each
 | `bg_color_channels_luv`, `bg_channel_deviations_luv` | background detectors | tolerance, minimum sample coverage, `settings_ui` | P27 |
 | `stage_measure` | `StageMeasure` | `calibrated_range`; `perform_rom_test`, `perform_recentre` | P30 |
 | `gallery` | `Gallery` | `card_types`, `list_data`, `bulk_actions`; `delete_all_data`; the endpoints `captures/{name}` (`DELETE`) and `captures/{name}/zip` | P31 |
-| `smart_scan` | `SmartScan` | `workflow_name`, `workflow_display_names`, `latest_scan_live_details`, `stitch_automatically`; `sample_scan`, `stitch_scan`, `stitch_all_scans`, `download_zip`, `purge_empty_scans` | P35, P39 |
+| `smart_scan` | `SmartScan` | `workflow_name`, `workflow_display_names`, `latest_scan_live_details`, `stitch_automatically`; `sample_scan`, `stitch_scan`, `stitch_all_scans`, `download_zip`, `purge_empty_scans` | P35, P35b, P39 |
 | `snake_workflow`, `raster_workflow`, `histo_scan_workflow`, `c_chip_workflow` | workflow Things (`ScanWorkflow`) | overlap, autofocus range, counts, stack settings, `ready`, `settings_ui` | P35, P37 |
 | `sequence` | `Sequence` | `dt`, `duration`, `autofocus_enabled`, `autofocus_dz`; `run_sequence`, `download_zip` | P41 |
 
@@ -316,7 +316,7 @@ CI runs on `windows-latest`, with jobs `rust` (fmt, clippy, test, doc), `web` (l
 | Slide Scan | Background-detection settings, set and check background | Yes | P27, P37 |
 | Slide Scan | Smart z-stacks | Yes | P36 |
 | Slide Scan | Live stitching preview, scan log, phase-aware cancel, scan settings dialog, image count, duration | Yes | P39, P40 |
-| Slide Scan | Download ZIP, stitch automatically | Yes | P35, P39 |
+| Slide Scan | Download ZIP, stitch automatically | Yes | P35b, P39 |
 | Slide Scan | Pyramidal TIFF | Deferred | — |
 | Sequence | Timelapse: duration, interval, autofocus before each capture | Yes, with an MDA-ready model | P41, P42 |
 | Gallery | Detailed and thumbnail cards, pagination, type filter, bulk actions, Delete All, per-card downloads, actions and messages | Yes | P31, P32 |
@@ -454,12 +454,13 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P34 | Scan planners | P13 | M | 0028 | In review |
-| P35 | Scan engine with snake and raster workflows | P21, P23, P31, P34 | L | 0029 | Planned |
+| P34 | Scan planners | P13 | M | 0028 | Done |
+| P35 | Scan engine with snake and raster workflows | P21, P23, P31, P34 | L | 0029 | In review |
+| P35b | Scans in the gallery | P33, P35 | M | — | Planned |
 | P36 | Smart z-stacks | P35 | M | — | Planned |
 | P37 | Histo smart-spiral and C-Chip workflows | P27, P36 | L | — | Planned |
 | P38 | Mosaic and deep-zoom pyramid core | P13 | L | 0030 | Planned |
-| P39 | Live and final stitching | P35, P38 | M | — | Planned |
+| P39 | Live and final stitching | P35b, P38 | M | — | Planned |
 | P40 | Slide Scan tab | P24b, P33, P37, P39 | L | — | Planned |
 
 **Checkpoint D, "Slide scanning":** all four workflows run on the simulator, show a live stitching preview, and end as a stitched deep-zoom image in the gallery.
@@ -666,3 +667,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-11 | P24 split in two, at the project owner's choice, since it was estimated at 1,100–1,300 lines against its L budget. P24 keeps ADR-0024, the Rust model's blocks, `PropertyControl`, `Accordion` and `Container`, sanitised text, and the web's `ServerInterface` and `PropertyControl`. The new P24b, sized M, has `ActionButton` and `DownloadButton`, in the model and the web. P25, P27, P28, P40 and P42 now depend on P24b |
 | 2026-10-11 | P24b re-sized from M to L, at the project owner's choice, since it was estimated at 750–880 lines. Its two buttons share the invocation handling, so it stays one phase |
 | 2026-10-13 | §5.9: the gallery's index is brought up to date from the folders whenever it's read, rather than told of each write, so it also follows changes made by hand (ADR-0026, P31) |
+| 2026-10-13 | P35 split in two, at the project owner's choice, since it was estimated at 1,050–1,300 lines against its L budget. P35 keeps the `ScanWorkflow` interface, the snake and raster workflows, and `smart_scan`'s `sample_scan` with its scan lock, scan folder and return to the start, and `latest_scan_live_details`. The new P35b, sized M, has `purge_empty_scans`, `download_zip`, the delete endpoint and the scans' gallery provider. P39 now depends on P35b |

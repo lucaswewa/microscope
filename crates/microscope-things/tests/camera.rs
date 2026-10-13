@@ -11,7 +11,7 @@ use teta_wot::prelude::*;
 use teta_wot::testing::{Harness, TestClient};
 
 use microscope_things::camera::{SimulatedCamera, SimulatedCameraActions};
-use microscope_things::hardware::{CameraApi, Position, StageApi};
+use microscope_things::hardware::{CameraApi, CaptureMode, Position, StageApi};
 use microscope_things::illumination::SimulatedIllumination;
 use microscope_things::stage::SimulatedStage;
 
@@ -407,7 +407,10 @@ async fn other_things_use_it_through_camera_api() {
         820
     );
 
-    let capture = camera.capture_to_memory().await.expect("a capture");
+    let capture = camera
+        .capture_to_memory(CaptureMode::Standard)
+        .await
+        .expect("a capture");
     assert_eq!(capture.image.dimensions(), (1640, 1232));
     let metadata = capture.metadata;
     assert_eq!((metadata.width, metadata.height), (1640, 1232));

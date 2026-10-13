@@ -6229,6 +6229,1329 @@
           }
         }
       }
+    },
+    "/api/v1/snake_workflow/autofocus_dz": {
+      "get": {
+        "summary": "How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "get_property_api_v1_snake_workflow_autofocus_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_autofocus_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "set_property_api_v1_snake_workflow_autofocus_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_autofocus_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/autofocus_dz/reset": {
+      "post": {
+        "summary": "Reset How far autofocus sweeps, in steps..",
+        "description": "## Reset How far autofocus sweeps, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_autofocus_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/capture_mode": {
+      "get": {
+        "summary": "How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "get_property_api_v1_snake_workflow_capture_mode_get",
+        "responses": {
+          "200": {
+            "description": "Value of capture_mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_capture_mode_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "set_property_api_v1_snake_workflow_capture_mode_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_capture_mode_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/capture_mode/reset": {
+      "post": {
+        "summary": "Reset How each image is captured..",
+        "description": "## Reset How each image is captured.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_capture_mode_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/display_name": {
+      "get": {
+        "summary": "What the app calls it.",
+        "description": "## What the app calls it.\n\nWhat the app calls it.",
+        "operationId": "get_property_api_v1_snake_workflow_display_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of display_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_display_name_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/overlap": {
+      "get": {
+        "summary": "The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "get_property_api_v1_snake_workflow_overlap_get",
+        "responses": {
+          "200": {
+            "description": "Value of overlap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_overlap_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "set_property_api_v1_snake_workflow_overlap_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_overlap_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/overlap/reset": {
+      "post": {
+        "summary": "Reset The share of each image that its neighbours overlap..",
+        "description": "## Reset The share of each image that its neighbours overlap.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_overlap_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/ready": {
+      "get": {
+        "summary": "Whether it can start: once the camera–stage mapping is calibrated.",
+        "description": "## Whether it can start: once the camera–stage mapping is calibrated.\n\nWhether it can start: once the camera–stage mapping is calibrated.",
+        "operationId": "get_property_api_v1_snake_workflow_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the Slide Scan tab (ADR-0024).",
+        "operationId": "settings_ui_api_v1_snake_workflow_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/x_count": {
+      "get": {
+        "summary": "How many columns.",
+        "description": "## How many columns.\n\nHow many columns.",
+        "operationId": "get_property_api_v1_snake_workflow_x_count_get",
+        "responses": {
+          "200": {
+            "description": "Value of x_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_x_count_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many columns.",
+        "description": "## How many columns.\n\nHow many columns.",
+        "operationId": "set_property_api_v1_snake_workflow_x_count_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_x_count_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/x_count/reset": {
+      "post": {
+        "summary": "Reset How many columns..",
+        "description": "## Reset How many columns.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_x_count_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/y_count": {
+      "get": {
+        "summary": "How many rows.",
+        "description": "## How many rows.\n\nHow many rows.",
+        "operationId": "get_property_api_v1_snake_workflow_y_count_get",
+        "responses": {
+          "200": {
+            "description": "Value of y_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_y_count_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many rows.",
+        "description": "## How many rows.\n\nHow many rows.",
+        "operationId": "set_property_api_v1_snake_workflow_y_count_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_y_count_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/y_count/reset": {
+      "post": {
+        "summary": "Reset How many rows..",
+        "description": "## Reset How many rows.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_y_count_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `snake_workflow` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_snake_workflow_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `snake_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_snake_workflow_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `snake_workflow`: its properties, actions and events, and how to use them.",
+        "operationId": "things_snake_workflow_api_v1_snake_workflow__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/autofocus_dz": {
+      "get": {
+        "summary": "How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "get_property_api_v1_raster_workflow_autofocus_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_autofocus_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "set_property_api_v1_raster_workflow_autofocus_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_autofocus_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/autofocus_dz/reset": {
+      "post": {
+        "summary": "Reset How far autofocus sweeps, in steps..",
+        "description": "## Reset How far autofocus sweeps, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_autofocus_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/capture_mode": {
+      "get": {
+        "summary": "How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "get_property_api_v1_raster_workflow_capture_mode_get",
+        "responses": {
+          "200": {
+            "description": "Value of capture_mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_capture_mode_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "set_property_api_v1_raster_workflow_capture_mode_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_capture_mode_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/capture_mode/reset": {
+      "post": {
+        "summary": "Reset How each image is captured..",
+        "description": "## Reset How each image is captured.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_capture_mode_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/display_name": {
+      "get": {
+        "summary": "What the app calls it.",
+        "description": "## What the app calls it.\n\nWhat the app calls it.",
+        "operationId": "get_property_api_v1_raster_workflow_display_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of display_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_display_name_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/overlap": {
+      "get": {
+        "summary": "The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "get_property_api_v1_raster_workflow_overlap_get",
+        "responses": {
+          "200": {
+            "description": "Value of overlap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_overlap_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "set_property_api_v1_raster_workflow_overlap_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_overlap_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/overlap/reset": {
+      "post": {
+        "summary": "Reset The share of each image that its neighbours overlap..",
+        "description": "## Reset The share of each image that its neighbours overlap.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_overlap_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/ready": {
+      "get": {
+        "summary": "Whether it can start: once the camera–stage mapping is calibrated.",
+        "description": "## Whether it can start: once the camera–stage mapping is calibrated.\n\nWhether it can start: once the camera–stage mapping is calibrated.",
+        "operationId": "get_property_api_v1_raster_workflow_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the Slide Scan tab (ADR-0024).",
+        "operationId": "settings_ui_api_v1_raster_workflow_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/x_count": {
+      "get": {
+        "summary": "How many columns.",
+        "description": "## How many columns.\n\nHow many columns.",
+        "operationId": "get_property_api_v1_raster_workflow_x_count_get",
+        "responses": {
+          "200": {
+            "description": "Value of x_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_x_count_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many columns.",
+        "description": "## How many columns.\n\nHow many columns.",
+        "operationId": "set_property_api_v1_raster_workflow_x_count_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_x_count_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/x_count/reset": {
+      "post": {
+        "summary": "Reset How many columns..",
+        "description": "## Reset How many columns.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_x_count_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/y_count": {
+      "get": {
+        "summary": "How many rows.",
+        "description": "## How many rows.\n\nHow many rows.",
+        "operationId": "get_property_api_v1_raster_workflow_y_count_get",
+        "responses": {
+          "200": {
+            "description": "Value of y_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_y_count_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many rows.",
+        "description": "## How many rows.\n\nHow many rows.",
+        "operationId": "set_property_api_v1_raster_workflow_y_count_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_y_count_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/y_count/reset": {
+      "post": {
+        "summary": "Reset How many rows..",
+        "description": "## Reset How many rows.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_y_count_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `raster_workflow` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_raster_workflow_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `raster_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_raster_workflow_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `raster_workflow`: its properties, actions and events, and how to use them.",
+        "operationId": "things_raster_workflow_api_v1_raster_workflow__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/all_workflow_names": {
+      "get": {
+        "summary": "The workflows' names.",
+        "description": "## The workflows' names.\n\nThe workflows' names.",
+        "operationId": "get_property_api_v1_smart_scan_all_workflow_names_get",
+        "responses": {
+          "200": {
+            "description": "Value of all_workflow_names",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_all_workflow_names_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/latest_scan_live_details": {
+      "get": {
+        "summary": "The latest scan's details, while it runs and after it ends.",
+        "description": "## The latest scan's details, while it runs and after it ends.\n\nThe latest scan's details, while it runs and after it ends.",
+        "operationId": "get_property_api_v1_smart_scan_latest_scan_live_details_get",
+        "responses": {
+          "200": {
+            "description": "Value of latest_scan_live_details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_latest_scan_live_details_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/sample_scan": {
+      "get": {
+        "summary": "All invocations of sample_scan.",
+        "description": "List all the invocations of sample_scan that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_smart_scan_sample_scan_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of sample_scan.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Scans with the chosen workflow into a new folder in `scans/`, called",
+        "description": "## Scans with the chosen workflow into a new folder in `scans/`, called\n\nScans with the chosen workflow into a new folder in `scans/`, called\n`scan_name`, or by the time without one, with `-2`, `-3`, … if that's\ntaken. However it ends, the stage goes back to the start. Returns the\nfolder's name.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_smart_scan_sample_scan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_sample_scan_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_sample_scan_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_sample_scan_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/workflow_display_names": {
+      "get": {
+        "summary": "What the app calls each workflow, by its name.",
+        "description": "## What the app calls each workflow, by its name.\n\nWhat the app calls each workflow, by its name.",
+        "operationId": "get_property_api_v1_smart_scan_workflow_display_names_get",
+        "responses": {
+          "200": {
+            "description": "Value of workflow_display_names",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_workflow_display_names_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/workflow_name": {
+      "get": {
+        "summary": "The workflow to scan with, by its Thing's name.",
+        "description": "## The workflow to scan with, by its Thing's name.\n\nThe workflow to scan with, by its Thing's name.",
+        "operationId": "get_property_api_v1_smart_scan_workflow_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of workflow_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_workflow_name_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The workflow to scan with, by its Thing's name.",
+        "description": "## The workflow to scan with, by its Thing's name.\n\nThe workflow to scan with, by its Thing's name.",
+        "operationId": "set_property_api_v1_smart_scan_workflow_name_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_workflow_name_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/workflow_name/reset": {
+      "post": {
+        "summary": "Reset The workflow to scan with, by its Thing's name..",
+        "description": "## Reset The workflow to scan with, by its Thing's name.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_smart_scan_workflow_name_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `smart_scan` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_smart_scan_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `smart_scan` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_smart_scan_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `smart_scan`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_smart_scan_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `smart_scan`: its properties, actions and events, and how to use them.",
+        "operationId": "things_smart_scan_api_v1_smart_scan__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8103,7 +9426,7 @@
             "description": "How a capture is taken.",
             "oneOf": [
               {
-                "description": "At full resolution: 1640 × 1232.",
+                "description": "At the camera's full resolution.",
                 "const": "standard",
                 "type": "string"
               },
@@ -12585,6 +13908,281 @@
             "delete_endpoint"
           ]
         }
+      },
+      "snake_workflow_autofocus_dz_value": {
+        "type": "integer",
+        "minimum": 400,
+        "maximum": 3000
+      },
+      "snake_workflow_capture_mode_value": {
+        "description": "How a capture is taken.",
+        "oneOf": [
+          {
+            "description": "At the camera's full resolution.",
+            "const": "standard",
+            "type": "string"
+          },
+          {
+            "description": "At the stream's size, without changing the stream.",
+            "const": "quick",
+            "type": "string"
+          }
+        ]
+      },
+      "snake_workflow_display_name_value": {
+        "type": "string"
+      },
+      "snake_workflow_overlap_value": {
+        "type": "number",
+        "minimum": 0.1,
+        "maximum": 0.7
+      },
+      "snake_workflow_ready_value": {
+        "type": "boolean"
+      },
+      "snake_workflow_x_count_value": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "snake_workflow_y_count_value": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "raster_workflow_autofocus_dz_value": {
+        "type": "integer",
+        "minimum": 400,
+        "maximum": 3000
+      },
+      "raster_workflow_capture_mode_value": {
+        "description": "How a capture is taken.",
+        "oneOf": [
+          {
+            "description": "At the camera's full resolution.",
+            "const": "standard",
+            "type": "string"
+          },
+          {
+            "description": "At the stream's size, without changing the stream.",
+            "const": "quick",
+            "type": "string"
+          }
+        ]
+      },
+      "raster_workflow_display_name_value": {
+        "type": "string"
+      },
+      "raster_workflow_overlap_value": {
+        "type": "number",
+        "minimum": 0.1,
+        "maximum": 0.7
+      },
+      "raster_workflow_ready_value": {
+        "type": "boolean"
+      },
+      "raster_workflow_x_count_value": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "raster_workflow_y_count_value": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "smart_scan_all_workflow_names_value": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "smart_scan_latest_scan_live_details_value": {
+        "oneOf": [
+          {
+            "description": "How the latest scan is going, or went.",
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Its name, which is its folder's.",
+                "type": "string"
+              },
+              "scan_phase": {
+                "description": "Where it is.",
+                "oneOf": [
+                  {
+                    "description": "Getting ready, such as by autofocusing.",
+                    "const": "setup",
+                    "type": "string"
+                  },
+                  {
+                    "description": "Visiting its sites.",
+                    "const": "scanning",
+                    "type": "string"
+                  },
+                  {
+                    "description": "Ended, however it did.",
+                    "const": "complete",
+                    "type": "string"
+                  }
+                ]
+              },
+              "image_count": {
+                "description": "How many images it has saved.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "duration_seconds": {
+                "description": "How long it has run, in seconds.",
+                "type": "number"
+              },
+              "workflow": {
+                "description": "Its workflow, by the Thing's name.",
+                "type": "string"
+              },
+              "settings": {
+                "description": "The workflow's settings for it, once it has begun."
+              },
+              "result": {
+                "description": "How it ended: `success`, `cancelled`, or the error.",
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "scan_phase",
+              "image_count",
+              "duration_seconds",
+              "workflow"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "smart_scan_sample_scan_input": {
+        "type": "object",
+        "properties": {
+          "scan_name": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "smart_scan_sample_scan_output": {
+        "type": "string"
+      },
+      "smart_scan_sample_scan_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/smart_scan_sample_scan_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/smart_scan_sample_scan_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "smart_scan_workflow_display_names_value": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "smart_scan_workflow_name_value": {
+        "type": "string"
       }
     }
   }

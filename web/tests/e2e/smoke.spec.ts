@@ -17,6 +17,7 @@ test('the built app opens on the View page, connected, with the navigation rail'
   await expect(rail.getByRole('link')).toHaveText([
     'View',
     'Control',
+    'Slide Scan',
     'Gallery',
     'Settings',
     'Logging',

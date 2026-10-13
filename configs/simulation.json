@@ -9,7 +9,10 @@
         "bg_color_channels_luv": "microscope.background:ColourChannelDetector",
         "bg_channel_deviations_luv": "microscope.background:ChannelDeviationDetector",
         "stage_measure": "microscope.stage_measure:StageMeasure",
-        "gallery": "microscope.gallery:Gallery"
+        "gallery": "microscope.gallery:Gallery",
+        "snake_workflow": {"class": "microscope.workflows:GridWorkflow", "kwargs": {"order": "snake"}},
+        "raster_workflow": {"class": "microscope.workflows:GridWorkflow", "kwargs": {"order": "raster"}},
+        "smart_scan": "microscope.smart_scan:SmartScan"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",

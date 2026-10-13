@@ -9,7 +9,9 @@ use teta_wot::server::ServerConfig;
 use teta_wot::testing::TestClient;
 
 use microscope_things::fakes::{self, FakeCamera, FakeIllumination, FakeStage};
-use microscope_things::hardware::{AxisScale, CameraApi, IlluminationApi, Position, StageApi};
+use microscope_things::hardware::{
+    AxisScale, CameraApi, CaptureMode, IlluminationApi, Position, StageApi,
+};
 
 /// Uses hardware only through its interfaces, as autofocus and scanning will.
 #[derive(Thing)]
@@ -38,7 +40,7 @@ impl Bench {
         let back = self.stage.move_absolute(start).await?;
         self.stage.stop().await?;
         let frame = self.camera.grab_frame().await?;
-        let capture = self.camera.capture_to_memory().await?;
+        let capture = self.camera.capture_to_memory(CaptureMode::Standard).await?;
         Ok(json!({
             "moved": moved,
             "back": back,

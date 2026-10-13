@@ -4023,6 +4023,935 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/snake_workflow/autofocus_dz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How far autofocus sweeps, in steps.
+         * @description ## How far autofocus sweeps, in steps.
+         *
+         *     How far autofocus sweeps, in steps.
+         */
+        get: operations["get_property_api_v1_snake_workflow_autofocus_dz_get"];
+        /**
+         * Set How far autofocus sweeps, in steps.
+         * @description ## How far autofocus sweeps, in steps.
+         *
+         *     How far autofocus sweeps, in steps.
+         */
+        put: operations["set_property_api_v1_snake_workflow_autofocus_dz_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/autofocus_dz/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How far autofocus sweeps, in steps..
+         * @description ## Reset How far autofocus sweeps, in steps.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_autofocus_dz_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/capture_mode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How each image is captured.
+         * @description ## How each image is captured.
+         *
+         *     How each image is captured.
+         */
+        get: operations["get_property_api_v1_snake_workflow_capture_mode_get"];
+        /**
+         * Set How each image is captured.
+         * @description ## How each image is captured.
+         *
+         *     How each image is captured.
+         */
+        put: operations["set_property_api_v1_snake_workflow_capture_mode_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/capture_mode/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How each image is captured..
+         * @description ## Reset How each image is captured.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_capture_mode_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/display_name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the app calls it.
+         * @description ## What the app calls it.
+         *
+         *     What the app calls it.
+         */
+        get: operations["get_property_api_v1_snake_workflow_display_name_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/overlap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The share of each image that its neighbours overlap.
+         * @description ## The share of each image that its neighbours overlap.
+         *
+         *     The share of each image that its neighbours overlap.
+         */
+        get: operations["get_property_api_v1_snake_workflow_overlap_get"];
+        /**
+         * Set The share of each image that its neighbours overlap.
+         * @description ## The share of each image that its neighbours overlap.
+         *
+         *     The share of each image that its neighbours overlap.
+         */
+        put: operations["set_property_api_v1_snake_workflow_overlap_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/overlap/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The share of each image that its neighbours overlap..
+         * @description ## Reset The share of each image that its neighbours overlap.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_overlap_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether it can start: once the camera–stage mapping is calibrated.
+         * @description ## Whether it can start: once the camera–stage mapping is calibrated.
+         *
+         *     Whether it can start: once the camera–stage mapping is calibrated.
+         */
+        get: operations["get_property_api_v1_snake_workflow_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/settings_ui": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Settings Ui
+         * @description The settings, described for the Slide Scan tab (ADR-0024).
+         */
+        get: operations["settings_ui_api_v1_snake_workflow_settings_ui_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/x_count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many columns.
+         * @description ## How many columns.
+         *
+         *     How many columns.
+         */
+        get: operations["get_property_api_v1_snake_workflow_x_count_get"];
+        /**
+         * Set How many columns.
+         * @description ## How many columns.
+         *
+         *     How many columns.
+         */
+        put: operations["set_property_api_v1_snake_workflow_x_count_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/x_count/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many columns..
+         * @description ## Reset How many columns.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_x_count_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/y_count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many rows.
+         * @description ## How many rows.
+         *
+         *     How many rows.
+         */
+        get: operations["get_property_api_v1_snake_workflow_y_count_get"];
+        /**
+         * Set How many rows.
+         * @description ## How many rows.
+         *
+         *     How many rows.
+         */
+        put: operations["set_property_api_v1_snake_workflow_y_count_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/y_count/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many rows..
+         * @description ## Reset How many rows.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_y_count_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `snake_workflow` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_snake_workflow_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `snake_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_snake_workflow_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `snake_workflow`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_snake_workflow_api_v1_snake_workflow__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/autofocus_dz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How far autofocus sweeps, in steps.
+         * @description ## How far autofocus sweeps, in steps.
+         *
+         *     How far autofocus sweeps, in steps.
+         */
+        get: operations["get_property_api_v1_raster_workflow_autofocus_dz_get"];
+        /**
+         * Set How far autofocus sweeps, in steps.
+         * @description ## How far autofocus sweeps, in steps.
+         *
+         *     How far autofocus sweeps, in steps.
+         */
+        put: operations["set_property_api_v1_raster_workflow_autofocus_dz_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/autofocus_dz/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How far autofocus sweeps, in steps..
+         * @description ## Reset How far autofocus sweeps, in steps.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_autofocus_dz_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/capture_mode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How each image is captured.
+         * @description ## How each image is captured.
+         *
+         *     How each image is captured.
+         */
+        get: operations["get_property_api_v1_raster_workflow_capture_mode_get"];
+        /**
+         * Set How each image is captured.
+         * @description ## How each image is captured.
+         *
+         *     How each image is captured.
+         */
+        put: operations["set_property_api_v1_raster_workflow_capture_mode_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/capture_mode/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How each image is captured..
+         * @description ## Reset How each image is captured.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_capture_mode_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/display_name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the app calls it.
+         * @description ## What the app calls it.
+         *
+         *     What the app calls it.
+         */
+        get: operations["get_property_api_v1_raster_workflow_display_name_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/overlap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The share of each image that its neighbours overlap.
+         * @description ## The share of each image that its neighbours overlap.
+         *
+         *     The share of each image that its neighbours overlap.
+         */
+        get: operations["get_property_api_v1_raster_workflow_overlap_get"];
+        /**
+         * Set The share of each image that its neighbours overlap.
+         * @description ## The share of each image that its neighbours overlap.
+         *
+         *     The share of each image that its neighbours overlap.
+         */
+        put: operations["set_property_api_v1_raster_workflow_overlap_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/overlap/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The share of each image that its neighbours overlap..
+         * @description ## Reset The share of each image that its neighbours overlap.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_overlap_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether it can start: once the camera–stage mapping is calibrated.
+         * @description ## Whether it can start: once the camera–stage mapping is calibrated.
+         *
+         *     Whether it can start: once the camera–stage mapping is calibrated.
+         */
+        get: operations["get_property_api_v1_raster_workflow_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/settings_ui": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Settings Ui
+         * @description The settings, described for the Slide Scan tab (ADR-0024).
+         */
+        get: operations["settings_ui_api_v1_raster_workflow_settings_ui_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/x_count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many columns.
+         * @description ## How many columns.
+         *
+         *     How many columns.
+         */
+        get: operations["get_property_api_v1_raster_workflow_x_count_get"];
+        /**
+         * Set How many columns.
+         * @description ## How many columns.
+         *
+         *     How many columns.
+         */
+        put: operations["set_property_api_v1_raster_workflow_x_count_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/x_count/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many columns..
+         * @description ## Reset How many columns.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_x_count_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/y_count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many rows.
+         * @description ## How many rows.
+         *
+         *     How many rows.
+         */
+        get: operations["get_property_api_v1_raster_workflow_y_count_get"];
+        /**
+         * Set How many rows.
+         * @description ## How many rows.
+         *
+         *     How many rows.
+         */
+        put: operations["set_property_api_v1_raster_workflow_y_count_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/y_count/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many rows..
+         * @description ## Reset How many rows.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_y_count_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `raster_workflow` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_raster_workflow_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `raster_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_raster_workflow_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `raster_workflow`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_raster_workflow_api_v1_raster_workflow__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/all_workflow_names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The workflows' names.
+         * @description ## The workflows' names.
+         *
+         *     The workflows' names.
+         */
+        get: operations["get_property_api_v1_smart_scan_all_workflow_names_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/latest_scan_live_details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The latest scan's details, while it runs and after it ends.
+         * @description ## The latest scan's details, while it runs and after it ends.
+         *
+         *     The latest scan's details, while it runs and after it ends.
+         */
+        get: operations["get_property_api_v1_smart_scan_latest_scan_live_details_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/sample_scan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of sample_scan.
+         * @description List all the invocations of sample_scan that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_smart_scan_sample_scan_get"];
+        put?: never;
+        /**
+         * Scans with the chosen workflow into a new folder in `scans/`, called
+         * @description ## Scans with the chosen workflow into a new folder in `scans/`, called
+         *
+         *     Scans with the chosen workflow into a new folder in `scans/`, called
+         *     `scan_name`, or by the time without one, with `-2`, `-3`, … if that's
+         *     taken. However it ends, the stage goes back to the start. Returns the
+         *     folder's name.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_smart_scan_sample_scan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/workflow_display_names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What the app calls each workflow, by its name.
+         * @description ## What the app calls each workflow, by its name.
+         *
+         *     What the app calls each workflow, by its name.
+         */
+        get: operations["get_property_api_v1_smart_scan_workflow_display_names_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/workflow_name": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The workflow to scan with, by its Thing's name.
+         * @description ## The workflow to scan with, by its Thing's name.
+         *
+         *     The workflow to scan with, by its Thing's name.
+         */
+        get: operations["get_property_api_v1_smart_scan_workflow_name_get"];
+        /**
+         * Set The workflow to scan with, by its Thing's name.
+         * @description ## The workflow to scan with, by its Thing's name.
+         *
+         *     The workflow to scan with, by its Thing's name.
+         */
+        put: operations["set_property_api_v1_smart_scan_workflow_name_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/workflow_name/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The workflow to scan with, by its Thing's name..
+         * @description ## Reset The workflow to scan with, by its Thing's name.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_smart_scan_workflow_name_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `smart_scan` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_smart_scan_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `smart_scan` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_smart_scan_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `smart_scan`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_smart_scan_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `smart_scan`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_smart_scan_api_v1_smart_scan__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -5552,6 +6481,64 @@ export interface components {
             /** @description Where to send `DELETE` to delete it, relative to the API prefix. */
             delete_endpoint: string;
         }[];
+        snake_workflow_autofocus_dz_value: number;
+        /** @description How a capture is taken. */
+        snake_workflow_capture_mode_value: "standard" | "quick";
+        snake_workflow_display_name_value: string;
+        snake_workflow_overlap_value: number;
+        snake_workflow_ready_value: boolean;
+        snake_workflow_x_count_value: number;
+        snake_workflow_y_count_value: number;
+        raster_workflow_autofocus_dz_value: number;
+        /** @description How a capture is taken. */
+        raster_workflow_capture_mode_value: "standard" | "quick";
+        raster_workflow_display_name_value: string;
+        raster_workflow_overlap_value: number;
+        raster_workflow_ready_value: boolean;
+        raster_workflow_x_count_value: number;
+        raster_workflow_y_count_value: number;
+        smart_scan_all_workflow_names_value: string[];
+        smart_scan_latest_scan_live_details_value: {
+            /** @description Its name, which is its folder's. */
+            name: string;
+            /** @description Where it is. */
+            scan_phase: "setup" | "scanning" | "complete";
+            /** @description How many images it has saved. */
+            image_count: number;
+            /** @description How long it has run, in seconds. */
+            duration_seconds: number;
+            /** @description Its workflow, by the Thing's name. */
+            workflow: string;
+            /** @description The workflow's settings for it, once it has begun. */
+            settings?: unknown;
+            /** @description How it ended: `success`, `cancelled`, or the error. */
+            result?: string | null;
+        } | null;
+        smart_scan_sample_scan_input: {
+            /** @default  */
+            scan_name?: string;
+        };
+        smart_scan_sample_scan_output: string;
+        smart_scan_sample_scan_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["smart_scan_sample_scan_input"];
+            output?: components["schemas"]["smart_scan_sample_scan_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        smart_scan_workflow_display_names_value: {
+            [key: string]: string;
+        };
+        smart_scan_workflow_name_value: string;
     };
     responses: never;
     parameters: never;
@@ -11381,6 +12368,1296 @@ export interface operations {
         };
     };
     things_gallery_api_v1_gallery__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_autofocus_dz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of autofocus_dz */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_autofocus_dz_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_autofocus_dz_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_autofocus_dz_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_autofocus_dz_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_capture_mode_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of capture_mode */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_capture_mode_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_capture_mode_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_capture_mode_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_capture_mode_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_display_name_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of display_name */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_display_name_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_overlap_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of overlap */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_overlap_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_overlap_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_overlap_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_overlap_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of ready */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_ready_value"];
+                };
+            };
+        };
+    };
+    settings_ui_api_v1_snake_workflow_settings_ui_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_x_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of x_count */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_x_count_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_x_count_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_x_count_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_x_count_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_y_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of y_count */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_y_count_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_y_count_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_y_count_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_y_count_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_snake_workflow_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_snake_workflow_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    things_snake_workflow_api_v1_snake_workflow__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_autofocus_dz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of autofocus_dz */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_autofocus_dz_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_autofocus_dz_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_autofocus_dz_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_autofocus_dz_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_capture_mode_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of capture_mode */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_capture_mode_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_capture_mode_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_capture_mode_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_capture_mode_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_display_name_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of display_name */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_display_name_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_overlap_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of overlap */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_overlap_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_overlap_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_overlap_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_overlap_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of ready */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_ready_value"];
+                };
+            };
+        };
+    };
+    settings_ui_api_v1_raster_workflow_settings_ui_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_x_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of x_count */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_x_count_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_x_count_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_x_count_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_x_count_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_y_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of y_count */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_y_count_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_y_count_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_y_count_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_y_count_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_raster_workflow_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_raster_workflow_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    things_raster_workflow_api_v1_raster_workflow__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_all_workflow_names_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of all_workflow_names */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_all_workflow_names_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_latest_scan_live_details_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of latest_scan_live_details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_latest_scan_live_details_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_smart_scan_sample_scan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of sample_scan. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_smart_scan_sample_scan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["smart_scan_sample_scan_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_sample_scan_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_sample_scan_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_workflow_display_names_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of workflow_display_names */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_workflow_display_names_value"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_workflow_name_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of workflow_name */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_workflow_name_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_smart_scan_workflow_name_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["smart_scan_workflow_name_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_smart_scan_workflow_name_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_smart_scan_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_smart_scan_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_smart_scan_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_smart_scan_api_v1_smart_scan__get: {
         parameters: {
             query?: never;
             header?: never;
