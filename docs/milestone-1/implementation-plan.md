@@ -455,8 +455,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P34 | Scan planners | P13 | M | 0028 | Done |
-| P35 | Scan engine with snake and raster workflows | P21, P23, P31, P34 | L | 0029 | In review |
-| P35b | Scans in the gallery | P33, P35 | M | — | Planned |
+| P35 | Scan engine with snake and raster workflows | P21, P23, P31, P34 | L | 0029 | Done |
+| P35b | Scans in the gallery | P33, P35 | M | — | In review |
 | P36 | Smart z-stacks | P35 | M | — | Planned |
 | P37 | Histo smart-spiral and C-Chip workflows | P27, P36 | L | — | Planned |
 | P38 | Mosaic and deep-zoom pyramid core | P13 | L | 0030 | Planned |

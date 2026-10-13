@@ -51,4 +51,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P32 | [Gallery tab](P32-gallery-tab.md) | Done |
 | P33 | [Image and deep-zoom viewer](P33-viewer.md) | Done |
 | P34 | [Scan planners](P34-scan-planners.md) | Done |
-| P35 | [Scan engine with snake and raster workflows](P35-scan-engine.md) | In review |
+| P35 | [Scan engine with snake and raster workflows](P35-scan-engine.md) | Done |
+| P35b | [Scans in the gallery](P35b-scans-in-gallery.md) | In review |

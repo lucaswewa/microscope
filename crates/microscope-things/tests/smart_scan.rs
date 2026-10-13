@@ -12,6 +12,7 @@ use teta_wot::testing::{Harness, TestClient};
 
 use microscope_things::autofocus::Autofocus;
 use microscope_things::camera::SimulatedCamera;
+use microscope_things::gallery::Gallery;
 use microscope_things::illumination::SimulatedIllumination;
 use microscope_things::mapping::CameraStageMapping;
 use microscope_things::smart_scan::SmartScan;
@@ -33,6 +34,7 @@ async fn start(calibrate: bool) -> (Harness<SmartScan>, PathBuf) {
         .thing("illumination", SimulatedIllumination::default())
         .thing("autofocus", Autofocus::default())
         .thing("camera_stage_mapping", CameraStageMapping::default())
+        .thing("gallery", Gallery::default())
         .application_config(json!({"data_folder": data}))
         .global_lock(true)
         .start()
@@ -144,6 +146,8 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
             .json(),
         json!({"snake_workflow": "Snake scan", "raster_workflow": "Raster scan"})
     );
+    // A scan ends by removing folders without an image (P35b).
+    std::fs::create_dir_all(data.join("scans/stale/images")).expect("created");
     let begin = client.get("/stage/position").await.json();
     let record = run(
         client,
@@ -151,6 +155,7 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
         json!({"scan_name": "first"}),
     )
     .await;
+    assert!(!data.join("scans/stale").exists());
     assert_eq!(record["status"], "completed", "{record}");
     assert_eq!(record["output"], "first");
     // Back at the start, z included.
@@ -289,6 +294,9 @@ async fn a_cancelled_scan_stops_and_goes_back_to_the_start() {
         );
         tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     }
+    // The gallery won't delete it while it runs (P35b).
+    let deleted = client.delete("/gallery/scans/long").await;
+    assert_eq!(deleted.status.as_u16(), 409, "{}", deleted.text());
     assert!(client.delete(&scan).await.status.is_success());
     let record = finish(client, &scan).await;
     assert_eq!(record["status"], "cancelled", "{record}");

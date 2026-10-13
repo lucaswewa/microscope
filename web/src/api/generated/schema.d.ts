@@ -3941,6 +3941,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/gallery/scans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Scan
+         * @description Deletes the scan named by the path's last part, unless it's being
+         *     scanned.
+         */
+        delete: operations["delete_scan_api_v1_gallery_scans__id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/gallery/list_data": {
         parameters: {
             query?: never;
@@ -4761,6 +4782,37 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/smart_scan/download_zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of download_zip.
+         * @description List all the invocations of download_zip that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_smart_scan_download_zip_get"];
+        put?: never;
+        /**
+         * The scan `scan_name` as a ZIP archive: its images with their
+         * @description ## The scan `scan_name` as a ZIP archive: its images with their
+         *
+         *     The scan `scan_name` as a ZIP archive: its images with their
+         *     sidecars, its record and its log.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_smart_scan_download_zip_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/smart_scan/latest_scan_live_details": {
         parameters: {
             query?: never;
@@ -4777,6 +4829,37 @@ export interface paths {
         get: operations["get_property_api_v1_smart_scan_latest_scan_live_details_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/purge_empty_scans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of purge_empty_scans.
+         * @description List all the invocations of purge_empty_scans that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_smart_scan_purge_empty_scans_get"];
+        put?: never;
+        /**
+         * Removes every scan folder without an image, but the one being
+         * @description ## Removes every scan folder without an image, but the one being
+         *
+         *     Removes every scan folder without an image, but the one being
+         *     scanned. Returns how many it removed.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_smart_scan_purge_empty_scans_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6498,6 +6581,56 @@ export interface components {
         raster_workflow_x_count_value: number;
         raster_workflow_y_count_value: number;
         smart_scan_all_workflow_names_value: string[];
+        smart_scan_download_zip_input: {
+            scan_name: string;
+        };
+        /**
+         * @description A model for JSON-serialised `.Blob` objects.
+         *
+         *     This model describes the JSON representation of a `.Blob`
+         *     and is used to describe the `.Blob` object in JSON responses.
+         *
+         *     The binary data may be retrieved with a ``GET`` request to the URL
+         *     specified in ``href`` which should return it directly in the body of
+         *     the response.
+         */
+        smart_scan_download_zip_output: {
+            /** Href */
+            href: string;
+            /**
+             * Media Type
+             * @default application/zip
+             * @constant
+             */
+            media_type: "application/zip";
+            /**
+             * Rel
+             * @default output
+             * @constant
+             */
+            rel?: "output";
+            /**
+             * Description
+             * @default The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.
+             */
+            description?: string;
+        };
+        smart_scan_download_zip_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["smart_scan_download_zip_input"];
+            output?: components["schemas"]["smart_scan_download_zip_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         smart_scan_latest_scan_live_details_value: {
             /** @description Its name, which is its folder's. */
             name: string;
@@ -6514,6 +6647,29 @@ export interface components {
             /** @description How it ended: `success`, `cancelled`, or the error. */
             result?: string | null;
         } | null;
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        smart_scan_purge_empty_scans_input: Record<string, never> | null;
+        smart_scan_purge_empty_scans_output: number;
+        smart_scan_purge_empty_scans_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["smart_scan_purge_empty_scans_input"];
+            output?: components["schemas"]["smart_scan_purge_empty_scans_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         smart_scan_sample_scan_input: {
             /** @default  */
             scan_name?: string;
@@ -12304,6 +12460,24 @@ export interface operations {
             };
         };
     };
+    delete_scan_api_v1_gallery_scans__id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_property_api_v1_gallery_list_data_get: {
         parameters: {
             query?: never;
@@ -13407,6 +13581,68 @@ export interface operations {
             };
         };
     };
+    list_invocations_api_v1_smart_scan_download_zip_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of download_zip. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_smart_scan_download_zip_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["smart_scan_download_zip_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_download_zip_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_download_zip_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_property_api_v1_smart_scan_latest_scan_live_details_get: {
         parameters: {
             query?: never;
@@ -13423,6 +13659,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["smart_scan_latest_scan_live_details_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_smart_scan_purge_empty_scans_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of purge_empty_scans. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_smart_scan_purge_empty_scans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["smart_scan_purge_empty_scans_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_purge_empty_scans_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_purge_empty_scans_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

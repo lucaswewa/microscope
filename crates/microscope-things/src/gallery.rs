@@ -1,7 +1,7 @@
 //! The `gallery` Thing (P31, ADR-0026): one index of everything saved in
 //! the data folder, for the Gallery tab. Each card type has a provider that
-//! finds its items on disk, describes them and deletes them: the captures'
-//! is here, and scans and sequences add theirs. The index is built when the
+//! finds its items on disk, describes them and deletes them: captures and
+//! scans (P35b) now, and sequences later. The index is built when the
 //! gallery starts, and brought up to date from the folders whenever it's
 //! read, so it follows every write, by any Thing or from outside the server.
 
@@ -16,7 +16,7 @@ use chrono::{DateTime, SecondsFormat, Utc};
 use percent_encoding::{AsciiSet, NON_ALPHANUMERIC, percent_decode_str, utf8_percent_encode};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
 use teta_wot::http::axum::Json;
 use teta_wot::http::axum::http::{StatusCode, Uri, header};
 use teta_wot::http::axum::response::{IntoResponse, Response};
@@ -24,6 +24,7 @@ use teta_wot::prelude::*;
 
 use crate::capture::{self, CAPTURES, Sidecar, StageRecord, THUMBNAILS};
 use crate::data;
+use crate::smart_scan::{SCANS, SmartScan};
 use crate::ui::{ActionButton, DownloadButton, DownloadSource};
 
 /// What a URL's path segment can hold unencoded: letters, digits and `-._~`.
@@ -125,20 +126,30 @@ trait Provider: Send + Sync {
     /// Its items' paths in the data folder `folder`, each with a stamp of
     /// its files.
     fn items(&self, folder: &Path) -> Vec<(String, Stamp)>;
-    /// The entry for the item at `path`, in the gallery called `gallery`.
-    fn entry(&self, folder: &Path, path: &str, gallery: &str) -> GalleryEntry;
+    /// The entry for the item at `path`.
+    fn entry(&self, started: &Started, path: &str) -> GalleryEntry;
     /// Deletes the item at `path`, with all its files.
     fn delete(&self, folder: &Path, path: &str) -> std::io::Result<()>;
 }
 
 /// The providers, one for each card type.
-const PROVIDERS: &[&dyn Provider] = &[&Captures];
+const PROVIDERS: &[&dyn Provider] = &[&Captures, &Scans];
+
+/// What the gallery knows once it has started.
+struct Started {
+    /// The data folder.
+    folder: PathBuf,
+    /// The gallery's name.
+    gallery: String,
+    /// `smart_scan`'s name, if there's one.
+    smart_scan: Option<String>,
+    server: Server,
+}
 
 /// The gallery (see the module's description).
 #[derive(Thing)]
 pub struct Gallery {
-    /// The data folder and the gallery's name, once it has started.
-    started: OnceLock<(PathBuf, String)>,
+    started: OnceLock<Started>,
     /// The entries by path, each with the stamp it was described at.
     index: Mutex<BTreeMap<String, (Stamp, GalleryEntry)>>,
 }
@@ -173,7 +184,7 @@ impl Gallery {
                 "there's no card type `{unknown}`"
             )));
         }
-        let (folder, _) = self.started.get().ok_or_else(not_started)?;
+        let folder = &self.started.get().ok_or_else(not_started)?.folder;
         for provider in PROVIDERS {
             if card_types.iter().any(|name| name == provider.card_type()) {
                 for (path, _) in provider.items(folder) {
@@ -195,6 +206,36 @@ impl Gallery {
             Err((status, message)) => return detail(status, message),
         };
         match Captures.delete(folder, &path) {
+            Ok(()) => StatusCode::NO_CONTENT.into_response(),
+            Err(error) => detail(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+        }
+    }
+
+    /// Deletes the scan named by the path's last part, unless it's being
+    /// scanned.
+    #[endpoint(delete, "scans/{id}")]
+    async fn delete_scan(&self, uri: Uri) -> Response {
+        let Some(started) = self.started.get() else {
+            return detail(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "the gallery hasn't started".to_owned(),
+            );
+        };
+        let name = segment(&uri, 0);
+        let Some(name) = name.filter(|name| started.folder.join(SCANS).join(name).is_dir()) else {
+            return detail(
+                StatusCode::NOT_FOUND,
+                "There's no scan by that name.".to_owned(),
+            );
+        };
+        let scans = started.server.things_of_type::<SmartScan>();
+        if scans
+            .iter()
+            .any(|scan| ThingRef::thing(scan).scanning().as_deref() == Some(&name))
+        {
+            return detail(StatusCode::CONFLICT, format!("`{name}` is being scanned."));
+        }
+        match Scans.delete(&started.folder, &format!("{SCANS}/{name}")) {
             Ok(()) => StatusCode::NO_CONTENT.into_response(),
             Err(error) => detail(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
         }
@@ -231,8 +272,17 @@ impl Gallery {
     /// Notes the data folder, and builds the index in the background.
     #[on_start]
     async fn start(&self, ctx: ThingCtx) {
-        let started = (data::data_folder(ctx.server()), ctx.name().to_owned());
-        let _ = self.started.set(started);
+        let server = ctx.server();
+        let smart_scan = server
+            .things_of_type::<SmartScan>()
+            .first()
+            .map(|scan| ThingRef::name(scan).to_owned());
+        let _ = self.started.set(Started {
+            folder: data::data_folder(server),
+            gallery: ctx.name().to_owned(),
+            smart_scan,
+            server: server.clone(),
+        });
         if let Some(gallery) = ctx.server().thing_ref::<Gallery>(ctx.name()) {
             let gallery = Arc::clone(ThingRef::thing(&gallery));
             tokio::task::spawn_blocking(move || gallery.refresh());
@@ -244,16 +294,16 @@ impl Gallery {
     /// Brings the index up to date with the data folder, describing only
     /// the items whose files changed: every entry, newest first.
     fn refresh(&self) -> Vec<GalleryEntry> {
-        let Some((folder, name)) = self.started.get() else {
+        let Some(started) = self.started.get() else {
             return Vec::new();
         };
         let mut index = self.index.lock().expect("not poisoned");
         let mut fresh = BTreeMap::new();
         for provider in PROVIDERS {
-            for (path, stamp) in provider.items(folder) {
+            for (path, stamp) in provider.items(&started.folder) {
                 let entry = match index.remove(&path) {
                     Some((old, entry)) if old == stamp => entry,
-                    _ => provider.entry(folder, &path, name),
+                    _ => provider.entry(started, &path),
                 };
                 fresh.insert(path, (stamp, entry));
             }
@@ -274,16 +324,10 @@ impl Gallery {
                 "the gallery hasn't started".to_owned(),
             )
         };
-        let (folder, _) = self.started.get().ok_or_else(unstarted)?;
-        let segment = uri.path().rsplit('/').nth(back).unwrap_or_default();
-        let name = percent_decode_str(segment).decode_utf8_lossy();
-        let mut parts = Path::new(name.as_ref()).components();
-        let plain = matches!(
-            (parts.next(), parts.next()),
-            (Some(Component::Normal(_)), None)
-        );
+        let folder = &self.started.get().ok_or_else(unstarted)?.folder;
+        let name = segment(uri, back).unwrap_or_default();
         let path = format!("{CAPTURES}/{name}");
-        if plain && is_jpeg(&name) && folder.join(&path).is_file() {
+        if is_jpeg(&name) && folder.join(&path).is_file() {
             Ok((folder, path))
         } else {
             Err((
@@ -317,7 +361,8 @@ impl Provider for Captures {
         files.flatten().filter_map(|file| jpeg(&file)).collect()
     }
 
-    fn entry(&self, folder: &Path, path: &str, gallery: &str) -> GalleryEntry {
+    fn entry(&self, started: &Started, path: &str) -> GalleryEntry {
+        let (folder, gallery) = (&started.folder, &started.gallery);
         let image = folder.join(path);
         let name = image.file_name().unwrap_or_default().to_string_lossy();
         let stem = image.file_stem().unwrap_or_default().to_string_lossy();
@@ -388,6 +433,144 @@ impl Provider for Captures {
         }
         Ok(())
     }
+}
+
+/// The scans in `scans/` (P35): each a folder of images with their sidecars,
+/// a record and a log, viewed as a sequence until it's stitched (P39).
+struct Scans;
+
+impl Provider for Scans {
+    fn card_type(&self) -> &'static str {
+        "Scan"
+    }
+
+    fn items(&self, folder: &Path) -> Vec<(String, Stamp)> {
+        let Ok(scans) = fs::read_dir(folder.join(SCANS)) else {
+            return Vec::new();
+        };
+        let scan = |entry: fs::DirEntry| {
+            let name = entry.file_name().into_string().ok()?;
+            let scan = entry.path();
+            entry.file_type().ok()?.is_dir().then(|| {
+                let stamp = stamp(&[&scan.join("scan.json"), &scan.join("images")]);
+                (format!("{SCANS}/{name}"), stamp)
+            })
+        };
+        scans.flatten().filter_map(scan).collect()
+    }
+
+    fn entry(&self, started: &Started, path: &str) -> GalleryEntry {
+        let scan = started.folder.join(path);
+        let name = scan
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .into_owned();
+        let record: Value = (fs::read(scan.join("scan.json")).ok())
+            .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+            .unwrap_or_default();
+        let mut images: Vec<String> = (fs::read_dir(scan.join("images"))
+            .into_iter()
+            .flatten()
+            .flatten())
+        .filter_map(|file| file.file_name().into_string().ok())
+        .filter(|file| is_jpeg(file))
+        .collect();
+        images.sort();
+        // A small copy of the first image, made once.
+        let thumbnail = scan.join("thumbnail.jpeg");
+        let thumbnail = thumbnail.is_file()
+            || (images.first())
+                .and_then(|first| image::open(scan.join("images").join(first)).ok())
+                .is_some_and(|picture| {
+                    capture::save_thumbnail(&picture.to_rgb8(), &thumbnail).is_ok()
+                });
+        let started_at = record["started"]
+            .as_str()
+            .and_then(|t| DateTime::parse_from_rfc3339(t).ok());
+        let created = (started_at.map(|t| t.with_timezone(&Utc))).or_else(|| {
+            Some(DateTime::<Utc>::from(
+                fs::metadata(&scan).ok()?.modified().ok()?,
+            ))
+        });
+        let line = |label: &str, value: String| InfoLine {
+            label: label.to_owned(),
+            value,
+        };
+        let mut info = vec![line("Images", images.len().to_string())];
+        if let Some(workflow) = record["workflow"].as_str() {
+            info.push(line("Workflow", workflow.to_owned()));
+        }
+        if let Some(seconds) = record["duration_seconds"].as_f64() {
+            info.push(line("Duration", format!("{} s", seconds.round())));
+        }
+        let message = |level, text: String| {
+            vec![CardMessage {
+                level,
+                message: text,
+            }]
+        };
+        let card_messages = match record["result"].as_str() {
+            Some("success") => Vec::new(),
+            Some("cancelled") => message(MessageLevel::Warning, "It was cancelled.".to_owned()),
+            Some(error) => message(MessageLevel::Alert, format!("It stopped: {error}.")),
+            None => message(MessageLevel::Warning, "It hasn't finished.".to_owned()),
+        };
+        let encoded = utf8_percent_encode(&name, SEGMENT);
+        let mut download_buttons = vec![download(
+            "Record",
+            DownloadSource::Data {
+                path: format!("{path}/scan.json"),
+            },
+            &format!("{name}.json"),
+        )];
+        if let Some(smart_scan) = &started.smart_scan {
+            let zip = DownloadSource::Action {
+                thing: smart_scan.clone(),
+                action: "download_zip".to_owned(),
+                input: json!({ "scan_name": name }),
+            };
+            download_buttons.insert(0, download("Images (ZIP)", zip, &format!("{name}.zip")));
+        }
+        GalleryEntry {
+            name: name.clone(),
+            path: path.to_owned(),
+            card_type: self.card_type().to_owned(),
+            created: created
+                .unwrap_or_default()
+                .to_rfc3339_opts(SecondsFormat::Millis, true),
+            thumbnail: thumbnail.then(|| format!("{path}/thumbnail.jpeg")),
+            viewer: Viewer::Directory {
+                paths: images
+                    .iter()
+                    .map(|image| format!("{path}/images/{image}"))
+                    .collect(),
+                start: 0,
+            },
+            info,
+            download_buttons,
+            card_actions: Vec::new(),
+            card_messages,
+            delete_endpoint: format!("{}/{SCANS}/{encoded}", started.gallery),
+        }
+    }
+
+    fn delete(&self, folder: &Path, path: &str) -> std::io::Result<()> {
+        fs::remove_dir_all(folder.join(path))
+    }
+}
+
+/// The URL's path segment `back` from the end, percent-decoded, if it names
+/// one file or folder.
+fn segment(uri: &Uri, back: usize) -> Option<String> {
+    let segment = uri.path().rsplit('/').nth(back)?;
+    let name = percent_decode_str(segment).decode_utf8_lossy().into_owned();
+    let mut parts = Path::new(&name).components();
+    matches!(
+        (parts.next(), parts.next()),
+        (Some(Component::Normal(_)), None)
+    )
+    .then_some(name)
 }
 
 /// Each of `files`' size and modification time, if it's there.
