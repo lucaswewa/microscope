@@ -49,4 +49,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P30 | [Stage measurement tools](P30-stage-measure.md) | Done |
 | P31 | [Gallery backend and data route](P31-gallery-backend.md) | Done |
 | P32 | [Gallery tab](P32-gallery-tab.md) | Done |
-| P33 | [Image and deep-zoom viewer](P33-viewer.md) | In review |
+| P33 | [Image and deep-zoom viewer](P33-viewer.md) | Done |
+| P34 | [Scan planners](P34-scan-planners.md) | In review |

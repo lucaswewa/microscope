@@ -446,7 +446,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P31 | Gallery backend and data route | P26 | L | 0026 | Done |
 | P32 | Gallery tab | P09b, P31 | L | — | Done |
-| P33 | Image and deep-zoom viewer | P32 | M | 0027 | In review |
+| P33 | Image and deep-zoom viewer | P32 | M | 0027 | Done |
 
 **Checkpoint C, "Gallery":** captures appear as cards that you can filter, page through, download, delete and open in the viewer.
 
@@ -454,7 +454,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P34 | Scan planners | P13 | M | 0028 | Planned |
+| P34 | Scan planners | P13 | M | 0028 | In review |
 | P35 | Scan engine with snake and raster workflows | P21, P23, P31, P34 | L | 0029 | Planned |
 | P36 | Smart z-stacks | P35 | M | — | Planned |
 | P37 | Histo smart-spiral and C-Chip workflows | P27, P36 | L | — | Planned |
