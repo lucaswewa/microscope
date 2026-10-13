@@ -61,7 +61,7 @@ pub struct GalleryEntry {
     pub delete_endpoint: String,
 }
 
-/// How the viewer shows an item.
+/// How the viewer shows an item (ADR-0027).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Viewer {
@@ -69,6 +69,19 @@ pub enum Viewer {
     Image {
         /// The image's path in the data folder.
         path: String,
+    },
+    /// As a deep-zoom image, such as a stitched scan (P38).
+    Dzi {
+        /// The path of its `.dzi` file, with its tiles beside it in
+        /// `<name>_files/`.
+        path: String,
+    },
+    /// As images shown one at a time, such as a timelapse's (P41).
+    Directory {
+        /// The images' paths, in order.
+        paths: Vec<String>,
+        /// The one shown first, from 0.
+        start: usize,
     },
 }
 

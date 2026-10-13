@@ -26,6 +26,7 @@
     "capture:reference": "node tests/reference/capture.ts"
   },
   "dependencies": {
+    "openseadragon": "^6.1.1",
     "pinia": "^4.0.3",
     "reka-ui": "^2.10.5",
     "vue": "^3.5.43",

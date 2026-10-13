@@ -4,7 +4,7 @@
 // sidebar, which can be hidden, chooses the types shown and the cards per
 // page, runs the bulk actions, and deletes everything of the types shown.
 // The gallery is read again when the tab opens, on Refresh, and after
-// anything that changes it. View shows an item's image in a dialog.
+// anything that changes it. View opens the viewer (ADR-0027).
 import detailsIcon from '@material-symbols/svg-400/outlined/view_agenda.svg?raw'
 import refreshIcon from '@material-symbols/svg-400/outlined/refresh.svg?raw'
 import closeIcon from '@material-symbols/svg-400/outlined/right_panel_close.svg?raw'
@@ -14,12 +14,9 @@ import { computed, h, ref, shallowRef, watch } from 'vue'
 
 import { type GalleryEntry, useThing } from '@/api/things'
 import { ApiError } from '@/api/wot/errors'
-import { useConnectionStore } from '@/connection/store'
 import ActionButton from '@/server-ui/ActionButton.vue'
-import { dataUrl } from '@/server-ui/download'
 import type { ActionButtonElement } from '@/server-ui/types'
 import AppButton from '@/ui/AppButton.vue'
-import AppDialog from '@/ui/AppDialog.vue'
 import AppPagination from '@/ui/AppPagination.vue'
 import AppSelect from '@/ui/AppSelect.vue'
 import FormField from '@/ui/FormField.vue'
@@ -29,11 +26,11 @@ import MultiSelect from '@/ui/MultiSelect.vue'
 import { useConfirm, useToast } from '@/ui/overlays'
 
 import GalleryCard from './GalleryCard.vue'
+import ImageViewer from './ImageViewer.vue'
 
 const PER_PAGE = [18, 25].map((n) => ({ value: n, label: String(n) }))
 
 const gallery = useThing('gallery')
-const connection = useConnectionStore()
 const confirm = useConfirm()
 const toast = useToast()
 
@@ -181,19 +178,7 @@ async function deleteAll() {
         Delete all
       </AppButton>
     </aside>
-    <AppDialog
-      :open="!!viewing"
-      :title="viewing?.name ?? ''"
-      size="lg"
-      @update:open="(open) => open || (viewing = undefined)"
-    >
-      <img
-        v-if="viewing && connection.client"
-        :src="dataUrl(viewing.viewer.path, connection.client.baseUrl).href"
-        :alt="viewing.name"
-        class="gallery-page__image"
-      />
-    </AppDialog>
+    <ImageViewer v-if="viewing" :entry="viewing" @close="viewing = undefined" />
   </div>
 </template>
 
@@ -252,12 +237,5 @@ async function deleteAll() {
   overflow: hidden auto;
   border-left: var(--border-width) solid var(--color-border);
   background: var(--color-surface-panel);
-}
-
-.gallery-page__image {
-  display: block;
-  max-width: 100%;
-  max-height: 70vh;
-  margin: 0 auto;
 }
 </style>

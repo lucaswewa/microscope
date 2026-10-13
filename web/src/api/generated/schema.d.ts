@@ -5455,6 +5455,21 @@ export interface components {
                 path: string;
                 /** @constant */
                 type: "image";
+            } | {
+                /**
+                 * @description The path of its `.dzi` file, with its tiles beside it in
+                 *     `<name>_files/`.
+                 */
+                path: string;
+                /** @constant */
+                type: "dzi";
+            } | {
+                /** @description The images' paths, in order. */
+                paths: string[];
+                /** @description The one shown first, from 0. */
+                start: number;
+                /** @constant */
+                type: "directory";
             };
             /** @description Lines that describe it. */
             info: {

@@ -4,6 +4,7 @@ import { h } from 'vue'
 
 import AppCheckbox from '@/ui/AppCheckbox.vue'
 import AppSelect from '@/ui/AppSelect.vue'
+import AppSlider from '@/ui/AppSlider.vue'
 import AppToggle from '@/ui/AppToggle.vue'
 import FormField from '@/ui/FormField.vue'
 
@@ -146,5 +147,38 @@ describe('AppSelect', () => {
     expect(wrapper.get('label').attributes('for')).toBe(trigger.attributes('id'))
     expect(trigger.attributes('aria-invalid')).toBe('true')
     expect(trigger.attributes('aria-describedby')).toMatch(/-error$/)
+  })
+})
+
+describe('AppSlider', () => {
+  it('is a named slider that the keys move, within its range', async () => {
+    const wrapper = mount(AppSlider, {
+      props: {
+        modelValue: 100,
+        label: 'Brightness',
+        max: 200,
+        'onUpdate:modelValue': (value: number) => wrapper.setProps({ modelValue: value }),
+      },
+      attachTo: document.body,
+    })
+    await flushPromises()
+    const thumb = wrapper.get('[role="slider"]')
+    expect(thumb.attributes()).toMatchObject({
+      'aria-label': 'Brightness',
+      'aria-valuemin': '0',
+      'aria-valuemax': '200',
+      'aria-valuenow': '100',
+    })
+    for (const [key, value] of [
+      ['ArrowRight', 101],
+      ['PageUp', 111],
+      ['Home', 0],
+      ['ArrowLeft', 0],
+      ['End', 200],
+    ] as const) {
+      await thumb.trigger('keydown', { key })
+      await flushPromises()
+      expect(wrapper.props('modelValue')).toBe(value)
+    }
   })
 })

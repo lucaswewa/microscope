@@ -29,7 +29,8 @@ const props = withDefaults(
   defineProps<{
     title: string
     description?: string
-    size?: 'sm' | 'md' | 'lg'
+    /** `full` fills the window. */
+    size?: 'sm' | 'md' | 'lg' | 'full'
     dismissible?: boolean
     closeOnOutsideClick?: boolean
     alert?: boolean
@@ -150,6 +151,19 @@ function onOpenAutoFocus(event: Event) {
 
 .app-dialog--lg {
   --dialog-width: 800px;
+}
+
+.app-dialog--full {
+  inset: 0;
+  width: auto;
+  max-height: none;
+  border: none;
+  border-radius: 0;
+  transform: none;
+}
+
+.app-dialog--full .app-dialog__body {
+  flex: 1;
 }
 
 .app-dialog:focus-visible {
