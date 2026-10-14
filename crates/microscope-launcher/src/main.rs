@@ -1,8 +1,9 @@
-//! `microscope-launcher`: starts and supervises a local microscope server,
-//! and opens the web app.
-//!
-//! For now it only reports its version. The launcher itself arrives in P45.
+//! `microscope-launcher`: starts the microscope server, keeps it running and
+//! opens the app. See the library's documentation.
 
-fn main() {
-    println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+use std::process::ExitCode;
+
+#[tokio::main]
+async fn main() -> ExitCode {
+    microscope_launcher::main().await
 }

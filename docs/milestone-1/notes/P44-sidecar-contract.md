@@ -1,6 +1,6 @@
 # P44: Sidecar process contract
 
-- Status: In review
+- Status: Done
 - Pull request: [#57](https://github.com/lucaswewa/microscope/pull/57)
 - ADRs: [ADR-0032](../../adr/0032-sidecar-process-contract.md)
 - Spec: [phases.md#p44](../phases.md#p44)

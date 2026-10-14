@@ -47,5 +47,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0030](0030-position-based-stitching-with-dzi-output.md) | Position-based stitching with DZI output | Accepted | P38 |
 | [0031](0031-sequence-model.md) | Sequence model | Accepted | P41 |
 | [0032](0032-sidecar-process-contract.md) | Sidecar process contract | Accepted | P44 |
+| [0033](0033-local-launcher-and-its-tauri-successor.md) | Local launcher and its Tauri successor | Accepted | P45 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.
