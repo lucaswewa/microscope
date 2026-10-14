@@ -55,4 +55,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P35b | [Scans in the gallery](P35b-scans-in-gallery.md) | Done |
 | P36 | [Smart z-stacks](P36-smart-stacks.md) | Done |
 | P37 | [Histo smart-spiral and C-Chip workflows](P37-histo-and-c-chip.md) | Done |
-| P38 | [Mosaic and deep-zoom pyramid core](P38-mosaic-core.md) | In review |
+| P38 | [Mosaic and deep-zoom pyramid core](P38-mosaic-core.md) | Done |
+| P39 | [Live and final stitching](P39-stitching.md) | In review |

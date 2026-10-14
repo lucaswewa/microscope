@@ -4,8 +4,14 @@
 //! `scan.json`, and its log in `scan.log`. However a scan ends, the stage
 //! goes back to where it started, and folders without an image are removed.
 //! A scan can be downloaded as a ZIP archive (P35b).
+//!
+//! Stitching (P39, [`crate::stitch`]): while a scan runs, its live preview
+//! is drawn again after each site that saves an image. Once it ends, it's
+//! stitched in the background if `stitch_automatically` is set.
+//! `stitch_scan` and `stitch_all_scans` stitch scans on request. Like the
+//! downloads, they don't take the global lock.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::fs::OpenOptions;
 use std::io::{Cursor, ErrorKind, Write};
 use std::path::{Component, Path, PathBuf};
@@ -18,10 +24,14 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use teta_wot::MediaType;
+use teta_wot::http::axum::Json;
+use teta_wot::http::axum::http::{StatusCode, header};
+use teta_wot::http::axum::response::{IntoResponse, Response};
 use teta_wot::prelude::*;
 
 use crate::data;
 use crate::hardware::{Position, StageApi};
+use crate::stitch::{self, Preview, STITCHED, Stitched};
 use crate::workflow::{Begun, ScanWorkflow};
 
 /// The folder, in the data folder, that scans are saved in.
@@ -67,6 +77,8 @@ pub struct LiveScanDetails {
     pub settings: Option<serde_json::Value>,
     /// How it ended: `success`, `cancelled`, or the error.
     pub result: Option<String>,
+    /// When its live preview was last drawn: RFC 3339, in UTC.
+    pub preview_stitch_time: Option<String>,
 }
 
 /// The latest scan's details, and when it started.
@@ -88,9 +100,17 @@ pub struct SmartScan {
     /// The workflow to scan with, by its Thing's name.
     #[setting(default = "histo_scan_workflow".to_owned())]
     workflow_name: Prop<String>,
+    /// Whether each scan is stitched once it ends.
+    #[setting(default = true)]
+    stitch_automatically: Prop<bool>,
     /// Held while a scan runs, so only one does.
     running: tokio::sync::Mutex<()>,
     latest: Mutex<Option<Latest>>,
+    /// The latest scan's live preview, and its JPEG.
+    preview: Arc<Mutex<Preview>>,
+    preview_jpeg: Mutex<Option<Vec<u8>>>,
+    /// The scans being stitched, by name.
+    stitching: Arc<Mutex<HashSet<String>>>,
 }
 
 #[thing_impl]
@@ -120,6 +140,24 @@ impl SmartScan {
             }
             details
         })
+    }
+
+    /// The latest scan's live preview: its mosaic so far, as a JPEG.
+    #[endpoint(get, "latest_preview_stitch.jpg")]
+    async fn latest_preview_stitch(&self) -> Response {
+        match self.preview_jpeg.lock().expect("not poisoned").clone() {
+            Some(jpeg) => {
+                let headers = [
+                    (header::CONTENT_TYPE, "image/jpeg"),
+                    (header::CACHE_CONTROL, "no-store"),
+                ];
+                (headers, jpeg).into_response()
+            }
+            None => {
+                let detail = json!({"detail": "there's no preview yet"});
+                (StatusCode::NOT_FOUND, Json(detail)).into_response()
+            }
+        }
     }
 
     /// Scans with the chosen workflow into a new folder in `scans/`, called
@@ -157,7 +195,10 @@ impl SmartScan {
             workflow: workflow_name.clone(),
             settings: None,
             result: None,
+            preview_stitch_time: None,
         };
+        *self.preview.lock().expect("not poisoned") = Preview::default();
+        *self.preview_jpeg.lock().expect("not poisoned") = None;
         *self.latest.lock().expect("not poisoned") = Some(Latest {
             details,
             started: Instant::now(),
@@ -185,6 +226,12 @@ impl SmartScan {
         });
         self.record(&folder, start)?;
         purge(&scans, None)?;
+        let imaged = self
+            .latest_details()
+            .is_some_and(|(d, _)| d.image_count > 0);
+        if imaged && self.stitch_automatically.get() {
+            self.stitch_later(&name, folder);
+        }
         outcome?;
         back?;
         Ok(name)
@@ -202,17 +249,7 @@ impl SmartScan {
     /// sidecars, its record and its log.
     #[action(blocking, global_lock = false)]
     fn download_zip(&self, server: Server, scan_name: String) -> Result<Blob<Zip>, ActionError> {
-        let scan = data::data_folder(&server).join(SCANS).join(&scan_name);
-        let mut parts = Path::new(&scan_name).components();
-        let plain = matches!(
-            (parts.next(), parts.next()),
-            (Some(Component::Normal(_)), None)
-        );
-        if !plain || !scan.is_dir() {
-            return Err(ActionError::handled(format!(
-                "there's no scan `{scan_name}`"
-            )));
-        }
+        let scan = scan_folder(&server, &scan_name)?;
         let mut files: Vec<(String, PathBuf)> = ["scan.json", "scan.log"]
             .into_iter()
             .map(|name| (name.to_owned(), scan.join(name)))
@@ -231,6 +268,68 @@ impl SmartScan {
         let archive = data::zip(&files, Cursor::new(Vec::new())).map_err(ActionError::handled)?;
         Ok(Blob::from_bytes(archive.into_inner()))
     }
+
+    /// Stitches the scan `scan_name` into its `stitched/` folder, replacing
+    /// any earlier stitch.
+    #[action(blocking, global_lock = false)]
+    fn stitch_scan(&self, server: Server, scan_name: String) -> Result<Stitched, ActionError> {
+        let scan = scan_folder(&server, &scan_name)?;
+        if self.scanning().as_deref() == Some(scan_name.as_str()) {
+            return Err(ActionError::handled(format!(
+                "`{scan_name}` is still scanning"
+            )));
+        }
+        let _stitching = Stitching::start(&self.stitching, &scan_name).ok_or_else(|| {
+            ActionError::handled(format!("`{scan_name}` is already being stitched"))
+        })?;
+        stitch::stitch(&scan)
+    }
+
+    /// Stitches every scan that isn't stitched, but the one being scanned.
+    /// Returns the names of those it stitched; any that fail are logged.
+    #[action(blocking, global_lock = false)]
+    fn stitch_all_scans(&self, server: Server) -> Result<Vec<String>, ActionError> {
+        let scans = data::data_folder(&server).join(SCANS);
+        let mut names: Vec<String> = (std::fs::read_dir(&scans).into_iter().flatten().flatten())
+            .filter(|entry| entry.path().is_dir() && !entry.path().join(STITCHED).exists())
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .collect();
+        names.sort();
+        let mut stitched = Vec::new();
+        for name in names {
+            let running = self.scanning().as_deref() == Some(name.as_str());
+            let Some(_stitching) = Stitching::start(&self.stitching, &name).filter(|_| !running)
+            else {
+                continue;
+            };
+            match stitch::stitch(&scans.join(&name)) {
+                Ok(_) => stitched.push(name),
+                Err(error) => tracing::warn!("couldn't stitch `{name}`: {error}"),
+            }
+        }
+        Ok(stitched)
+    }
+
+    /// The scan `scan_name`'s stitched mosaic as a ZIP archive: its
+    /// deep-zoom image, overview and thumbnail.
+    #[action(blocking, global_lock = false)]
+    fn download_stitched_zip(
+        &self,
+        server: Server,
+        scan_name: String,
+    ) -> Result<Blob<Zip>, ActionError> {
+        let stitched = scan_folder(&server, &scan_name)?.join(STITCHED);
+        if !stitched.is_dir() {
+            return Err(ActionError::handled(format!(
+                "`{scan_name}` isn't stitched"
+            )));
+        }
+        let mut files = Vec::new();
+        files_in(&stitched, "", &mut files).map_err(ActionError::handled)?;
+        files.sort();
+        let archive = data::zip(&files, Cursor::new(Vec::new())).map_err(ActionError::handled)?;
+        Ok(Blob::from_bytes(archive.into_inner()))
+    }
 }
 
 impl SmartScan {
@@ -241,6 +340,45 @@ impl SmartScan {
             .as_ref()
             .filter(|l| l.details.scan_phase != ScanPhase::Complete);
         running.map(|latest| latest.details.name.clone())
+    }
+
+    /// Stitches the scan `name`, in `folder`, in the background, and says
+    /// how that went in its log.
+    fn stitch_later(&self, name: &str, folder: PathBuf) {
+        let Some(stitching) = Stitching::start(&self.stitching, name) else {
+            return;
+        };
+        tokio::task::spawn_blocking(move || {
+            let _stitching = stitching;
+            let log = ScanLog(folder.join("scan.log"));
+            match stitch::stitch(&folder) {
+                Ok(Stitched { size: [w, h], .. }) => {
+                    log.write(&format!("Stitched: {w} × {h} pixels"))
+                }
+                Err(error) => log.write(&format!("Stitching failed: {error}")),
+            }
+        });
+    }
+
+    /// Draws the live preview again from the scan's images in `folder`. If
+    /// it can't, that's logged, and the scan carries on.
+    async fn draw_preview(&self, folder: &Path) {
+        let (preview, folder) = (Arc::clone(&self.preview), folder.to_owned());
+        let drawn = tokio::task::spawn_blocking(move || {
+            preview.lock().expect("not poisoned").update(&folder)
+        });
+        match drawn
+            .await
+            .map_err(ActionError::handled)
+            .and_then(|drawn| drawn)
+        {
+            Ok(jpeg) => {
+                *self.preview_jpeg.lock().expect("not poisoned") = Some(jpeg);
+                let now = Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true);
+                self.update(|details| details.preview_stitch_time = Some(now));
+            }
+            Err(error) => tracing::warn!("the live preview couldn't be drawn: {error}"),
+        }
     }
 
     /// Visits every site the workflow's planner gives, until it finishes.
@@ -276,6 +414,9 @@ impl SmartScan {
             let (imaged, focused) = (acquired.images > 0, acquired.focus.is_some());
             planner.visited(acquired.focus.unwrap_or(z), imaged, focused);
             self.update(|details| details.image_count += acquired.images);
+            if imaged {
+                self.draw_preview(folder).await;
+            }
         }
         Ok(planner.finished().unwrap_or(Finished::AllVisited))
     }
@@ -346,6 +487,62 @@ fn new_folder(scans: &Path, requested: &str) -> Result<(String, PathBuf), Action
             Err(error) if error.kind() == ErrorKind::AlreadyExists => n += 1,
             Err(error) => return Err(ActionError::handled(error)),
         }
+    }
+}
+
+/// The scan `name`'s folder, if it has one: a plain name, in `scans/`.
+fn scan_folder(server: &Server, name: &str) -> Result<PathBuf, ActionError> {
+    let scan = data::data_folder(server).join(SCANS).join(name);
+    let mut parts = Path::new(name).components();
+    let plain = matches!(
+        (parts.next(), parts.next()),
+        (Some(Component::Normal(_)), None)
+    );
+    if !plain || !scan.is_dir() {
+        return Err(ActionError::handled(format!("there's no scan `{name}`")));
+    }
+    Ok(scan)
+}
+
+/// Every file in `folder` and below, each with its path from there after
+/// `prefix`.
+fn files_in(
+    folder: &Path,
+    prefix: &str,
+    files: &mut Vec<(String, PathBuf)>,
+) -> std::io::Result<()> {
+    for entry in std::fs::read_dir(folder)?.flatten() {
+        let (path, name) = (entry.path(), entry.file_name());
+        let inside = format!("{prefix}{}", name.to_string_lossy());
+        if path.is_dir() {
+            files_in(&path, &format!("{inside}/"), files)?;
+        } else {
+            files.push((inside, path));
+        }
+    }
+    Ok(())
+}
+
+/// A scan being stitched: its name is in the set until this is dropped.
+struct Stitching {
+    set: Arc<Mutex<HashSet<String>>>,
+    name: String,
+}
+
+impl Stitching {
+    /// Marks `name` as being stitched, unless it already is.
+    fn start(set: &Arc<Mutex<HashSet<String>>>, name: &str) -> Option<Stitching> {
+        let added = set.lock().expect("not poisoned").insert(name.to_owned());
+        added.then(|| Stitching {
+            set: Arc::clone(set),
+            name: name.to_owned(),
+        })
+    }
+}
+
+impl Drop for Stitching {
+    fn drop(&mut self) {
+        self.set.lock().expect("not poisoned").remove(&self.name);
     }
 }
 

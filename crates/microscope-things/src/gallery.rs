@@ -25,6 +25,7 @@ use teta_wot::prelude::*;
 use crate::capture::{self, CAPTURES, Sidecar, StageRecord, THUMBNAILS};
 use crate::data;
 use crate::smart_scan::{SCANS, SmartScan};
+use crate::stitch::{MOSAIC, STITCHED};
 use crate::ui::{ActionButton, DownloadButton, DownloadSource};
 
 /// What a URL's path segment can hold unencoded: letters, digits and `-._~`.
@@ -436,7 +437,8 @@ impl Provider for Captures {
 }
 
 /// The scans in `scans/` (P35): each a folder of images with their sidecars,
-/// a record and a log, viewed as a sequence until it's stitched (P39).
+/// a record and a log, viewed as a sequence until it's stitched, then as
+/// its deep-zoom mosaic (P39).
 struct Scans;
 
 impl Provider for Scans {
@@ -452,7 +454,8 @@ impl Provider for Scans {
             let name = entry.file_name().into_string().ok()?;
             let scan = entry.path();
             entry.file_type().ok()?.is_dir().then(|| {
-                let stamp = stamp(&[&scan.join("scan.json"), &scan.join("images")]);
+                let mosaic = scan.join(STITCHED).join(format!("{MOSAIC}.dzi"));
+                let stamp = stamp(&[&scan.join("scan.json"), &scan.join("images"), &mosaic]);
                 (format!("{SCANS}/{name}"), stamp)
             })
         };
@@ -477,6 +480,9 @@ impl Provider for Scans {
         .filter(|file| is_jpeg(file))
         .collect();
         images.sort();
+        let stitched = format!("{path}/{STITCHED}");
+        let mosaic = started.folder.join(&stitched);
+        let mosaic = mosaic.join(format!("{MOSAIC}.dzi")).is_file();
         // A small copy of the first image, made once.
         let thumbnail = scan.join("thumbnail.jpeg");
         let thumbnail = thumbnail.is_file()
@@ -532,6 +538,31 @@ impl Provider for Scans {
             };
             download_buttons.insert(0, download("Images (ZIP)", zip, &format!("{name}.zip")));
         }
+        let mut card_actions = Vec::new();
+        if mosaic {
+            let overview = DownloadSource::Data {
+                path: format!("{stitched}/overview.jpeg"),
+            };
+            download_buttons.push(download("Mosaic (JPEG)", overview, &format!("{name}.jpeg")));
+        }
+        if let Some(smart_scan) = &started.smart_scan {
+            let input = json!({ "scan_name": name });
+            if mosaic {
+                let tiles = DownloadSource::Action {
+                    thing: smart_scan.clone(),
+                    action: "download_stitched_zip".to_owned(),
+                    input,
+                };
+                let filename = format!("{name}-mosaic.zip");
+                download_buttons.push(download("Mosaic tiles (ZIP)", tiles, &filename));
+            } else if !images.is_empty() {
+                let stitch = json!({
+                    "thing": smart_scan, "action": "stitch_scan", "label": "Stitch",
+                    "input": input, "success": {"message": "Stitched."}, "refresh": true,
+                });
+                card_actions.push(serde_json::from_value(stitch).expect("a button"));
+            }
+        }
         GalleryEntry {
             name: name.clone(),
             path: path.to_owned(),
@@ -539,17 +570,26 @@ impl Provider for Scans {
             created: created
                 .unwrap_or_default()
                 .to_rfc3339_opts(SecondsFormat::Millis, true),
-            thumbnail: thumbnail.then(|| format!("{path}/thumbnail.jpeg")),
-            viewer: Viewer::Directory {
-                paths: images
-                    .iter()
-                    .map(|image| format!("{path}/images/{image}"))
-                    .collect(),
-                start: 0,
+            thumbnail: if mosaic {
+                Some(format!("{stitched}/thumbnail.jpeg"))
+            } else {
+                thumbnail.then(|| format!("{path}/thumbnail.jpeg"))
+            },
+            viewer: if mosaic {
+                Viewer::Dzi {
+                    path: format!("{stitched}/{MOSAIC}.dzi"),
+                }
+            } else {
+                Viewer::Directory {
+                    paths: (images.iter())
+                        .map(|image| format!("{path}/images/{image}"))
+                        .collect(),
+                    start: 0,
+                }
             },
             info,
             download_buttons,
-            card_actions: Vec::new(),
+            card_actions,
             card_messages,
             delete_endpoint: format!("{}/{SCANS}/{encoded}", started.gallery),
         }

@@ -56,6 +56,8 @@ async fn start() -> (Harness<SmartScan>, PathBuf) {
     let mut simulation = client.get("/stage/simulation").await.json();
     simulation["speed"] = json!({"x": 1e6, "y": 1e6, "z": 500});
     put(client, "/stage/simulation", simulation).await;
+    // Not stitched, so nothing is still writing as a test removes its data.
+    put(client, "/smart_scan/stitch_automatically", json!(false)).await;
     for (setting, value) in [
         ("sample_type", json!("image")),
         ("sample_image", json!("island.png")),

@@ -459,8 +459,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P35b | Scans in the gallery | P33, P35 | M | — | Done |
 | P36 | Smart z-stacks | P35 | M | — | Done |
 | P37 | Histo smart-spiral and C-Chip workflows | P27, P36 | L | — | Done |
-| P38 | Mosaic and deep-zoom pyramid core | P13 | L | 0030 | In review |
-| P39 | Live and final stitching | P35b, P38 | M | — | Planned |
+| P38 | Mosaic and deep-zoom pyramid core | P13 | L | 0030 | Done |
+| P39 | Live and final stitching | P35b, P38 | M | — | In review |
 | P40 | Slide Scan tab | P24b, P33, P37, P39 | L | — | Planned |
 
 **Checkpoint D, "Slide scanning":** all four workflows run on the simulator, show a live stitching preview, and end as a stitched deep-zoom image in the gallery.
