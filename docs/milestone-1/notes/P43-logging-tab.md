@@ -1,6 +1,6 @@
 # P43: Logging tab
 
-- Status: In review
+- Status: Done
 - Pull request: [#56](https://github.com/lucaswewa/microscope/pull/56)
 - ADRs: none new
 - Spec: [phases.md#p43](../phases.md#p43)

@@ -99,6 +99,7 @@ async fn shutdown_cancels_invocations_and_stops_the_things() {
         async move {
             let _ = stop_requested.await;
         },
+        |_| {},
     ));
 
     assert_eq!(status_line(addr, "/api/v1/health").await, "HTTP/1.1 200 OK");
@@ -144,6 +145,7 @@ async fn a_thing_that_cant_start_is_a_startup_error() {
         routes::app_routes(PREFIX, Logs::new(None)),
         listener,
         std::future::pending(),
+        |_| panic!("a server whose Thing can't start isn't ready"),
     )
     .await;
     match result {

@@ -5,7 +5,7 @@
 //! of that router (ADR-0006):
 //!
 //! 1. start the Things, each after the Things in its slots;
-//! 2. serve until the shutdown signal;
+//! 2. serve until the shutdown signal, saying when it's ready;
 //! 3. stop accepting connections, end observation streams (SSE and
 //!    WebSocket) and cancel unfinished invocations;
 //! 4. wait up to the grace period for requests and invocations to finish;
@@ -15,6 +15,7 @@
 //! them again whenever `teta-wot` is upgraded (ADR-0004).
 
 use std::future::{Future, IntoFuture};
+use std::net::SocketAddr;
 use std::sync::Arc;
 
 use teta_wot::http::axum::{self, Router};
@@ -29,7 +30,8 @@ pub fn compose(app_routes: Router, server: &ThingServer) -> Router {
 }
 
 /// Starts `server`'s Things, serves them with `app_routes` in front on
-/// `listener` until `shutdown` completes, then shuts down gracefully.
+/// `listener` until `shutdown` completes, then shuts down gracefully. Once
+/// the Things have started, `ready` is called with the address served.
 ///
 /// Fails with [`ServeError::Startup`] if a Thing can't start (the Things
 /// already started are stopped), or [`ServeError::Io`] if serving fails.
@@ -38,6 +40,7 @@ pub async fn serve(
     app_routes: Router,
     listener: TcpListener,
     shutdown: impl Future<Output = ()> + Send + 'static,
+    ready: impl FnOnce(SocketAddr),
 ) -> Result<(), ServeError> {
     let runtime = Arc::clone(server.runtime());
     let grace = server.shutdown_grace();
@@ -53,6 +56,7 @@ pub async fn serve(
             "serving {} Things on http://{addr}",
             runtime.things().count()
         );
+        ready(addr);
     }
 
     let (stop, stopped) = watch::channel(false);
