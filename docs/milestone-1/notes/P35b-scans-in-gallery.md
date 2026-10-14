@@ -1,6 +1,6 @@
 # P35b: Scans in the gallery
 
-- Status: In review
+- Status: Done
 - Pull request: [#48](https://github.com/lucaswewa/microscope/pull/48)
 - ADRs: none new
 - Spec: [phases.md#p35b](../phases.md#p35b)

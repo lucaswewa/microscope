@@ -1,21 +1,21 @@
 //! Scan workflows (P35, ADR-0029): how a scan plans its path and what it
 //! does at each site. `smart_scan` runs the one chosen, through the
 //! `ScanWorkflow` interface. The snake and raster workflows are one Thing
-//! type, `GridWorkflow`, configured with its order.
+//! type, `GridWorkflow`, configured with its order. At each site they take
+//! a smart stack (P36).
 
-use std::path::PathBuf;
 use std::sync::Arc;
 
 use microscope_core::scan::{Order, Planner, RegularGrid, Step};
+use microscope_core::stack::Counts;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
 
-use crate::autofocus::{Autofocus, AutofocusActions, SweepStart};
-use crate::capture;
-use crate::hardware::{CameraApi, CaptureMode, Position, StageApi};
+use crate::autofocus::{self, Autofocus, AutofocusActions, StackSettings, SweepStart};
+use crate::hardware::{CaptureMode, Position, StageApi};
 use crate::mapping::CameraStageMapping;
 use crate::ui::{OwnEntry, ThingUi, UiElement};
 
@@ -46,8 +46,9 @@ pub trait ScanWorkflow: Send + Sync {
     /// Starts a scan with the stage at `start`: it refuses if it can't, and
     /// otherwise gets ready, such as by autofocusing, and fixes its settings.
     fn begin(&self, start: Position) -> BoxFuture<'_, Result<Begun, ActionError>>;
-    /// With the stage at a site: focuses, and saves its images in `folder`.
-    fn acquire(&self, folder: PathBuf) -> BoxFuture<'_, Result<Acquired, ActionError>>;
+    /// With the stage at a site: focuses, and saves its images in `folder`,
+    /// a folder in the data folder.
+    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>>;
 }
 
 /// The order a `GridWorkflow` visits its grid in.
@@ -70,15 +71,12 @@ pub struct GridWorkflowConfig {
 }
 
 /// A scan over a grid of columns and rows, from the stage's position as its
-/// first corner: autofocus there first, then at each site autofocus and
-/// capture.
+/// first corner: autofocus there first, then a smart stack at each site.
 #[derive(Thing)]
 #[thing(config = GridWorkflowConfig, interfaces(ScanWorkflow))]
 pub struct GridWorkflow {
     #[thing(init = config.order)]
     order: GridOrder,
-    #[slot(default = "camera")]
-    camera: Slot<dyn CameraApi>,
     #[slot(default = "stage")]
     stage: Slot<dyn StageApi>,
     #[slot(default = "autofocus")]
@@ -100,6 +98,15 @@ pub struct GridWorkflow {
     /// How each image is captured.
     #[setting(default = CaptureMode::Standard)]
     capture_mode: Prop<CaptureMode>,
+    /// How many images of each stack to save: odd.
+    #[setting(default = 1, ge = 1, le = 9)]
+    stack_images_to_save: Prop<u32>,
+    /// How many of a stack's latest images are judged together: odd.
+    #[setting(default = 9, ge = 3, le = 9)]
+    stack_min_images_to_test: Prop<u32>,
+    /// The distance between a stack's images, in steps.
+    #[setting(default = 50, ge = 10, le = 400)]
+    stack_dz: Prop<i64>,
     entry: OwnEntry,
 }
 
@@ -151,6 +158,8 @@ impl GridWorkflow {
         let planner = RegularGrid::new([start.x, start.y], step, counts, planned)
             .map_err(ActionError::handled)?;
         let dz = self.autofocus_dz.get();
+        let stack = self.stack();
+        let images = autofocus::counts(&stack)?;
         self.autofocus
             .looping_autofocus(dz, SweepStart::Centre)
             .await?;
@@ -162,7 +171,10 @@ impl GridWorkflow {
             "x_count": counts[0],
             "y_count": counts[1],
             "autofocus_dz": dz,
-            "capture_mode": self.capture_mode.get(),
+            "capture_mode": stack.capture_mode,
+            "stack_images_to_save": images.save,
+            "stack_min_images_to_test": images.test,
+            "stack_dz": stack.dz,
         });
         Ok(Begun {
             settings,
@@ -170,24 +182,31 @@ impl GridWorkflow {
         })
     }
 
-    async fn acquire(&self, folder: PathBuf) -> Result<Acquired, ActionError> {
+    /// A smart stack, saving even without focus so every site has an image.
+    async fn acquire(&self, folder: String) -> Result<Acquired, ActionError> {
+        let mut stack = self.stack();
+        // Odd and consistent already: `begin` said if it had to change them.
+        let counts = Counts::new(stack.min_images_to_test, stack.images_to_save);
+        (stack.min_images_to_test, stack.images_to_save) = (counts.test as u32, counts.save as u32);
         let dz = self.autofocus_dz.get();
-        let curve = self
+        let stacked = self
             .autofocus
-            .fast_autofocus(dz, SweepStart::Centre)
+            .run_smart_stack(folder, stack, true, dz)
             .await?;
-        let here = self.stage.position().await?;
-        let capture = self
-            .camera
-            .capture_to_memory(self.capture_mode.get())
-            .await?;
-        let name = format!("img_{}_{}_{}.jpeg", here.x, here.y, here.z);
-        let mapping = capture::mapping_of(&self.mapping);
-        capture::save_to(&folder.join(name), &capture, mapping)?;
         Ok(Acquired {
-            images: 1,
-            focus: curve.focus_z,
+            images: stacked.saved.len() as u32,
+            focus: stacked.success.then_some(stacked.sharpest_z),
         })
+    }
+
+    /// The stack settings.
+    fn stack(&self) -> StackSettings {
+        StackSettings {
+            images_to_save: self.stack_images_to_save.get(),
+            min_images_to_test: self.stack_min_images_to_test.get(),
+            dz: self.stack_dz.get(),
+            capture_mode: self.capture_mode.get(),
+        }
     }
 }
 
@@ -207,7 +226,7 @@ impl ScanWorkflow for ThingRef<GridWorkflow> {
         Box::pin(async move { workflow.begin(start).await })
     }
 
-    fn acquire(&self, folder: PathBuf) -> BoxFuture<'_, Result<Acquired, ActionError>> {
+    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
         Box::pin(async move { workflow.acquire(folder).await })
     }
@@ -224,5 +243,10 @@ fn panel(ui: &ThingUi) -> Vec<UiElement> {
         ui.property("autofocus_dz", "Autofocus range (steps)")
             .into(),
         ui.property("capture_mode", "Capture mode").into(),
+        ui.property("stack_images_to_save", "Images to save per site (odd)")
+            .into(),
+        ui.property("stack_min_images_to_test", "Images to test (odd, 3–9)")
+            .into(),
+        ui.property("stack_dz", "Stack step (steps)").into(),
     ]
 }

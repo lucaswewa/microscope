@@ -1,7 +1,8 @@
-//! Scanning (P35) on the simulator: a scan visits its grid, saving its
-//! images with their sidecars, its record and its log in a folder of its own,
-//! and goes back to the start. A cancelled scan, and one that fails part of
-//! the way, go back to the start too. Only one scan runs at a time.
+//! Scanning (P35) on the simulator: a scan visits its grid, saving a smart
+//! stack's sharpest image (P36) at each site with its sidecar, its record and
+//! its log in a folder of its own, and goes back to the start. A cancelled
+//! scan, and one that fails part of the way, go back to the start too. Only
+//! one scan runs at a time.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -45,8 +46,15 @@ async fn start(calibrate: bool) -> (Harness<SmartScan>, PathBuf) {
     simulation["speed"] = json!({"x": 1e6, "y": 1e6, "z": 500});
     put(client, "/stage/simulation", simulation).await;
     put(client, "/camera/blob_density", json!(10_000.0)).await;
-    for (setting, value) in [("x_count", 2), ("y_count", 2), ("autofocus_dz", 400)] {
-        put(client, &format!("/snake_workflow/{setting}"), json!(value)).await;
+    for (setting, value) in [
+        ("x_count", json!(2)),
+        ("y_count", json!(2)),
+        ("autofocus_dz", json!(400)),
+        ("capture_mode", json!("quick")),
+        // Stacks test an odd number of images, so 5 (P36).
+        ("stack_min_images_to_test", json!(4)),
+    ] {
+        put(client, &format!("/snake_workflow/{setting}"), value).await;
     }
     if calibrate {
         let calibrated = run(client, "/camera_stage_mapping/calibrate_xy", json!({})).await;
@@ -194,6 +202,9 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     assert_eq!(saved["result"], "success");
     assert_eq!(saved["start"], begin);
     assert_eq!(saved["settings"]["order"], "snake");
+    for (setting, value) in [("images_to_save", 1), ("min_images_to_test", 5), ("dz", 50)] {
+        assert_eq!(saved["settings"][format!("stack_{setting}")], value);
+    }
     let log = std::fs::read_to_string(scan.join("scan.log")).expect("read");
     assert_eq!(log.matches("Moving to").count(), 4, "{log}");
     assert!(
@@ -235,6 +246,7 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
         ("y_count", json!(2)),
         ("autofocus_dz", json!(400)),
         ("capture_mode", json!("quick")),
+        ("stack_min_images_to_test", json!(5)),
     ] {
         put(client, &format!("/raster_workflow/{setting}"), value).await;
     }

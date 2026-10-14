@@ -2845,6 +2845,73 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/autofocus/run_basic_stack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of run_basic_stack.
+         * @description List all the invocations of run_basic_stack that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_autofocus_run_basic_stack_get"];
+        put?: never;
+        /**
+         * Takes `images_to_save` images `dz` apart, upwards, from, centred on
+         * @description ## Takes `images_to_save` images `dz` apart, upwards, from, centred on
+         *
+         *     Takes `images_to_save` images `dz` apart, upwards, from, centred on
+         *     or ending at where the stage is, by `origin`, and saves them all in
+         *     `folder`, a folder in the data folder. Returns their z positions.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_autofocus_run_basic_stack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/autofocus/run_smart_stack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of run_smart_stack.
+         * @description List all the invocations of run_smart_stack that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_autofocus_run_smart_stack_get"];
+        put?: never;
+        /**
+         * Takes images `dz` apart, upwards through focus, until the sharpest is
+         * @description ## Takes images `dz` apart, upwards through focus, until the sharpest is
+         *
+         *     Takes images `dz` apart, upwards through focus, until the sharpest is
+         *     well inside the latest `min_images_to_test`, then saves
+         *     `images_to_save` about it in `folder`, a folder in the data folder.
+         *     When focus is out of reach, it autofocuses over `autofocus_dz` and
+         *     tries again, 3 times in all. With `save_on_failure`, it saves the
+         *     images about the sharpest even without focus.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_autofocus_run_smart_stack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/autofocus/z_move_and_measure_sharpness": {
         parameters: {
             query?: never;
@@ -4258,6 +4325,156 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/snake_workflow/stack_dz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The distance between a stack's images, in steps.
+         * @description ## The distance between a stack's images, in steps.
+         *
+         *     The distance between a stack's images, in steps.
+         */
+        get: operations["get_property_api_v1_snake_workflow_stack_dz_get"];
+        /**
+         * Set The distance between a stack's images, in steps.
+         * @description ## The distance between a stack's images, in steps.
+         *
+         *     The distance between a stack's images, in steps.
+         */
+        put: operations["set_property_api_v1_snake_workflow_stack_dz_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/stack_dz/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The distance between a stack's images, in steps..
+         * @description ## Reset The distance between a stack's images, in steps.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_stack_dz_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/stack_images_to_save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many images of each stack to save: odd.
+         * @description ## How many images of each stack to save: odd.
+         *
+         *     How many images of each stack to save: odd.
+         */
+        get: operations["get_property_api_v1_snake_workflow_stack_images_to_save_get"];
+        /**
+         * Set How many images of each stack to save: odd.
+         * @description ## How many images of each stack to save: odd.
+         *
+         *     How many images of each stack to save: odd.
+         */
+        put: operations["set_property_api_v1_snake_workflow_stack_images_to_save_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/stack_images_to_save/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many images of each stack to save: odd..
+         * @description ## Reset How many images of each stack to save: odd.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_stack_images_to_save_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/stack_min_images_to_test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many of a stack's latest images are judged together: odd.
+         * @description ## How many of a stack's latest images are judged together: odd.
+         *
+         *     How many of a stack's latest images are judged together: odd.
+         */
+        get: operations["get_property_api_v1_snake_workflow_stack_min_images_to_test_get"];
+        /**
+         * Set How many of a stack's latest images are judged together: odd.
+         * @description ## How many of a stack's latest images are judged together: odd.
+         *
+         *     How many of a stack's latest images are judged together: odd.
+         */
+        put: operations["set_property_api_v1_snake_workflow_stack_min_images_to_test_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/snake_workflow/stack_min_images_to_test/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many of a stack's latest images are judged together: odd..
+         * @description ## Reset How many of a stack's latest images are judged together: odd.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_snake_workflow_stack_min_images_to_test_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/snake_workflow/x_count": {
         parameters: {
             query?: never;
@@ -4610,6 +4827,156 @@ export interface paths {
         get: operations["settings_ui_api_v1_raster_workflow_settings_ui_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_dz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The distance between a stack's images, in steps.
+         * @description ## The distance between a stack's images, in steps.
+         *
+         *     The distance between a stack's images, in steps.
+         */
+        get: operations["get_property_api_v1_raster_workflow_stack_dz_get"];
+        /**
+         * Set The distance between a stack's images, in steps.
+         * @description ## The distance between a stack's images, in steps.
+         *
+         *     The distance between a stack's images, in steps.
+         */
+        put: operations["set_property_api_v1_raster_workflow_stack_dz_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_dz/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The distance between a stack's images, in steps..
+         * @description ## Reset The distance between a stack's images, in steps.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_stack_dz_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_images_to_save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many images of each stack to save: odd.
+         * @description ## How many images of each stack to save: odd.
+         *
+         *     How many images of each stack to save: odd.
+         */
+        get: operations["get_property_api_v1_raster_workflow_stack_images_to_save_get"];
+        /**
+         * Set How many images of each stack to save: odd.
+         * @description ## How many images of each stack to save: odd.
+         *
+         *     How many images of each stack to save: odd.
+         */
+        put: operations["set_property_api_v1_raster_workflow_stack_images_to_save_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_images_to_save/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many images of each stack to save: odd..
+         * @description ## Reset How many images of each stack to save: odd.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_stack_images_to_save_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_min_images_to_test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How many of a stack's latest images are judged together: odd.
+         * @description ## How many of a stack's latest images are judged together: odd.
+         *
+         *     How many of a stack's latest images are judged together: odd.
+         */
+        get: operations["get_property_api_v1_raster_workflow_stack_min_images_to_test_get"];
+        /**
+         * Set How many of a stack's latest images are judged together: odd.
+         * @description ## How many of a stack's latest images are judged together: odd.
+         *
+         *     How many of a stack's latest images are judged together: odd.
+         */
+        put: operations["set_property_api_v1_raster_workflow_stack_min_images_to_test_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/raster_workflow/stack_min_images_to_test/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How many of a stack's latest images are judged together: odd..
+         * @description ## Reset How many of a stack's latest images are judged together: odd.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_raster_workflow_stack_min_images_to_test_reset_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6080,6 +6447,127 @@ export interface components {
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
+        autofocus_run_basic_stack_input: {
+            folder: string;
+            /**
+             * @description A stack's settings.
+             * @default {
+             *       "images_to_save": 1,
+             *       "min_images_to_test": 9,
+             *       "dz": 50,
+             *       "capture_mode": "standard"
+             *     }
+             */
+            stack?: {
+                /**
+                 * @description How many images to save: odd, and no more than the images tested.
+                 * @default 1
+                 */
+                images_to_save?: number;
+                /**
+                 * @description How many of the latest images are judged together: odd, 3 to 9.
+                 * @default 9
+                 */
+                min_images_to_test?: number;
+                /**
+                 * @description The distance between images, in steps.
+                 * @default 50
+                 */
+                dz?: number;
+                /**
+                 * @description How each image is captured.
+                 * @default standard
+                 */
+                capture_mode?: "standard" | "quick";
+            };
+            /**
+             * @description Where a basic stack's images are, about the stage's z.
+             * @default centre
+             */
+            origin?: "start" | "centre" | "end";
+        };
+        autofocus_run_basic_stack_output: number[];
+        autofocus_run_basic_stack_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["autofocus_run_basic_stack_input"];
+            output?: components["schemas"]["autofocus_run_basic_stack_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        autofocus_run_smart_stack_input: {
+            folder: string;
+            /**
+             * @description A stack's settings.
+             * @default {
+             *       "images_to_save": 1,
+             *       "min_images_to_test": 9,
+             *       "dz": 50,
+             *       "capture_mode": "standard"
+             *     }
+             */
+            stack?: {
+                /**
+                 * @description How many images to save: odd, and no more than the images tested.
+                 * @default 1
+                 */
+                images_to_save?: number;
+                /**
+                 * @description How many of the latest images are judged together: odd, 3 to 9.
+                 * @default 9
+                 */
+                min_images_to_test?: number;
+                /**
+                 * @description The distance between images, in steps.
+                 * @default 50
+                 */
+                dz?: number;
+                /**
+                 * @description How each image is captured.
+                 * @default standard
+                 */
+                capture_mode?: "standard" | "quick";
+            };
+            /** @default false */
+            save_on_failure?: boolean;
+            /** @default 2000 */
+            autofocus_dz?: number;
+        };
+        /** @description What a smart stack did. */
+        autofocus_run_smart_stack_output: {
+            /** @description Whether it found focus. */
+            success: boolean;
+            /** @description Its sharpest image's z, in steps. */
+            sharpest_z: number;
+            /** @description The images it saved, by name, lowest first. */
+            saved: string[];
+            /** @description How many attempts it made. */
+            attempts: number;
+        };
+        autofocus_run_smart_stack_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["autofocus_run_smart_stack_input"];
+            output?: components["schemas"]["autofocus_run_smart_stack_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         autofocus_z_move_and_measure_sharpness_input: {
             dz: number[];
             /** @default 0 */
@@ -6570,6 +7058,9 @@ export interface components {
         snake_workflow_display_name_value: string;
         snake_workflow_overlap_value: number;
         snake_workflow_ready_value: boolean;
+        snake_workflow_stack_dz_value: number;
+        snake_workflow_stack_images_to_save_value: number;
+        snake_workflow_stack_min_images_to_test_value: number;
         snake_workflow_x_count_value: number;
         snake_workflow_y_count_value: number;
         raster_workflow_autofocus_dz_value: number;
@@ -6578,6 +7069,9 @@ export interface components {
         raster_workflow_display_name_value: string;
         raster_workflow_overlap_value: number;
         raster_workflow_ready_value: boolean;
+        raster_workflow_stack_dz_value: number;
+        raster_workflow_stack_images_to_save_value: number;
+        raster_workflow_stack_min_images_to_test_value: number;
         raster_workflow_x_count_value: number;
         raster_workflow_y_count_value: number;
         smart_scan_all_workflow_names_value: string[];
@@ -10997,6 +11491,130 @@ export interface operations {
             };
         };
     };
+    list_invocations_api_v1_autofocus_run_basic_stack_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of run_basic_stack. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_autofocus_run_basic_stack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["autofocus_run_basic_stack_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_run_basic_stack_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_run_basic_stack_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_autofocus_run_smart_stack_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of run_smart_stack. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_autofocus_run_smart_stack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["autofocus_run_smart_stack_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_run_smart_stack_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["autofocus_run_smart_stack_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_invocations_api_v1_autofocus_z_move_and_measure_sharpness_get: {
         parameters: {
             query?: never;
@@ -12841,6 +13459,228 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_snake_workflow_stack_dz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_dz */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_stack_dz_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_stack_dz_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_stack_dz_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_stack_dz_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_stack_images_to_save_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_images_to_save */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_stack_images_to_save_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_stack_images_to_save_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_stack_images_to_save_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_stack_images_to_save_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_snake_workflow_stack_min_images_to_test_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_min_images_to_test */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["snake_workflow_stack_min_images_to_test_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_snake_workflow_stack_min_images_to_test_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["snake_workflow_stack_min_images_to_test_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_snake_workflow_stack_min_images_to_test_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     get_property_api_v1_snake_workflow_x_count_get: {
         parameters: {
             query?: never;
@@ -13338,6 +14178,228 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_stack_dz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_dz */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_stack_dz_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_stack_dz_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_stack_dz_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_stack_dz_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_stack_images_to_save_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_images_to_save */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_stack_images_to_save_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_stack_images_to_save_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_stack_images_to_save_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_stack_images_to_save_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_raster_workflow_stack_min_images_to_test_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of stack_min_images_to_test */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["raster_workflow_stack_min_images_to_test_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_raster_workflow_stack_min_images_to_test_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["raster_workflow_stack_min_images_to_test_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_raster_workflow_stack_min_images_to_test_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
             };
         };
     };

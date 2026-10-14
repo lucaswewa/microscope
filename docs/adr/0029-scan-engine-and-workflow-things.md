@@ -16,7 +16,7 @@
 - **A `ScanWorkflow` interface** (a `teta-wot` interface, ADR-0018) for the workflow Things:
   - `display_name()` and `ready()`;
   - `begin(start)`: it refuses if it can't start, else gets ready (such as by autofocusing), fixes its settings for the scan, and returns them with its planner;
-  - `acquire(folder)`: with the stage at a site, it focuses and saves its images, and says how many it saved and where it found focus.
+  - `acquire(folder)`: with the stage at a site, it focuses and saves its images, and says how many it saved and where it found focus. Since P36, `folder` is a folder in the data folder, such as `scans/<name>/images`, as the stack actions take it.
 - **`smart_scan`** (`SmartScan`) holds every workflow in a `SlotMap<dyn ScanWorkflow>`, by Thing name.
   - **The choice:** its `workflow_name` setting chooses one.
   - **The names:** `all_workflow_names` and `workflow_display_names` list them.
@@ -34,7 +34,7 @@
 - **The grid workflows are one Thing type,** `GridWorkflow` (`microscope.workflows:GridWorkflow`), configured with its `order` (`snake` or `raster`) in `kwargs`.
   - **Settings,** OpenFlexure's defaults: `overlap` 0.35 (0.1–0.7), `autofocus_dz` 1000 (400–3000), `x_count` 3, `y_count` 2, and `capture_mode`. Also `ready`, `display_name` and a `settings_ui` panel (ADR-0024).
   - **`begin`:** it needs the camera–stage mapping. It plans a grid from the start, with the step from the overlap through the mapping (P34), then autofocuses, repeating until it's in focus.
-  - **`acquire`:** a fast autofocus, then a capture saved as `img_<x>_<y>_<z>.jpeg`.
+  - **`acquire`:** a fast autofocus, then a capture saved as `img_<x>_<y>_<z>.jpeg`. Since P36, a smart stack instead, with the stack settings `stack_images_to_save`, `stack_min_images_to_test` and `stack_dz`. It saves even without focus, and the planner is told of focus only if the stack found it.
 - **The camera interface:** `CameraApi::capture_to_memory` takes a `CaptureMode`, now part of the interface, so a workflow can capture `standard` or `quick`.
 
 ## Consequences
