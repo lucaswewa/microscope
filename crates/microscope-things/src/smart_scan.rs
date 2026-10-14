@@ -165,7 +165,9 @@ impl SmartScan {
         });
         let log = ScanLog(folder.join("scan.log"));
         log.write(&format!("Scanning with {workflow_name} from {}", at(start)));
-        let outcome = self.scan(&ctx, &*workflow, start, &folder, &log).await;
+        let outcome = self
+            .scan(&ctx, &*workflow, start, (&name, &folder), &log)
+            .await;
         log.write("Going back to the start");
         let back = self.stage.move_absolute(start).await;
         let result = match &outcome {
@@ -247,7 +249,7 @@ impl SmartScan {
         ctx: &ActionCtx,
         workflow: &dyn ScanWorkflow,
         start: Position,
-        folder: &Path,
+        (name, folder): (&str, &Path),
         log: &ScanLog,
     ) -> Result<Finished, ActionError> {
         let Begun {
@@ -259,7 +261,8 @@ impl SmartScan {
             details.scan_phase = ScanPhase::Scanning;
         });
         self.record(folder, start)?;
-        let images = folder.join("images");
+        // In the data folder, as stacks take it.
+        let images = format!("{SCANS}/{name}/images");
         while let Some((site, z)) = planner.next() {
             ctx.check_cancelled()?;
             let z = match z {

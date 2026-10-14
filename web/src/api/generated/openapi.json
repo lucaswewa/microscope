@@ -4594,6 +4594,144 @@
         }
       }
     },
+    "/api/v1/autofocus/run_basic_stack": {
+      "get": {
+        "summary": "All invocations of run_basic_stack.",
+        "description": "List all the invocations of run_basic_stack that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_autofocus_run_basic_stack_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of run_basic_stack.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Takes `images_to_save` images `dz` apart, upwards, from, centred on",
+        "description": "## Takes `images_to_save` images `dz` apart, upwards, from, centred on\n\nTakes `images_to_save` images `dz` apart, upwards, from, centred on\nor ending at where the stage is, by `origin`, and saves them all in\n`folder`, a folder in the data folder. Returns their z positions.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_autofocus_run_basic_stack_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/autofocus_run_basic_stack_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_run_basic_stack_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_run_basic_stack_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/autofocus/run_smart_stack": {
+      "get": {
+        "summary": "All invocations of run_smart_stack.",
+        "description": "List all the invocations of run_smart_stack that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_autofocus_run_smart_stack_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of run_smart_stack.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Takes images `dz` apart, upwards through focus, until the sharpest is",
+        "description": "## Takes images `dz` apart, upwards through focus, until the sharpest is\n\nTakes images `dz` apart, upwards through focus, until the sharpest is\nwell inside the latest `min_images_to_test`, then saves\n`images_to_save` about it in `folder`, a folder in the data folder.\nWhen focus is out of reach, it autofocuses over `autofocus_dz` and\ntries again, 3 times in all. With `save_on_failure`, it saves the\nimages about the sharpest even without focus.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_autofocus_run_smart_stack_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/autofocus_run_smart_stack_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_run_smart_stack_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/autofocus_run_smart_stack_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/autofocus/z_move_and_measure_sharpness": {
       "get": {
         "summary": "All invocations of z_move_and_measure_sharpness.",
@@ -6523,6 +6661,237 @@
         }
       }
     },
+    "/api/v1/snake_workflow/stack_dz": {
+      "get": {
+        "summary": "The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "get_property_api_v1_snake_workflow_stack_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_stack_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "set_property_api_v1_snake_workflow_stack_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_stack_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/stack_dz/reset": {
+      "post": {
+        "summary": "Reset The distance between a stack's images, in steps..",
+        "description": "## Reset The distance between a stack's images, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_stack_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/stack_images_to_save": {
+      "get": {
+        "summary": "How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "get_property_api_v1_snake_workflow_stack_images_to_save_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_images_to_save",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_stack_images_to_save_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "set_property_api_v1_snake_workflow_stack_images_to_save_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_stack_images_to_save_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/stack_images_to_save/reset": {
+      "post": {
+        "summary": "Reset How many images of each stack to save: odd..",
+        "description": "## Reset How many images of each stack to save: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_stack_images_to_save_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/stack_min_images_to_test": {
+      "get": {
+        "summary": "How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "get_property_api_v1_snake_workflow_stack_min_images_to_test_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_min_images_to_test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snake_workflow_stack_min_images_to_test_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "set_property_api_v1_snake_workflow_stack_min_images_to_test_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snake_workflow_stack_min_images_to_test_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snake_workflow/stack_min_images_to_test/reset": {
+      "post": {
+        "summary": "Reset How many of a stack's latest images are judged together: odd..",
+        "description": "## Reset How many of a stack's latest images are judged together: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_snake_workflow_stack_min_images_to_test_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/snake_workflow/x_count": {
       "get": {
         "summary": "How many columns.",
@@ -7029,6 +7398,237 @@
         "responses": {
           "200": {
             "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_dz": {
+      "get": {
+        "summary": "The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "get_property_api_v1_raster_workflow_stack_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_stack_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "set_property_api_v1_raster_workflow_stack_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_stack_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_dz/reset": {
+      "post": {
+        "summary": "Reset The distance between a stack's images, in steps..",
+        "description": "## Reset The distance between a stack's images, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_stack_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_images_to_save": {
+      "get": {
+        "summary": "How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "get_property_api_v1_raster_workflow_stack_images_to_save_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_images_to_save",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_stack_images_to_save_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "set_property_api_v1_raster_workflow_stack_images_to_save_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_stack_images_to_save_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_images_to_save/reset": {
+      "post": {
+        "summary": "Reset How many images of each stack to save: odd..",
+        "description": "## Reset How many images of each stack to save: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_stack_images_to_save_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_min_images_to_test": {
+      "get": {
+        "summary": "How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "get_property_api_v1_raster_workflow_stack_min_images_to_test_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_min_images_to_test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/raster_workflow_stack_min_images_to_test_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "set_property_api_v1_raster_workflow_stack_min_images_to_test_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/raster_workflow_stack_min_images_to_test_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/raster_workflow/stack_min_images_to_test/reset": {
+      "post": {
+        "summary": "Reset How many of a stack's latest images are judged together: odd..",
+        "description": "## Reset How many of a stack's latest images are judged together: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_raster_workflow_stack_min_images_to_test_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           }
         }
       }
@@ -12032,6 +12632,383 @@
           "log"
         ]
       },
+      "autofocus_run_basic_stack_input": {
+        "type": "object",
+        "properties": {
+          "folder": {
+            "type": "string"
+          },
+          "stack": {
+            "description": "A stack's settings.",
+            "default": {
+              "images_to_save": 1,
+              "min_images_to_test": 9,
+              "dz": 50,
+              "capture_mode": "standard"
+            },
+            "type": "object",
+            "properties": {
+              "images_to_save": {
+                "description": "How many images to save: odd, and no more than the images tested.",
+                "default": 1,
+                "type": "integer",
+                "minimum": 0
+              },
+              "min_images_to_test": {
+                "description": "How many of the latest images are judged together: odd, 3 to 9.",
+                "default": 9,
+                "type": "integer",
+                "minimum": 0
+              },
+              "dz": {
+                "description": "The distance between images, in steps.",
+                "default": 50,
+                "type": "integer"
+              },
+              "capture_mode": {
+                "description": "How each image is captured.",
+                "oneOf": [
+                  {
+                    "description": "At the camera's full resolution.",
+                    "const": "standard",
+                    "type": "string"
+                  },
+                  {
+                    "description": "At the stream's size, without changing the stream.",
+                    "const": "quick",
+                    "type": "string"
+                  }
+                ],
+                "default": "standard"
+              }
+            }
+          },
+          "origin": {
+            "description": "Where a basic stack's images are, about the stage's z.",
+            "oneOf": [
+              {
+                "description": "From it, upwards.",
+                "const": "start",
+                "type": "string"
+              },
+              {
+                "description": "Centred on it.",
+                "const": "centre",
+                "type": "string"
+              },
+              {
+                "description": "Ending at it.",
+                "const": "end",
+                "type": "string"
+              }
+            ],
+            "default": "centre"
+          }
+        },
+        "required": [
+          "folder"
+        ],
+        "additionalProperties": false
+      },
+      "autofocus_run_basic_stack_output": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        }
+      },
+      "autofocus_run_basic_stack_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/autofocus_run_basic_stack_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/autofocus_run_basic_stack_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "autofocus_run_smart_stack_input": {
+        "type": "object",
+        "properties": {
+          "folder": {
+            "type": "string"
+          },
+          "stack": {
+            "description": "A stack's settings.",
+            "default": {
+              "images_to_save": 1,
+              "min_images_to_test": 9,
+              "dz": 50,
+              "capture_mode": "standard"
+            },
+            "type": "object",
+            "properties": {
+              "images_to_save": {
+                "description": "How many images to save: odd, and no more than the images tested.",
+                "default": 1,
+                "type": "integer",
+                "minimum": 0
+              },
+              "min_images_to_test": {
+                "description": "How many of the latest images are judged together: odd, 3 to 9.",
+                "default": 9,
+                "type": "integer",
+                "minimum": 0
+              },
+              "dz": {
+                "description": "The distance between images, in steps.",
+                "default": 50,
+                "type": "integer"
+              },
+              "capture_mode": {
+                "description": "How each image is captured.",
+                "oneOf": [
+                  {
+                    "description": "At the camera's full resolution.",
+                    "const": "standard",
+                    "type": "string"
+                  },
+                  {
+                    "description": "At the stream's size, without changing the stream.",
+                    "const": "quick",
+                    "type": "string"
+                  }
+                ],
+                "default": "standard"
+              }
+            }
+          },
+          "save_on_failure": {
+            "default": false,
+            "type": "boolean"
+          },
+          "autofocus_dz": {
+            "default": 2000,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "folder"
+        ],
+        "additionalProperties": false
+      },
+      "autofocus_run_smart_stack_output": {
+        "description": "What a smart stack did.",
+        "type": "object",
+        "properties": {
+          "success": {
+            "description": "Whether it found focus.",
+            "type": "boolean"
+          },
+          "sharpest_z": {
+            "description": "Its sharpest image's z, in steps.",
+            "type": "integer"
+          },
+          "saved": {
+            "description": "The images it saved, by name, lowest first.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "attempts": {
+            "description": "How many attempts it made.",
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "success",
+          "sharpest_z",
+          "saved",
+          "attempts"
+        ]
+      },
+      "autofocus_run_smart_stack_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/autofocus_run_smart_stack_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/autofocus_run_smart_stack_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
       "autofocus_z_move_and_measure_sharpness_input": {
         "type": "object",
         "properties": {
@@ -14089,6 +15066,21 @@
       "snake_workflow_ready_value": {
         "type": "boolean"
       },
+      "snake_workflow_stack_dz_value": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 400
+      },
+      "snake_workflow_stack_images_to_save_value": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+      },
+      "snake_workflow_stack_min_images_to_test_value": {
+        "type": "integer",
+        "minimum": 3,
+        "maximum": 9
+      },
       "snake_workflow_x_count_value": {
         "type": "integer",
         "minimum": 1
@@ -14127,6 +15119,21 @@
       },
       "raster_workflow_ready_value": {
         "type": "boolean"
+      },
+      "raster_workflow_stack_dz_value": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 400
+      },
+      "raster_workflow_stack_images_to_save_value": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+      },
+      "raster_workflow_stack_min_images_to_test_value": {
+        "type": "integer",
+        "minimum": 3,
+        "maximum": 9
       },
       "raster_workflow_x_count_value": {
         "type": "integer",

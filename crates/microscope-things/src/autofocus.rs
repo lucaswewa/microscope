@@ -6,17 +6,27 @@
 //! a monitor records each frame's size and when it was taken, and samples
 //! the stage's z every 20 ms. A frame's z is interpolated between the
 //! samples either side of it.
+//!
+//! Stacks (P36) take images a set distance apart in z: a smart stack until
+//! the sharpest is well inside its latest images, a basic stack a set
+//! number. They save them in the data folder. The behaviour spec opens the
+//! P36 notes.
 
+use std::collections::VecDeque;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use chrono::{DateTime, TimeDelta, Utc};
+use microscope_core::stack::{self, Counts, Verdict, judge};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use teta_wot::prelude::*;
 use tokio::task::JoinHandle;
 
-use crate::hardware::{CameraApi, Position, StageApi};
+use crate::capture::{self, MappingRecord};
+use crate::data;
+use crate::hardware::{CameraApi, Capture, CaptureMode, Position, StageApi};
 
 /// How often the monitor samples the stage's z while it moves.
 const SAMPLE_INTERVAL: Duration = Duration::from_millis(20);
@@ -26,6 +36,15 @@ const FRAME_WAIT: Duration = Duration::from_secs(1);
 
 /// How many sweeps `looping_autofocus` makes before giving up.
 const MAX_SWEEPS: u32 = 10;
+
+/// How long a stack waits after each move.
+const SETTLE: Duration = Duration::from_millis(50);
+/// How many images below its window a smart stack starts.
+const START_BELOW: i64 = 5;
+/// How many images beyond its window a smart stack takes before giving up.
+const MAX_EXTRA: usize = 15;
+/// How many attempts a smart stack makes.
+const ATTEMPTS: u32 = 3;
 
 /// A frame's sharpness, and the z it was taken at.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, JsonSchema)]
@@ -56,6 +75,134 @@ pub enum SweepStart {
     Centre,
     /// Where the stage is.
     Base,
+}
+
+/// A stack's settings.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(default)]
+pub struct StackSettings {
+    /// How many images to save: odd, and no more than the images tested.
+    pub images_to_save: u32,
+    /// How many of the latest images are judged together: odd, 3 to 9.
+    pub min_images_to_test: u32,
+    /// The distance between images, in steps.
+    pub dz: i64,
+    /// How each image is captured.
+    pub capture_mode: CaptureMode,
+}
+
+impl Default for StackSettings {
+    fn default() -> Self {
+        Self {
+            images_to_save: 1,
+            min_images_to_test: 9,
+            dz: 50,
+            capture_mode: CaptureMode::Standard,
+        }
+    }
+}
+
+/// Where a basic stack's images are, about the stage's z.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "lowercase")]
+pub enum StackOrigin {
+    /// From it, upwards.
+    Start,
+    /// Centred on it.
+    #[default]
+    Centre,
+    /// Ending at it.
+    End,
+}
+
+/// What a smart stack did.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+pub struct StackResult {
+    /// Whether it found focus.
+    pub success: bool,
+    /// Its sharpest image's z, in steps.
+    pub sharpest_z: i64,
+    /// The images it saved, by name, lowest first.
+    pub saved: Vec<String>,
+    /// How many attempts it made.
+    pub attempts: u32,
+}
+
+/// An image of a stack, kept until it's saved.
+struct Shot {
+    capture: Capture,
+    at: Position,
+    sharpness: f64,
+}
+
+/// One attempt at a smart stack.
+struct Attempt {
+    /// Its latest images, lowest first.
+    shots: VecDeque<Shot>,
+    /// The sharpest's index, if it found focus.
+    focused: Option<usize>,
+    /// The z it started at.
+    first_z: i64,
+}
+
+/// `stack`'s counts, made odd and consistent, logged if that changed them.
+pub fn counts(stack: &StackSettings) -> Result<Counts, ActionError> {
+    if stack.dz <= 0 {
+        return Err(ActionError::handled(
+            "dz must be a positive number of steps",
+        ));
+    }
+    let (test, save) = (stack.min_images_to_test, stack.images_to_save);
+    let counts = Counts::new(test, save);
+    if (counts.test, counts.save) != (test as usize, save as usize) {
+        tracing::warn!(
+            "testing {} images and saving {}, not {test} and {save}: both must be odd, \
+             and no more saved than tested",
+            counts.test,
+            counts.save
+        );
+    }
+    Ok(counts)
+}
+
+/// `folder` in the data folder, made if it's missing.
+fn stack_folder(server: &Server, folder: &str) -> Result<PathBuf, ActionError> {
+    let folder = data::resolve(&data::data_folder(server), folder);
+    let folder = folder.map_err(ActionError::handled)?;
+    std::fs::create_dir_all(&folder).map_err(ActionError::handled)?;
+    Ok(folder)
+}
+
+/// Saves `capture` in `folder`, named for where it was taken. Returns the
+/// name.
+fn save(
+    folder: &Path,
+    capture: &Capture,
+    at: Position,
+    mapping: Option<MappingRecord>,
+) -> Result<String, ActionError> {
+    let name = format!("img_{}_{}_{}.jpeg", at.x, at.y, at.z);
+    capture::save_to(&folder.join(&name), capture, mapping)?;
+    Ok(name)
+}
+
+/// The JPEG size of the next preview frame taken from now on.
+async fn next_sharpness(stream: &MjpegStream) -> Result<f64, ActionError> {
+    let (after, mut frames) = (Utc::now(), stream.frames());
+    let next = async {
+        while let Some(frame) = frames.next().await {
+            if frame.timestamp > after {
+                return Some(frame.data.len() as f64);
+            }
+        }
+        None
+    };
+    match tokio::time::timeout(FRAME_WAIT, next).await {
+        Ok(Some(size)) => Ok(size),
+        _ => Err(ActionError::handled(
+            "no preview frame arrived: is the camera streaming?",
+        )),
+    }
 }
 
 /// When a frame was taken, and its JPEG size.
@@ -208,24 +355,99 @@ impl Autofocus {
         #[param(default = 2000)] dz: i64,
         #[param(default)] start: SweepStart,
     ) -> Result<FocusCurve, ActionError> {
-        let mut monitor = Monitor::start(self.camera.lores_stream());
-        let mut start = start;
-        for sweeps in 1..=MAX_SWEEPS {
-            let mut curve = self.sweep(&mut monitor, dz, start).await?;
-            curve.sweeps = sweeps;
-            let zs = curve.points.iter().map(|point| point.z);
-            let low = zs.clone().fold(f64::INFINITY, f64::min);
-            let high = zs.fold(f64::NEG_INFINITY, f64::max);
-            let margin = dz as f64 / 5.0;
-            let focus = curve.focus_z.unwrap_or_default() as f64;
-            if low + margin < focus && focus < high - margin {
-                return Ok(curve);
+        let focused = self.looping(dz, start).await?;
+        focused.ok_or_else(|| {
+            ActionError::handled(format!("no focus found within {MAX_SWEEPS} sweeps"))
+        })
+    }
+
+    /// Takes images `dz` apart, upwards through focus, until the sharpest is
+    /// well inside the latest `min_images_to_test`, then saves
+    /// `images_to_save` about it in `folder`, a folder in the data folder.
+    /// When focus is out of reach, it autofocuses over `autofocus_dz` and
+    /// tries again, 3 times in all. With `save_on_failure`, it saves the
+    /// images about the sharpest even without focus.
+    #[action]
+    async fn run_smart_stack(
+        &self,
+        ctx: ActionCtx,
+        folder: String,
+        #[param(default)] stack: StackSettings,
+        #[param(default)] save_on_failure: bool,
+        #[param(default = 2000)] autofocus_dz: i64,
+    ) -> Result<StackResult, ActionError> {
+        let folder = stack_folder(ctx.server(), &folder)?;
+        let counts = counts(&stack)?;
+        let mut attempts = 1;
+        let (shots, sharpest, success) = loop {
+            let attempt = self.attempt(&ctx, counts, &stack).await?;
+            if let Some(sharpest) = attempt.focused {
+                break (attempt.shots, sharpest, true);
             }
-            start = SweepStart::Centre;
+            let shots = attempt.shots;
+            let sharpness: Vec<f64> = shots.iter().map(|shot| shot.sharpness).collect();
+            let sharpest = stack::sharpest(&sharpness);
+            if attempts == ATTEMPTS {
+                break (shots, sharpest, false);
+            }
+            tracing::info!("attempt {attempts} found no focus, so autofocusing to try again");
+            let here = self.stage.position().await?;
+            let back = Position::new(0, 0, attempt.first_z - here.z);
+            self.stage.move_relative(back).await?;
+            let refocused = self.looping(autofocus_dz, SweepStart::Centre).await?;
+            if refocused.is_none() {
+                tracing::warn!("autofocus found no focus, so the stack stops trying");
+                break (shots, sharpest, false);
+            }
+            attempts += 1;
+        };
+        let mut saved = Vec::new();
+        if success || save_on_failure {
+            let mapping = capture::mapping(ctx.server());
+            for shot in shots.range(counts.to_save(sharpest, shots.len())) {
+                saved.push(save(&folder, &shot.capture, shot.at, mapping.clone())?);
+            }
         }
-        Err(ActionError::handled(format!(
-            "no focus found within {MAX_SWEEPS} sweeps"
-        )))
+        Ok(StackResult {
+            success,
+            sharpest_z: shots.get(sharpest).map_or(0, |shot| shot.at.z),
+            saved,
+            attempts,
+        })
+    }
+
+    /// Takes `images_to_save` images `dz` apart, upwards, from, centred on
+    /// or ending at where the stage is, by `origin`, and saves them all in
+    /// `folder`, a folder in the data folder. Returns their z positions.
+    #[action]
+    async fn run_basic_stack(
+        &self,
+        ctx: ActionCtx,
+        folder: String,
+        #[param(default)] stack: StackSettings,
+        #[param(default)] origin: StackOrigin,
+    ) -> Result<Vec<i64>, ActionError> {
+        let folder = stack_folder(ctx.server(), &folder)?;
+        let (n, dz) = (counts(&stack)?.save as i64, stack.dz);
+        let below = match origin {
+            StackOrigin::Start => 0,
+            StackOrigin::Centre => (n - 1) * dz / 2,
+            StackOrigin::End => (n - 1) * dz,
+        };
+        self.stage
+            .move_relative(Position::new(0, 0, -below))
+            .await?;
+        let mapping = capture::mapping(ctx.server());
+        let mut zs = Vec::new();
+        for i in 0..n {
+            if i > 0 {
+                self.stage.move_relative(Position::new(0, 0, dz)).await?;
+            }
+            let (capture, at) = self.shot(&ctx, stack.capture_mode).await?;
+            save(&folder, &capture, at, mapping.clone())?;
+            zs.push(at.z);
+        }
+        Ok(zs)
     }
 
     /// Makes each move in `dz` in z, waiting `wait` seconds between them,
@@ -254,6 +476,96 @@ impl Autofocus {
 }
 
 impl Autofocus {
+    /// `looping_autofocus`'s sweeps: the last, or none if it found no focus.
+    async fn looping(&self, dz: i64, start: SweepStart) -> Result<Option<FocusCurve>, ActionError> {
+        let mut monitor = Monitor::start(self.camera.lores_stream());
+        let mut start = start;
+        for sweeps in 1..=MAX_SWEEPS {
+            let mut curve = self.sweep(&mut monitor, dz, start).await?;
+            curve.sweeps = sweeps;
+            let zs = curve.points.iter().map(|point| point.z);
+            let low = zs.clone().fold(f64::INFINITY, f64::min);
+            let high = zs.fold(f64::NEG_INFINITY, f64::max);
+            let margin = dz as f64 / 5.0;
+            let focus = curve.focus_z.unwrap_or_default() as f64;
+            if low + margin < focus && focus < high - margin {
+                return Ok(Some(curve));
+            }
+            start = SweepStart::Centre;
+        }
+        Ok(None)
+    }
+
+    /// One attempt at a smart stack, from below where the stage is.
+    async fn attempt(
+        &self,
+        ctx: &ActionCtx,
+        counts: Counts,
+        stack: &StackSettings,
+    ) -> Result<Attempt, ActionError> {
+        let (stage, dz) = (&**self.stage, stack.dz);
+        let (n, side) = (counts.test, counts.each_side());
+        let below = START_BELOW * dz + (n as i64 - 1) * dz / 2;
+        let first_z = stage.move_relative(Position::new(0, 0, -below)).await?.z;
+        let mut shots = VecDeque::new();
+        let mut focused = None;
+        for taken in 1..=n + MAX_EXTRA {
+            if taken > 1 {
+                stage.move_relative(Position::new(0, 0, dz)).await?;
+            }
+            shots.push_back(self.judged_shot(ctx, stack.capture_mode).await?);
+            // Only the images it might save: the window, and those below it.
+            if shots.len() > n + side {
+                shots.pop_front();
+            }
+            if taken < n {
+                continue;
+            }
+            let window = shots.range(shots.len() - n..).map(|shot| shot.sharpness);
+            match judge(&window.collect::<Vec<_>>()) {
+                Verdict::Continue => continue,
+                Verdict::Restart => break,
+                Verdict::Focused(i) => {
+                    let sharpest = shots.len() - n + i;
+                    // Enough above it to save.
+                    while shots.len() - 1 - sharpest < side {
+                        stage.move_relative(Position::new(0, 0, dz)).await?;
+                        shots.push_back(self.judged_shot(ctx, stack.capture_mode).await?);
+                    }
+                    focused = Some(sharpest);
+                    break;
+                }
+            }
+        }
+        Ok(Attempt {
+            shots,
+            focused,
+            first_z,
+        })
+    }
+
+    /// Settles, then captures an image, with where it was taken.
+    async fn shot(
+        &self,
+        ctx: &ActionCtx,
+        mode: CaptureMode,
+    ) -> Result<(Capture, Position), ActionError> {
+        ctx.sleep(SETTLE).await?;
+        let at = self.stage.position().await?;
+        Ok((self.camera.capture_to_memory(mode).await?, at))
+    }
+
+    /// A shot, and its sharpness from the next preview frame.
+    async fn judged_shot(&self, ctx: &ActionCtx, mode: CaptureMode) -> Result<Shot, ActionError> {
+        let (capture, at) = self.shot(ctx, mode).await?;
+        let sharpness = next_sharpness(&self.camera.lores_stream()).await?;
+        Ok(Shot {
+            capture,
+            at,
+            sharpness,
+        })
+    }
+
     /// One sweep up through focus, then the move to its sharpest point.
     async fn sweep(
         &self,
@@ -321,5 +633,24 @@ mod tests {
         let zs: Vec<f64> = curve.iter().map(|point| point.z.round()).collect();
         assert_eq!(zs, [25.0, 90.0]);
         assert!(curve.iter().all(|point| point.sharpness == 4));
+    }
+
+    #[tokio::test]
+    async fn a_stacks_sharpness_is_from_a_frame_taken_after_it_asks() {
+        let stream = MjpegStream::new();
+        let later = stream.clone();
+        let asked = Utc::now();
+        tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(20)).await;
+            // Taken before it asked, though it arrives after.
+            let before = asked - TimeDelta::milliseconds(50);
+            later.add_frame_at(JPEG.to_vec(), before).expect("a frame");
+            tokio::time::sleep(Duration::from_millis(20)).await;
+            let after = [0xff, 0xd8, 0, 0xff, 0xd9];
+            later
+                .add_frame_at(after.to_vec(), Utc::now())
+                .expect("a frame");
+        });
+        assert_eq!(next_sharpness(&stream).await.expect("a frame"), 5.0);
     }
 }
