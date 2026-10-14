@@ -1,6 +1,6 @@
 # P42: Sequence tab
 
-- Status: In review
+- Status: Done
 - Pull request: [#55](https://github.com/lucaswewa/microscope/pull/55)
 - ADRs: none new
 - Spec: [phases.md#p42](../phases.md#p42)

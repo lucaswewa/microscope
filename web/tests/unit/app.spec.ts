@@ -43,7 +43,7 @@ describe('the app', () => {
     expect(wrapper.find('.live-image').exists()).toBe(true)
   })
 
-  const built = ['view', 'control', 'slide-scan', 'sequence', 'gallery', 'settings']
+  const built = ['view', 'control', 'slide-scan', 'sequence', 'gallery', 'settings', 'logging']
   for (const destination of DESTINATIONS.filter(({ id }) => !built.includes(id))) {
     it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
       const app = await mountApp(`/${destination.id}`)
