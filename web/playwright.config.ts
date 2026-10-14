@@ -38,7 +38,7 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
-      testIgnore: /e2e\/scan\.spec\.ts$/,
+      testIgnore: /e2e\/(scan|sequence)\.spec\.ts$/,
     },
     // A scan holds the microscope for a while, so it runs once the others have finished.
     {
@@ -46,6 +46,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['chromium'],
       testMatch: /e2e\/scan\.spec\.ts$/,
+    },
+    // So does a sequence, after the scan.
+    {
+      name: 'sequence',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['scan'],
+      testMatch: /e2e\/sequence\.spec\.ts$/,
     },
   ],
   webServer: {

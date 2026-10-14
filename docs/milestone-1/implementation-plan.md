@@ -469,8 +469,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P41 | Sequence engine (MDA-ready) | P21, P26, P31 | L | 0031 | In review |
-| P42 | Sequence tab | P24b, P41 | M | — | Planned |
+| P41 | Sequence engine (MDA-ready) | P21, P26, P31 | L | 0031 | Done |
+| P42 | Sequence tab | P24b, P41 | L | — | In review |
 
 **Checkpoint E, "Sequence":** a timelapse with autofocus runs, can be cancelled, and appears in the gallery with an image-sequence viewer.
 
@@ -668,3 +668,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-11 | P24b re-sized from M to L, at the project owner's choice, since it was estimated at 750–880 lines. Its two buttons share the invocation handling, so it stays one phase |
 | 2026-10-13 | §5.9: the gallery's index is brought up to date from the folders whenever it's read, rather than told of each write, so it also follows changes made by hand (ADR-0026, P31) |
 | 2026-10-13 | P35 split in two, at the project owner's choice, since it was estimated at 1,050–1,300 lines against its L budget. P35 keeps the `ScanWorkflow` interface, the snake and raster workflows, and `smart_scan`'s `sample_scan` with its scan lock, scan folder and return to the start, and `latest_scan_live_details`. The new P35b, sized M, has `purge_empty_scans`, `download_zip`, the delete endpoint and the scans' gallery provider. P39 now depends on P35b |
+| 2026-10-14 | P42 re-sized from M to L, at the project owner's choice, since it was estimated at 650–750 lines. The sequence's live details, which the server adds, serve only the tab, so it stays one phase |

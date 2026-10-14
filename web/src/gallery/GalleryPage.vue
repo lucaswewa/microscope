@@ -4,13 +4,15 @@
 // sidebar, which can be hidden, chooses the types shown and the cards per
 // page, runs the bulk actions, and deletes everything of the types shown.
 // The gallery is read again when the tab opens, on Refresh, and after
-// anything that changes it. View opens the viewer (ADR-0027).
+// anything that changes it. View opens the viewer (ADR-0027), as does a link
+// to an item, `/#/gallery?view=<its path>`.
 import detailsIcon from '@material-symbols/svg-400/outlined/view_agenda.svg?raw'
 import refreshIcon from '@material-symbols/svg-400/outlined/refresh.svg?raw'
 import closeIcon from '@material-symbols/svg-400/outlined/right_panel_close.svg?raw'
 import openIcon from '@material-symbols/svg-400/outlined/right_panel_open.svg?raw'
 import thumbnailsIcon from '@material-symbols/svg-400/outlined/grid_view.svg?raw'
 import { computed, h, ref, shallowRef, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { type GalleryEntry, useThing } from '@/api/things'
 import { ApiError } from '@/api/wot/errors'
@@ -31,6 +33,8 @@ import ImageViewer from './ImageViewer.vue'
 const PER_PAGE = [18, 25].map((n) => ({ value: n, label: String(n) }))
 
 const gallery = useThing('gallery')
+const route = useRoute()
+const router = useRouter()
 const confirm = useConfirm()
 const toast = useToast()
 
@@ -78,6 +82,14 @@ async function load() {
   }
 }
 watch(gallery, () => void load(), { immediate: true })
+watch([entries, () => route.query.view], ([list, path]) => {
+  const linked = list.find((entry) => entry.path === path)
+  if (linked) viewing.value = linked
+})
+function closeViewer() {
+  viewing.value = undefined
+  if (route.query.view) void router.replace({ query: {} })
+}
 
 const filtered = computed(() => entries.value.filter((e) => shown.value.includes(e.card_type)))
 const first = computed(() => (page.value - 1) * perPage.value)
@@ -178,7 +190,7 @@ async function deleteAll() {
         Delete all
       </AppButton>
     </aside>
-    <ImageViewer v-if="viewing" :entry="viewing" @close="viewing = undefined" />
+    <ImageViewer v-if="viewing" :entry="viewing" @close="closeViewer" />
   </div>
 </template>
 

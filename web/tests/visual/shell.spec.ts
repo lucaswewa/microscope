@@ -7,7 +7,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
   test.describe(`the shell in the ${colorScheme} theme`, () => {
     test.use({ colorScheme, viewport: { width: 1280, height: 800 } })
 
-    for (const route of ['control', 'slide-scan', 'settings/camera']) {
+    for (const route of ['control', 'slide-scan', 'sequence', 'settings/camera']) {
       test(`on ${route}`, async ({ page }) => {
         // A still picture: the stream off, and the stage at a fixed place,
         // whatever other tests do with it meanwhile.
@@ -21,8 +21,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
           'data-state',
           'connected',
         )
-        // A panel the server describes, loaded.
+        // A panel the server describes, or the sequence's settings, loaded.
         if (route === 'slide-scan') await expect(page.getByText('Set background')).toBeVisible()
+        if (route === 'sequence')
+          await expect(page.getByLabel('Autofocus range (steps)')).toBeVisible()
         // The indicator names the machine the tests run on.
         await expect(page).toHaveScreenshot(`${route.replace('/', '-')}-${colorScheme}.png`, {
           mask: [page.locator('.connection-indicator__label')],

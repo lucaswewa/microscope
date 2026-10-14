@@ -3,15 +3,19 @@
 //! folder in the data folder's `sequences/`: its images, `image_<k>.jpeg`
 //! for time point k, each with its sidecar (ADR-0025), and its record,
 //! `sequence.json`. Captures are kept in memory and saved by a queue beside
-//! the schedule. The behaviour spec opens the P41 notes.
+//! the schedule. The behaviour spec opens the P41 notes. How the latest
+//! sequence is going is `latest_sequence_live_details`, which the Sequence
+//! tab follows (P42).
 
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use chrono::{SecondsFormat, Utc};
 use microscope_core::sequence::{Due, SequencePlan, Step};
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use teta_wot::prelude::*;
 use tokio::sync::mpsc;
@@ -29,6 +33,33 @@ pub const SEQUENCES: &str = "sequences";
 const FORMAT: u32 = 1;
 /// How many captures may wait to be saved.
 const QUEUE: usize = 4;
+
+/// How the latest sequence is going, or went.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct LiveSequenceDetails {
+    /// Its name, which is its folder's.
+    pub name: String,
+    /// How many time points its plan has.
+    pub points: u64,
+    /// How many images it has saved.
+    pub image_count: u64,
+    /// How many time points it has skipped.
+    pub skipped: u64,
+    /// How long it has run, in seconds.
+    pub duration_seconds: f64,
+    /// When its last time point is due, in seconds from its start.
+    pub last_point_seconds: f64,
+    /// The image it saved last, by its path in the data folder.
+    pub latest_image: Option<String>,
+    /// How it ended: `success`, `cancelled`, or the error. Empty while it runs.
+    pub result: Option<String>,
+}
+
+/// The latest sequence's details, and when it started.
+struct Latest {
+    details: LiveSequenceDetails,
+    started: Instant,
+}
 
 /// Runs timelapses: see the module's description.
 #[derive(Thing)]
@@ -53,10 +84,25 @@ pub struct Sequence {
     running: tokio::sync::Mutex<()>,
     /// The sequence running, by name.
     current: Mutex<Option<String>>,
+    /// The latest sequence, which its save queue updates too.
+    latest: Arc<Mutex<Option<Latest>>>,
 }
 
 #[thing_impl]
 impl Sequence {
+    /// The latest sequence's details, while it runs and after it ends.
+    #[property]
+    async fn latest_sequence_live_details(&self) -> Option<LiveSequenceDetails> {
+        let latest = self.latest.lock().expect("not poisoned");
+        latest.as_ref().map(|latest| {
+            let mut details = latest.details.clone();
+            if details.result.is_none() {
+                details.duration_seconds = latest.started.elapsed().as_secs_f64();
+            }
+            details
+        })
+    }
+
     /// Runs a timelapse into a new folder in `sequences/`, called `name`, or
     /// by the time without one, with `-2`, `-3`, … if that's taken: a capture
     /// every `dt` seconds for `duration`, each after an autofocus if
@@ -101,18 +147,40 @@ impl Sequence {
         });
         write_record(&folder, &record)?;
         let started = Instant::now();
-        let saver = Saver::start(folder.clone(), capture::mapping(ctx.server()));
-        let mut skipped = 0;
-        let outcome = self.run(&ctx, &plan, started, &saver, &mut skipped).await;
+        let points = plan.points();
+        *self.latest.lock().expect("not poisoned") = Some(Latest {
+            details: LiveSequenceDetails {
+                name: name.clone(),
+                points,
+                image_count: 0,
+                skipped: 0,
+                duration_seconds: 0.0,
+                last_point_seconds: plan.at(points - 1).as_secs_f64(),
+                latest_image: None,
+                result: None,
+            },
+            started,
+        });
+        let images_at = format!("{SEQUENCES}/{name}");
+        let mapping = capture::mapping(ctx.server());
+        let saver = Saver::start(folder.clone(), images_at, mapping, Arc::clone(&self.latest));
+        let outcome = self.run(&ctx, &plan, started, &saver).await;
         let outcome = outcome.and(saver.finish().await);
-        record["duration_seconds"] = json!(started.elapsed().as_secs_f64());
-        record["image_count"] = json!(images(&folder).len());
-        record["skipped"] = json!(skipped);
-        record["result"] = json!(match &outcome {
+        let result = match &outcome {
             Ok(()) => "success".to_owned(),
             Err(error) if error.is_cancelled() => "cancelled".to_owned(),
             Err(error) => format!("error: {error}"),
+        };
+        let mut skipped = 0;
+        self.update(|details| {
+            details.duration_seconds = started.elapsed().as_secs_f64();
+            details.result = Some(result.clone());
+            skipped = details.skipped;
         });
+        record["duration_seconds"] = json!(started.elapsed().as_secs_f64());
+        record["image_count"] = json!(images(&folder).len());
+        record["skipped"] = json!(skipped);
+        record["result"] = json!(result);
         *self.current.lock().expect("not poisoned") = None;
         write_record(&folder, &record)?;
         outcome.map(|()| name)
@@ -148,6 +216,13 @@ impl Sequence {
         self.current.lock().expect("not poisoned").clone()
     }
 
+    /// Changes the latest sequence's details.
+    fn update(&self, change: impl FnOnce(&mut LiveSequenceDetails)) {
+        if let Some(latest) = self.latest.lock().expect("not poisoned").as_mut() {
+            change(&mut latest.details);
+        }
+    }
+
     /// Runs `plan`'s time points from `started` until it's done, counting
     /// the points skipped.
     async fn run(
@@ -156,7 +231,6 @@ impl Sequence {
         plan: &SequencePlan,
         started: Instant,
         saver: &Saver,
-        skipped: &mut u64,
     ) -> Result<(), ActionError> {
         let mut next = 0;
         loop {
@@ -167,7 +241,7 @@ impl Sequence {
                 }
                 Due::Done { skipped: late } => {
                     report(late);
-                    *skipped += late;
+                    self.update(|details| details.skipped += late);
                     return Ok(());
                 }
                 Due::Run {
@@ -180,7 +254,7 @@ impl Sequence {
                 }
             };
             report(late);
-            *skipped += late;
+            self.update(|details| details.skipped += late);
         }
     }
 
@@ -218,8 +292,9 @@ impl Sequence {
 
 /// Logs that `late` time points were skipped, if any were.
 fn report(late: u64) {
+    let points = if late == 1 { "point" } else { "points" };
     if late > 0 {
-        tracing::warn!("Skipped {late} time points: the steps took longer than the interval");
+        tracing::warn!("Skipped {late} time {points}: the steps took longer than the interval");
     }
 }
 
@@ -241,22 +316,34 @@ fn write_record(folder: &Path, record: &Value) -> Result<(), ActionError> {
 }
 
 /// Saves captures, in the order given, beside the schedule: at most `QUEUE`
-/// wait, and a capture that finds the queue full waits for room.
+/// wait, and a capture that finds the queue full waits for room. Each one
+/// saved is counted in the latest sequence's details.
 struct Saver {
     sender: mpsc::Sender<(u64, Capture)>,
     task: JoinHandle<Result<(), ActionError>>,
 }
 
 impl Saver {
-    fn start(folder: PathBuf, mapping: Option<MappingRecord>) -> Saver {
+    /// Saves into `folder`, which is `images_at` in the data folder.
+    fn start(
+        folder: PathBuf,
+        images_at: String,
+        mapping: Option<MappingRecord>,
+        latest: Arc<Mutex<Option<Latest>>>,
+    ) -> Saver {
         let (sender, mut receiver) = mpsc::channel::<(u64, Capture)>(QUEUE);
         let task = tokio::spawn(async move {
             while let Some((index, capture)) = receiver.recv().await {
-                let path = folder.join(format!("image_{index:05}.jpeg"));
+                let file = format!("image_{index:05}.jpeg");
+                let path = folder.join(&file);
                 let mapping = mapping.clone();
                 let written =
                     tokio::task::spawn_blocking(move || capture::save_to(&path, &capture, mapping));
                 written.await.map_err(ActionError::handled)??;
+                if let Some(latest) = latest.lock().expect("not poisoned").as_mut() {
+                    latest.details.image_count += 1;
+                    latest.details.latest_image = Some(format!("{images_at}/{file}"));
+                }
             }
             Ok(())
         });

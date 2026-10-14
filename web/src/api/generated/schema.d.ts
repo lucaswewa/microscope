@@ -6787,6 +6787,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/sequence/latest_sequence_live_details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The latest sequence's details, while it runs and after it ends.
+         * @description ## The latest sequence's details, while it runs and after it ends.
+         *
+         *     The latest sequence's details, while it runs and after it ends.
+         */
+        get: operations["get_property_api_v1_sequence_latest_sequence_live_details_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/sequence/run_sequence": {
         parameters: {
             query?: never;
@@ -8905,6 +8927,24 @@ export interface components {
         };
         sequence_dt_value: number;
         sequence_duration_value: number;
+        sequence_latest_sequence_live_details_value: {
+            /** @description Its name, which is its folder's. */
+            name: string;
+            /** @description How many time points its plan has. */
+            points: number;
+            /** @description How many images it has saved. */
+            image_count: number;
+            /** @description How many time points it has skipped. */
+            skipped: number;
+            /** @description How long it has run, in seconds. */
+            duration_seconds: number;
+            /** @description When its last time point is due, in seconds from its start. */
+            last_point_seconds: number;
+            /** @description The image it saved last, by its path in the data folder. */
+            latest_image?: string | null;
+            /** @description How it ended: `success`, `cancelled`, or the error. Empty while it runs. */
+            result?: string | null;
+        } | null;
         sequence_run_sequence_input: {
             /** @default  */
             name?: string;
@@ -18812,6 +18852,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_sequence_latest_sequence_live_details_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of latest_sequence_live_details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_latest_sequence_live_details_value"];
                 };
             };
         };
