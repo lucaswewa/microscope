@@ -33,6 +33,7 @@ let sendExposure: (value: number) => void
 /** The statuses of the settle and capture invocations, which the tests move on. */
 let settled: string
 let captured: string
+let capturedOutput: unknown
 /** The answer to the next confirmation. */
 let answer: boolean
 /** How often the camera's panel has been fetched, and whether it's there. */
@@ -80,7 +81,7 @@ const actionRoutes = {
   },
   'POST /api/v1/camera/capture_to_memory': () => json(record('c', 'running'), 201),
   'GET /api/v1/action_invocations/c': () =>
-    json(record('c', captured, { output: 1, error: { detail: 'No camera.' } })),
+    json(record('c', captured, { output: capturedOutput, error: { detail: 'No camera.' } })),
   'POST /api/v1/camera/grab_jpeg': () =>
     json(record('g', 'completed', { output: { href: '/api/v1/blob/b1' } }), 201),
   'GET /api/v1/blob/b1': () => new Response('jpeg'),
@@ -125,7 +126,7 @@ beforeEach(() => {
     hostname: 'lab-pc',
   }
   putStatus = 201
-  ;[settled, captured, answer] = ['running', 'running', true]
+  ;[settled, captured, capturedOutput, answer] = ['running', 'running', 1, true]
   ;[panelFetches, panelServed] = [0, true]
   const routes = Object.fromEntries(
     Object.keys(schemas).flatMap((name) => [
@@ -319,6 +320,15 @@ describe('server-described buttons', () => {
     captured = 'completed'
     await vi.advanceTimersByTimeAsync(1000)
     expect(toaster.success).toHaveBeenCalledWith('1')
+  })
+
+  it("says an output's message, if it has one", async () => {
+    capturedOutput = { sample: true, message: '62.5% sample' }
+    await show([buttons[1]!])
+    await button('Capture')!.trigger('click')
+    captured = 'completed'
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(toaster.success).toHaveBeenCalledWith('62.5% sample')
   })
 
   it('asks first, then shows its log and stream in a dialog, and cancels', async () => {

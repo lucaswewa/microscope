@@ -53,4 +53,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P34 | [Scan planners](P34-scan-planners.md) | Done |
 | P35 | [Scan engine with snake and raster workflows](P35-scan-engine.md) | Done |
 | P35b | [Scans in the gallery](P35b-scans-in-gallery.md) | Done |
-| P36 | [Smart z-stacks](P36-smart-stacks.md) | In review |
+| P36 | [Smart z-stacks](P36-smart-stacks.md) | Done |
+| P37 | [Histo smart-spiral and C-Chip workflows](P37-histo-and-c-chip.md) | In review |

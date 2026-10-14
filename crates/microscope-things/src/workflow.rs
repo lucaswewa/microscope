@@ -2,7 +2,8 @@
 //! does at each site. `smart_scan` runs the one chosen, through the
 //! `ScanWorkflow` interface. The snake and raster workflows are one Thing
 //! type, `GridWorkflow`, configured with its order. At each site they take
-//! a smart stack (P36).
+//! a smart stack (P36). The histo and C-Chip workflows (P37) are in
+//! [`crate::histo`] and [`crate::c_chip`], and share what's here.
 
 use std::sync::Arc;
 
@@ -146,10 +147,8 @@ impl GridWorkflow {
     }
 
     async fn begin(&self, start: Position) -> Result<Begun, ActionError> {
-        let (matrix, size) = (ThingRef::thing(&self.mapping).calibrated())
-            .ok_or_else(|| ActionError::handled("calibrate the camera–stage mapping first"))?;
         let overlap = self.overlap.get();
-        let step = Step::from_overlap(&matrix, size, overlap).map_err(ActionError::handled)?;
+        let step = step(&self.mapping, overlap)?;
         let (order, counts) = (self.order, [self.x_count.get(), self.y_count.get()]);
         let planned = match order {
             GridOrder::Snake => Order::Snake,
@@ -182,21 +181,9 @@ impl GridWorkflow {
         })
     }
 
-    /// A smart stack, saving even without focus so every site has an image.
     async fn acquire(&self, folder: String) -> Result<Acquired, ActionError> {
-        let mut stack = self.stack();
-        // Odd and consistent already: `begin` said if it had to change them.
-        let counts = Counts::new(stack.min_images_to_test, stack.images_to_save);
-        (stack.min_images_to_test, stack.images_to_save) = (counts.test as u32, counts.save as u32);
         let dz = self.autofocus_dz.get();
-        let stacked = self
-            .autofocus
-            .run_smart_stack(folder, stack, true, dz)
-            .await?;
-        Ok(Acquired {
-            images: stacked.saved.len() as u32,
-            focus: stacked.success.then_some(stacked.sharpest_z),
-        })
+        smart_stack(&self.autofocus, folder, self.stack(), dz).await
     }
 
     /// The stack settings.
@@ -234,12 +221,49 @@ impl ScanWorkflow for ThingRef<GridWorkflow> {
 
 /// A grid workflow's settings panel.
 fn panel(ui: &ThingUi) -> Vec<UiElement> {
-    vec![
+    let mut panel = vec![
         ui.property("overlap", "Image overlap (0.1–0.7)")
             .step(0.05)
             .into(),
         ui.property("x_count", "Columns").into(),
         ui.property("y_count", "Rows").into(),
+    ];
+    panel.extend(stack_panel(ui));
+    panel
+}
+
+/// The grid's step from `overlap`, through the camera–stage mapping, which
+/// must be calibrated.
+pub(crate) fn step(
+    mapping: &ThingRef<CameraStageMapping>,
+    overlap: f64,
+) -> Result<Step, ActionError> {
+    let (matrix, size) = (ThingRef::thing(mapping).calibrated())
+        .ok_or_else(|| ActionError::handled("calibrate the camera–stage mapping first"))?;
+    Step::from_overlap(&matrix, size, overlap).map_err(ActionError::handled)
+}
+
+/// A smart stack at a site, saving even without focus so every site has an
+/// image. The planner is told of focus only if the stack found it.
+pub(crate) async fn smart_stack(
+    autofocus: &ThingRef<Autofocus>,
+    folder: String,
+    mut stack: StackSettings,
+    autofocus_dz: i64,
+) -> Result<Acquired, ActionError> {
+    // Odd and consistent already: `begin` said if it had to change them.
+    let counts = Counts::new(stack.min_images_to_test, stack.images_to_save);
+    (stack.min_images_to_test, stack.images_to_save) = (counts.test as u32, counts.save as u32);
+    let stacked = (autofocus.run_smart_stack(folder, stack, true, autofocus_dz)).await?;
+    Ok(Acquired {
+        images: stacked.saved.len() as u32,
+        focus: stacked.success.then_some(stacked.sharpest_z),
+    })
+}
+
+/// The settings panel's autofocus, capture and smart stack settings.
+pub(crate) fn stack_panel(ui: &ThingUi) -> [UiElement; 5] {
+    [
         ui.property("autofocus_dz", "Autofocus range (steps)")
             .into(),
         ui.property("capture_mode", "Capture mode").into(),

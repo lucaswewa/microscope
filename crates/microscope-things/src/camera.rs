@@ -114,6 +114,21 @@ pub struct SampleCheck {
     pub message: String,
 }
 
+impl SampleCheck {
+    /// How `detector` judges `image`, a frame at the low-resolution stream's
+    /// size.
+    pub fn of(detector: &dyn BackgroundDetector, image: &RgbImage) -> Result<Self, ActionError> {
+        let coverage = detector.sample_coverage(image)?;
+        let sample = coverage > detector.min_sample_coverage();
+        let only = if sample { "" } else { "only " };
+        Ok(SampleCheck {
+            sample,
+            coverage,
+            message: format!("{only}{coverage:.1}% sample"),
+        })
+    }
+}
+
 /// A picture loaded for the sample: from which file, at which scale, and
 /// the picture, unless it couldn't be loaded.
 struct LoadedPicture {
@@ -561,14 +576,7 @@ impl SimulatedCamera {
     #[action]
     async fn image_is_sample(&self) -> Result<SampleCheck, ActionError> {
         let (_, detector) = self.detector().ok_or_else(no_detector)?;
-        let coverage = detector.sample_coverage(&self.small_frame().await?)?;
-        let sample = coverage > detector.min_sample_coverage();
-        let only = if sample { "" } else { "only " };
-        Ok(SampleCheck {
-            sample,
-            coverage,
-            message: format!("{only}{coverage:.1}% sample"),
-        })
+        SampleCheck::of(&*detector, &self.small_frame().await?)
     }
 
     /// Calibrates the camera. In the simulator: takes the sample out, sets

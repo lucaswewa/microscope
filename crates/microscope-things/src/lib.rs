@@ -13,12 +13,14 @@
 
 pub mod autofocus;
 pub mod background;
+pub mod c_chip;
 pub mod camera;
 pub mod capture;
 pub mod data;
 pub mod fakes;
 pub mod gallery;
 pub mod hardware;
+pub mod histo;
 pub mod illumination;
 pub mod mapping;
 pub mod registry;
