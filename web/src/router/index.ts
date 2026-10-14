@@ -9,6 +9,7 @@ import {
 import { DESTINATIONS } from '@/app/navigation'
 import ConnectView from '@/connection/ConnectView.vue'
 import GalleryPage from '@/gallery/GalleryPage.vue'
+import LoggingPage from '@/logging/LoggingPage.vue'
 import SlideScanPage from '@/scan/SlideScanPage.vue'
 import SequencePage from '@/sequence/SequencePage.vue'
 import ControlPage from '@/views/ControlPage.vue'
@@ -27,6 +28,7 @@ const PAGES: Record<string, Component> = {
   sequence: SequencePage,
   gallery: GalleryPage,
   settings: SettingsPage,
+  logging: LoggingPage,
 }
 
 /** One route per destination in the rail. Settings has sections: `/#/settings/camera`. */
