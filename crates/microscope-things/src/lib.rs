@@ -27,6 +27,7 @@ pub mod registry;
 pub mod smart_scan;
 pub mod stage;
 pub mod stage_measure;
+pub mod stitch;
 pub mod system;
 pub mod ui;
 pub mod workflow;

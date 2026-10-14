@@ -340,7 +340,10 @@ async fn scans_are_listed_downloaded_deleted_and_purged() {
                 },
                 {"label": "Record", "source": "data", "path": "scans/alpha/scan.json", "filename": "alpha.json"}
             ],
-            "card_actions": [],
+            "card_actions": [{
+                "thing": "smart_scan", "action": "stitch_scan", "label": "Stitch",
+                "input": {"scan_name": "alpha"}, "success": {"message": "Stitched."}, "refresh": true
+            }],
             "card_messages": [],
             "delete_endpoint": "gallery/scans/alpha"
         })

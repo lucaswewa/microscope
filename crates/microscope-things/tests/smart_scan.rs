@@ -47,6 +47,9 @@ async fn start(calibrate: bool) -> (Harness<SmartScan>, PathBuf) {
     simulation["speed"] = json!({"x": 1e6, "y": 1e6, "z": 500});
     put(client, "/stage/simulation", simulation).await;
     put(client, "/camera/blob_density", json!(10_000.0)).await;
+    // Stitched only where a test waits for it (P39), so nothing is still
+    // writing as a test removes its data.
+    put(client, "/smart_scan/stitch_automatically", json!(false)).await;
     for (setting, value) in [
         ("x_count", json!(2)),
         ("y_count", json!(2)),
@@ -158,6 +161,10 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     );
     // A scan ends by removing folders without an image (P35b).
     std::fs::create_dir_all(data.join("scans/stale/images")).expect("created");
+    // No live preview before a scan; this one is stitched once it ends (P39).
+    let preview = "/smart_scan/latest_preview_stitch.jpg";
+    assert_eq!(client.get(preview).await.status.as_u16(), 404);
+    put(client, "/smart_scan/stitch_automatically", json!(true)).await;
     let begin = client.get("/stage/position").await.json();
     let record = run(
         client,
@@ -232,6 +239,26 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     assert_eq!(details["scan_phase"], "complete");
     assert_eq!(details["image_count"], 4);
     assert_eq!(details["result"], "success");
+    // The live preview, drawn after the last site, and the final stitch.
+    assert!(details["preview_stitch_time"].is_string(), "{details}");
+    let drawn = client.get(preview).await;
+    assert_eq!(drawn.status.as_u16(), 200);
+    let drawn = image::load_from_memory(&drawn.body).expect("a JPEG");
+    assert!(
+        drawn.width() <= 1024 && drawn.width() > drawn.height(),
+        "{drawn:?}"
+    );
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(60);
+    while !scan.join("stitched/mosaic.dzi").exists() {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "not stitched in a minute"
+        );
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    }
+    let log = std::fs::read_to_string(scan.join("scan.log")).expect("read");
+    assert!(log.contains("Stitched:"), "{log}");
+    put(client, "/smart_scan/stitch_automatically", json!(false)).await;
 
     // The same name again is made unique. In a 2 × 2 raster on a sample
     // tilted in x, the third site starts from the first site's focus, the

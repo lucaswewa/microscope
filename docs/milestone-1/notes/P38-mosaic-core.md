@@ -1,6 +1,6 @@
 # P38: Mosaic and deep-zoom pyramid core
 
-- Status: In review
+- Status: Done
 - Pull request: [#51](https://github.com/lucaswewa/microscope/pull/51)
 - ADRs: [ADR-0030](../../adr/0030-position-based-stitching-with-dzi-output.md)
 - Spec: [phases.md#p38](../phases.md#p38)
