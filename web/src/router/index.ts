@@ -9,6 +9,7 @@ import {
 import { DESTINATIONS } from '@/app/navigation'
 import ConnectView from '@/connection/ConnectView.vue'
 import GalleryPage from '@/gallery/GalleryPage.vue'
+import SlideScanPage from '@/scan/SlideScanPage.vue'
 import ControlPage from '@/views/ControlPage.vue'
 import PlaceholderPage from '@/views/PlaceholderPage.vue'
 import SettingsPage from '@/views/SettingsPage.vue'
@@ -16,7 +17,6 @@ import ViewPage from '@/views/ViewPage.vue'
 
 /** The layout each destination's page will have, which its placeholder shows. */
 const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }> = {
-  'slide-scan': { pane: 'wide', liveImage: true },
   sequence: { pane: 'wide', liveImage: true },
 }
 
@@ -24,6 +24,7 @@ const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }>
 const PAGES: Record<string, Component> = {
   view: ViewPage,
   control: ControlPage,
+  'slide-scan': SlideScanPage,
   gallery: GalleryPage,
   settings: SettingsPage,
 }

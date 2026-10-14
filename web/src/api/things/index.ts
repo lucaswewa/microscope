@@ -97,6 +97,7 @@ export type ThingName =
   | 'camera_stage_mapping'
   | 'stage_measure'
   | 'gallery'
+  | 'smart_scan'
 
 /** Thing `name` as a typed facade, while the app has a client and the Thing's description. */
 export function useThing<T extends ThingName>(name: T) {
@@ -115,3 +116,5 @@ export type AxisScale = Schemas['stage_um_per_step_value']
 export type StreamingMode = Schemas['camera_streaming_mode_value']
 /** One item in the gallery, as its card shows it (ADR-0026). */
 export type GalleryEntry = Schemas['gallery_list_data_value'][number]
+/** How the latest scan is going, or went (ADR-0029). */
+export type LiveScanDetails = NonNullable<Schemas['smart_scan_latest_scan_live_details_value']>

@@ -129,6 +129,14 @@ impl SmartScan {
             .collect()
     }
 
+    /// What each workflow does, by its name, for the app to show.
+    #[property]
+    async fn workflow_descriptions(&self) -> BTreeMap<String, String> {
+        (self.workflows.iter())
+            .map(|(name, workflow)| (name.clone(), workflow.description()))
+            .collect()
+    }
+
     /// The latest scan's details, while it runs and after it ends.
     #[property]
     async fn latest_scan_live_details(&self) -> Option<LiveScanDetails> {

@@ -287,6 +287,11 @@ async fn a_histo_scan_spirals_over_a_tissue_island_and_stops_at_its_edge() {
 async fn a_c_chip_scan_visits_every_site_with_a_stack_on_one_plane() {
     let (harness, data) = start().await;
     let client = harness.client();
+    // What each does, for the Slide Scan tab (P40).
+    let descriptions = client.get("/smart_scan/workflow_descriptions").await.json();
+    let described = |name: &str| descriptions[name].as_str().unwrap_or_default().to_owned();
+    assert!(described("c_chip_workflow").starts_with("For a C-Chip"));
+    assert!(described("histo_scan_workflow").starts_with("For tissue sections"));
     put(
         client,
         "/smart_scan/workflow_name",

@@ -34,7 +34,19 @@ export default defineConfig({
   projects: [
     // Calibrates the server first, so the calibration wizard stays shut.
     { name: 'setup', testMatch: /e2e\/calibrate\.setup\.ts$/ },
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, dependencies: ['setup'] },
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+      testIgnore: /e2e\/scan\.spec\.ts$/,
+    },
+    // A scan holds the microscope for a while, so it runs once the others have finished.
+    {
+      name: 'scan',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['chromium'],
+      testMatch: /e2e\/scan\.spec\.ts$/,
+    },
   ],
   webServer: {
     command: serverCommand,

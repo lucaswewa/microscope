@@ -19,6 +19,11 @@ use crate::workflow::{self, Acquired, Begun, ScanWorkflow};
 
 /// What the app calls it.
 const NAME: &str = "Histo scan";
+/// What it does, for the app to show.
+const DESCRIPTION: &str = "For tissue sections: spirals out from where the stage is, \
+    imaging the sample and skipping the empty slide, until the sample is surrounded by \
+    background or the maximum range is reached. A smart z-stack at each site keeps the \
+    sharpest image.";
 
 /// A scan of a tissue section: see the module's description.
 #[derive(Thing)]
@@ -201,6 +206,10 @@ impl HistoScanWorkflow {
 impl ScanWorkflow for ThingRef<HistoScanWorkflow> {
     fn display_name(&self) -> String {
         NAME.to_owned()
+    }
+
+    fn description(&self) -> String {
+        DESCRIPTION.to_owned()
     }
 
     fn ready(&self) -> bool {

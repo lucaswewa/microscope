@@ -159,6 +159,15 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
             .json(),
         json!({"snake_workflow": "Snake scan", "raster_workflow": "Raster scan"})
     );
+    // What each does, for the Slide Scan tab (P40).
+    let descriptions = client.get("/smart_scan/workflow_descriptions").await.json();
+    for (name, order) in [
+        ("snake_workflow", "turning back"),
+        ("raster_workflow", "each row"),
+    ] {
+        let description = descriptions[name].as_str().unwrap_or_default();
+        assert!(description.contains(order), "{descriptions}");
+    }
     // A scan ends by removing folders without an image (P35b).
     std::fs::create_dir_all(data.join("scans/stale/images")).expect("created");
     // No live preview before a scan; this one is stitched once it ends (P39).
