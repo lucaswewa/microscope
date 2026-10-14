@@ -10417,6 +10417,25 @@
         }
       }
     },
+    "/api/v1/sequence/latest_sequence_live_details": {
+      "get": {
+        "summary": "The latest sequence's details, while it runs and after it ends.",
+        "description": "## The latest sequence's details, while it runs and after it ends.\n\nThe latest sequence's details, while it runs and after it ends.",
+        "operationId": "get_property_api_v1_sequence_latest_sequence_live_details_get",
+        "responses": {
+          "200": {
+            "description": "Value of latest_sequence_live_details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_latest_sequence_live_details_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/sequence/run_sequence": {
       "get": {
         "summary": "All invocations of run_sequence.",
@@ -18798,6 +18817,76 @@
       "sequence_duration_value": {
         "type": "number",
         "minimum": 0.0
+      },
+      "sequence_latest_sequence_live_details_value": {
+        "oneOf": [
+          {
+            "description": "How the latest sequence is going, or went.",
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Its name, which is its folder's.",
+                "type": "string"
+              },
+              "points": {
+                "description": "How many time points its plan has.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "image_count": {
+                "description": "How many images it has saved.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "skipped": {
+                "description": "How many time points it has skipped.",
+                "type": "integer",
+                "minimum": 0
+              },
+              "duration_seconds": {
+                "description": "How long it has run, in seconds.",
+                "type": "number"
+              },
+              "last_point_seconds": {
+                "description": "When its last time point is due, in seconds from its start.",
+                "type": "number"
+              },
+              "latest_image": {
+                "description": "The image it saved last, by its path in the data folder.",
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "result": {
+                "description": "How it ended: `success`, `cancelled`, or the error. Empty while it runs.",
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "points",
+              "image_count",
+              "skipped",
+              "duration_seconds",
+              "last_point_seconds"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "sequence_run_sequence_input": {
         "type": "object",

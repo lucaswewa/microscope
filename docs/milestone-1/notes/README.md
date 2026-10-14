@@ -58,4 +58,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P38 | [Mosaic and deep-zoom pyramid core](P38-mosaic-core.md) | Done |
 | P39 | [Live and final stitching](P39-stitching.md) | Done |
 | P40 | [Slide Scan tab](P40-slide-scan.md) | Done |
-| P41 | [Sequence engine (MDA-ready)](P41-sequence-engine.md) | In review |
+| P41 | [Sequence engine (MDA-ready)](P41-sequence-engine.md) | Done |
+| P42 | [Sequence tab](P42-sequence-tab.md) | In review |

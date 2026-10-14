@@ -831,7 +831,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P42: Sequence tab
 
 **Goal.** Set up, run and follow a sequence.
-**Depends on** P24b, P41 · **Size** M · **ADRs** —
+**Depends on** P24b, P41 · **Size** L · **ADRs** —
 
 **Scope**
 - A form: total duration as H:M:S, the interval, and an autofocus toggle with its range.

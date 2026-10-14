@@ -1,6 +1,6 @@
 # P41: Sequence engine (MDA-ready)
 
-- Status: In review
+- Status: Done
 - Pull request: [#54](https://github.com/lucaswewa/microscope/pull/54)
 - ADRs: [ADR-0031](../../adr/0031-sequence-model.md)
 - Spec: [phases.md#p41](../phases.md#p41)

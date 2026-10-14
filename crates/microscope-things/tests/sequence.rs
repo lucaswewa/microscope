@@ -1,7 +1,8 @@
 //! Sequences (P41) on the simulator: a timelapse captures at each time point
 //! into its folder, with a record and a gallery card; points that can't run
 //! in time are skipped; cancelling keeps the images already captured; and
-//! only plain names, and one sequence at a time.
+//! only plain names, and one sequence at a time. The latest sequence's live
+//! details follow each (P42).
 
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -63,6 +64,10 @@ async fn run(client: &TestClient, action: &str, input: Value) -> Value {
     finish(client, &invocation).await
 }
 
+async fn details(client: &TestClient) -> Value {
+    (client.get("/sequence/latest_sequence_live_details").await).json()
+}
+
 fn record(folder: &Path) -> Value {
     let bytes = std::fs::read(folder.join("sequence.json")).expect("read");
     serde_json::from_slice(&bytes).expect("JSON")
@@ -82,7 +87,8 @@ fn files(folder: &Path) -> Vec<String> {
 async fn a_timelapse_captures_at_each_point_with_its_record_and_card() {
     let (harness, data) = start().await;
     let client = harness.client();
-    for (setting, value) in [("dt", 1.0), ("duration", 2.0)] {
+    // Its last point is at 2 s, before its end.
+    for (setting, value) in [("dt", 1.0), ("duration", 2.5)] {
         put(client, &format!("/sequence/{setting}"), json!(value)).await;
     }
     let began = Instant::now();
@@ -112,13 +118,25 @@ async fn a_timelapse_captures_at_each_point_with_its_record_and_card() {
     let saved = record(&folder);
     assert_eq!(
         saved["plan"],
-        json!({"dt": 1.0, "duration": 2.0, "autofocus_enabled": false, "autofocus_dz": 2000})
+        json!({"dt": 1.0, "duration": 2.5, "autofocus_enabled": false, "autofocus_dz": 2000})
     );
     assert_eq!(
         (saved["image_count"].as_u64(), saved["skipped"].as_u64()),
         (Some(3), Some(0))
     );
     assert_eq!(saved["result"], "success");
+    let live = details(client).await;
+    assert_eq!(
+        (&live["name"], &live["points"], &live["image_count"]),
+        (&json!("lapse"), &json!(3), &json!(3))
+    );
+    assert_eq!(
+        (&live["skipped"], &live["result"]),
+        (&json!(0), &json!("success"))
+    );
+    assert_eq!(live["last_point_seconds"], 2.0);
+    assert_eq!(live["latest_image"], "sequences/lapse/image_00002.jpeg");
+    assert!(live["duration_seconds"].as_f64().unwrap() >= 2.0, "{live}");
 
     // Its card, and its ZIP.
     let list = client.get("/gallery/list_data").await.json();
@@ -197,6 +215,11 @@ async fn points_that_cant_run_in_time_are_skipped() {
         (saved["image_count"].as_u64(), saved["skipped"].as_u64()),
         (Some(2), Some(7))
     );
+    let live = details(client).await;
+    assert_eq!(
+        (&live["points"], &live["image_count"], &live["skipped"]),
+        (&json!(9), &json!(2), &json!(7))
+    );
     harness.stop().await;
     let _ = std::fs::remove_dir_all(&data);
 }
@@ -214,6 +237,20 @@ async fn cancelling_keeps_the_images_captured_and_one_runs_at_a_time() {
         assert!(Instant::now() < deadline, "no second image in 30 s");
         tokio::time::sleep(Duration::from_millis(50)).await;
     }
+    // Its details while it runs.
+    let live = details(client).await;
+    assert_eq!(
+        (&live["name"], &live["result"]),
+        (&json!("long"), &Value::Null)
+    );
+    assert_eq!(
+        (&live["points"], &live["last_point_seconds"]),
+        (&json!(121), &json!(60.0))
+    );
+    assert!(live["image_count"].as_u64().unwrap() >= 1, "{live}");
+    let latest = live["latest_image"].as_str().expect("an image");
+    assert!(data.join(latest).is_file(), "{latest}");
+    assert!(live["duration_seconds"].as_f64().unwrap() >= 0.5, "{live}");
     // Another is refused, and the gallery won't delete this one.
     let second = run(client, "/sequence/run_sequence", json!({})).await;
     assert_eq!(second["status"], "error", "{second}");
@@ -227,6 +264,11 @@ async fn cancelling_keeps_the_images_captured_and_one_runs_at_a_time() {
     assert_eq!(saved["result"], "cancelled");
     let count = saved["image_count"].as_u64().unwrap();
     assert!(count >= 2, "{count} images");
+    let live = details(client).await;
+    assert_eq!(
+        (&live["result"], &live["image_count"]),
+        (&json!("cancelled"), &json!(count))
+    );
     assert_eq!(
         files(&folder).len() as u64,
         2 * count,
@@ -240,6 +282,7 @@ async fn cancelling_keeps_the_images_captured_and_one_runs_at_a_time() {
 async fn only_plain_names() {
     let (harness, data) = start().await;
     let client = harness.client();
+    assert_eq!(details(client).await, Value::Null);
     for name in ["../out", "a/b", ".hidden"] {
         let refused = run(client, "/sequence/run_sequence", json!({"name": name})).await;
         assert!(
@@ -250,6 +293,8 @@ async fn only_plain_names() {
         assert_eq!(zip["status"], "error", "{name}: {zip}");
     }
     assert!(!data.join("out").exists());
+    // Refused before they began, they leave no details.
+    assert_eq!(details(client).await, Value::Null);
     harness.stop().await;
     let _ = std::fs::remove_dir_all(&data);
 }

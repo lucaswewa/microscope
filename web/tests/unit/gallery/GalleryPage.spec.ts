@@ -1,5 +1,6 @@
 import { type DOMWrapper, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { Router } from 'vue-router'
 
 import type { GalleryEntry } from '@/api/things'
 import type { ThingDescription } from '@/api/wot/td'
@@ -80,6 +81,7 @@ let fullScreen: (active: boolean) => void
 const setFullScreen = vi.fn(async () => {})
 let received: Received[]
 let wrapper: VueWrapper | undefined
+let router: Router
 const saveFile = vi.fn(async () => {})
 
 beforeEach(() => {
@@ -119,14 +121,14 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-async function open() {
+async function open(path = '/gallery') {
   const fullscreen = {
     active: () => false,
     set: setFullScreen,
     watch: (onChange: (active: boolean) => void) => ((fullScreen = onChange), () => {}),
   }
   const host = { ...createBrowserHost(), saveFile, fullscreen }
-  ;({ wrapper } = await mountApp('/gallery', { [hostKey]: host }))
+  ;({ wrapper, router } = await mountApp(path, { [hostKey]: host }))
   await useConnectionStore().connect({ kind: 'local' })
   await vi.advanceTimersByTimeAsync(0)
   await flushPromises()
@@ -313,6 +315,16 @@ describe('the viewer', () => {
     await flushPromises()
     expect(viewer.destroy).toHaveBeenCalledOnce()
     expect(document.querySelector('[role="dialog"]')).toBeNull()
+  })
+
+  it('opens the item a link names, and forgets the link once closed', async () => {
+    await open('/gallery?view=captures/capture-2.jpeg')
+    const dialog = document.querySelector<HTMLElement>('[role="dialog"]')!
+    expect(dialog.querySelector('h2')!.textContent).toBe('capture-2')
+    press('Close')
+    await flushPromises()
+    expect(document.querySelector('[role="dialog"]')).toBeNull()
+    expect(router.currentRoute.value.fullPath).toBe('/gallery')
   })
 
   it('shows a deep-zoom image, and a sequence with a slider', async () => {
