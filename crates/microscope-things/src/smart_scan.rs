@@ -86,7 +86,7 @@ pub struct SmartScan {
     #[slot(default = "stage")]
     stage: Slot<dyn StageApi>,
     /// The workflow to scan with, by its Thing's name.
-    #[setting(default = "snake_workflow".to_owned())]
+    #[setting(default = "histo_scan_workflow".to_owned())]
     workflow_name: Prop<String>,
     /// Held while a scan runs, so only one does.
     running: tokio::sync::Mutex<()>,

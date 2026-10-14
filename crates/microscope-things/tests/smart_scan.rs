@@ -20,8 +20,9 @@ use microscope_things::smart_scan::SmartScan;
 use microscope_things::stage::SimulatedStage;
 use microscope_things::workflow::{GridOrder, GridWorkflow, GridWorkflowConfig};
 
-/// A microscope with both grid workflows and a calibrated mapping, its data
-/// in a new folder, and a 2 × 2 snake chosen.
+/// A microscope with both grid workflows, its data in a new folder, and a
+/// 2 × 2 snake. If `calibrate`, the mapping is calibrated and the snake
+/// chosen; the default, the histo workflow (P37), isn't configured here.
 async fn start(calibrate: bool) -> (Harness<SmartScan>, PathBuf) {
     static NEXT: AtomicU32 = AtomicU32::new(0);
     let n = NEXT.fetch_add(1, Ordering::Relaxed);
@@ -59,6 +60,7 @@ async fn start(calibrate: bool) -> (Harness<SmartScan>, PathBuf) {
     if calibrate {
         let calibrated = run(client, "/camera_stage_mapping/calibrate_xy", json!({})).await;
         assert_eq!(calibrated["status"], "completed", "{calibrated}");
+        put(client, "/smart_scan/workflow_name", json!("snake_workflow")).await;
     }
     (harness, data)
 }
@@ -355,6 +357,15 @@ async fn a_scan_that_fails_goes_back_to_the_start() {
 async fn a_scan_needs_a_ready_workflow_and_a_plain_name() {
     let (harness, data) = start(false).await;
     let client = harness.client();
+    // The default workflow isn't configured here.
+    let unknown = run(client, "/smart_scan/sample_scan", json!({})).await;
+    assert!(
+        unknown["error"]
+            .to_string()
+            .contains("no workflow `histo_scan_workflow`"),
+        "{unknown}"
+    );
+    put(client, "/smart_scan/workflow_name", json!("snake_workflow")).await;
     let refused = run(client, "/smart_scan/sample_scan", json!({})).await;
     assert!(
         refused["error"]
@@ -362,19 +373,10 @@ async fn a_scan_needs_a_ready_workflow_and_a_plain_name() {
             .contains("Snake scan isn't ready"),
         "{refused}"
     );
-    put(client, "/smart_scan/workflow_name", json!("histo_workflow")).await;
-    let unknown = run(client, "/smart_scan/sample_scan", json!({})).await;
-    assert!(
-        unknown["error"]
-            .to_string()
-            .contains("no workflow `histo_workflow`"),
-        "{unknown}"
-    );
     // Nothing was scanned, so nothing was made.
     assert!(!data.join("scans").exists());
     let calibrated = run(client, "/camera_stage_mapping/calibrate_xy", json!({})).await;
     assert_eq!(calibrated["status"], "completed", "{calibrated}");
-    put(client, "/smart_scan/workflow_name", json!("snake_workflow")).await;
     for name in ["../out", "a/b", ".hidden", "c:d"] {
         let refused = run(
             client,

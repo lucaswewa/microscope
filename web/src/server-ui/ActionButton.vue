@@ -33,6 +33,13 @@ const thing = computed(() => {
 })
 const running = shallowRef<Invocation>()
 const log = ref<string[]>([])
+
+/** An action's output, in words: its text, its message if it has one, or its JSON. */
+function said(output: unknown): string {
+  if (typeof output === 'string') return output
+  const message = (output as { message?: unknown } | null)?.message
+  return typeof message === 'string' ? message : JSON.stringify(output)
+}
 const inDialog = computed(() => props.button.progress === 'dialog')
 const cancellable = computed(() => props.button.cancellable !== false)
 
@@ -47,8 +54,7 @@ async function run() {
   try {
     running.value = await target.invokeAction(action, input ?? {}, { onUpdate })
     const output = await running.value.output()
-    if (success === 'output')
-      toast.success(typeof output === 'string' ? output : JSON.stringify(output))
+    if (success === 'output') toast.success(said(output))
     else if (success) toast.success(success.message)
     if (props.button.refresh) emit('refresh')
   } catch (error) {

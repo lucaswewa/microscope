@@ -1,6 +1,6 @@
 # P36: Smart z-stacks
 
-- Status: In review
+- Status: Done
 - Pull request: [#49](https://github.com/lucaswewa/microscope/pull/49)
 - ADRs: none new
 - Spec: [phases.md#p36](../phases.md#p36)

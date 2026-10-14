@@ -18,16 +18,19 @@
 //! | `stage_measure` | `microscope.stage_measure:StageMeasure` | P30 (here) |
 //! | `gallery` | `microscope.gallery:Gallery` | P31 (here) |
 //! | `smart_scan`, `snake_workflow`, `raster_workflow` | `microscope.smart_scan:SmartScan`, `microscope.workflows:GridWorkflow` (with its `order`) | P35 (here) |
+//! | `histo_scan_workflow`, `c_chip_workflow` | `microscope.workflows:HistoScanWorkflow`, `microscope.workflows:CChipWorkflow` | P37 (here) |
 //!
-//! and later the other scan workflows (P37) and
-//! `sequence` (P41). The test fakes ([`crate::fakes`]) are never here.
+//! and later `sequence` (P41). The test fakes ([`crate::fakes`]) are never
+//! here.
 
 use teta_wot::server::ThingRegistry;
 
 use crate::autofocus::Autofocus;
 use crate::background::{ChannelDeviationDetector, ColourChannelDetector};
+use crate::c_chip::CChipWorkflow;
 use crate::camera::SimulatedCamera;
 use crate::gallery::Gallery;
+use crate::histo::HistoScanWorkflow;
 use crate::illumination::SimulatedIllumination;
 use crate::mapping::CameraStageMapping;
 use crate::smart_scan::SmartScan;
@@ -50,5 +53,7 @@ pub fn registry() -> ThingRegistry {
         .register::<StageMeasure>("microscope.stage_measure:StageMeasure")
         .register::<Gallery>("microscope.gallery:Gallery")
         .register::<GridWorkflow>("microscope.workflows:GridWorkflow")
+        .register::<HistoScanWorkflow>("microscope.workflows:HistoScanWorkflow")
+        .register::<CChipWorkflow>("microscope.workflows:CChipWorkflow")
         .register::<SmartScan>("microscope.smart_scan:SmartScan")
 }

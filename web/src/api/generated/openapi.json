@@ -7862,6 +7862,1418 @@
         }
       }
     },
+    "/api/v1/histo_scan_workflow/autofocus_dz": {
+      "get": {
+        "summary": "How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_autofocus_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_autofocus_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far autofocus sweeps, in steps.",
+        "description": "## How far autofocus sweeps, in steps.\n\nHow far autofocus sweeps, in steps.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_autofocus_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_autofocus_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/autofocus_dz/reset": {
+      "post": {
+        "summary": "Reset How far autofocus sweeps, in steps..",
+        "description": "## Reset How far autofocus sweeps, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_autofocus_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/capture_mode": {
+      "get": {
+        "summary": "How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_capture_mode_get",
+        "responses": {
+          "200": {
+            "description": "Value of capture_mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_capture_mode_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_capture_mode_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_capture_mode_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/capture_mode/reset": {
+      "post": {
+        "summary": "Reset How each image is captured..",
+        "description": "## Reset How each image is captured.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_capture_mode_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/check_background": {
+      "get": {
+        "summary": "All invocations of check_background.",
+        "description": "List all the invocations of check_background that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_histo_scan_workflow_check_background_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of check_background.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Whether what the camera sees now holds sample, and how much of it.",
+        "description": "## Whether what the camera sees now holds sample, and how much of it.\n\nWhether what the camera sees now holds sample, and how much of it.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_histo_scan_workflow_check_background_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_check_background_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_check_background_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_check_background_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/display_name": {
+      "get": {
+        "summary": "What the app calls it.",
+        "description": "## What the app calls it.\n\nWhat the app calls it.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_display_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of display_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_display_name_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/equal_distances": {
+      "get": {
+        "summary": "Whether the steps in x and y are both the smaller of the two.",
+        "description": "## Whether the steps in x and y are both the smaller of the two.\n\nWhether the steps in x and y are both the smaller of the two.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_equal_distances_get",
+        "responses": {
+          "200": {
+            "description": "Value of equal_distances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_equal_distances_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Whether the steps in x and y are both the smaller of the two.",
+        "description": "## Whether the steps in x and y are both the smaller of the two.\n\nWhether the steps in x and y are both the smaller of the two.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_equal_distances_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_equal_distances_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/equal_distances/reset": {
+      "post": {
+        "summary": "Reset Whether the steps in x and y are both the smaller of the two..",
+        "description": "## Reset Whether the steps in x and y are both the smaller of the two.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_equal_distances_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/max_range": {
+      "get": {
+        "summary": "The furthest a site may be from the start, in steps.",
+        "description": "## The furthest a site may be from the start, in steps.\n\nThe furthest a site may be from the start, in steps.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_max_range_get",
+        "responses": {
+          "200": {
+            "description": "Value of max_range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_max_range_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The furthest a site may be from the start, in steps.",
+        "description": "## The furthest a site may be from the start, in steps.\n\nThe furthest a site may be from the start, in steps.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_max_range_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_max_range_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/max_range/reset": {
+      "post": {
+        "summary": "Reset The furthest a site may be from the start, in steps..",
+        "description": "## Reset The furthest a site may be from the start, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_max_range_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/overlap": {
+      "get": {
+        "summary": "The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_overlap_get",
+        "responses": {
+          "200": {
+            "description": "Value of overlap",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_overlap_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The share of each image that its neighbours overlap.",
+        "description": "## The share of each image that its neighbours overlap.\n\nThe share of each image that its neighbours overlap.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_overlap_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_overlap_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/overlap/reset": {
+      "post": {
+        "summary": "Reset The share of each image that its neighbours overlap..",
+        "description": "## Reset The share of each image that its neighbours overlap.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_overlap_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/ready": {
+      "get": {
+        "summary": "Whether it can start: once the camera–stage mapping is calibrated",
+        "description": "## Whether it can start: once the camera–stage mapping is calibrated\n\nWhether it can start: once the camera–stage mapping is calibrated\nand, while it skips background, its detector has a background.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/set_background": {
+      "get": {
+        "summary": "All invocations of set_background.",
+        "description": "List all the invocations of set_background that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_histo_scan_workflow_set_background_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of set_background.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Sets the background detector's background from a frame of what the",
+        "description": "## Sets the background detector's background from a frame of what the\n\nSets the background detector's background from a frame of what the\ncamera sees now, which should be the empty slide.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_histo_scan_workflow_set_background_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_set_background_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_set_background_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_set_background_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the Slide Scan tab (ADR-0024).",
+        "operationId": "settings_ui_api_v1_histo_scan_workflow_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/skip_background": {
+      "get": {
+        "summary": "Whether sites that look like background are skipped.",
+        "description": "## Whether sites that look like background are skipped.\n\nWhether sites that look like background are skipped.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_skip_background_get",
+        "responses": {
+          "200": {
+            "description": "Value of skip_background",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_skip_background_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Whether sites that look like background are skipped.",
+        "description": "## Whether sites that look like background are skipped.\n\nWhether sites that look like background are skipped.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_skip_background_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_skip_background_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/skip_background/reset": {
+      "post": {
+        "summary": "Reset Whether sites that look like background are skipped..",
+        "description": "## Reset Whether sites that look like background are skipped.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_skip_background_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_dz": {
+      "get": {
+        "summary": "The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_stack_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_stack_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_stack_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_stack_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_dz/reset": {
+      "post": {
+        "summary": "Reset The distance between a stack's images, in steps..",
+        "description": "## Reset The distance between a stack's images, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_stack_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_images_to_save": {
+      "get": {
+        "summary": "How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_stack_images_to_save_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_images_to_save",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_stack_images_to_save_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many images of each stack to save: odd.",
+        "description": "## How many images of each stack to save: odd.\n\nHow many images of each stack to save: odd.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_stack_images_to_save_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_stack_images_to_save_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_images_to_save/reset": {
+      "post": {
+        "summary": "Reset How many images of each stack to save: odd..",
+        "description": "## Reset How many images of each stack to save: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_stack_images_to_save_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_min_images_to_test": {
+      "get": {
+        "summary": "How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "get_property_api_v1_histo_scan_workflow_stack_min_images_to_test_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_min_images_to_test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/histo_scan_workflow_stack_min_images_to_test_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many of a stack's latest images are judged together: odd.",
+        "description": "## How many of a stack's latest images are judged together: odd.\n\nHow many of a stack's latest images are judged together: odd.",
+        "operationId": "set_property_api_v1_histo_scan_workflow_stack_min_images_to_test_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/histo_scan_workflow_stack_min_images_to_test_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/stack_min_images_to_test/reset": {
+      "post": {
+        "summary": "Reset How many of a stack's latest images are judged together: odd..",
+        "description": "## Reset How many of a stack's latest images are judged together: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_histo_scan_workflow_stack_min_images_to_test_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `histo_scan_workflow` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_histo_scan_workflow_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `histo_scan_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_histo_scan_workflow_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `histo_scan_workflow`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_histo_scan_workflow_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/histo_scan_workflow/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `histo_scan_workflow`: its properties, actions and events, and how to use them.",
+        "operationId": "things_histo_scan_workflow_api_v1_histo_scan_workflow__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/autofocus_dz": {
+      "get": {
+        "summary": "How far autofocus sweeps at the start, in steps.",
+        "description": "## How far autofocus sweeps at the start, in steps.\n\nHow far autofocus sweeps at the start, in steps.",
+        "operationId": "get_property_api_v1_c_chip_workflow_autofocus_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_autofocus_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far autofocus sweeps at the start, in steps.",
+        "description": "## How far autofocus sweeps at the start, in steps.\n\nHow far autofocus sweeps at the start, in steps.",
+        "operationId": "set_property_api_v1_c_chip_workflow_autofocus_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/c_chip_workflow_autofocus_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/autofocus_dz/reset": {
+      "post": {
+        "summary": "Reset How far autofocus sweeps at the start, in steps..",
+        "description": "## Reset How far autofocus sweeps at the start, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_c_chip_workflow_autofocus_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/capture_mode": {
+      "get": {
+        "summary": "How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "get_property_api_v1_c_chip_workflow_capture_mode_get",
+        "responses": {
+          "200": {
+            "description": "Value of capture_mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_capture_mode_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How each image is captured.",
+        "description": "## How each image is captured.\n\nHow each image is captured.",
+        "operationId": "set_property_api_v1_c_chip_workflow_capture_mode_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/c_chip_workflow_capture_mode_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/capture_mode/reset": {
+      "post": {
+        "summary": "Reset How each image is captured..",
+        "description": "## Reset How each image is captured.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_c_chip_workflow_capture_mode_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/display_name": {
+      "get": {
+        "summary": "What the app calls it.",
+        "description": "## What the app calls it.\n\nWhat the app calls it.",
+        "operationId": "get_property_api_v1_c_chip_workflow_display_name_get",
+        "responses": {
+          "200": {
+            "description": "Value of display_name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_display_name_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/ready": {
+      "get": {
+        "summary": "Whether it can start: once the camera–stage mapping is calibrated.",
+        "description": "## Whether it can start: once the camera–stage mapping is calibrated.\n\nWhether it can start: once the camera–stage mapping is calibrated.",
+        "operationId": "get_property_api_v1_c_chip_workflow_ready_get",
+        "responses": {
+          "200": {
+            "description": "Value of ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_ready_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/settings_ui": {
+      "get": {
+        "summary": "Settings Ui",
+        "description": "The settings, described for the Slide Scan tab (ADR-0024).",
+        "operationId": "settings_ui_api_v1_c_chip_workflow_settings_ui_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/stack_dz": {
+      "get": {
+        "summary": "The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "get_property_api_v1_c_chip_workflow_stack_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_stack_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The distance between a stack's images, in steps.",
+        "description": "## The distance between a stack's images, in steps.\n\nThe distance between a stack's images, in steps.",
+        "operationId": "set_property_api_v1_c_chip_workflow_stack_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/c_chip_workflow_stack_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/stack_dz/reset": {
+      "post": {
+        "summary": "Reset The distance between a stack's images, in steps..",
+        "description": "## Reset The distance between a stack's images, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_c_chip_workflow_stack_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/stack_images_to_save": {
+      "get": {
+        "summary": "How many images each site's stack takes, all saved: odd.",
+        "description": "## How many images each site's stack takes, all saved: odd.\n\nHow many images each site's stack takes, all saved: odd.",
+        "operationId": "get_property_api_v1_c_chip_workflow_stack_images_to_save_get",
+        "responses": {
+          "200": {
+            "description": "Value of stack_images_to_save",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/c_chip_workflow_stack_images_to_save_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How many images each site's stack takes, all saved: odd.",
+        "description": "## How many images each site's stack takes, all saved: odd.\n\nHow many images each site's stack takes, all saved: odd.",
+        "operationId": "set_property_api_v1_c_chip_workflow_stack_images_to_save_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/c_chip_workflow_stack_images_to_save_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/stack_images_to_save/reset": {
+      "post": {
+        "summary": "Reset How many images each site's stack takes, all saved: odd..",
+        "description": "## Reset How many images each site's stack takes, all saved: odd.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_c_chip_workflow_stack_images_to_save_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `c_chip_workflow` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_c_chip_workflow_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `c_chip_workflow` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_c_chip_workflow_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/c_chip_workflow/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `c_chip_workflow`: its properties, actions and events, and how to use them.",
+        "operationId": "things_c_chip_workflow_api_v1_c_chip_workflow__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/smart_scan/all_workflow_names": {
       "get": {
         "summary": "The workflows' names.",
@@ -15142,6 +16554,348 @@
       "raster_workflow_y_count_value": {
         "type": "integer",
         "minimum": 1
+      },
+      "histo_scan_workflow_autofocus_dz_value": {
+        "type": "integer",
+        "minimum": 400,
+        "maximum": 3000
+      },
+      "histo_scan_workflow_capture_mode_value": {
+        "description": "How a capture is taken.",
+        "oneOf": [
+          {
+            "description": "At the camera's full resolution.",
+            "const": "standard",
+            "type": "string"
+          },
+          {
+            "description": "At the stream's size, without changing the stream.",
+            "const": "quick",
+            "type": "string"
+          }
+        ]
+      },
+      "histo_scan_workflow_check_background_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "histo_scan_workflow_check_background_output": {
+        "description": "Whether an image holds sample, as the background detector judges.",
+        "type": "object",
+        "properties": {
+          "sample": {
+            "description": "Whether it holds sample.",
+            "type": "boolean"
+          },
+          "coverage": {
+            "description": "The percentage of it that does.",
+            "type": "number"
+          },
+          "message": {
+            "description": "Both, in words: \"62.5% sample\", or \"only 3.1% sample\".",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sample",
+          "coverage",
+          "message"
+        ]
+      },
+      "histo_scan_workflow_check_background_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/histo_scan_workflow_check_background_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/histo_scan_workflow_check_background_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "histo_scan_workflow_display_name_value": {
+        "type": "string"
+      },
+      "histo_scan_workflow_equal_distances_value": {
+        "type": "boolean"
+      },
+      "histo_scan_workflow_max_range_value": {
+        "type": "integer",
+        "minimum": 1000
+      },
+      "histo_scan_workflow_overlap_value": {
+        "type": "number",
+        "minimum": 0.1,
+        "maximum": 0.7
+      },
+      "histo_scan_workflow_ready_value": {
+        "type": "boolean"
+      },
+      "histo_scan_workflow_set_background_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "histo_scan_workflow_set_background_output": {
+        "type": "null"
+      },
+      "histo_scan_workflow_set_background_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/histo_scan_workflow_set_background_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/histo_scan_workflow_set_background_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "histo_scan_workflow_skip_background_value": {
+        "type": "boolean"
+      },
+      "histo_scan_workflow_stack_dz_value": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 400
+      },
+      "histo_scan_workflow_stack_images_to_save_value": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
+      },
+      "histo_scan_workflow_stack_min_images_to_test_value": {
+        "type": "integer",
+        "minimum": 3,
+        "maximum": 9
+      },
+      "c_chip_workflow_autofocus_dz_value": {
+        "type": "integer",
+        "minimum": 400,
+        "maximum": 3000
+      },
+      "c_chip_workflow_capture_mode_value": {
+        "description": "How a capture is taken.",
+        "oneOf": [
+          {
+            "description": "At the camera's full resolution.",
+            "const": "standard",
+            "type": "string"
+          },
+          {
+            "description": "At the stream's size, without changing the stream.",
+            "const": "quick",
+            "type": "string"
+          }
+        ]
+      },
+      "c_chip_workflow_display_name_value": {
+        "type": "string"
+      },
+      "c_chip_workflow_ready_value": {
+        "type": "boolean"
+      },
+      "c_chip_workflow_stack_dz_value": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 400
+      },
+      "c_chip_workflow_stack_images_to_save_value": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9
       },
       "smart_scan_all_workflow_names_value": {
         "type": "array",
