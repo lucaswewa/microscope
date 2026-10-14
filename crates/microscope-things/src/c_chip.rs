@@ -18,6 +18,10 @@ use crate::workflow::{self, Acquired, Begun, ScanWorkflow};
 
 /// What the app calls it.
 const NAME: &str = "C-Chip scan";
+/// What it does, for the app to show.
+const DESCRIPTION: &str = "For a C-Chip counting chamber: images its well in a fixed grid \
+    of 5 columns and 7 rows, from where the stage is as its corner, with a stack of images \
+    at each site, all on the starting focus.";
 
 /// A scan of a C-Chip's well: see the module's description.
 #[derive(Thing)]
@@ -133,6 +137,10 @@ impl CChipWorkflow {
 impl ScanWorkflow for ThingRef<CChipWorkflow> {
     fn display_name(&self) -> String {
         NAME.to_owned()
+    }
+
+    fn description(&self) -> String {
+        DESCRIPTION.to_owned()
     }
 
     fn ready(&self) -> bool {

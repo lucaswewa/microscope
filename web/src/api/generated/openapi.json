@@ -9813,6 +9813,25 @@
         }
       }
     },
+    "/api/v1/smart_scan/workflow_descriptions": {
+      "get": {
+        "summary": "What each workflow does, by its name, for the app to show.",
+        "description": "## What each workflow does, by its name, for the app to show.\n\nWhat each workflow does, by its name, for the app to show.",
+        "operationId": "get_property_api_v1_smart_scan_workflow_descriptions_get",
+        "responses": {
+          "200": {
+            "description": "Value of workflow_descriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_workflow_descriptions_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/smart_scan/workflow_display_names": {
       "get": {
         "summary": "What the app calls each workflow, by its name.",
@@ -18050,6 +18069,12 @@
           "input",
           "log"
         ]
+      },
+      "smart_scan_workflow_descriptions_value": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
       },
       "smart_scan_workflow_display_names_value": {
         "type": "object",

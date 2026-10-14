@@ -42,6 +42,8 @@ pub struct Acquired {
 pub trait ScanWorkflow: Send + Sync {
     /// What the app calls it.
     fn display_name(&self) -> String;
+    /// What it does, in a sentence or two, for the app to show.
+    fn description(&self) -> String;
     /// Whether it can start.
     fn ready(&self) -> bool;
     /// Starts a scan with the stage at `start`: it refuses if it can't, and
@@ -146,6 +148,21 @@ impl GridWorkflow {
         }
     }
 
+    fn description(&self) -> &'static str {
+        match self.order {
+            GridOrder::Snake => {
+                "Images a grid of columns and rows, from where the stage is as its first \
+                 corner, turning back at the end of each row. A smart z-stack at each site \
+                 keeps the sharpest image."
+            }
+            GridOrder::Raster => {
+                "Images a grid of columns and rows, from where the stage is as its first \
+                 corner, each row in the same direction. A smart z-stack at each site keeps \
+                 the sharpest image."
+            }
+        }
+    }
+
     async fn begin(&self, start: Position) -> Result<Begun, ActionError> {
         let overlap = self.overlap.get();
         let step = step(&self.mapping, overlap)?;
@@ -200,6 +217,10 @@ impl GridWorkflow {
 impl ScanWorkflow for ThingRef<GridWorkflow> {
     fn display_name(&self) -> String {
         ThingRef::thing(self).name().to_owned()
+    }
+
+    fn description(&self) -> String {
+        ThingRef::thing(self).description().to_owned()
     }
 
     fn ready(&self) -> bool {

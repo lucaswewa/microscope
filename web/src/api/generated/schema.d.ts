@@ -6377,6 +6377,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/smart_scan/workflow_descriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * What each workflow does, by its name, for the app to show.
+         * @description ## What each workflow does, by its name, for the app to show.
+         *
+         *     What each workflow does, by its name, for the app to show.
+         */
+        get: operations["get_property_api_v1_smart_scan_workflow_descriptions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/smart_scan/workflow_display_names": {
         parameters: {
             query?: never;
@@ -8472,6 +8494,9 @@ export interface components {
             output?: components["schemas"]["smart_scan_stitch_scan_output"] | null;
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        smart_scan_workflow_descriptions_value: {
+            [key: string]: string;
         };
         smart_scan_workflow_display_names_value: {
             [key: string]: string;
@@ -17779,6 +17804,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_workflow_descriptions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of workflow_descriptions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_workflow_descriptions_value"];
                 };
             };
         };

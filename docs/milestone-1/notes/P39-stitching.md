@@ -1,6 +1,6 @@
 # P39: Live and final stitching
 
-- Status: In review
+- Status: Done
 - Pull request: [#52](https://github.com/lucaswewa/microscope/pull/52)
 - ADRs: none new
 - Spec: [phases.md#p39](../phases.md#p39)
