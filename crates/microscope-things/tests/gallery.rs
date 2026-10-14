@@ -112,7 +112,7 @@ async fn the_index_is_built_from_the_data_folder_and_follows_writes() {
     let client = harness.client();
     assert_eq!(
         client.get("/gallery/card_types").await.json(),
-        json!(["Capture", "Scan"])
+        json!(["Capture", "Scan", "Sequence"])
     );
     assert_eq!(client.get("/gallery/bulk_actions").await.json(), json!([]));
 
@@ -239,7 +239,7 @@ async fn captures_are_downloaded_and_deleted_with_their_files() {
     let unknown = run(
         client,
         "/gallery/delete_all_data",
-        json!({"card_types": ["Sequence"]}),
+        json!({"card_types": ["Timelapse"]}),
     )
     .await;
     assert!(

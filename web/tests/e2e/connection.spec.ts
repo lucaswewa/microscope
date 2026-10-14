@@ -58,6 +58,10 @@ test('connects to a microscope on another origin, and recovers after it restarts
   page,
 }) => {
   test.setTimeout(60_000)
+  // A microscope without a sequence.
+  const config = JSON.parse(readFileSync(fresh.config, 'utf8'))
+  delete config.things.sequence
+  writeFileSync(fresh.config, JSON.stringify(config))
   let server = await startServer(fresh.config)
   try {
     await page.goto(`/?microscope=127.0.0.1:${PORT}#/view`)
@@ -70,7 +74,7 @@ test('connects to a microscope on another origin, and recovers after it restarts
     await page.getByRole('button', { name: 'Close the wizard' }).click()
     await expect(page.getByRole('dialog')).toBeHidden()
     // Only the tabs whose Things the server has: it has a gallery, but no
-    // sequence yet.
+    // sequence.
     await expect(page.getByRole('link', { name: 'Gallery' })).toHaveCount(1)
     await expect(page.getByRole('link', { name: 'Sequence' })).toHaveCount(0)
 

@@ -24,6 +24,7 @@ use teta_wot::prelude::*;
 
 use crate::capture::{self, CAPTURES, Sidecar, StageRecord, THUMBNAILS};
 use crate::data;
+use crate::sequence::{self, SEQUENCES, Sequence};
 use crate::smart_scan::{SCANS, SmartScan};
 use crate::stitch::{MOSAIC, STITCHED};
 use crate::ui::{ActionButton, DownloadButton, DownloadSource};
@@ -134,7 +135,7 @@ trait Provider: Send + Sync {
 }
 
 /// The providers, one for each card type.
-const PROVIDERS: &[&dyn Provider] = &[&Captures, &Scans];
+const PROVIDERS: &[&dyn Provider] = &[&Captures, &Scans, &Sequences];
 
 /// What the gallery knows once it has started.
 struct Started {
@@ -144,6 +145,8 @@ struct Started {
     gallery: String,
     /// `smart_scan`'s name, if there's one.
     smart_scan: Option<String>,
+    /// `sequence`'s name, if there's one.
+    sequence: Option<String>,
     server: Server,
 }
 
@@ -216,30 +219,20 @@ impl Gallery {
     /// scanned.
     #[endpoint(delete, "scans/{id}")]
     async fn delete_scan(&self, uri: Uri) -> Response {
-        let Some(started) = self.started.get() else {
-            return detail(
-                StatusCode::SERVICE_UNAVAILABLE,
-                "the gallery hasn't started".to_owned(),
-            );
-        };
-        let name = segment(&uri, 0);
-        let Some(name) = name.filter(|name| started.folder.join(SCANS).join(name).is_dir()) else {
-            return detail(
-                StatusCode::NOT_FOUND,
-                "There's no scan by that name.".to_owned(),
-            );
-        };
-        let scans = started.server.things_of_type::<SmartScan>();
-        if scans
-            .iter()
-            .any(|scan| ThingRef::thing(scan).scanning().as_deref() == Some(&name))
-        {
-            return detail(StatusCode::CONFLICT, format!("`{name}` is being scanned."));
-        }
-        match Scans.delete(&started.folder, &format!("{SCANS}/{name}")) {
-            Ok(()) => StatusCode::NO_CONTENT.into_response(),
-            Err(error) => detail(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
-        }
+        self.delete_run(&uri, SCANS, &Scans, |server, name| {
+            let scans = server.things_of_type::<SmartScan>();
+            (scans.iter()).any(|scan| ThingRef::thing(scan).scanning().as_deref() == Some(name))
+        })
+    }
+
+    /// Deletes the sequence named by the path's last part, unless it's
+    /// running.
+    #[endpoint(delete, "sequences/{id}")]
+    async fn delete_sequence(&self, uri: Uri) -> Response {
+        self.delete_run(&uri, SEQUENCES, &Sequences, |server, name| {
+            let sequences = server.things_of_type::<Sequence>();
+            (sequences.iter()).any(|s| ThingRef::thing(s).running().as_deref() == Some(name))
+        })
     }
 
     /// The capture named by the path's second-last part, with its sidecar,
@@ -278,10 +271,13 @@ impl Gallery {
             .things_of_type::<SmartScan>()
             .first()
             .map(|scan| ThingRef::name(scan).to_owned());
+        let sequence = (server.things_of_type::<Sequence>().first())
+            .map(|sequence| ThingRef::name(sequence).to_owned());
         let _ = self.started.set(Started {
             folder: data::data_folder(server),
             gallery: ctx.name().to_owned(),
             smart_scan,
+            sequence,
             server: server.clone(),
         });
         if let Some(gallery) = ctx.server().thing_ref::<Gallery>(ctx.name()) {
@@ -292,6 +288,37 @@ impl Gallery {
 }
 
 impl Gallery {
+    /// Deletes the scan or sequence named by `uri`'s last part, a folder in
+    /// `parent`, unless `running` says it's still going.
+    fn delete_run(
+        &self,
+        uri: &Uri,
+        parent: &str,
+        provider: &dyn Provider,
+        running: impl Fn(&Server, &str) -> bool,
+    ) -> Response {
+        let Some(started) = self.started.get() else {
+            return detail(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "the gallery hasn't started".to_owned(),
+            );
+        };
+        let name = segment(uri, 0);
+        let Some(name) = name.filter(|name| started.folder.join(parent).join(name).is_dir()) else {
+            return detail(
+                StatusCode::NOT_FOUND,
+                "There's nothing by that name.".to_owned(),
+            );
+        };
+        if running(&started.server, &name) {
+            return detail(StatusCode::CONFLICT, format!("`{name}` is still running."));
+        }
+        match provider.delete(&started.folder, &format!("{parent}/{name}")) {
+            Ok(()) => StatusCode::NO_CONTENT.into_response(),
+            Err(error) => detail(StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+        }
+    }
+
     /// Brings the index up to date with the data folder, describing only
     /// the items whose files changed: every entry, newest first.
     fn refresh(&self) -> Vec<GalleryEntry> {
@@ -469,9 +496,6 @@ impl Provider for Scans {
             .unwrap_or_default()
             .to_string_lossy()
             .into_owned();
-        let record: Value = (fs::read(scan.join("scan.json")).ok())
-            .and_then(|bytes| serde_json::from_slice(&bytes).ok())
-            .unwrap_or_default();
         let mut images: Vec<String> = (fs::read_dir(scan.join("images"))
             .into_iter()
             .flatten()
@@ -483,26 +507,13 @@ impl Provider for Scans {
         let stitched = format!("{path}/{STITCHED}");
         let mosaic = started.folder.join(&stitched);
         let mosaic = mosaic.join(format!("{MOSAIC}.dzi")).is_file();
-        // A small copy of the first image, made once.
-        let thumbnail = scan.join("thumbnail.jpeg");
-        let thumbnail = thumbnail.is_file()
-            || (images.first())
-                .and_then(|first| image::open(scan.join("images").join(first)).ok())
-                .is_some_and(|picture| {
-                    capture::save_thumbnail(&picture.to_rgb8(), &thumbnail).is_ok()
-                });
-        let started_at = record["started"]
-            .as_str()
-            .and_then(|t| DateTime::parse_from_rfc3339(t).ok());
-        let created = (started_at.map(|t| t.with_timezone(&Utc))).or_else(|| {
-            Some(DateTime::<Utc>::from(
-                fs::metadata(&scan).ok()?.modified().ok()?,
-            ))
-        });
-        let line = |label: &str, value: String| InfoLine {
-            label: label.to_owned(),
-            value,
-        };
+        let first = images.first().map(|first| scan.join("images").join(first));
+        let Run {
+            record,
+            thumbnail,
+            created,
+            card_messages,
+        } = Run::read(&scan, "scan.json", first);
         let mut info = vec![line("Images", images.len().to_string())];
         if let Some(workflow) = record["workflow"].as_str() {
             info.push(line("Workflow", workflow.to_owned()));
@@ -510,18 +521,6 @@ impl Provider for Scans {
         if let Some(seconds) = record["duration_seconds"].as_f64() {
             info.push(line("Duration", format!("{} s", seconds.round())));
         }
-        let message = |level, text: String| {
-            vec![CardMessage {
-                level,
-                message: text,
-            }]
-        };
-        let card_messages = match record["result"].as_str() {
-            Some("success") => Vec::new(),
-            Some("cancelled") => message(MessageLevel::Warning, "It was cancelled.".to_owned()),
-            Some(error) => message(MessageLevel::Alert, format!("It stopped: {error}.")),
-            None => message(MessageLevel::Warning, "It hasn't finished.".to_owned()),
-        };
         let encoded = utf8_percent_encode(&name, SEGMENT);
         let mut download_buttons = vec![download(
             "Record",
@@ -600,6 +599,90 @@ impl Provider for Scans {
     }
 }
 
+/// The timelapses in `sequences/` (P41): each a folder of images with their
+/// sidecars and a record, viewed as a sequence.
+struct Sequences;
+
+impl Provider for Sequences {
+    fn card_type(&self) -> &'static str {
+        "Sequence"
+    }
+
+    fn items(&self, folder: &Path) -> Vec<(String, Stamp)> {
+        let Ok(sequences) = fs::read_dir(folder.join(SEQUENCES)) else {
+            return Vec::new();
+        };
+        let sequence = |entry: fs::DirEntry| {
+            let name = entry.file_name().into_string().ok()?;
+            let path = entry.path();
+            entry.file_type().ok()?.is_dir().then(|| {
+                let stamp = stamp(&[&path.join("sequence.json"), &path]);
+                (format!("{SEQUENCES}/{name}"), stamp)
+            })
+        };
+        sequences.flatten().filter_map(sequence).collect()
+    }
+
+    fn entry(&self, started: &Started, path: &str) -> GalleryEntry {
+        let folder = started.folder.join(path);
+        let name = folder.file_name().unwrap_or_default();
+        let name = name.to_string_lossy().into_owned();
+        let images = sequence::images(&folder);
+        let first = images.first().map(|first| folder.join(first));
+        let Run {
+            record,
+            thumbnail,
+            created,
+            card_messages,
+        } = Run::read(&folder, "sequence.json", first);
+        let mut info = vec![line("Images", images.len().to_string())];
+        if let Some(dt) = record["plan"]["dt"].as_f64() {
+            info.push(line("Interval", format!("{dt} s")));
+        }
+        if let Some(seconds) = record["duration_seconds"].as_f64() {
+            info.push(line("Duration", format!("{} s", seconds.round())));
+        }
+        let record_path = DownloadSource::Data {
+            path: format!("{path}/sequence.json"),
+        };
+        let mut download_buttons = vec![download("Record", record_path, &format!("{name}.json"))];
+        if let Some(sequence) = &started.sequence {
+            let zip = DownloadSource::Action {
+                thing: sequence.clone(),
+                action: "download_zip".to_owned(),
+                input: json!({ "name": name }),
+            };
+            download_buttons.insert(0, download("Images (ZIP)", zip, &format!("{name}.zip")));
+        }
+        let encoded = utf8_percent_encode(&name, SEGMENT);
+        GalleryEntry {
+            name: name.clone(),
+            path: path.to_owned(),
+            card_type: self.card_type().to_owned(),
+            created: created
+                .unwrap_or_default()
+                .to_rfc3339_opts(SecondsFormat::Millis, true),
+            thumbnail: thumbnail.then(|| format!("{path}/thumbnail.jpeg")),
+            viewer: Viewer::Directory {
+                paths: images
+                    .iter()
+                    .map(|image| format!("{path}/{image}"))
+                    .collect(),
+                start: 0,
+            },
+            info,
+            download_buttons,
+            card_actions: Vec::new(),
+            card_messages,
+            delete_endpoint: format!("{}/{SEQUENCES}/{encoded}", started.gallery),
+        }
+    }
+
+    fn delete(&self, folder: &Path, path: &str) -> std::io::Result<()> {
+        fs::remove_dir_all(folder.join(path))
+    }
+}
+
 /// The URL's path segment `back` from the end, percent-decoded, if it names
 /// one file or folder.
 fn segment(uri: &Uri, back: usize) -> Option<String> {
@@ -666,6 +749,67 @@ fn position(stage: &StageRecord) -> String {
             let steps = stage.steps;
             format!("({}, {}, {}) steps", steps.x, steps.y, steps.z)
         }
+    }
+}
+
+/// What a scan's or a sequence's folder shows of how it went.
+struct Run {
+    /// Its record, or null.
+    record: Value,
+    /// Whether it has a thumbnail, `thumbnail.jpeg`: a small copy of its
+    /// first image, made once.
+    thumbnail: bool,
+    /// When it started, by its record or else its folder.
+    created: Option<DateTime<Utc>>,
+    /// What its record says of how it ended.
+    card_messages: Vec<CardMessage>,
+}
+
+impl Run {
+    /// The run in `folder`, with its record in the file `record` and its
+    /// first image at `first`.
+    fn read(folder: &Path, record: &str, first: Option<PathBuf>) -> Run {
+        let record: Value = (fs::read(folder.join(record)).ok())
+            .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+            .unwrap_or_default();
+        let thumbnail = folder.join("thumbnail.jpeg");
+        let thumbnail = thumbnail.is_file()
+            || (first.and_then(|first| image::open(first).ok())).is_some_and(|picture| {
+                capture::save_thumbnail(&picture.to_rgb8(), &thumbnail).is_ok()
+            });
+        let started_at = record["started"]
+            .as_str()
+            .and_then(|t| DateTime::parse_from_rfc3339(t).ok());
+        let created = (started_at.map(|t| t.with_timezone(&Utc))).or_else(|| {
+            Some(DateTime::<Utc>::from(
+                fs::metadata(folder).ok()?.modified().ok()?,
+            ))
+        });
+        let message = |level, text: String| {
+            vec![CardMessage {
+                level,
+                message: text,
+            }]
+        };
+        let card_messages = match record["result"].as_str() {
+            Some("success") => Vec::new(),
+            Some("cancelled") => message(MessageLevel::Warning, "It was cancelled.".to_owned()),
+            Some(error) => message(MessageLevel::Alert, format!("It stopped: {error}.")),
+            None => message(MessageLevel::Warning, "It hasn't finished.".to_owned()),
+        };
+        Run {
+            record,
+            thumbnail,
+            created,
+            card_messages,
+        }
+    }
+}
+
+fn line(label: &str, value: String) -> InfoLine {
+    InfoLine {
+        label: label.to_owned(),
+        value,
     }
 }
 

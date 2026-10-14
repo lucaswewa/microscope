@@ -13,7 +13,7 @@
 
 use std::collections::{BTreeMap, HashSet};
 use std::fs::OpenOptions;
-use std::io::{Cursor, ErrorKind, Write};
+use std::io::{Cursor, Write};
 use std::path::{Component, Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -464,38 +464,11 @@ impl SmartScan {
     }
 }
 
-/// A new scan folder in `scans`, with its `images/`: called `requested`, or
-/// by the time without it, with `-2`, `-3`, … if that's taken. Its name and
-/// its path.
+/// A new scan folder in `scans`, with its `images/`.
 fn new_folder(scans: &Path, requested: &str) -> Result<(String, PathBuf), ActionError> {
-    let requested = requested.trim();
-    let stem = match requested {
-        "" => format!("scan-{}", Utc::now().format("%Y-%m-%dT%H-%M-%SZ")),
-        name => name.to_owned(),
-    };
-    let allowed = |c: char| c.is_alphanumeric() || " -_.".contains(c);
-    if !stem.chars().all(allowed) || stem.starts_with('.') {
-        return Err(ActionError::handled(
-            "a scan's name can have letters, digits, spaces, `-`, `_` and `.`, and can't start with `.`",
-        ));
-    }
-    std::fs::create_dir_all(scans).map_err(ActionError::handled)?;
-    let mut n = 1;
-    loop {
-        let name = match n {
-            1 => stem.clone(),
-            n => format!("{stem}-{n}"),
-        };
-        let folder = scans.join(&name);
-        match std::fs::create_dir(&folder) {
-            Ok(()) => {
-                std::fs::create_dir(folder.join("images")).map_err(ActionError::handled)?;
-                return Ok((name, folder));
-            }
-            Err(error) if error.kind() == ErrorKind::AlreadyExists => n += 1,
-            Err(error) => return Err(ActionError::handled(error)),
-        }
-    }
+    let (name, folder) = data::new_folder(scans, requested, "scan")?;
+    std::fs::create_dir(folder.join("images")).map_err(ActionError::handled)?;
+    Ok((name, folder))
 }
 
 /// The scan `name`'s folder, if it has one: a plain name, in `scans/`.

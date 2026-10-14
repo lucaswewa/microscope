@@ -6291,6 +6291,18 @@
         }
       }
     },
+    "/api/v1/gallery/sequences/{id}": {
+      "delete": {
+        "summary": "Delete Sequence",
+        "description": "Deletes the sequence named by the path's last part, unless it's\nrunning.",
+        "operationId": "delete_sequence_api_v1_gallery_sequences__id__delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/v1/gallery/list_data": {
       "get": {
         "summary": "Everything in the gallery, newest first.",
@@ -10014,6 +10026,552 @@
         "summary": "Thing Description",
         "description": "The W3C Thing Description of `smart_scan`: its properties, actions and events, and how to use them.",
         "operationId": "things_smart_scan_api_v1_smart_scan__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThingDescription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/autofocus_dz": {
+      "get": {
+        "summary": "How far each autofocus sweeps, in steps.",
+        "description": "## How far each autofocus sweeps, in steps.\n\nHow far each autofocus sweeps, in steps.",
+        "operationId": "get_property_api_v1_sequence_autofocus_dz_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_dz",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_autofocus_dz_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How far each autofocus sweeps, in steps.",
+        "description": "## How far each autofocus sweeps, in steps.\n\nHow far each autofocus sweeps, in steps.",
+        "operationId": "set_property_api_v1_sequence_autofocus_dz_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_autofocus_dz_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/autofocus_dz/reset": {
+      "post": {
+        "summary": "Reset How far each autofocus sweeps, in steps..",
+        "description": "## Reset How far each autofocus sweeps, in steps.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_sequence_autofocus_dz_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/autofocus_enabled": {
+      "get": {
+        "summary": "Whether each capture follows an autofocus.",
+        "description": "## Whether each capture follows an autofocus.\n\nWhether each capture follows an autofocus.",
+        "operationId": "get_property_api_v1_sequence_autofocus_enabled_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_enabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_autofocus_enabled_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Whether each capture follows an autofocus.",
+        "description": "## Whether each capture follows an autofocus.\n\nWhether each capture follows an autofocus.",
+        "operationId": "set_property_api_v1_sequence_autofocus_enabled_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_autofocus_enabled_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/autofocus_enabled/reset": {
+      "post": {
+        "summary": "Reset Whether each capture follows an autofocus..",
+        "description": "## Reset Whether each capture follows an autofocus.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_sequence_autofocus_enabled_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/download_zip": {
+      "get": {
+        "summary": "All invocations of download_zip.",
+        "description": "List all the invocations of download_zip that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_sequence_download_zip_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of download_zip.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "The sequence `name` as a ZIP archive: its images with their sidecars,",
+        "description": "## The sequence `name` as a ZIP archive: its images with their sidecars,\n\nThe sequence `name` as a ZIP archive: its images with their sidecars,\nand its record.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_sequence_download_zip_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_download_zip_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_download_zip_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_download_zip_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/dt": {
+      "get": {
+        "summary": "The time between captures, in seconds.",
+        "description": "## The time between captures, in seconds.\n\nThe time between captures, in seconds.",
+        "operationId": "get_property_api_v1_sequence_dt_get",
+        "responses": {
+          "200": {
+            "description": "Value of dt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_dt_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set The time between captures, in seconds.",
+        "description": "## The time between captures, in seconds.\n\nThe time between captures, in seconds.",
+        "operationId": "set_property_api_v1_sequence_dt_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_dt_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/dt/reset": {
+      "post": {
+        "summary": "Reset The time between captures, in seconds..",
+        "description": "## Reset The time between captures, in seconds.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_sequence_dt_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/duration": {
+      "get": {
+        "summary": "How long the sequence runs, in seconds.",
+        "description": "## How long the sequence runs, in seconds.\n\nHow long the sequence runs, in seconds.",
+        "operationId": "get_property_api_v1_sequence_duration_get",
+        "responses": {
+          "200": {
+            "description": "Value of duration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_duration_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set How long the sequence runs, in seconds.",
+        "description": "## How long the sequence runs, in seconds.\n\nHow long the sequence runs, in seconds.",
+        "operationId": "set_property_api_v1_sequence_duration_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_duration_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/duration/reset": {
+      "post": {
+        "summary": "Reset How long the sequence runs, in seconds..",
+        "description": "## Reset How long the sequence runs, in seconds.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_sequence_duration_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/run_sequence": {
+      "get": {
+        "summary": "All invocations of run_sequence.",
+        "description": "List all the invocations of run_sequence that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_sequence_run_sequence_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of run_sequence.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Runs a timelapse into a new folder in `sequences/`, called `name`, or",
+        "description": "## Runs a timelapse into a new folder in `sequences/`, called `name`, or\n\nRuns a timelapse into a new folder in `sequences/`, called `name`, or\nby the time without one, with `-2`, `-3`, … if that's taken: a capture\nevery `dt` seconds for `duration`, each after an autofocus if\n`autofocus_enabled`. Returns the folder's name.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_sequence_run_sequence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sequence_run_sequence_input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_run_sequence_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/sequence_run_sequence_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/properties": {
+      "get": {
+        "summary": "Read All Properties",
+        "description": "Every property of `sequence` (`readallproperties`), or their changes (`observeallproperties`).",
+        "operationId": "read_all_properties_api_v1_sequence_properties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Each property's value, by name."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write Multiple Properties",
+        "description": "Writes several properties of `sequence` (`writemultipleproperties`): nothing is written unless every value is valid.",
+        "operationId": "write_multiple_properties_api_v1_sequence_properties_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Properties written"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `sequence`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_sequence_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sequence/": {
+      "get": {
+        "summary": "Thing Description",
+        "description": "The W3C Thing Description of `sequence`: its properties, actions and events, and how to use them.",
+        "operationId": "things_sequence_api_v1_sequence__get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18084,6 +18642,273 @@
       },
       "smart_scan_workflow_name_value": {
         "type": "string"
+      },
+      "sequence_autofocus_dz_value": {
+        "type": "integer",
+        "minimum": 100
+      },
+      "sequence_autofocus_enabled_value": {
+        "type": "boolean"
+      },
+      "sequence_download_zip_input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "sequence_download_zip_output": {
+        "description": "A model for JSON-serialised `.Blob` objects.\n\nThis model describes the JSON representation of a `.Blob`\nand is used to describe the `.Blob` object in JSON responses.\n\nThe binary data may be retrieved with a ``GET`` request to the URL\nspecified in ``href`` which should return it directly in the body of\nthe response.",
+        "type": "object",
+        "properties": {
+          "href": {
+            "title": "Href",
+            "type": "string"
+          },
+          "media_type": {
+            "title": "Media Type",
+            "const": "application/zip",
+            "default": "application/zip",
+            "type": "string"
+          },
+          "rel": {
+            "title": "Rel",
+            "const": "output",
+            "default": "output",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "default": "The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "href",
+          "media_type"
+        ]
+      },
+      "sequence_download_zip_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/sequence_download_zip_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/sequence_download_zip_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "sequence_dt_value": {
+        "type": "number",
+        "minimum": 0.5
+      },
+      "sequence_duration_value": {
+        "type": "number",
+        "minimum": 0.0
+      },
+      "sequence_run_sequence_input": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "default": "",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "sequence_run_sequence_output": {
+        "type": "string"
+      },
+      "sequence_run_sequence_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/sequence_run_sequence_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/sequence_run_sequence_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
       }
     }
   }

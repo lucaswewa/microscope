@@ -24,6 +24,7 @@ pub mod histo;
 pub mod illumination;
 pub mod mapping;
 pub mod registry;
+pub mod sequence;
 pub mod smart_scan;
 pub mod stage;
 pub mod stage_measure;

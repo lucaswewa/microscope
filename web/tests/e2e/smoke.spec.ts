@@ -18,6 +18,7 @@ test('the built app opens on the View page, connected, with the navigation rail'
     'View',
     'Control',
     'Slide Scan',
+    'Sequence',
     'Gallery',
     'Settings',
     'Logging',

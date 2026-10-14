@@ -16,4 +16,5 @@ pub mod mapping;
 pub mod mosaic;
 pub mod registration;
 pub mod scan;
+pub mod sequence;
 pub mod stack;
