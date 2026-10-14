@@ -210,6 +210,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/system/managed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether a supervisor, such as the launcher, started the server, and
+         * @description ## Whether a supervisor, such as the launcher, started the server, and
+         *
+         *     Whether a supervisor, such as the launcher, started the server, and
+         *     so can restart it.
+         */
+        get: operations["get_property_api_v1_system_managed_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/system/os_version": {
         parameters: {
             query?: never;
@@ -226,6 +249,67 @@ export interface paths {
         get: operations["get_property_api_v1_system_os_version_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/system/restart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of restart.
+         * @description List all the invocations of restart that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_system_restart_get"];
+        put?: never;
+        /**
+         * Restarts the server, ending what's running. Only a server that a
+         * @description ## Restarts the server, ending what's running. Only a server that a
+         *
+         *     Restarts the server, ending what's running. Only a server that a
+         *     supervisor started can restart.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_system_restart_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/system/shutdown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of shutdown.
+         * @description List all the invocations of shutdown that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_system_shutdown_get"];
+        put?: never;
+        /**
+         * Stops the server, ending what's running.
+         * @description ## Stops the server, ending what's running.
+         *
+         *     Stops the server, ending what's running.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_system_shutdown_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -267,6 +351,26 @@ export interface paths {
          * @description Every property of `system` (`readallproperties`), or their changes (`observeallproperties`).
          */
         get: operations["read_all_properties_api_v1_system_properties_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/system/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `system`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_system_actions_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7005,7 +7109,54 @@ export interface components {
             [key: string]: unknown;
         };
         system_hostname_value: string;
+        system_managed_value: boolean;
         system_os_version_value: string;
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        system_restart_input: Record<string, never> | null;
+        system_restart_output: null;
+        system_restart_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["system_restart_input"];
+            output?: components["schemas"]["system_restart_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        /**
+         * @description Represent the input of an action that never takes parameters.
+         *
+         *     This may be either an empty dictionary or ``None``.
+         */
+        system_shutdown_input: Record<string, never> | null;
+        system_shutdown_output: null;
+        system_shutdown_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["system_shutdown_input"];
+            output?: components["schemas"]["system_shutdown_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
         /** @description The server's version, and where the build came from. */
         system_version_data_value: {
             /** @description The server's version number, such as `0.1.0`. */
@@ -9312,6 +9463,26 @@ export interface operations {
             };
         };
     };
+    get_property_api_v1_system_managed_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of managed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["system_managed_value"];
+                };
+            };
+        };
+    };
     get_property_api_v1_system_os_version_get: {
         parameters: {
             query?: never;
@@ -9328,6 +9499,130 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["system_os_version_value"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_system_restart_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of restart. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_system_restart_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["system_restart_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["system_restart_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["system_restart_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_system_shutdown_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of shutdown. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_system_shutdown_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["system_shutdown_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["system_shutdown_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["system_shutdown_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -9369,6 +9664,28 @@ export interface operations {
                 content: {
                     "application/json": Record<string, never>;
                     "text/event-stream": string;
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_system_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
                 };
             };
         };

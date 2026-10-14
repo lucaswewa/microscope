@@ -60,4 +60,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P40 | [Slide Scan tab](P40-slide-scan.md) | Done |
 | P41 | [Sequence engine (MDA-ready)](P41-sequence-engine.md) | Done |
 | P42 | [Sequence tab](P42-sequence-tab.md) | Done |
-| P43 | [Logging tab](P43-logging-tab.md) | In review |
+| P43 | [Logging tab](P43-logging-tab.md) | Done |
+| P44 | [Sidecar process contract](P44-sidecar-contract.md) | In review |

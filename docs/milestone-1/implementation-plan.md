@@ -478,8 +478,8 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P43 | Logging tab | P03, P09b, P11 | M | — | In review |
-| P44 | Sidecar process contract | P02 | M | 0032 | Planned |
+| P43 | Logging tab | P03, P09b, P11 | M | — | Done |
+| P44 | Sidecar process contract | P02 | M | 0032 | In review |
 | P45 | Local launcher | P12, P44 | L | 0033 | Planned |
 | P46 | About and Power tabs | P11, P44 | M | — | Planned |
 | P47 | Visual fidelity and accessibility pass | P05, all tabs | L | 0034 | Planned |

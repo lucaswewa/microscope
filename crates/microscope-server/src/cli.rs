@@ -1,7 +1,7 @@
 //! The command line.
 //!
 //! ```text
-//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist]
+//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist] [--managed]
 //! microscope-server -j '{"things": {…}}'
 //! microscope-server -c config.json --print-openapi
 //! ```
@@ -9,23 +9,34 @@
 //! The options, messages and exit codes are `teta-wot`'s (and LabThings'),
 //! plus `--webapp-dir`, which serves the web app from a folder instead of the
 //! build in the binary (ADR-0016), and `--print-openapi`, which writes the
-//! configured Things' OpenAPI document instead of serving them (ADR-0021):
+//! configured Things' OpenAPI document instead of serving them (ADR-0021).
+//!
+//! With `--managed`, a supervisor such as the launcher runs the server
+//! (ADR-0032). Once serving, it prints one line to standard output,
+//! `MICROSCOPE_READY {"url": …, "pid": …, "version": …}`, which gives the
+//! port `--port 0` chose. It stops when standard input closes, and
+//! `system.restart` stops it with exit code 75, for the supervisor to start
+//! it again.
 //!
 //! | Code | When |
 //! |---|---|
 //! | 0 | The server stopped normally, or `--help` or `--version` was given |
+//! | 75 | `system.restart` stopped the server, for its supervisor to start it again |
 //! | 1 | Anything else: no configuration, a missing file, a Thing that can't be built, a port in use |
 //! | 2 | The command line is wrong |
 //! | 3 | The configuration is invalid, a Thing failed to start, or the fallback server was served |
 
 use std::ffi::OsString;
 use std::future::Future;
-use std::net::SocketAddr;
+use std::io::Read;
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
 use clap::Parser;
+use microscope_things::system::{Control, Exit, MicroscopeSystem};
+use serde_json::json;
 use teta_wot::http::axum;
 use teta_wot::server::cli::CliArgs;
 use teta_wot::server::{FallbackPage, ServeError, ThingServer, fallback_router, shutdown_signal};
@@ -58,6 +69,11 @@ pub struct Args {
     /// output, without starting them, and exit.
     #[arg(long)]
     pub print_openapi: bool,
+    /// Run under a supervisor: print a ready line once serving, stop when
+    /// standard input closes, and let `system.restart` stop the server with
+    /// exit code 75 (ADR-0032).
+    #[arg(long)]
+    pub managed: bool,
 }
 
 /// Why serving failed, and so the exit code.
@@ -108,10 +124,20 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    let (stop, stopped) = watch::channel(false);
-    let _shutdown = tokio::spawn(async move {
-        shutdown.await;
-        let _ = stop.send(true);
+    let (sender, stopped) = watch::channel(None);
+    let request: Arc<dyn Fn(Exit) + Send + Sync> = Arc::new(move |exit| {
+        sender.send_if_modified(|asked| {
+            let first = asked.is_none();
+            asked.get_or_insert(exit);
+            first
+        });
+    });
+    let _shutdown = tokio::spawn({
+        let request = Arc::clone(&request);
+        async move {
+            shutdown.await;
+            request(Exit::Stop);
+        }
     });
     let stop = Stop(stopped);
 
@@ -119,6 +145,7 @@ where
         server: args,
         webapp_dir,
         print_openapi,
+        managed,
     } = match Args::try_parse_from(args) {
         Ok(args) => args,
         Err(error) => {
@@ -128,17 +155,35 @@ where
         }
     };
 
+    if managed {
+        // A supervisor closes standard input to stop the server. What it
+        // writes there is ignored.
+        let request = Arc::clone(&request);
+        std::thread::spawn(move || {
+            let mut buffer = [0; 256];
+            while std::io::stdin().read(&mut buffer).is_ok_and(|n| n > 0) {}
+            request(Exit::Stop);
+        });
+    }
+
     // Logging starts once the configuration says where log files go.
     let mut config_text = None;
     let mut logs = None;
     let source = webapp_dir.map_or(WebApp::Embedded, WebApp::Dir);
+    let control = Control {
+        managed,
+        stop: request,
+    };
     let outcome = if print_openapi {
         write_openapi(&args).await
     } else {
-        serve(&args, source, &mut config_text, &mut logs, &stop).await
+        serve(&args, source, &control, &mut config_text, &mut logs, &stop).await
     };
     let Err(failure) = outcome else {
-        return ExitCode::SUCCESS;
+        return match *stop.0.borrow() {
+            Some(Exit::Restart) => ExitCode::from(75),
+            _ => ExitCode::SUCCESS,
+        };
     };
 
     if args.fallback && !print_openapi {
@@ -184,6 +229,7 @@ where
 async fn serve(
     args: &CliArgs,
     webapp: WebApp,
+    control: &Control,
     config_text: &mut Option<String>,
     logs: &mut Option<Logs>,
     stop: &Stop,
@@ -216,6 +262,11 @@ async fn serve(
         .map(|t| t.name().to_owned())
         .collect();
     server_log.attach(Arc::clone(server.runtime().invocations()));
+    for handle in server.runtime().things() {
+        if let Some(system) = handle.instance::<MicroscopeSystem>() {
+            system.attach(control.clone());
+        }
+    }
 
     let listener = bind(args).await.map_err(Failure::Other)?;
     match listener.local_addr() {
@@ -228,7 +279,13 @@ async fn serve(
             config.app.data_folder.clone(),
         ))
         .merge(webapp::webapp_routes(webapp));
-    match lifecycle::serve(server, app_routes, listener, stop.wait()).await {
+    let managed = control.managed;
+    let ready = move |addr| {
+        if managed {
+            println!("MICROSCOPE_READY {}", ready_line(addr));
+        }
+    };
+    match lifecycle::serve(server, app_routes, listener, stop.wait(), ready).await {
         Ok(()) => Ok(()),
         Err(ServeError::Startup(failure)) => Err(Failure::Startup {
             thing: failure.thing,
@@ -237,6 +294,21 @@ async fn serve(
         }),
         Err(other) => Err(Failure::Other(other.to_string())),
     }
+}
+
+/// The ready line's JSON: where the server is, its process and its version.
+/// A server listening on every address is reached on the loopback one.
+fn ready_line(addr: SocketAddr) -> serde_json::Value {
+    let ip = match addr.ip() {
+        IpAddr::V4(ip) if ip.is_unspecified() => IpAddr::V4(Ipv4Addr::LOCALHOST),
+        IpAddr::V6(ip) if ip.is_unspecified() => IpAddr::V6(Ipv6Addr::LOCALHOST),
+        ip => ip,
+    };
+    json!({
+        "url": format!("http://{}", SocketAddr::new(ip, addr.port())),
+        "pid": std::process::id(),
+        "version": env!("CARGO_PKG_VERSION"),
+    })
 }
 
 /// Writes the OpenAPI document of the configured Things to standard output,
@@ -288,14 +360,32 @@ async fn serve_fallback(args: &CliArgs, page: FallbackPage, stop: &Stop) -> Resu
         .map_err(|e| e.to_string())
 }
 
-/// The shutdown request, shared by the server and the fallback server.
-struct Stop(watch::Receiver<bool>);
+/// The shutdown request, and how the server was asked to stop, shared by
+/// the server and the fallback server.
+struct Stop(watch::Receiver<Option<Exit>>);
 
 impl Stop {
     fn wait(&self) -> impl Future<Output = ()> + Send + 'static {
         let mut stopped = self.0.clone();
         async move {
-            let _ = stopped.wait_for(|stop| *stop).await;
+            let _ = stopped.wait_for(Option::is_some).await;
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_ready_line_gives_a_reachable_url() {
+        let url = |addr: &str| ready_line(addr.parse().expect("an address"))["url"].clone();
+        assert_eq!(url("127.0.0.1:5000"), "http://127.0.0.1:5000");
+        assert_eq!(url("0.0.0.0:5001"), "http://127.0.0.1:5001");
+        assert_eq!(url("[::]:5002"), "http://[::1]:5002");
+        assert_eq!(url("192.168.1.9:5003"), "http://192.168.1.9:5003");
+        let line = ready_line("127.0.0.1:5000".parse().expect("an address"));
+        assert_eq!(line["pid"], std::process::id());
+        assert_eq!(line["version"], env!("CARGO_PKG_VERSION"));
     }
 }

@@ -393,6 +393,25 @@
         }
       }
     },
+    "/api/v1/system/managed": {
+      "get": {
+        "summary": "Whether a supervisor, such as the launcher, started the server, and",
+        "description": "## Whether a supervisor, such as the launcher, started the server, and\n\nWhether a supervisor, such as the launcher, started the server, and\nso can restart it.",
+        "operationId": "get_property_api_v1_system_managed_get",
+        "responses": {
+          "200": {
+            "description": "Value of managed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/system_managed_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/system/os_version": {
       "get": {
         "summary": "The operating system and its version.",
@@ -405,6 +424,142 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/system_os_version_value"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/restart": {
+      "get": {
+        "summary": "All invocations of restart.",
+        "description": "List all the invocations of restart that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_system_restart_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of restart.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Restarts the server, ending what's running. Only a server that a",
+        "description": "## Restarts the server, ending what's running. Only a server that a\n\nRestarts the server, ending what's running. Only a server that a\nsupervisor started can restart.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_system_restart_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/system_restart_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/system_restart_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/system_restart_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/shutdown": {
+      "get": {
+        "summary": "All invocations of shutdown.",
+        "description": "List all the invocations of shutdown that the server is keeping, with their times and links.",
+        "operationId": "list_invocations_api_v1_system_shutdown_get",
+        "responses": {
+          "200": {
+            "description": "A list of every invocation of shutdown.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvocationSummary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Stops the server, ending what's running.",
+        "description": "## Stops the server, ending what's running.\n\nStops the server, ending what's running.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "operationId": "start_action_api_v1_system_shutdown_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/system_shutdown_input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action has been invoked (and may still be running).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/system_shutdown_invocation"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Action completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/system_shutdown_output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -450,6 +605,31 @@
                 "schema": {
                   "type": "string",
                   "description": "Server-sent events: each observable property's new values, as events named after it. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/actions": {
+      "get": {
+        "summary": "Query All Actions",
+        "description": "The invocations of each action of `system`, newest first (`queryallactions`).",
+        "operationId": "query_all_actions_api_v1_system_actions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/InvocationSummary"
+                    }
+                  }
                 }
               }
             }
@@ -11031,8 +11211,241 @@
       "system_hostname_value": {
         "type": "string"
       },
+      "system_managed_value": {
+        "type": "boolean"
+      },
       "system_os_version_value": {
         "type": "string"
+      },
+      "system_restart_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "system_restart_output": {
+        "type": "null"
+      },
+      "system_restart_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/system_restart_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/system_restart_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
+      },
+      "system_shutdown_input": {
+        "description": "Represent the input of an action that never takes parameters.\n\nThis may be either an empty dictionary or ``None``.",
+        "oneOf": [
+          {
+            "description": "A model representing an object that must have no keys.",
+            "type": "object",
+            "properties": {},
+            "additionalProperties": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "system_shutdown_output": {
+        "type": "null"
+      },
+      "system_shutdown_invocation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/InvocationStatus"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri"
+          },
+          "timeStarted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeRequested": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "timeCompleted": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LinkElement"
+            }
+          },
+          "input": {
+            "$ref": "#/components/schemas/system_shutdown_input"
+          },
+          "output": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/system_shutdown_output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LogRecordModel"
+            }
+          },
+          "error": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ProblemDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "id",
+          "action",
+          "href",
+          "timeStarted",
+          "timeRequested",
+          "timeCompleted",
+          "input",
+          "log"
+        ]
       },
       "system_version_data_value": {
         "description": "The server's version, and where the build came from.",
