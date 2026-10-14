@@ -1,6 +1,6 @@
 # P37: Histo smart-spiral and C-Chip workflows
 
-- Status: In review
+- Status: Done
 - Pull request: [#50](https://github.com/lucaswewa/microscope/pull/50)
 - ADRs: none new
 - Spec: [phases.md#p37](../phases.md#p37)
