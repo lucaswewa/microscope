@@ -1,6 +1,6 @@
 # P40: Slide Scan tab
 
-- Status: In review
+- Status: Done
 - Pull request: [#53](https://github.com/lucaswewa/microscope/pull/53)
 - ADRs: none new
 - Spec: [phases.md#p40](../phases.md#p40)

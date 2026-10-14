@@ -45,5 +45,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0028](0028-scan-planning-model.md) | Scan planning model | Accepted | P34 |
 | [0029](0029-scan-engine-and-workflow-things.md) | Scan engine and workflow Things | Accepted | P35 |
 | [0030](0030-position-based-stitching-with-dzi-output.md) | Position-based stitching with DZI output | Accepted | P38 |
+| [0031](0031-sequence-model.md) | Sequence model | Accepted | P41 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

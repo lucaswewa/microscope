@@ -14,7 +14,8 @@
         "raster_workflow": {"class": "microscope.workflows:GridWorkflow", "kwargs": {"order": "raster"}},
         "histo_scan_workflow": "microscope.workflows:HistoScanWorkflow",
         "c_chip_workflow": "microscope.workflows:CChipWorkflow",
-        "smart_scan": "microscope.smart_scan:SmartScan"
+        "smart_scan": "microscope.smart_scan:SmartScan",
+        "sequence": "microscope.sequence:Sequence"
     },
     "settings_folder": ".microscope/settings",
     "api_prefix": "/api/v1",

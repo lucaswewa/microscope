@@ -38,6 +38,40 @@ pub fn resolve(folder: &Path, relative: &str) -> Result<PathBuf, String> {
     Ok(folder.join(path))
 }
 
+/// A new folder in `parent` for a run of `kind`, such as a scan: called
+/// `requested`, or `<kind>-<UTC time>` without it, with `-2`, `-3`, … if
+/// that's taken. Its name and its path.
+pub fn new_folder(
+    parent: &Path,
+    requested: &str,
+    kind: &str,
+) -> Result<(String, PathBuf), ActionError> {
+    let stem = match requested.trim() {
+        "" => format!("{kind}-{}", chrono::Utc::now().format("%Y-%m-%dT%H-%M-%SZ")),
+        name => name.to_owned(),
+    };
+    let allowed = |c: char| c.is_alphanumeric() || " -_.".contains(c);
+    if !stem.chars().all(allowed) || stem.starts_with('.') {
+        return Err(ActionError::handled(format!(
+            "a {kind}'s name can have letters, digits, spaces, `-`, `_` and `.`, and can't start with `.`"
+        )));
+    }
+    std::fs::create_dir_all(parent).map_err(ActionError::handled)?;
+    for n in 1.. {
+        let name = match n {
+            1 => stem.clone(),
+            n => format!("{stem}-{n}"),
+        };
+        let folder = parent.join(&name);
+        match std::fs::create_dir(&folder) {
+            Ok(()) => return Ok((name, folder)),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(ActionError::handled(error)),
+        }
+    }
+    unreachable!("a free name is found")
+}
+
 /// Writes a ZIP archive of `files`, each a name in the archive and the file
 /// to put there, to `out`, which it returns. The files are stored as they
 /// are, since images are compressed already.

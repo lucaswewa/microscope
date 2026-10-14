@@ -4029,6 +4029,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/gallery/sequences/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Sequence
+         * @description Deletes the sequence named by the path's last part, unless it's
+         *     running.
+         */
+        delete: operations["delete_sequence_api_v1_gallery_sequences__id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/gallery/list_data": {
         parameters: {
             query?: never;
@@ -6535,6 +6556,334 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/sequence/autofocus_dz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How far each autofocus sweeps, in steps.
+         * @description ## How far each autofocus sweeps, in steps.
+         *
+         *     How far each autofocus sweeps, in steps.
+         */
+        get: operations["get_property_api_v1_sequence_autofocus_dz_get"];
+        /**
+         * Set How far each autofocus sweeps, in steps.
+         * @description ## How far each autofocus sweeps, in steps.
+         *
+         *     How far each autofocus sweeps, in steps.
+         */
+        put: operations["set_property_api_v1_sequence_autofocus_dz_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/autofocus_dz/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How far each autofocus sweeps, in steps..
+         * @description ## Reset How far each autofocus sweeps, in steps.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_sequence_autofocus_dz_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/autofocus_enabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether each capture follows an autofocus.
+         * @description ## Whether each capture follows an autofocus.
+         *
+         *     Whether each capture follows an autofocus.
+         */
+        get: operations["get_property_api_v1_sequence_autofocus_enabled_get"];
+        /**
+         * Set Whether each capture follows an autofocus.
+         * @description ## Whether each capture follows an autofocus.
+         *
+         *     Whether each capture follows an autofocus.
+         */
+        put: operations["set_property_api_v1_sequence_autofocus_enabled_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/autofocus_enabled/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Whether each capture follows an autofocus..
+         * @description ## Reset Whether each capture follows an autofocus.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_sequence_autofocus_enabled_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/download_zip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of download_zip.
+         * @description List all the invocations of download_zip that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_sequence_download_zip_get"];
+        put?: never;
+        /**
+         * The sequence `name` as a ZIP archive: its images with their sidecars,
+         * @description ## The sequence `name` as a ZIP archive: its images with their sidecars,
+         *
+         *     The sequence `name` as a ZIP archive: its images with their sidecars,
+         *     and its record.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_sequence_download_zip_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/dt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * The time between captures, in seconds.
+         * @description ## The time between captures, in seconds.
+         *
+         *     The time between captures, in seconds.
+         */
+        get: operations["get_property_api_v1_sequence_dt_get"];
+        /**
+         * Set The time between captures, in seconds.
+         * @description ## The time between captures, in seconds.
+         *
+         *     The time between captures, in seconds.
+         */
+        put: operations["set_property_api_v1_sequence_dt_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/dt/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset The time between captures, in seconds..
+         * @description ## Reset The time between captures, in seconds.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_sequence_dt_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/duration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * How long the sequence runs, in seconds.
+         * @description ## How long the sequence runs, in seconds.
+         *
+         *     How long the sequence runs, in seconds.
+         */
+        get: operations["get_property_api_v1_sequence_duration_get"];
+        /**
+         * Set How long the sequence runs, in seconds.
+         * @description ## How long the sequence runs, in seconds.
+         *
+         *     How long the sequence runs, in seconds.
+         */
+        put: operations["set_property_api_v1_sequence_duration_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/duration/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset How long the sequence runs, in seconds..
+         * @description ## Reset How long the sequence runs, in seconds.
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_sequence_duration_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/run_sequence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * All invocations of run_sequence.
+         * @description List all the invocations of run_sequence that the server is keeping, with their times and links.
+         */
+        get: operations["list_invocations_api_v1_sequence_run_sequence_get"];
+        put?: never;
+        /**
+         * Runs a timelapse into a new folder in `sequences/`, called `name`, or
+         * @description ## Runs a timelapse into a new folder in `sequences/`, called `name`, or
+         *
+         *     Runs a timelapse into a new folder in `sequences/`, called `name`, or
+         *     by the time without one, with `-2`, `-3`, … if that's taken: a capture
+         *     every `dt` seconds for `duration`, each after an autofocus if
+         *     `autofocus_enabled`. Returns the folder's name.
+         *
+         *     ## Important note
+         *
+         *     This `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.
+         */
+        post: operations["start_action_api_v1_sequence_run_sequence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read All Properties
+         * @description Every property of `sequence` (`readallproperties`), or their changes (`observeallproperties`).
+         */
+        get: operations["read_all_properties_api_v1_sequence_properties_get"];
+        /**
+         * Write Multiple Properties
+         * @description Writes several properties of `sequence` (`writemultipleproperties`): nothing is written unless every value is valid.
+         */
+        put: operations["write_multiple_properties_api_v1_sequence_properties_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Query All Actions
+         * @description The invocations of each action of `sequence`, newest first (`queryallactions`).
+         */
+        get: operations["query_all_actions_api_v1_sequence_actions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sequence/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Thing Description
+         * @description The W3C Thing Description of `sequence`: its properties, actions and events, and how to use them.
+         */
+        get: operations["things_sequence_api_v1_sequence__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -8502,6 +8851,81 @@ export interface components {
             [key: string]: string;
         };
         smart_scan_workflow_name_value: string;
+        sequence_autofocus_dz_value: number;
+        sequence_autofocus_enabled_value: boolean;
+        sequence_download_zip_input: {
+            name: string;
+        };
+        /**
+         * @description A model for JSON-serialised `.Blob` objects.
+         *
+         *     This model describes the JSON representation of a `.Blob`
+         *     and is used to describe the `.Blob` object in JSON responses.
+         *
+         *     The binary data may be retrieved with a ``GET`` request to the URL
+         *     specified in ``href`` which should return it directly in the body of
+         *     the response.
+         */
+        sequence_download_zip_output: {
+            /** Href */
+            href: string;
+            /**
+             * Media Type
+             * @default application/zip
+             * @constant
+             */
+            media_type: "application/zip";
+            /**
+             * Rel
+             * @default output
+             * @constant
+             */
+            rel?: "output";
+            /**
+             * Description
+             * @default The output from this action is not serialised to JSON, so it must be retrieved as a file. This link will return the file.
+             */
+            description?: string;
+        };
+        sequence_download_zip_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["sequence_download_zip_input"];
+            output?: components["schemas"]["sequence_download_zip_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
+        sequence_dt_value: number;
+        sequence_duration_value: number;
+        sequence_run_sequence_input: {
+            /** @default  */
+            name?: string;
+        };
+        sequence_run_sequence_output: string;
+        sequence_run_sequence_invocation: {
+            status: components["schemas"]["InvocationStatus"];
+            /** Format: uuid */
+            id: string;
+            action: string;
+            /** Format: uri */
+            href: string;
+            timeStarted: string | null;
+            timeRequested: string | null;
+            timeCompleted: string | null;
+            links?: components["schemas"]["LinkElement"][];
+            input: components["schemas"]["sequence_run_sequence_input"];
+            output?: components["schemas"]["sequence_run_sequence_output"] | null;
+            log: components["schemas"]["LogRecordModel"][];
+            error?: components["schemas"]["ProblemDetails"] | null;
+        };
     };
     responses: never;
     parameters: never;
@@ -14409,6 +14833,24 @@ export interface operations {
             };
         };
     };
+    delete_sequence_api_v1_gallery_sequences__id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     get_property_api_v1_gallery_list_data_get: {
         parameters: {
             query?: never;
@@ -17997,6 +18439,520 @@ export interface operations {
         };
     };
     things_smart_scan_api_v1_smart_scan__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThingDescription"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_sequence_autofocus_dz_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of autofocus_dz */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_autofocus_dz_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_sequence_autofocus_dz_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_autofocus_dz_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_sequence_autofocus_dz_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_sequence_autofocus_enabled_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of autofocus_enabled */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_autofocus_enabled_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_sequence_autofocus_enabled_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_autofocus_enabled_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_sequence_autofocus_enabled_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_sequence_download_zip_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of download_zip. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_sequence_download_zip_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_download_zip_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_download_zip_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_download_zip_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_sequence_dt_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of dt */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_dt_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_sequence_dt_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_dt_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_sequence_dt_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_property_api_v1_sequence_duration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of duration */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_duration_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_sequence_duration_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_duration_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_sequence_duration_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    list_invocations_api_v1_sequence_run_sequence_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A list of every invocation of run_sequence. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvocationSummary"][];
+                };
+            };
+        };
+    };
+    start_action_api_v1_sequence_run_sequence_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["sequence_run_sequence_input"];
+            };
+        };
+        responses: {
+            /** @description Action completed. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_run_sequence_output"];
+                };
+            };
+            /** @description Action has been invoked (and may still be running). */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["sequence_run_sequence_invocation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_all_properties_api_v1_sequence_properties_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    write_multiple_properties_api_v1_sequence_properties_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": Record<string, never>;
+            };
+        };
+        responses: {
+            /** @description Properties written */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    query_all_actions_api_v1_sequence_actions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: components["schemas"]["InvocationSummary"][];
+                    };
+                };
+            };
+        };
+    };
+    things_sequence_api_v1_sequence__get: {
         parameters: {
             query?: never;
             header?: never;

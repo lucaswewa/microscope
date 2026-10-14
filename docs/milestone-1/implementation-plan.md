@@ -461,7 +461,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P37 | Histo smart-spiral and C-Chip workflows | P27, P36 | L | — | Done |
 | P38 | Mosaic and deep-zoom pyramid core | P13 | L | 0030 | Done |
 | P39 | Live and final stitching | P35b, P38 | M | — | Done |
-| P40 | Slide Scan tab | P24b, P33, P37, P39 | L | — | In review |
+| P40 | Slide Scan tab | P24b, P33, P37, P39 | L | — | Done |
 
 **Checkpoint D, "Slide scanning":** all four workflows run on the simulator, show a live stitching preview, and end as a stitched deep-zoom image in the gallery.
 
@@ -469,7 +469,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P41 | Sequence engine (MDA-ready) | P21, P26, P31 | L | 0031 | Planned |
+| P41 | Sequence engine (MDA-ready) | P21, P26, P31 | L | 0031 | In review |
 | P42 | Sequence tab | P24b, P41 | M | — | Planned |
 
 **Checkpoint E, "Sequence":** a timelapse with autofocus runs, can be cancelled, and appears in the gallery with an image-sequence viewer.
