@@ -9485,6 +9485,83 @@
         }
       }
     },
+    "/api/v1/smart_scan/autofocus_enabled": {
+      "get": {
+        "summary": "Whether a scan autofocuses: at its start, and at each site.",
+        "description": "## Whether a scan autofocuses: at its start, and at each site.\n\nWhether a scan autofocuses: at its start, and at each site.\nOff, it takes one image at each site, where the stage is.",
+        "operationId": "get_property_api_v1_smart_scan_autofocus_enabled_get",
+        "responses": {
+          "200": {
+            "description": "Value of autofocus_enabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_autofocus_enabled_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Whether a scan autofocuses: at its start, and at each site.",
+        "description": "## Whether a scan autofocuses: at its start, and at each site.\n\nWhether a scan autofocuses: at its start, and at each site.\nOff, it takes one image at each site, where the stage is.",
+        "operationId": "set_property_api_v1_smart_scan_autofocus_enabled_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_autofocus_enabled_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/autofocus_enabled/reset": {
+      "post": {
+        "summary": "Reset Whether a scan autofocuses: at its start, and at each site..",
+        "description": "## Reset Whether a scan autofocuses: at its start, and at each site.\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_smart_scan_autofocus_enabled_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/smart_scan/download_stitched_zip": {
       "get": {
         "summary": "All invocations of download_stitched_zip.",
@@ -18206,6 +18283,9 @@
         "items": {
           "type": "string"
         }
+      },
+      "smart_scan_autofocus_enabled_value": {
+        "type": "boolean"
       },
       "smart_scan_download_stitched_zip_input": {
         "type": "object",

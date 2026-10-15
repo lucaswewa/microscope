@@ -2,7 +2,8 @@
 //! stack's sharpest image (P36) at each site with its sidecar, its record and
 //! its log in a folder of its own, and goes back to the start. A cancelled
 //! scan, and one that fails part of the way, go back to the start too. Only
-//! one scan runs at a time.
+//! one scan runs at a time. Without autofocus (P51), a scan takes one image
+//! at each site, where the stage is.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -174,6 +175,10 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     let preview = "/smart_scan/latest_preview_stitch.jpg";
     assert_eq!(client.get(preview).await.status.as_u16(), 404);
     put(client, "/smart_scan/stitch_automatically", json!(true)).await;
+    assert_eq!(
+        client.get("/smart_scan/autofocus_enabled").await.json(),
+        true
+    );
     let begin = client.get("/stage/position").await.json();
     let record = run(
         client,
@@ -220,6 +225,7 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     assert_eq!(saved["result"], "success");
     assert_eq!(saved["start"], begin);
     assert_eq!(saved["settings"]["order"], "snake");
+    assert_eq!(saved["settings"]["autofocus_enabled"], true);
     for (setting, value) in [("images_to_save", 1), ("min_images_to_test", 5), ("dz", 50)] {
         assert_eq!(saved["settings"][format!("stack_{setting}")], value);
     }
@@ -306,6 +312,44 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     let sidecar = images(&raster).into_iter().find(|f| f.ends_with(".json"));
     let sidecar = read_json(&raster.join("images").join(sidecar.expect("a sidecar")));
     assert_eq!(sidecar["width"], 820);
+    harness.stop().await;
+    std::fs::remove_dir_all(&data).expect("removed");
+}
+
+#[tokio::test]
+async fn a_scan_without_autofocus_takes_one_image_a_site_where_the_stage_is() {
+    let (harness, data) = start(true).await;
+    let client = harness.client();
+    // Out of focus, where autofocus would move away from.
+    let mut begin = client.get("/stage/position").await.json();
+    begin["z"] = json!(begin["z"].as_i64().unwrap() + 150);
+    let moved = run(client, "/stage/move_absolute", begin.clone()).await;
+    assert_eq!(moved["status"], "completed", "{moved}");
+    put(client, "/snake_workflow/stack_images_to_save", json!(3)).await;
+    put(client, "/smart_scan/autofocus_enabled", json!(false)).await;
+    let record = run(
+        client,
+        "/smart_scan/sample_scan",
+        json!({"scan_name": "flat"}),
+    )
+    .await;
+    assert_eq!(record["status"], "completed", "{record}");
+    assert_eq!(client.get("/stage/position").await.json(), begin);
+
+    let scan = data.join("scans/flat");
+    let jpegs: Vec<String> = (images(&scan).into_iter())
+        .filter(|f| f.ends_with(".jpeg"))
+        .collect();
+    assert_eq!(jpegs.len(), 4, "{jpegs:?}");
+    let z = begin["z"].as_i64().unwrap();
+    for jpeg in &jpegs {
+        assert!(jpeg.ends_with(&format!("_{z}.jpeg")), "{jpegs:?}");
+    }
+    let saved = read_json(&scan.join("scan.json"));
+    assert_eq!(saved["settings"]["autofocus_enabled"], false);
+    assert_eq!(saved["image_count"], 4);
+    let log = std::fs::read_to_string(scan.join("scan.log")).expect("read");
+    assert!(log.contains("Autofocus is off"), "{log}");
     harness.stop().await;
     std::fs::remove_dir_all(&data).expect("removed");
 }

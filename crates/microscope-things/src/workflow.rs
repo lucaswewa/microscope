@@ -15,7 +15,7 @@ use serde_json::{Value, json};
 use teta_wot::http::axum::Json;
 use teta_wot::prelude::*;
 
-use crate::autofocus::{self, Autofocus, AutofocusActions, StackSettings, SweepStart};
+use crate::autofocus::{self, Autofocus, AutofocusActions, StackOrigin, StackSettings, SweepStart};
 use crate::hardware::{CaptureMode, Position, StageApi};
 use crate::mapping::CameraStageMapping;
 use crate::ui::{OwnEntry, ThingUi, UiElement};
@@ -47,11 +47,16 @@ pub trait ScanWorkflow: Send + Sync {
     /// Whether it can start.
     fn ready(&self) -> bool;
     /// Starts a scan with the stage at `start`: it refuses if it can't, and
-    /// otherwise gets ready, such as by autofocusing, and fixes its settings.
-    fn begin(&self, start: Position) -> BoxFuture<'_, Result<Begun, ActionError>>;
-    /// With the stage at a site: focuses, and saves its images in `folder`,
-    /// a folder in the data folder.
-    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>>;
+    /// otherwise gets ready, such as by autofocusing if `autofocus`, and
+    /// fixes its settings.
+    fn begin(&self, start: Position, autofocus: bool) -> BoxFuture<'_, Result<Begun, ActionError>>;
+    /// With the stage at a site: focuses if `autofocus`, and saves its images
+    /// in `folder`, a folder in the data folder.
+    fn acquire(
+        &self,
+        folder: String,
+        autofocus: bool,
+    ) -> BoxFuture<'_, Result<Acquired, ActionError>>;
 }
 
 /// The order a `GridWorkflow` visits its grid in.
@@ -163,7 +168,7 @@ impl GridWorkflow {
         }
     }
 
-    async fn begin(&self, start: Position) -> Result<Begun, ActionError> {
+    async fn begin(&self, start: Position, focus: bool) -> Result<Begun, ActionError> {
         let overlap = self.overlap.get();
         let step = step(&self.mapping, overlap)?;
         let (order, counts) = (self.order, [self.x_count.get(), self.y_count.get()]);
@@ -176,9 +181,11 @@ impl GridWorkflow {
         let dz = self.autofocus_dz.get();
         let stack = self.stack();
         let images = autofocus::counts(&stack)?;
-        self.autofocus
-            .looping_autofocus(dz, SweepStart::Centre)
-            .await?;
+        if focus {
+            self.autofocus
+                .looping_autofocus(dz, SweepStart::Centre)
+                .await?;
+        }
         let settings = json!({
             "order": order,
             "overlap": overlap,
@@ -198,9 +205,9 @@ impl GridWorkflow {
         })
     }
 
-    async fn acquire(&self, folder: String) -> Result<Acquired, ActionError> {
+    async fn acquire(&self, folder: String, focus: bool) -> Result<Acquired, ActionError> {
         let dz = self.autofocus_dz.get();
-        smart_stack(&self.autofocus, folder, self.stack(), dz).await
+        at_site(&self.autofocus, folder, self.stack(), focus.then_some(dz)).await
     }
 
     /// The stack settings.
@@ -229,14 +236,14 @@ impl ScanWorkflow for ThingRef<GridWorkflow> {
             .is_some()
     }
 
-    fn begin(&self, start: Position) -> BoxFuture<'_, Result<Begun, ActionError>> {
+    fn begin(&self, start: Position, focus: bool) -> BoxFuture<'_, Result<Begun, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.begin(start).await })
+        Box::pin(async move { workflow.begin(start, focus).await })
     }
 
-    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>> {
+    fn acquire(&self, folder: String, focus: bool) -> BoxFuture<'_, Result<Acquired, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.acquire(folder).await })
+        Box::pin(async move { workflow.acquire(folder, focus).await })
     }
 }
 
@@ -264,9 +271,31 @@ pub(crate) fn step(
     Step::from_overlap(&matrix, size, overlap).map_err(ActionError::handled)
 }
 
+/// What's taken at a site: a smart stack that autofocuses over
+/// `autofocus_dz`, or without it one image where the stage is.
+pub(crate) async fn at_site(
+    autofocus: &ThingRef<Autofocus>,
+    folder: String,
+    stack: StackSettings,
+    autofocus_dz: Option<i64>,
+) -> Result<Acquired, ActionError> {
+    let Some(dz) = autofocus_dz else {
+        let one = StackSettings {
+            images_to_save: 1,
+            ..stack
+        };
+        let taken = (autofocus.run_basic_stack(folder, one, StackOrigin::Start)).await?;
+        return Ok(Acquired {
+            images: taken.len() as u32,
+            focus: None,
+        });
+    };
+    smart_stack(autofocus, folder, stack, dz).await
+}
+
 /// A smart stack at a site, saving even without focus so every site has an
 /// image. The planner is told of focus only if the stack found it.
-pub(crate) async fn smart_stack(
+async fn smart_stack(
     autofocus: &ThingRef<Autofocus>,
     folder: String,
     mut stack: StackSettings,

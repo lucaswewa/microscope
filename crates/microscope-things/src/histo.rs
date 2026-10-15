@@ -116,7 +116,7 @@ impl HistoScanWorkflow {
         mapped && (!self.skip_background.get() || self.background_detector.ready())
     }
 
-    async fn begin(&self, start: Position) -> Result<Begun, ActionError> {
+    async fn begin(&self, start: Position, focus: bool) -> Result<Begun, ActionError> {
         let overlap = self.overlap.get();
         let mut step = workflow::step(&self.mapping, overlap)?;
         let equal = self.equal_distances.get();
@@ -135,9 +135,11 @@ impl HistoScanWorkflow {
         let dz = self.autofocus_dz.get();
         let stack = self.stack();
         let images = autofocus::counts(&stack)?;
-        self.autofocus
-            .looping_autofocus(dz, SweepStart::Centre)
-            .await?;
+        if focus {
+            self.autofocus
+                .looping_autofocus(dz, SweepStart::Centre)
+                .await?;
+        }
         let settings = json!({
             "pattern": "smart_spiral",
             "overlap": overlap,
@@ -159,8 +161,8 @@ impl HistoScanWorkflow {
     }
 
     /// Nothing where it looks like background, if skipping it; otherwise a
-    /// smart stack.
-    async fn acquire(&self, folder: String) -> Result<Acquired, ActionError> {
+    /// smart stack, or one image without autofocus.
+    async fn acquire(&self, folder: String, focus: bool) -> Result<Acquired, ActionError> {
         if self.skip_background.get() {
             let check = self.check().await?;
             if !check.sample {
@@ -172,7 +174,7 @@ impl HistoScanWorkflow {
             }
         }
         let dz = self.autofocus_dz.get();
-        workflow::smart_stack(&self.autofocus, folder, self.stack(), dz).await
+        workflow::at_site(&self.autofocus, folder, self.stack(), focus.then_some(dz)).await
     }
 
     /// How the background detector judges what the camera sees now.
@@ -216,14 +218,14 @@ impl ScanWorkflow for ThingRef<HistoScanWorkflow> {
         ThingRef::thing(self).is_ready()
     }
 
-    fn begin(&self, start: Position) -> BoxFuture<'_, Result<Begun, ActionError>> {
+    fn begin(&self, start: Position, focus: bool) -> BoxFuture<'_, Result<Begun, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.begin(start).await })
+        Box::pin(async move { workflow.begin(start, focus).await })
     }
 
-    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>> {
+    fn acquire(&self, folder: String, focus: bool) -> BoxFuture<'_, Result<Acquired, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.acquire(folder).await })
+        Box::pin(async move { workflow.acquire(folder, focus).await })
     }
 }
 

@@ -3,7 +3,9 @@
 //! its images in `images/`, each with its sidecar (ADR-0025), its record in
 //! `scan.json`, and its log in `scan.log`. However a scan ends, the stage
 //! goes back to where it started, and folders without an image are removed.
-//! A scan can be downloaded as a ZIP archive (P35b).
+//! A scan can be downloaded as a ZIP archive (P35b). With
+//! `autofocus_enabled` off (P51), the workflow doesn't autofocus: it takes
+//! one image at each site where the stage is.
 //!
 //! Stitching (P39, [`crate::stitch`]): while a scan runs, its live preview
 //! is drawn again after each site that saves an image. Once it ends, it's
@@ -103,6 +105,10 @@ pub struct SmartScan {
     /// Whether each scan is stitched once it ends.
     #[setting(default = true)]
     stitch_automatically: Prop<bool>,
+    /// Whether a scan autofocuses: at its start, and at each site.
+    /// Off, it takes one image at each site, where the stage is.
+    #[setting(default = true)]
+    autofocus_enabled: Prop<bool>,
     /// Held while a scan runs, so only one does.
     running: tokio::sync::Mutex<()>,
     latest: Mutex<Option<Latest>>,
@@ -214,8 +220,12 @@ impl SmartScan {
         });
         let log = ScanLog(folder.join("scan.log"));
         log.write(&format!("Scanning with {workflow_name} from {}", at(start)));
+        let focus = self.autofocus_enabled.get();
+        if !focus {
+            log.write("Autofocus is off: one image at each site, where the stage is");
+        }
         let outcome = self
-            .scan(&ctx, &*workflow, start, (&name, &folder), &log)
+            .scan(&ctx, (&*workflow, focus), start, (&name, &folder), &log)
             .await;
         log.write("Going back to the start");
         let back = self.stage.move_absolute(start).await;
@@ -393,15 +403,18 @@ impl SmartScan {
     async fn scan(
         &self,
         ctx: &ActionCtx,
-        workflow: &dyn ScanWorkflow,
+        (workflow, focus): (&dyn ScanWorkflow, bool),
         start: Position,
         (name, folder): (&str, &Path),
         log: &ScanLog,
     ) -> Result<Finished, ActionError> {
         let Begun {
-            settings,
+            mut settings,
             mut planner,
-        } = workflow.begin(start).await?;
+        } = workflow.begin(start, focus).await?;
+        if let Some(settings) = settings.as_object_mut() {
+            settings.insert("autofocus_enabled".to_owned(), focus.into());
+        }
         self.update(|details| {
             details.settings = Some(settings);
             details.scan_phase = ScanPhase::Scanning;
@@ -418,7 +431,7 @@ impl SmartScan {
             let target = Position::new(site[0], site[1], z);
             log.write(&format!("Moving to {}", at(target)));
             self.stage.move_absolute(target).await?;
-            let acquired = workflow.acquire(images.clone()).await?;
+            let acquired = workflow.acquire(images.clone(), focus).await?;
             let (imaged, focused) = (acquired.images > 0, acquired.focus.is_some());
             planner.visited(acquired.focus.unwrap_or(z), imaged, focused);
             self.update(|details| details.image_count += acquired.images);
