@@ -43,13 +43,11 @@ describe('the app', () => {
     expect(wrapper.find('.live-image').exists()).toBe(true)
   })
 
-  const built = ['view', 'control', 'slide-scan', 'sequence', 'gallery', 'settings', 'logging']
-  for (const destination of DESTINATIONS.filter(({ id }) => !built.includes(id))) {
-    it(`has a placeholder for ${destination.label}, built in ${destination.builtIn}`, async () => {
+  for (const destination of DESTINATIONS) {
+    it(`opens the ${destination.label} page`, async () => {
       const app = await mountApp(`/${destination.id}`)
       wrapper = app.wrapper
       expect(wrapper.get('h1').text()).toBe(destination.label)
-      expect(wrapper.text()).toContain(`built in ${destination.builtIn}`)
     })
   }
 

@@ -12,15 +12,13 @@ import GalleryPage from '@/gallery/GalleryPage.vue'
 import LoggingPage from '@/logging/LoggingPage.vue'
 import SlideScanPage from '@/scan/SlideScanPage.vue'
 import SequencePage from '@/sequence/SequencePage.vue'
+import AboutPage from '@/system/AboutPage.vue'
+import PowerPage from '@/system/PowerPage.vue'
 import ControlPage from '@/views/ControlPage.vue'
-import PlaceholderPage from '@/views/PlaceholderPage.vue'
 import SettingsPage from '@/views/SettingsPage.vue'
 import ViewPage from '@/views/ViewPage.vue'
 
-/** The layout each destination's page will have, which its placeholder shows. */
-const LAYOUTS: Record<string, { pane?: 'narrow' | 'wide'; liveImage?: boolean }> = {}
-
-/** The pages built so far; the other destinations show a placeholder. */
+/** Each destination's page. */
 const PAGES: Record<string, Component> = {
   view: ViewPage,
   control: ControlPage,
@@ -29,18 +27,15 @@ const PAGES: Record<string, Component> = {
   gallery: GalleryPage,
   settings: SettingsPage,
   logging: LoggingPage,
+  about: AboutPage,
+  power: PowerPage,
 }
 
 /** One route per destination in the rail. Settings has sections: `/#/settings/camera`. */
 const destinationRoutes: RouteRecordRaw[] = DESTINATIONS.map((destination) => ({
   path: destination.id === 'settings' ? '/settings/:section?' : `/${destination.id}`,
   name: destination.id,
-  ...(PAGES[destination.id]
-    ? { component: PAGES[destination.id] }
-    : {
-        component: PlaceholderPage,
-        props: { destinationId: destination.id, ...LAYOUTS[destination.id] },
-      }),
+  component: PAGES[destination.id]!,
 }))
 
 /** Pages for development only: left out of production builds. */

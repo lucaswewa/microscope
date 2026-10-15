@@ -71,8 +71,11 @@ pub async fn run(options: Options, mut stop: watch::Receiver<bool>) -> ExitCode 
     let log = &options.log;
     let mut policy = Policy::default();
     let mut opened = !options.open_browser;
+    // Once the server has served on a port, it's preferred, so the app
+    // finds it there again after a restart.
+    let mut port = options.port;
     loop {
-        let code = match serve_once(&options, &mut stop, &mut opened).await {
+        let code = match serve_once(&options, &mut port, &mut stop, &mut opened).await {
             Ok(Some(code)) => code,
             Ok(None) => return ExitCode::SUCCESS,
             Err(message) => {
@@ -102,15 +105,17 @@ pub async fn run(options: Options, mut stop: watch::Receiver<bool>) -> ExitCode 
     }
 }
 
-/// Starts the server once and runs it until it exits, returning its exit
-/// code, or `None` once the launcher has stopped it.
+/// Starts the server once, on `preferred` if it's free, and runs it until it
+/// exits, returning its exit code, or `None` once the launcher has stopped
+/// it. The port it serves on becomes `preferred`.
 async fn serve_once(
     options: &Options,
+    preferred: &mut u16,
     stop: &mut watch::Receiver<bool>,
     opened: &mut bool,
 ) -> Result<Option<Option<i32>>, String> {
     let log = &options.log;
-    let port = setup::port(options.port);
+    let port = setup::port(*preferred);
     let mut command = Command::new(&options.server);
     command
         .arg("-c")
@@ -145,6 +150,8 @@ async fn serve_once(
                 waiting = false;
                 let Ok(address) = address else { continue };
                 log.say(&format!("the microscope is at {address}"));
+                let served = address.rsplit(':').next().and_then(|port| port.parse().ok());
+                *preferred = served.unwrap_or(*preferred);
                 if !std::mem::replace(opened, true) {
                     open(&address, log);
                 }

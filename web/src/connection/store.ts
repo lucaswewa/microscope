@@ -45,6 +45,8 @@ export const useConnectionStore = defineStore('connection', () => {
   const hostname = ref<string>()
   /** Why the last attempt, or the connection, failed. */
   const error = shallowRef<unknown>()
+  /** Whether this app shut the server down: then it stops trying to reach it. */
+  const shutDown = ref(false)
   const recent = ref(readRecent())
 
   // Each connect() starts a new attempt; answers to older ones are ignored.
@@ -66,6 +68,7 @@ export const useConnectionStore = defineStore('connection', () => {
     descriptions.value = undefined
     hostname.value = undefined
     error.value = undefined
+    shutDown.value = false
     retryDelay = FIRST_RETRY_MS
     state.value = 'connecting'
     window.history.replaceState(window.history.state, '', locationFor(next, window.location))
@@ -132,6 +135,12 @@ export const useConnectionStore = defineStore('connection', () => {
     state.value = 'idle'
   }
 
+  /** Records that this app shut the server down, and stops trying to reach it. */
+  function markShutDown() {
+    disconnect()
+    shutDown.value = true
+  }
+
   /** Connects as the page's address asks (`?microscope=`), or to the server that served it. */
   function start() {
     void connect(profileFromLocation(window.location))
@@ -159,10 +168,12 @@ export const useConnectionStore = defineStore('connection', () => {
     descriptions,
     hostname,
     error,
+    shutDown,
     recent,
     connect,
     retry,
     disconnect,
+    markShutDown,
     start,
     forget,
     isAvailable,

@@ -127,3 +127,31 @@ test('the calibration wizard calibrates a fresh microscope', async ({ page }) =>
     server.kill()
   }
 })
+
+test('shuts a microscope down from the Power tab, and reconnects once it’s back', async ({
+  page,
+}) => {
+  test.setTimeout(60_000)
+  let server = await startServer(fresh.config)
+  try {
+    await page.goto(`/?microscope=127.0.0.1:${PORT}#/power`)
+    await expect(page.getByRole('dialog')).toContainText('Welcome to your microscope')
+    await page.keyboard.press('Escape')
+    await page.getByRole('button', { name: 'Close the wizard' }).click()
+    // Another microscope, which no launcher manages.
+    await expect(page.getByRole('button', { name: 'Disconnect' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Restart' })).toHaveCount(0)
+
+    await page.getByRole('button', { name: 'Shut down' }).click()
+    await page.getByRole('alertdialog').getByRole('button', { name: 'Shut down' }).click()
+    await expect(page.getByRole('alert')).toContainText('The microscope has shut down')
+    await expect.poll(() => server.exitCode, { timeout: 15_000 }).toBe(0)
+
+    server = await startServer(fresh.config)
+    await page.getByRole('button', { name: 'Reconnect' }).click()
+    await expect(page.locator('.connection-indicator')).toHaveAttribute('data-state', 'connected')
+    await expect(page.getByRole('alert')).toBeHidden()
+  } finally {
+    server.kill()
+  }
+})

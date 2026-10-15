@@ -1,6 +1,6 @@
 # P45: Local launcher
 
-- Status: In review
+- Status: Done
 - Pull request: [#58](https://github.com/lucaswewa/microscope/pull/58)
 - ADRs: [ADR-0033](../../adr/0033-local-launcher-and-its-tauri-successor.md)
 - Spec: [phases.md#p45](../phases.md#p45)
