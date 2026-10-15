@@ -48,5 +48,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0031](0031-sequence-model.md) | Sequence model | Accepted | P41 |
 | [0032](0032-sidecar-process-contract.md) | Sidecar process contract | Accepted | P44 |
 | [0033](0033-local-launcher-and-its-tauri-successor.md) | Local launcher and its Tauri successor | Accepted | P45 |
+| [0034](0034-visual-regression-baselines.md) | Visual regression baselines | Accepted | P47 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

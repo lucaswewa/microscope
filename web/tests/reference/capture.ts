@@ -70,7 +70,7 @@ const SHOTS: Shot[] = [
   {
     name: 'settings-mapping',
     ofm: ofmSettings('Camera to Stage Mapping'),
-    route: '/#/settings/mapping',
+    route: '/#/settings/camera-stage-mapping',
   },
   { name: 'logging', ofm: ofmTab('logging'), route: '/#/logging' },
   { name: 'about', ofm: ofmTab('about'), route: '/#/about' },

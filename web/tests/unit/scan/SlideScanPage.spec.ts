@@ -139,9 +139,14 @@ describe('the Slide Scan tab', () => {
     await open()
     expect(pane().get('[role="combobox"]').text()).toContain('Snake scan')
     expect(pane().text()).toContain('Back and forth.')
-    expect(pane().text()).toContain('Snake panel')
+    // The sections start closed, so Start Smart Scan shows.
+    expect(pane().text()).not.toContain('Snake panel')
+    expect(button('Start Smart Scan')).toBeDefined()
     // Not stitching automatically is a change, shown on the closed section.
     expect(pane().text()).toContain('Stitching settings (changed)')
+    await button('Scan settings')!.trigger('click')
+    await flushPromises()
+    expect(pane().text()).toContain('Snake panel')
 
     await pane().get('[role="combobox"]').trigger('keydown', { key: 'Enter' })
     await flushPromises()

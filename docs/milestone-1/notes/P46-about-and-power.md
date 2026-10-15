@@ -1,6 +1,6 @@
 # P46: About and Power tabs
 
-- Status: In review
+- Status: Done
 - Pull request: [#59](https://github.com/lucaswewa/microscope/pull/59)
 - ADRs: none new
 - Spec: [phases.md#p46](../phases.md#p46)
