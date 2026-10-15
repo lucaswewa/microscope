@@ -67,3 +67,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P47 | [Visual fidelity and accessibility pass](P47-visual-and-accessibility.md) | Done |
 | P48 | [End-to-end, soak and performance](P48-end-to-end-soak-performance.md) | Done |
 | P49 | [Packaging and milestone close-out](P49-packaging.md) | Done |
+| P50 | [Control pane: a steady layout and the wide pane](P50-control-pane.md) | In review |

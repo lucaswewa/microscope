@@ -89,6 +89,8 @@ async function setHome() {
   <div class="position-section">
     <div class="position-section__live">
       <span>{{ live ? `x ${live.x}, y ${live.y}, z ${live.z}` : 'Position unknown' }}</span>
+      <!-- Always there, so nothing moves when the stage starts and stops. -->
+      <span class="position-section__moving" role="status">{{ moving ? 'Moving…' : '' }}</span>
       <IconButton
         :icon="refreshIcon"
         label="Fill in where the stage is"
@@ -97,15 +99,18 @@ async function setHome() {
         @click="refresh"
       />
     </div>
-    <p v-if="moving" class="position-section__moving">Moving…</p>
-    <label v-for="axis in AXES" :key="axis" class="position-section__axis">
-      <span>{{ axis }}</span>
-      <NumberField v-model="target[axis]" size="sm" :step="1" @submit="move" />
-    </label>
-    <AppButton v-if="running" variant="danger" @click="running.cancel()">Cancel</AppButton>
-    <AppButton v-else variant="primary" :disabled="!stage" @click="move">Move</AppButton>
-    <AppButton :disabled="!stage || !!running" @click="setHome">Set Home</AppButton>
-    <AppButton :disabled="!stage || !!running" @click="moveHome">Move Home</AppButton>
+    <div class="position-section__row">
+      <label v-for="axis in AXES" :key="axis" class="position-section__axis">
+        <span>{{ axis }}</span>
+        <NumberField v-model="target[axis]" size="sm" :step="1" @submit="move" />
+      </label>
+    </div>
+    <div class="position-section__row">
+      <AppButton v-if="running" variant="danger" @click="running.cancel()">Cancel</AppButton>
+      <AppButton v-else variant="primary" :disabled="!stage" @click="move">Move</AppButton>
+      <AppButton :disabled="!stage || !!running" @click="setHome">Set Home</AppButton>
+      <AppButton :disabled="!stage || !!running" @click="moveHome">Move Home</AppButton>
+    </div>
   </div>
 </template>
 
@@ -127,8 +132,14 @@ async function setHome() {
 }
 
 .position-section__moving {
-  margin: 0;
+  margin-left: auto;
   color: var(--color-accent-text);
+}
+
+.position-section__row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
 }
 
 .position-section__axis {

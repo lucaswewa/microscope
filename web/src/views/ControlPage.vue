@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// The Control tab: navigation in a narrow pane beside the live image. The
-// arrow keys and PgUp/PgDn move the stage while it is open, the mouse wheel
-// over the image focuses, and a double-click on it moves there.
+// The Control tab: navigation in a pane beside the live image, as wide as
+// Slide Scan's and Sequence's. The arrow keys and PgUp/PgDn move the stage
+// while it is open, the mouse wheel over the image focuses, and a
+// double-click on it moves there.
 import { ref } from 'vue'
 
 import { useThing } from '@/api/things'
@@ -32,7 +33,7 @@ const moveTo = useClickToMove()
 
 <template>
   <div class="control-page">
-    <ControlPane width="narrow">
+    <ControlPane width="wide">
       <h1 class="visually-hidden">Control</h1>
       <AppAccordion v-model="open">
         <AccordionSection value="position" title="Position">

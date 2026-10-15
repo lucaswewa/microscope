@@ -79,6 +79,8 @@ let finished: boolean
 let focusCancelled: boolean
 /** The frames' size when the mapping was calibrated, if it was. */
 let resolution: number[] | null
+/** The events the stage's `moving` sends. */
+let movingEvents: string[]
 
 /** An invocation record, running or completed. */
 const record = (id: string, status: string) => ({
@@ -94,6 +96,7 @@ beforeEach(() => {
   finished = false
   focusCancelled = false
   resolution = [820, 616]
+  movingEvents = []
   const server = fakeServer({
     'GET /api/v1/thing_descriptions/': {
       system,
@@ -107,7 +110,8 @@ beforeEach(() => {
       request.headers.get('Accept') === 'text/event-stream'
         ? eventStream(['data: {"x": 1, "y": 2, "z": 3}\n\n'], request, { open: true })
         : json({ x: 5, y: 6, z: 7 }),
-    'GET /api/v1/stage/moving': (request: Received) => eventStream([], request, { open: true }),
+    'GET /api/v1/stage/moving': (request: Received) =>
+      eventStream(movingEvents, request, { open: true }),
     'POST /api/v1/stage/move_absolute': () => json(record('m', 'running'), 201),
     'GET /api/v1/action_invocations/m': () => json(record('m', finished ? 'completed' : 'running')),
     'DELETE /api/v1/action_invocations/m': () => {
@@ -206,6 +210,18 @@ describe('the Control tab', () => {
     await vi.advanceTimersByTimeAsync(1000)
     expect(received.some((r) => r.method === 'DELETE')).toBe(true)
     expect(button('Move').exists()).toBe(true)
+  })
+
+  it('says when the stage is moving, in a line that is always there', async () => {
+    await open()
+    const status = () => wrapper!.find('.position-section [role="status"]')
+    expect(status().exists()).toBe(true)
+    expect(status().text()).toBe('')
+
+    wrapper!.unmount()
+    movingEvents = ['data: true\n\n']
+    await open()
+    expect(status().text()).toBe('Moving…')
   })
 
   it('sets Home, and moves Home only once you confirm', async () => {
