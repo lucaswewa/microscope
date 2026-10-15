@@ -63,6 +63,17 @@ cargo build --release -p microscope-server
 
 `target/release/microscope-server.exe -c configs/simulation.json` then serves the API and the app on its own.
 
+### Run the launcher
+
+The launcher is the one command a user needs ([ADR-0033](docs/adr/0033-local-launcher-and-its-tauri-successor.md)). It keeps the server's settings, data and logs in `%LOCALAPPDATA%\Microscope`, starts the server on port 5000 (or another, if that's taken), and opens the app in the browser. It starts the server again when the server asks to restart, or after a crash. Ctrl-C stops both.
+
+```powershell
+cargo build -p microscope-server -p microscope-launcher
+target\debug\microscope-launcher.exe
+```
+
+It runs the `microscope-server` beside it, so build both; a release build, after the web app, gives a server with the app embedded. `-c <config>` uses another configuration, `--no-browser` doesn't open the app, `--root <folder>` keeps everything in another folder, and `--help` lists the rest. Everything the server prints also goes to `logs\launcher.log` in that folder.
+
 Logs go to the console, to daily files in `.microscope/logs/`, and to the server log at <http://127.0.0.1:5000/api/v1/log/>; `/api/v1/logfile/` downloads today's file. `--debug` adds DEBUG events from the application and `teta-wot` ([ADR-0008](docs/adr/0008-server-logging-and-log-endpoints.md)).
 
 The workspace's crates and the rules between them are described in [ADR-0005](docs/adr/0005-repository-layout-and-crate-boundaries.md).
