@@ -69,15 +69,16 @@ The release workflow runs on this pull request, since it changes the packaging. 
 - **`teta-wot` isn't in the Rust list:** its crates are unpublished and declare no licence, so cargo-about can't place them. `NOTICE` names it, MIT, instead.
 - **The template** uses triple braces, so licence texts aren't HTML-escaped (`&lt;` in a plain-text file).
 - **cargo-about needs `--features cli`** to install its command.
+- **`cargo fetch` first:** cargo-about's `cargo metadata` reads every platform's crates, Android's included, which a Windows build doesn't download. The first CI run failed on that, since my computer already had them.
 - **The launcher's `--host`** was missing: the guide's "connecting from another computer" needed it, and without it the launcher's server answered only its own computer. The README warns there's no password.
 - **The smoke test** in the workflow starts the unzipped launcher with `--port 0` and its own `--root`, reads the address it prints, and checks the health route. It runs before the zip is kept or published, so a release whose launcher can't start isn't published.
 - **The retrospective and the readiness checklist** are new documents rather than notes. The README links to both.
-- **Size:** 223 changed lines of hand-written code, within M's 600 and my estimate of about 210.
+- **Size:** 227 changed lines of hand-written code, within M's 600 and my estimate of about 210.
 
   | Part | Lines |
   |---|---|
   | The release workflow | 72 |
-  | Packaging, and cargo-about's configuration and template | 73 |
+  | Packaging, and cargo-about's configuration and template | 77 |
   | The npm licences' plugin | 39 |
   | The launcher's `--host`, and its test | 36 |
   | `.gitignore` | 3 |

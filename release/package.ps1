@@ -27,7 +27,11 @@ Copy-Item configs/*.json (Join-Path $stage 'configs')
 Copy-Item README.md, LICENSE, NOTICE $stage
 
 # The Rust crates' licences, from the sources Cargo has: cargo-about runs
-# offline, and fails on a licence the configuration doesn't accept.
+# offline, and fails on a licence the configuration doesn't accept. Its
+# `cargo metadata` reads every platform's crates, which a Windows build
+# doesn't download, so they're fetched first.
+cargo fetch --locked
+if ($LASTEXITCODE -ne 0) { throw 'cargo fetch failed' }
 cargo about generate --offline --fail -c release/about.toml -o (Join-Path $stage 'THIRD-PARTY-RUST.txt') release/about.hbs
 if ($LASTEXITCODE -ne 0) { throw 'cargo about failed' }
 # The npm packages' licences, which the web app's build lists.
