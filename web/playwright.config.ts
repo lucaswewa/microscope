@@ -1,3 +1,5 @@
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -6,13 +8,39 @@ import { defineConfig, devices } from '@playwright/test'
 const port = 5098
 const root = fileURLToPath(new URL('..', import.meta.url))
 
+/**
+ * The simulation's configuration, keeping the server's settings, data and
+ * logs in a folder of its own, emptied for each run: the tests start from a
+ * fresh microscope, as in CI, and leave the repository's `.microscope`
+ * alone. Its path, quoted.
+ */
+function freshConfig() {
+  const folder = path.join(tmpdir(), 'microscope-e2e-server')
+  const file = path.join(folder, 'config.json')
+  // The workers load this file too; only the runner, which starts the
+  // server, writes it.
+  if (process.env.TEST_WORKER_INDEX === undefined) {
+    rmSync(folder, { recursive: true, force: true })
+    mkdirSync(folder, { recursive: true })
+    const config = JSON.parse(readFileSync(path.join(root, 'configs/simulation.json'), 'utf8'))
+    config.settings_folder = path.join(folder, 'settings')
+    config.application_config = {
+      data_folder: path.join(folder, 'data'),
+      log_folder: path.join(folder, 'logs'),
+    }
+    writeFileSync(file, JSON.stringify(config))
+  }
+  return `"${file}"`
+}
+
 // The server under test serves the app at / (ADR-0016). By default it's a
 // debug build of this checkout, serving the web app's fresh build from
 // web/dist. CI sets MICROSCOPE_SERVER, relative to the repository's root, to
 // a release build with the app embedded.
+const config = freshConfig()
 const serverCommand = process.env.MICROSCOPE_SERVER
-  ? `"${path.resolve(root, process.env.MICROSCOPE_SERVER)}" -c configs/simulation.json --port ${port}`
-  : `npm --prefix web run build && cargo run -q -p microscope-server -- -c configs/simulation.json --port ${port} --webapp-dir web/dist`
+  ? `"${path.resolve(root, process.env.MICROSCOPE_SERVER)}" -c ${config} --port ${port}`
+  : `npm --prefix web run build && cargo run -q -p microscope-server -- -c ${config} --port ${port} --webapp-dir web/dist`
 
 // End-to-end and visual tests, against the app as the server serves it.
 // (tests/unit is Vitest's.)

@@ -22,10 +22,11 @@
 - **The tolerance** is 1% of the pixels (`maxDiffPixelRatio: 0.01` in `playwright.config.ts`), for small differences in font rendering between Windows machines. A real change to the layout or colours moves far more.
 - **What changes from run to run is fixed** ([`tests/visual/pages.ts`](../../web/tests/visual/pages.ts)):
   - the live stream is off;
-  - the test answers for the stage's position, the computer's name and version, the gallery, the log, and the scan's and sequence's settings;
+  - the test answers for the stage's position, inversion and measured range, the computer's name and version, the gallery, the log, and the scan's and sequence's settings;
   - one time zone and locale;
   - reduced motion, so no transition is caught half-way.
-- **Updating:** `npx playwright test tests/visual --update-snapshots`, after a change to the look made on purpose, against a fresh server. The new images are reviewed in the pull request.
+- **The server Playwright starts** keeps its settings, data and logs in a temporary folder, emptied for each run, as CI's is fresh. It doesn't share the repository's `.microscope` with development runs.
+- **Updating:** `npx playwright test tests/visual --update-snapshots`, after a change to the look made on purpose, with no other server on port 5098, so Playwright starts a fresh one. The new images are reviewed in the pull request.
 - **Accessibility checks** use the same pages and states ([`tests/e2e/accessibility.spec.ts`](../../web/tests/e2e/accessibility.spec.ts)):
   - **axe's WCAG 2.1 A and AA rules** on each page and state, in both themes, must find nothing;
   - **with the keyboard alone,** Tab must reach each page's controls, each showing its focus ring.

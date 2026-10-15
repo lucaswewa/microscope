@@ -7,10 +7,11 @@ import { LOG } from '../unit/logging/fixture'
 /**
  * Every tab and Settings section, and a few key states, as the visual and
  * accessibility tests open them (ADR-0034), with what changes from run to
- * run fixed: the live stream off, and the stage, the computer, the gallery,
- * the log, and the scan's and sequence's settings answered by the test. Use
- * them with `STEADY`: one time zone and locale, and no transitions, which
- * the app drops for reduced motion.
+ * run fixed: the live stream off, and the stage and its measured range, the
+ * computer, the gallery, the log, and the scan's and sequence's settings
+ * answered by the test, whatever a server has saved. Use them with
+ * `STEADY`: one time zone and locale, and no transitions, which the app
+ * drops for reduced motion.
  */
 export const STEADY = { timezoneId: 'UTC', locale: 'en-US', reducedMotion: 'reduce' } as const
 
@@ -48,6 +49,8 @@ export async function fix(page: Page) {
     page.route(`**/api/v1/${path}`, (route) => route.fulfill({ json }))
   await answer('stage/position', { x: 0, y: 0, z: 0 })
   await answer('stage/moving', false)
+  await answer('stage/axis_inverted', { x: false, y: false, z: false })
+  await answer('stage_measure/calibrated_range', null)
   await answer('system/hostname', 'lab-pc')
   await answer('system/version_data', { version: '0.1.0', version_source: 'v0.1.0' })
   await answer('system/os_version', 'Windows 11')

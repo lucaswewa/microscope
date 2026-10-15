@@ -23,6 +23,7 @@ A last look at the whole app beside OpenFlexure's references, and checks that ke
 |---|---|
 | `web/tests/visual/pages.ts` | Every page and state the visual and accessibility tests open, with what changes from run to run answered by the test |
 | `web/tests/visual/shell.spec.ts` | The baselines, now for every page |
+| `web/playwright.config.ts` | The server Playwright starts keeps its settings, data and logs in a temporary folder, emptied for each run |
 | `web/tests/e2e/accessibility.spec.ts` | axe, and the keyboard walk |
 | `web/src/scan/SlideScanPage.vue` | Its sections start closed |
 | `web/tests/reference/capture.ts` | The mapping section's route |
@@ -36,6 +37,8 @@ npm --prefix web run build
 cd web
 npx playwright test tests/visual tests/e2e/accessibility.spec.ts
 ```
+
+With no server on port 5098, Playwright starts one, from a fresh folder of its own; with one, it uses that.
 
 1. **Everything passes:** 42 screenshots, axe on 17 pages and states in both themes, and 14 keyboard walks.
 2. **Slide Scan** opens with its sections closed, and Start Smart Scan in view, at 1280 × 800.
@@ -77,16 +80,23 @@ From the app's screenshots beside OpenFlexure's, taken with `npm run capture:ref
 
 - **The baselines' pages answer for what changes from run to run,** rather than masking it, so About's facts and the log are in the images. See ADR-0034.
 - **They're independent of the other tests:** the scan and sequence tests leave their own settings behind, which the pages answer for.
+- **And of what a server has saved.** The project owner's first run of "How to try it" failed Settings > Stage.
+  - **Why:** with no server on 5098, Playwright started one that kept its settings in the repository's `.microscope`, shared with the owner's own runs. There, the stage's range of motion had been measured.
+  - **Two fixes:**
+    - the pages now answer for the stage's inversion and its measured range too;
+    - Playwright's own server keeps its settings, data and logs in a temporary folder, emptied for each run, as fresh as CI's. It no longer reads or writes `.microscope`, whose captures stayed as they were through a whole run.
+  - **Checked** with a copy of the owner's settings: Settings > Stage failed without the fix, as the owner saw, and passes with it.
 - **The 1920 × 1080 baselines** are the four main layouts, not every page: the others only grow.
 - **axe's licence** is MPL-2.0, a file-level copyleft, allowed at the project owner's choice as a dev dependency. It isn't in the app.
 - **`npm audit`** reports the same five findings as on `main`, all in existing development tooling; the new packages add none.
-- **Size:** 264 changed lines of hand-written code, within L's 900 and my estimate of about 260. The 42 images, 2.5 MB, aren't counted.
+- **Size:** 299 changed lines of hand-written code, within L's 900, over my estimate of about 260 by the fix above. The 42 images, 2.5 MB, aren't counted.
 
   | Part | Lines |
   |---|---|
-  | The pages and their answers | 142 |
+  | The pages and their answers | 145 |
   | The visual tests | 54 |
   | The accessibility tests | 53 |
+  | Playwright's own server, in a fresh folder | 32 |
   | Slide Scan and its test | 10 |
   | The capture route, a fixture's import, `package.json` | 5 |
 
@@ -99,7 +109,7 @@ From the app's screenshots beside OpenFlexure's, taken with `npm run capture:ref
 
 **Mutation checks:** I broke 4 things, and a test failed for each: the focus ring removed, muted text too faint, Slide Scan's settings open again, and buttons without their names.
 
-All ran twice in a row, and again after the whole end-to-end suite, without a flake.
+All ran twice in a row, and again after the whole end-to-end suite, without a flake. They pass on a fresh server, on one the whole suite has used, and on a copy of the project owner's settings.
 
 ## Follow-ups and known gaps
 
