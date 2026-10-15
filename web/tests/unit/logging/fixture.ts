@@ -1,4 +1,4 @@
-import type { ServerLogRecord } from '@/logging/log'
+import type { ServerLogRecord } from '../../../src/logging/log'
 
 /** An invocation: its ID, Thing and action. */
 type Invocation = [string, string | null, string | null]

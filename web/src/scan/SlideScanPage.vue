@@ -41,7 +41,8 @@ const workflow = ref<string>()
 const names = ref<Record<string, string>>({})
 const descriptions = ref<Record<string, string>>({})
 const sampleId = ref('')
-const open = ref(['settings'])
+// Closed, so Start Smart Scan shows without scrolling (P47).
+const open = ref<string[]>([])
 const automatic = ref<boolean>()
 
 watch(
