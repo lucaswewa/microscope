@@ -15,6 +15,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - [Stage 6: Slide scanning](#stage-6-slide-scanning): [P34](#p34) [P35](#p35) [P35b](#p35b) [P36](#p36) [P37](#p37) [P38](#p38) [P39](#p39) [P40](#p40)
 - [Stage 7: Sequence](#stage-7-sequence): [P41](#p41) [P42](#p42)
 - [Stage 8: System, launcher and delivery](#stage-8-system-launcher-and-delivery): [P43](#p43) [P44](#p44) [P45](#p45) [P46](#p46) [P47](#p47) [P48](#p48) [P49](#p49)
+- [Stage 9: Polish after the first release](#stage-9-polish-after-the-first-release): [P50](#p50) [P51](#p51) [P52](#p52) [P53](#p53) [P53b](#p53b) [P54](#p54)
 
 ---
 
@@ -952,3 +953,104 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 - A user guide in the README: running it, connecting remotely, where data lives, and resetting settings.
 - A milestone retrospective in the notes.
 - A milestone-2 readiness checklist: driver interfaces, correlation stitching, the Linux and Pi question, and authentication.
+
+---
+
+## Stage 9: Polish after the first release
+
+Added after `v0.1.0`, at the project owner's request ([plan Appendix D](implementation-plan.md#appendix-d-change-log)).
+
+<a id="p50"></a>
+### P50: Control pane: a steady layout and the wide pane
+
+**Goal.** The Control tab's pane doesn't jump, and matches Slide Scan's and Sequence's.
+**Depends on** P20, P47 · **Size** S · **ADRs** —
+
+**Scope**
+- The Position section keeps its "Moving…" line in place whether or not the stage moves, so nothing below it shifts. The line is a status that screen readers announce.
+- The Control tab's pane is wide, as Slide Scan's and Sequence's are. Its sections, buttons and direction pad are laid out for the width. Settings keeps the narrow pane.
+
+**Tests**
+- A unit test that the "Moving…" line is there whether or not the stage moves.
+- The Control tab's visual baselines, updated.
+
+<a id="p51"></a>
+### P51: Slide Scan: an autofocus switch
+
+**Goal.** Scan without autofocus, as a sequence can.
+**Depends on** P37, P40 · **Size** M · **ADRs** —
+
+**Scope**
+- `smart_scan.autofocus_enabled`, on by default and kept with the settings, passed to the workflow when a scan begins.
+- Off, a scan doesn't autofocus at its start, and takes one image at each site where the stage is, instead of a smart z-stack. C-Chip keeps its basic stack, which isn't autofocus.
+- The scan's record and log say whether it autofocused.
+- A switch in the Slide Scan pane, by the stitching setting.
+
+**Tests**
+- With the autofocus fake: off, nothing autofocuses and each site has one image; on, as before.
+- The switch in the tab, and a quick scan with autofocus off, end to end.
+
+<a id="p52"></a>
+### P52: Sequence viewer: smooth switching and playback
+
+**Goal.** Step through a sequence, or play it, without the image flashing.
+**Depends on** P33, P42 · **Size** M · **ADRs** —
+
+**Scope**
+- Moving to another image keeps the current one shown until the next has loaded, then swaps them. The zoom and pan stay as they were, and the next images are loaded ahead.
+- A Play/Pause button, the seconds each image shows, and whether to loop. Playing waits for each image, so a slow connection slows it rather than making it flash. The slider and the count follow it.
+
+**Tests**
+- Playing, pausing, stopping at the end and looping, with a fake clock.
+- End to end: stepping through a sequence never shows an empty view.
+
+<a id="p53"></a>
+### P53: Overlay layers, with image outlines on stitched scans
+
+**Goal.** Draw information over an image, in layers that can be turned on and off; first, where each image of a scan lies in its stitched mosaic.
+**Depends on** P39, P40 · **Size** L · **ADRs** 0036
+
+**Scope**
+- Stitching records where each image went: `stitched/tiles.json`, with each image's name and rectangle in the mosaic. The live preview's layout is published with it.
+- Overlay layers in the web app: each with an id, a label and whether it's shown, and shapes (rectangles, lines, points and labels) in the image's pixels. One layer of SVG over the image draws them, with lines and labels the same size on screen at any zoom, visible on light and dark images. An adapter places it over a plain image; the deep-zoom viewer's follows in P53b.
+- A Layers menu turns each layer on and off, and remembers the choice.
+- The first layer, Image outlines: a dashed rectangle around each image, labelled with its number in the scan, with its file name on hover. It's shown over the Slide Scan tab's stitching preview.
+- Later layers, such as recognised objects, a scale bar and measurements, are added the same way.
+
+**Tests**
+- The tiles' record matches the mosaic's layout.
+- The layers' placement and turning them on and off; a visual baseline of the outlines over a preview.
+
+<a id="p53b"></a>
+### P53b: Overlay layers in the deep-zoom viewer
+
+**Goal.** The same layers over a stitched scan in the gallery's viewer.
+**Depends on** P33, P53 · **Size** M · **ADRs** —
+
+**Scope**
+- An adapter that places the overlay over the deep-zoom viewer, following its zoom and pan.
+- The viewer's Layers menu, with Image outlines for a stitched scan, from `stitched/tiles.json`.
+
+**Tests**
+- The overlay's placement as the view zooms and pans.
+- End to end: a stitched scan's outlines in the viewer.
+
+<a id="p54"></a>
+### P54: Autofocus accuracy
+
+**Goal.** Measure how accurately autofocus finds focus, then make it more accurate.
+**Depends on** P21, P36 · **Size** L · **ADRs** 0037
+
+**Scope**
+- A benchmark on the simulator, which knows where focus is, tilt included: from many starting offsets, on the default sample and on sparse fields, with backlash on. It reports the error (mean, 95th percentile and worst) and the time, for fast and looping autofocus and for a scan's smart stack. It stays in the repository, for comparing changes and for real hardware later.
+- Candidates, each measured against it:
+  - the focus between frames, from a curve fitted through the sharpest frame and its neighbours;
+  - a short, slower second sweep about the first one's focus;
+  - each frame's z, more precisely;
+  - a gradient-based sharpness metric beside the JPEG size;
+  - the stage's z: its backlash on the last approach, and settling.
+- What helps is adopted; ADR-0037 records the method, superseding ADR-0022 if it changes.
+
+**Tests**
+- The benchmark, run before and after, with its results in the notes.
+- Unit tests of whatever is adopted, such as the curve fit.

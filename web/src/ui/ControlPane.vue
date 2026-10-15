@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // The fixed-width column of controls beside a page's main view: narrow
-// (Control, Settings) or wide (Slide Scan, Sequence).
+// (Settings) or wide (Control, Slide Scan, Sequence).
 withDefaults(defineProps<{ width?: 'narrow' | 'wide' }>(), { width: 'narrow' })
 </script>
 

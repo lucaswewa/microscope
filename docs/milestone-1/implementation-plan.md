@@ -38,7 +38,7 @@ At the end of milestone 1:
 - **The web app is ready for Tauri**: it uses hash routing, makes no same-origin assumptions, keeps platform services behind a host adapter, and fetches its streams with `fetch` so that it can carry auth tokens later.
 - **Every phase** leaves implementation notes, and ADRs for any decisions it made, under [`docs/`](../README.md).
 
-The work is split into **50 phases (P00–P49)** in **9 stages**. Five demo checkpoints fall along the way ([§8](#8-phase-overview)).
+The work is split into **50 phases (P00–P49)** in **9 stages**. Five demo checkpoints fall along the way ([§8](#8-phase-overview)). A tenth stage, added after the first release, polishes it before milestone 2 (P50–P54).
 
 ## 2. In and out of scope
 
@@ -486,6 +486,19 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P48 | End-to-end, soak and performance | all | L | — | Done |
 | P49 | Packaging and milestone close-out | P45, P48 | M | 0035 | Done |
 
+### Stage 9: Polish after the first release
+
+Added after `v0.1.0`, at the project owner's request: fixes and improvements to the Control tab, Slide Scan, the sequence viewer and autofocus, before milestone 2 ([Appendix D](#appendix-d-change-log)).
+
+| ID | Phase | Depends on | Size | ADRs | Status |
+|---|---|---|---|---|---|
+| P50 | Control pane: a steady layout and the wide pane | P20, P47 | S | — | In review |
+| P51 | Slide Scan: an autofocus switch | P37, P40 | M | — | Planned |
+| P52 | Sequence viewer: smooth switching and playback | P33, P42 | M | — | Planned |
+| P53 | Overlay layers, with image outlines on stitched scans | P39, P40 | L | 0036 | Planned |
+| P53b | Overlay layers in the deep-zoom viewer | P33, P53 | M | — | Planned |
+| P54 | Autofocus accuracy | P21, P36 | L | 0037 | Planned |
+
 **Order.** The table order is the planned sequence, and phases run one at a time ([§7](#7-how-phases-work)). A few phases depend only on early ones, so they could be moved earlier if a reorder ever helps: P13, P14, P22, P34 and P38 (pure Rust), and P44. Any reorder is agreed first and recorded in [Appendix D](#appendix-d-change-log).
 
 <a id="adr-plan"></a>
@@ -530,6 +543,8 @@ Numbers are provisional. They are assigned in the order the ADRs are written.
 | 0033 | Local launcher and its Tauri successor | P45 |
 | 0034 | Visual regression baselines | P47 |
 | 0035 | Release packaging and third-party notices | P49 |
+| 0036 | Image overlay layers | P53 |
+| 0037 | Autofocus accuracy, superseding 0022 if the method changes | P54 |
 
 ## 9. Documentation conventions
 
@@ -669,3 +684,4 @@ Commands and clicks that work from a clean checkout.
 | 2026-10-13 | §5.9: the gallery's index is brought up to date from the folders whenever it's read, rather than told of each write, so it also follows changes made by hand (ADR-0026, P31) |
 | 2026-10-13 | P35 split in two, at the project owner's choice, since it was estimated at 1,050–1,300 lines against its L budget. P35 keeps the `ScanWorkflow` interface, the snake and raster workflows, and `smart_scan`'s `sample_scan` with its scan lock, scan folder and return to the start, and `latest_scan_live_details`. The new P35b, sized M, has `purge_empty_scans`, `download_zip`, the delete endpoint and the scans' gallery provider. P39 now depends on P35b |
 | 2026-10-14 | P42 re-sized from M to L, at the project owner's choice, since it was estimated at 650–750 lines. The sequence's live details, which the server adds, serve only the tab, so it stays one phase |
+| 2026-10-15 | Stage 9 added after the `v0.1.0` release, at the project owner's request: P50 (the Control pane), P51 (an autofocus switch for Slide Scan), P52 (the sequence viewer), P53 and P53b (overlay layers, in the Slide Scan preview and then the deep-zoom viewer) and P54 (autofocus accuracy). Their branches keep the `m1/` prefix |
