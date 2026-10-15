@@ -1,6 +1,6 @@
 # P50: Control pane: a steady layout and the wide pane
 
-- Status: In review
+- Status: Done
 - Pull request: [#63](https://github.com/lucaswewa/microscope/pull/63)
 - ADRs: none new
 - Spec: [phases.md#p50](../phases.md#p50)

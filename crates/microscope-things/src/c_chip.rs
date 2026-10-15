@@ -78,16 +78,18 @@ impl CChipWorkflow {
         ThingRef::thing(&self.mapping).calibrated().is_some()
     }
 
-    async fn begin(&self, start: Position) -> Result<Begun, ActionError> {
+    async fn begin(&self, start: Position, focus: bool) -> Result<Begun, ActionError> {
         let step = workflow::step(&self.mapping, C_CHIP_OVERLAP)?;
         let planner =
             RegularGrid::c_chip([start.x, start.y], step).map_err(ActionError::handled)?;
         let dz = self.autofocus_dz.get();
         let stack = self.stack();
         let images = autofocus::counts(&stack)?;
-        self.autofocus
-            .looping_autofocus(dz, SweepStart::Centre)
-            .await?;
+        if focus {
+            self.autofocus
+                .looping_autofocus(dz, SweepStart::Centre)
+                .await?;
+        }
         let settings = json!({
             "pattern": "c_chip",
             "overlap": C_CHIP_OVERLAP,
@@ -108,7 +110,8 @@ impl CChipWorkflow {
 
     /// A basic stack centred on where z is, saving every image. Its centre
     /// is the site's focus, so the next site's stack is centred there too.
-    async fn acquire(&self, folder: String) -> Result<Acquired, ActionError> {
+    /// It doesn't autofocus, so it's the same with `autofocus` off.
+    async fn acquire(&self, folder: String, _autofocus: bool) -> Result<Acquired, ActionError> {
         let mut stack = self.stack();
         // Odd already: `begin` said if it had to change it.
         let counts = Counts::new(stack.min_images_to_test, stack.images_to_save);
@@ -147,14 +150,14 @@ impl ScanWorkflow for ThingRef<CChipWorkflow> {
         ThingRef::thing(self).is_ready()
     }
 
-    fn begin(&self, start: Position) -> BoxFuture<'_, Result<Begun, ActionError>> {
+    fn begin(&self, start: Position, focus: bool) -> BoxFuture<'_, Result<Begun, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.begin(start).await })
+        Box::pin(async move { workflow.begin(start, focus).await })
     }
 
-    fn acquire(&self, folder: String) -> BoxFuture<'_, Result<Acquired, ActionError>> {
+    fn acquire(&self, folder: String, focus: bool) -> BoxFuture<'_, Result<Acquired, ActionError>> {
         let workflow = Arc::clone(ThingRef::thing(self));
-        Box::pin(async move { workflow.acquire(folder).await })
+        Box::pin(async move { workflow.acquire(folder, focus).await })
     }
 }
 

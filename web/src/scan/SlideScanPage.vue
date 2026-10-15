@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // The Slide Scan tab (ADR-0029). Before a scan, the pane chooses its
 // workflow, with what it does and its settings, the stitching settings, whose
-// title says when they've been changed, and a sample ID. While one runs, wherever it was started, the pane shows its
-// details, log and a Cancel that names its phase, and the main view its live
+// title says when they've been changed, whether to autofocus, and a sample
+// ID. While one runs, wherever it was started, the pane shows its details,
+// log and a Cancel that names its phase, and the main view its live
 // stitching preview, or the live image until there is one. Once it ends, it
 // can be downloaded, and Close goes back to the settings.
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
@@ -93,6 +94,15 @@ const stitching: UiElement[] = [
     label: 'Stitch the scan once it ends',
   },
 ]
+// Off, a scan takes one image at each site, where the stage is (P51).
+const autofocus: UiElement[] = [
+  {
+    kind: 'property_control',
+    thing: 'smart_scan',
+    property: 'autofocus_enabled',
+    label: 'Autofocus at the start and at each site',
+  },
+]
 
 const cancelLabel = computed(() => {
   if (cancelling.value) return 'Cancelling…'
@@ -172,6 +182,7 @@ watch(log, async () => {
             <ServerInterface :elements="stitching" />
           </AccordionSection>
         </AppAccordion>
+        <ServerInterface :elements="autofocus" />
         <FormField label="Sample ID" help="Names the scan. Left empty, it’s named by the time.">
           <TextField v-model="sampleId" @submit="scan.start(sampleId)" />
         </FormField>

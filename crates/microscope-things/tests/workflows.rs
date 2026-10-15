@@ -1,7 +1,8 @@
 //! The histo and C-Chip workflows (P37) on the simulator, over a tissue
 //! island: a picture of a disc of tissue on the empty slide. A histo scan
 //! spirals out over the island and stops at its edge; a C-Chip scan visits
-//! every site of its pattern.
+//! every site of its pattern. Without autofocus (P51), both keep to the
+//! plane they start on.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -279,6 +280,52 @@ async fn a_histo_scan_spirals_over_a_tissue_island_and_stops_at_its_edge() {
     );
     let [dx, dy] = ["dx", "dy"].map(|d| settings[d].as_i64().expect("a step").abs());
     assert_eq!(dx, dy, "{settings}");
+    harness.stop().await;
+    std::fs::remove_dir_all(&data).expect("removed");
+}
+
+#[tokio::test]
+async fn scans_without_autofocus_keep_to_the_plane_they_start_on() {
+    let (harness, data) = start().await;
+    let client = harness.client();
+    // Out of focus, where autofocus would move away from.
+    let begin = json!({"x": 0, "y": 0, "z": 150});
+    let moved = run(client, "/stage/move_absolute", begin).await;
+    assert_eq!(moved["status"], "completed", "{moved}");
+    put(client, "/smart_scan/autofocus_enabled", json!(false)).await;
+    for (workflow, settings) in [
+        (
+            "histo_scan_workflow",
+            json!({"skip_background": false, "max_range": 1000, "stack_images_to_save": 3}),
+        ),
+        ("c_chip_workflow", json!({"stack_images_to_save": 1})),
+    ] {
+        put(client, "/smart_scan/workflow_name", json!(workflow)).await;
+        put(client, &format!("/{workflow}/capture_mode"), json!("quick")).await;
+        for (setting, value) in settings.as_object().unwrap() {
+            put(client, &format!("/{workflow}/{setting}"), value.clone()).await;
+        }
+        let record = run(
+            client,
+            "/smart_scan/sample_scan",
+            json!({"scan_name": workflow}),
+        )
+        .await;
+        assert_eq!(record["status"], "completed", "{record}");
+        let scan = data.join("scans").join(workflow);
+        let imaged = images(&scan);
+        assert!(imaged.len() > 1, "{workflow}: {imaged:?}");
+        // One image at each site, all on the start's plane.
+        let mut sites: Vec<[i64; 2]> = imaged.iter().map(|[x, y, _]| [*x, *y]).collect();
+        sites.dedup();
+        assert_eq!(sites.len(), imaged.len(), "{workflow}: {imaged:?}");
+        assert!(
+            imaged.iter().all(|[_, _, z]| *z == 150),
+            "{workflow}: {imaged:?}"
+        );
+        let saved = read_json(&scan.join("scan.json"));
+        assert_eq!(saved["settings"]["autofocus_enabled"], false);
+    }
     harness.stop().await;
     std::fs::remove_dir_all(&data).expect("removed");
 }

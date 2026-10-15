@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 // Checkpoint D: a scan from the Slide Scan tab shows its live stitching
-// preview, then ends as a stitched deep-zoom image in the gallery. It holds
-// the microscope for a while, so it runs once the other tests have finished.
+// preview, then ends as a stitched deep-zoom image in the gallery; one with
+// autofocus off (P51) takes one image a site. They hold the microscope, so
+// they run in turn, once the other tests have finished.
+test.describe.configure({ mode: 'serial' })
 test.use({ viewport: { width: 1280, height: 800 } })
 
 test('a scan from the Slide Scan tab ends stitched in the gallery', async ({ page, request }) => {
@@ -47,4 +49,44 @@ test('a scan from the Slide Scan tab ends stitched in the gallery', async ({ pag
   await card.getByRole('button', { name: 'View', exact: true }).click()
   await mosaic
   await expect(page.locator('.deep-zoom')).toHaveAttribute('data-status', 'shown')
+})
+
+test('a scan with autofocus off takes one image a site, where the stage is', async ({
+  page,
+  request,
+}) => {
+  test.setTimeout(120_000)
+  const put = async (path: string, value: unknown) => {
+    const response = await request.put(`/api/v1/${path}`, {
+      data: JSON.stringify(value),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    expect(response.ok()).toBe(true)
+  }
+  for (const [setting, value] of [
+    ['x_count', 2],
+    ['y_count', 1],
+    ['capture_mode', 'quick'],
+  ] as const) {
+    await put(`snake_workflow/${setting}`, value)
+  }
+  await page.goto('/#/slide-scan')
+  const pane = page.locator('.control-pane')
+  await pane.getByRole('combobox').click()
+  await page.getByRole('option', { name: 'Snake scan' }).click()
+  const autofocus = pane.getByRole('switch', { name: 'Autofocus at the start and at each site' })
+  await expect(autofocus).toBeChecked()
+  await autofocus.uncheck()
+  try {
+    const name = `e2e-flat-${Date.now()}`
+    await pane.getByRole('textbox', { name: 'Sample ID' }).fill(name)
+    await pane.getByRole('button', { name: 'Start Smart Scan' }).click()
+    await expect(pane.getByText('The scan has finished.')).toBeVisible({ timeout: 60_000 })
+    const details = await (await request.get('/api/v1/smart_scan/latest_scan_live_details')).json()
+    expect(details).toMatchObject({ name, image_count: 2 })
+    expect(details.settings.autofocus_enabled).toBe(false)
+    await pane.getByRole('button', { name: 'Close' }).click()
+  } finally {
+    await put('smart_scan/autofocus_enabled', true)
+  }
 })

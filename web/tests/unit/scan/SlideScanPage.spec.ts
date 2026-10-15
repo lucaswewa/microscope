@@ -48,6 +48,7 @@ const scanning = (phase: LiveScanDetails['scan_phase'], more: Partial<LiveScanDe
 
 let workflow: string
 let automatic: boolean
+let focusing: boolean
 let details: LiveScanDetails | null
 let status: string
 let log: string[]
@@ -58,6 +59,7 @@ let wrapper: VueWrapper | undefined
 beforeEach(() => {
   vi.useFakeTimers()
   ;[workflow, automatic, details, status, log, ongoing] = ['snake_workflow', true, null, '', [], []]
+  focusing = true
   const server = fakeServer({
     'GET /api/v1/thing_descriptions/': {
       system: thing('system', { hostname: {} }),
@@ -70,6 +72,7 @@ beforeEach(() => {
           workflow_descriptions: {},
           latest_scan_live_details: {},
           stitch_automatically: { type: 'boolean', default: true },
+          autofocus_enabled: { type: 'boolean', default: true },
         },
         ['sample_scan', 'download_zip'],
       ),
@@ -91,6 +94,11 @@ beforeEach(() => {
       snake_workflow: 'Back and forth.',
     },
     'GET /api/v1/smart_scan/stitch_automatically': () => json(automatic),
+    'GET /api/v1/smart_scan/autofocus_enabled': () => json(focusing),
+    'PUT /api/v1/smart_scan/autofocus_enabled': (r) => {
+      focusing = JSON.parse(r.body!)
+      return json(null)
+    },
     'GET /api/v1/smart_scan/latest_scan_live_details': () => json(details),
     'GET /api/v1/smart_scan/sample_scan': () => json(ongoing),
     'POST /api/v1/smart_scan/sample_scan': () => {
@@ -160,9 +168,19 @@ describe('the Slide Scan tab', () => {
     expect(pane().text()).toContain('Raster panel')
   })
 
+  it('turns autofocus off for the scans it starts', async () => {
+    await open()
+    const toggle = pane().get('input[role="switch"]')
+    expect(pane().text()).toContain('Autofocus at the start and at each site')
+    expect((toggle.element as HTMLInputElement).checked).toBe(true)
+    await toggle.setValue(false)
+    await flushPromises()
+    expect(focusing).toBe(false)
+  })
+
   it('starts a scan, follows its phases and log, and cancels it', async () => {
     await open()
-    await pane().get('input').setValue('slide-1')
+    await pane().get('input[type="text"]').setValue('slide-1')
     await button('Start Smart Scan')!.trigger('click')
     await flushPromises()
     expect(JSON.parse(posted()[0]!.body!)).toEqual({ scan_name: 'slide-1' })
