@@ -1,6 +1,6 @@
 # P47: Visual fidelity and accessibility pass
 
-- Status: In review
+- Status: Done
 - Pull request: [#60](https://github.com/lucaswewa/microscope/pull/60)
 - ADRs: [ADR-0034](../../adr/0034-visual-regression-baselines.md)
 - Spec: [phases.md#p47](../phases.md#p47)

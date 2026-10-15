@@ -64,4 +64,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P44 | [Sidecar process contract](P44-sidecar-contract.md) | Done |
 | P45 | [Local launcher](P45-local-launcher.md) | Done |
 | P46 | [About and Power tabs](P46-about-and-power.md) | Done |
-| P47 | [Visual fidelity and accessibility pass](P47-visual-and-accessibility.md) | In review |
+| P47 | [Visual fidelity and accessibility pass](P47-visual-and-accessibility.md) | Done |
+| P48 | [End-to-end, soak and performance](P48-end-to-end-soak-performance.md) | In review |

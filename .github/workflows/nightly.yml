@@ -1,0 +1,53 @@
+name: Nightly
+
+# The long tests (P48), against a release build: a 30-minute soak, streaming
+# and scanning, and the performance budgets. Their measurements, soak.json
+# and budgets.json, are kept with the results. It also runs on a pull request
+# that changes it.
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  pull_request:
+    paths:
+      - .github/workflows/nightly.yml
+  workflow_dispatch:
+
+jobs:
+  long:
+    name: Soak and budgets (Windows x86_64)
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      - name: Build the web app
+        run: npm run build
+        working-directory: web
+      - name: Build the server, with the web app embedded
+        run: cargo build --release -p microscope-server --locked
+      - name: Install Chromium
+        run: npx playwright install chromium
+        working-directory: web
+      - name: Soak and budgets
+        run: npx playwright test --project=long
+        working-directory: web
+        env:
+          MICROSCOPE_LONG: '1'
+          MICROSCOPE_SOAK_MINUTES: '30'
+          MICROSCOPE_SERVER: target/release/microscope-server.exe
+      - name: Measurements and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: long-results
+          path: web/test-results
