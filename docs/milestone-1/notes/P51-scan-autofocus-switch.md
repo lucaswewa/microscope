@@ -1,6 +1,6 @@
 # P51: Slide Scan: an autofocus switch
 
-- Status: In review
+- Status: Done
 - Pull request: [#64](https://github.com/lucaswewa/microscope/pull/64)
 - ADRs: none new
 - Spec: [phases.md#p51](../phases.md#p51)
