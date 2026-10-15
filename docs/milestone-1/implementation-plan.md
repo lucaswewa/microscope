@@ -493,8 +493,8 @@ Added after `v0.1.0`, at the project owner's request: fixes and improvements to 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P50 | Control pane: a steady layout and the wide pane | P20, P47 | S | — | Done |
-| P51 | Slide Scan: an autofocus switch | P37, P40 | M | — | In review |
-| P52 | Sequence viewer: smooth switching and playback | P33, P42 | M | — | Planned |
+| P51 | Slide Scan: an autofocus switch | P37, P40 | M | — | Done |
+| P52 | Sequence viewer: smooth switching and playback | P33, P42 | M | — | In review |
 | P53 | Overlay layers, with image outlines on stitched scans | P39, P40 | L | 0036 | Planned |
 | P53b | Overlay layers in the deep-zoom viewer | P33, P53 | M | — | Planned |
 | P54 | Autofocus accuracy | P21, P36 | L | 0037 | Planned |

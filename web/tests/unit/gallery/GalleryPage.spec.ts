@@ -12,21 +12,44 @@ import { fakeServer, json, type Received } from '../api/fakeServer'
 import { mountApp } from '../mountApp'
 
 // OpenSeadragon draws with WebGL, which the tests' DOM lacks: a fake records
-// what it's asked.
+// what it's asked. Its world holds a sequence's images (P52), each loaded
+// when its test says so.
 const osd = vi.hoisted(() => {
+  /** An image in the world: its URL, its opacity, and whether it's in. */
+  type Item = { url: string; opacity: number; removed: boolean; load: () => void }
   const viewers: {
-    options: { tileSources: unknown; sequenceMode: boolean; initialPage: number }
+    options: { tileSources: unknown }
     viewport: Record<'zoomBy' | 'applyConstraints' | 'goHome', ReturnType<typeof vi.fn>>
-    goToPage: ReturnType<typeof vi.fn>
+    items: Item[]
     destroy: ReturnType<typeof vi.fn>
     fire: (event: string) => void
   }[] = []
+  type Added = { tileSource: { url: string }; opacity: number; success: (e: object) => void }
   const create = vi.fn((options: (typeof viewers)[number]['options']) => {
     const handlers: Record<string, () => void> = {}
+    const items: Item[] = []
     const viewer = {
       options,
       viewport: { zoomBy: vi.fn(), applyConstraints: vi.fn(), goHome: vi.fn() },
-      goToPage: vi.fn(),
+      items,
+      addTiledImage: ({ tileSource, opacity, success }: Added) => {
+        let loaded = () => {}
+        const item: Item = {
+          url: tileSource.url,
+          opacity,
+          removed: false,
+          load: () => loaded(),
+        }
+        items.push(item)
+        success({
+          item: {
+            whenFullyLoaded: (callback: () => void) => (loaded = callback),
+            setOpacity: (value: number) => (item.opacity = value),
+            item,
+          },
+        })
+      },
+      world: { removeItem: ({ item }: { item: Item }) => (item.removed = true) },
       destroy: vi.fn(),
       addHandler: (event: string, handler: () => void) => (handlers[event] = handler),
       fire: (event: string) => handlers[event]?.(),
@@ -300,7 +323,6 @@ describe('the viewer', () => {
       'image',
       '/api/v1/data/captures/capture-2.jpeg',
     ])
-    expect(viewer.options.sequenceMode).toBe(false)
     const status = () => dialog.querySelector('.deep-zoom')!.getAttribute('data-status')
     expect(status()).toBe('loading')
     viewer.fire('open')
@@ -327,7 +349,7 @@ describe('the viewer', () => {
     expect(router.currentRoute.value.fullPath).toBe('/gallery')
   })
 
-  it('shows a deep-zoom image, and a sequence with a slider', async () => {
+  it('shows a deep-zoom image, and a sequence with a slider and playback', async () => {
     const paths = ['a.jpeg', 'b.jpeg', 'c.jpeg']
     list = [
       capture(1, { viewer: { type: 'dzi', path: 'scans/s/stitched.dzi' } }),
@@ -345,15 +367,50 @@ describe('the viewer', () => {
     await flushPromises()
 
     const { dialog, viewer } = await view(1)
-    const sources = viewer.options.tileSources as { url: string }[]
-    expect(sources.map((source) => path(source.url))).toEqual(
-      paths.map((name) => `/api/v1/data/${name}`),
-    )
-    expect([viewer.options.sequenceMode, viewer.options.initialPage]).toEqual([true, 1])
+    const status = () => dialog.querySelector('.deep-zoom')!
+    // The images, hidden, then each shown once it's loaded (P52).
+    const shown = () => viewer.items.filter((i) => !i.removed).map((i) => [path(i.url), i.opacity])
+    expect(viewer.options.tileSources).toEqual([])
+    expect(shown()).toEqual([['/api/v1/data/b.jpeg', 0]])
+    expect(status().getAttribute('data-status')).toBe('loading')
+    viewer.items[0]!.load()
+    await flushPromises()
+    expect(status().getAttribute('data-status')).toBe('shown')
+    // Shown, with the next loaded ahead, hidden.
+    expect(shown()).toEqual([
+      ['/api/v1/data/b.jpeg', 1],
+      ['/api/v1/data/c.jpeg', 0],
+    ])
     expect(dialog.textContent).toContain('2 of 3')
+
+    // The next stays hidden until it's loaded, and the one before stays shown.
     await key(dialog.querySelector('[aria-label="Image"]')!, 'ArrowRight')
-    expect(viewer.goToPage).toHaveBeenCalledWith(2)
     expect(dialog.textContent).toContain('3 of 3')
+    expect(shown()).toEqual([
+      ['/api/v1/data/b.jpeg', 1],
+      ['/api/v1/data/c.jpeg', 0],
+    ])
+    expect(status().getAttribute('data-page')).toBe('1')
+    viewer.items[1]!.load()
+    await flushPromises()
+    expect(shown()).toEqual([['/api/v1/data/c.jpeg', 1]])
+    expect(status().getAttribute('data-page')).toBe('2')
+    // The zoom and pan stay as they were.
+    expect(viewer.viewport.goHome).not.toHaveBeenCalled()
+
+    // Playing starts from the first, as the last is shown, and stops at the end.
+    press('Play')
+    await flushPromises()
+    expect(dialog.textContent).toContain('1 of 3')
+    expect(dialog.querySelector('[aria-label="Pause"]')).not.toBeNull()
+    for (const item of viewer.items.slice(2)) item.load()
+    await flushPromises()
+    await vi.advanceTimersByTimeAsync(500)
+    expect(dialog.textContent).toContain('2 of 3')
+    for (const item of viewer.items.slice(3)) item.load()
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(dialog.textContent).toContain('3 of 3')
+    expect(dialog.querySelector('[aria-label="Play"]')).not.toBeNull()
   })
 
   it('changes the brightness, contrast and saturation, and resets them', async () => {

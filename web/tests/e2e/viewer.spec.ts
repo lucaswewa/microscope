@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { expect, type Page, test } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
 
 test.use({ viewport: { width: 1280, height: 800 } })
 
@@ -32,7 +32,7 @@ async function view(page: Page, name: string) {
         entry('mosaic', { type: 'dzi', path: 'fixtures/sample.dzi' }),
         entry('sequence', {
           type: 'directory',
-          paths: [level(9, '0_0'), level(9, '1_0'), level(10, '0_0')],
+          paths: [level(9, '0_0'), level(9, '1_0'), level(10, '0_0'), level(10, '1_0')],
           start: 0,
         }),
       ],
@@ -49,6 +49,17 @@ async function view(page: Page, name: string) {
   const dialog = page.getByRole('dialog')
   await expect(dialog.locator('.deep-zoom')).toHaveAttribute('data-status', 'shown')
   return { dialog, asked }
+}
+
+/** A screenshot of `view` once it's still: the same twice in a row. */
+async function still(view: Locator) {
+  let last = await view.screenshot()
+  for (;;) {
+    await view.page().waitForTimeout(200)
+    const next = await view.screenshot()
+    if (next.equals(last)) return next
+    last = next
+  }
 }
 
 test('the viewer zooms into a deep-zoom image, through filters', async ({ page }) => {
@@ -72,10 +83,40 @@ test('the viewer zooms into a deep-zoom image, through filters', async ({ page }
   )
 })
 
-test('the viewer steps through a sequence with its slider', async ({ page }) => {
+test('the viewer steps through a sequence, keeping each image until the next is drawn', async ({
+  page,
+}) => {
   const { dialog, asked } = await view(page, 'sequence')
-  await expect(dialog).toContainText('1 of 3')
-  await dialog.getByRole('slider', { name: 'Image' }).press('ArrowRight')
-  await expect(dialog).toContainText('2 of 3')
-  await expect.poll(() => asked).toContain('sample_files/9/1_0.jpeg')
+  const shown = dialog.locator('.deep-zoom')
+  const slider = dialog.getByRole('slider', { name: 'Image' })
+  await expect(dialog).toContainText('1 of 4')
+  // The next two are loaded ahead (P52), but not the last.
+  await expect.poll(() => asked).toContain('sample_files/10/0_0.jpeg')
+  expect(asked).not.toContain('sample_files/10/1_0.jpeg')
+
+  // The last is loaded slowly: until it's drawn, the first stays.
+  const before = await still(shown)
+  await page.route('**/api/v1/data/fixtures/**', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await route.fallback().catch(() => {})
+  })
+  await slider.press('End')
+  await expect(dialog).toContainText('4 of 4')
+  await page.waitForTimeout(500)
+  await expect(shown).toHaveAttribute('data-page', '0')
+  expect((await shown.screenshot()).equals(before)).toBe(true)
+  await expect(shown).toHaveAttribute('data-page', '3')
+  await page.unrouteAll({ behavior: 'ignoreErrors' })
+})
+
+test('the viewer plays a sequence, and stops at its end', async ({ page }) => {
+  const { dialog } = await view(page, 'sequence')
+  const seconds = dialog.getByLabel('Seconds each')
+  await seconds.fill('0.2')
+  await seconds.press('Enter')
+  await dialog.getByRole('button', { name: 'Play' }).click()
+  await expect(dialog.getByRole('button', { name: 'Pause' })).toBeVisible()
+  await expect(dialog).toContainText('4 of 4')
+  await expect(dialog.getByRole('button', { name: 'Play' })).toBeVisible()
+  await expect(dialog.locator('.deep-zoom')).toHaveAttribute('data-page', '3')
 })

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 // The viewer (ADR-0027): an item's image in a dialog, to zoom and pan. It's
-// one image, a deep-zoom image, or a sequence stepped through with a slider.
+// one image, a deep-zoom image, or a sequence stepped through with a slider,
+// or played, each image for a number of seconds, once or in a loop (P52).
 // Its brightness, contrast and saturation can be changed and reset, and it
 // can fill the screen. Its controls are the app's, so they follow the theme.
 import fitIcon from '@material-symbols/svg-400/outlined/fit_screen.svg?raw'
 import fullIcon from '@material-symbols/svg-400/outlined/fullscreen.svg?raw'
 import leaveIcon from '@material-symbols/svg-400/outlined/fullscreen_exit.svg?raw'
+import pauseIcon from '@material-symbols/svg-400/outlined/pause.svg?raw'
+import playIcon from '@material-symbols/svg-400/outlined/play_arrow.svg?raw'
 import zoomInIcon from '@material-symbols/svg-400/outlined/zoom_in.svg?raw'
 import zoomOutIcon from '@material-symbols/svg-400/outlined/zoom_out.svg?raw'
 import { computed, onBeforeUnmount, reactive, ref, useTemplateRef } from 'vue'
@@ -15,11 +18,14 @@ import { useConnectionStore } from '@/connection/store'
 import { useHost } from '@/host'
 import { dataUrl } from '@/server-ui/download'
 import AppButton from '@/ui/AppButton.vue'
+import AppCheckbox from '@/ui/AppCheckbox.vue'
 import AppDialog from '@/ui/AppDialog.vue'
 import AppSlider from '@/ui/AppSlider.vue'
 import IconButton from '@/ui/IconButton.vue'
+import NumberField from '@/ui/NumberField.vue'
 
 import DeepZoom from './DeepZoom.vue'
+import { usePlayback } from './playback'
 
 const props = defineProps<{ entry: GalleryEntry }>()
 const emit = defineEmits<{ close: [] }>()
@@ -34,6 +40,8 @@ const sources = computed(() => {
   return paths.map((path) => ({ type: 'image' as const, url: url(path) }))
 })
 const page = ref(props.entry.viewer.type === 'directory' ? props.entry.viewer.start : 0)
+const playback = usePlayback(page, () => sources.value.length)
+const { playing, seconds, loop } = playback
 
 const LOOKS = { brightness: 100, contrast: 100, saturation: 100 }
 const looks = reactive({ ...LOOKS })
@@ -84,10 +92,22 @@ const open = computed({ get: () => true, set: (open) => open || emit('close') })
         :filter="filter"
         class="image-viewer__view"
         :class="{ 'image-viewer__view--full': full }"
+        @shown="playback.shown"
       />
       <div v-if="sources.length > 1" class="image-viewer__row">
+        <IconButton
+          :icon="playing ? pauseIcon : playIcon"
+          :label="playing ? 'Pause' : 'Play'"
+          size="sm"
+          @click="playing ? playback.pause() : playback.play()"
+        />
         <AppSlider v-model="page" label="Image" :max="sources.length - 1" />
         <span class="image-viewer__count">{{ page + 1 }} of {{ sources.length }}</span>
+        <label class="image-viewer__seconds">
+          <span>Seconds each</span>
+          <NumberField v-model="seconds" size="sm" :min="0.1" :max="60" :step="0.1" />
+        </label>
+        <AppCheckbox v-model="loop" label="Loop" />
       </div>
       <div class="image-viewer__looks">
         <div v-for="slider in sliders" :key="slider.key" class="image-viewer__look">
@@ -129,6 +149,18 @@ const open = computed({ get: () => true, set: (open) => open || emit('close') })
   flex: none;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.image-viewer__seconds {
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.image-viewer__seconds :deep(input) {
+  width: var(--space-12);
 }
 
 .image-viewer__look {
