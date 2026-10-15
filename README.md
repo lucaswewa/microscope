@@ -100,6 +100,15 @@ npx playwright install chromium   # once per machine
 npm run test:e2e                  # builds the app and a server that serves it, on ports 5098 and 5099
 ```
 
+The end-to-end tests' server keeps its settings, data and logs in a temporary folder, emptied for each run, not in `.microscope`. They include whole workflows, such as a histo scan, and Restart through the launcher, which they build.
+
+The long tests run each night in CI ([`nightly.yml`](.github/workflows/nightly.yml)): a 30-minute soak, streaming and scanning, and the performance budgets. To run them, preferably against a release build:
+
+```powershell
+$env:MICROSCOPE_LONG = '1'; $env:MICROSCOPE_SOAK_MINUTES = '30'
+npx playwright test --project=long   # soak.json and budgets.json are written under test-results
+```
+
 `npm run test:contract` runs the web app's WoT client against a running server, whose API root is `MICROSCOPE_API_URL` (by default `http://127.0.0.1:5000/api/v1/`). CI runs it against a fresh server.
 
 `MICROSCOPE_API_TARGET` points the development proxy at another server, such as `http://lab-pc:5000`.

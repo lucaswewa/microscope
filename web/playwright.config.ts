@@ -42,8 +42,8 @@ const serverCommand = process.env.MICROSCOPE_SERVER
   ? `"${path.resolve(root, process.env.MICROSCOPE_SERVER)}" -c ${config} --port ${port}`
   : `npm --prefix web run build && cargo run -q -p microscope-server -- -c ${config} --port ${port} --webapp-dir web/dist`
 
-// End-to-end and visual tests, against the app as the server serves it.
-// (tests/unit is Vitest's.)
+// End-to-end and visual tests, against the app as the server serves it, and
+// on request the long ones. (tests/unit is Vitest's.)
 export default defineConfig({
   testDir: './tests',
   testMatch: /(e2e|visual)\/.*\.spec\.ts$/,
@@ -66,7 +66,7 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
-      testIgnore: /e2e\/(scan|sequence)\.spec\.ts$/,
+      testIgnore: /e2e\/(scan|sequence|workflows)\.spec\.ts$/,
     },
     // A scan holds the microscope for a while, so it runs once the others have finished.
     {
@@ -82,6 +82,27 @@ export default defineConfig({
       dependencies: ['scan'],
       testMatch: /e2e\/sequence\.spec\.ts$/,
     },
+    // Then whole workflows, one at a time (P48).
+    {
+      name: 'workflows',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['sequence'],
+      testMatch: /e2e\/workflows\.spec\.ts$/,
+    },
+    // The soak and the budgets take half an hour: only when asked, as the
+    // nightly workflow does, with `--project=long` (P48).
+    ...(process.env.MICROSCOPE_LONG
+      ? [
+          {
+            name: 'long',
+            use: { ...devices['Desktop Chrome'] },
+            dependencies: ['setup'],
+            // Half an hour is too long to try again.
+            retries: 0,
+            testMatch: /long\/.*\.spec\.ts$/,
+          },
+        ]
+      : []),
   ],
   webServer: {
     command: serverCommand,

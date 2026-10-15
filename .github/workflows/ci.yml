@@ -113,8 +113,8 @@ jobs:
       - name: Build the web app
         run: npm run build
         working-directory: web
-      - name: Build the server, with the web app embedded
-        run: cargo build --release -p microscope-server --locked
+      - name: Build the server, with the web app embedded, and the launcher
+        run: cargo build --release -p microscope-server -p microscope-launcher --locked
       - name: Install Chromium
         run: npx playwright install chromium
         working-directory: web
@@ -123,6 +123,7 @@ jobs:
         working-directory: web
         env:
           MICROSCOPE_SERVER: target/release/microscope-server.exe
+          MICROSCOPE_LAUNCHER: target/release/microscope-launcher.exe
       - name: Test results
         if: failure()
         uses: actions/upload-artifact@v4

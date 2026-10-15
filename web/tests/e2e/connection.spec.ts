@@ -1,10 +1,8 @@
-import { spawn, type ChildProcess } from 'node:child_process'
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 
 import { expect, test } from '@playwright/test'
+
+import { freshConfig, startServer as start } from '../servers'
 
 // The app on one origin, connected to a fresh microscope server on another
 // (through CORS), with its own settings folder. The tests share its port, so
@@ -12,43 +10,7 @@ import { expect, test } from '@playwright/test'
 test.describe.configure({ mode: 'default' })
 
 const PORT = 5099
-const ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-// The same binary as Playwright's server: MICROSCOPE_SERVER in CI, else the debug build.
-const EXE = path.resolve(
-  ROOT,
-  process.env.MICROSCOPE_SERVER ??
-    `target/debug/microscope-server${process.platform === 'win32' ? '.exe' : ''}`,
-)
-
-/** A configuration like the simulation's, keeping everything in a new folder. */
-function freshConfig(): { folder: string; config: string } {
-  const folder = mkdtempSync(path.join(tmpdir(), 'microscope-e2e-'))
-  const config = JSON.parse(readFileSync(path.join(ROOT, 'configs/simulation.json'), 'utf8'))
-  config.settings_folder = path.join(folder, 'settings')
-  config.application_config = {
-    data_folder: path.join(folder, 'data'),
-    log_folder: path.join(folder, 'logs'),
-  }
-  writeFileSync(path.join(folder, 'config.json'), JSON.stringify(config))
-  return { folder, config: path.join(folder, 'config.json') }
-}
-
-async function startServer(config: string): Promise<ChildProcess> {
-  const server = spawn(EXE, ['-c', config, '--port', String(PORT)], { cwd: ROOT, stdio: 'ignore' })
-  await expect
-    .poll(
-      () =>
-        fetch(`http://127.0.0.1:${PORT}/api/v1/health`).then(
-          (r) => r.ok,
-          () => false,
-        ),
-      {
-        timeout: 15_000,
-      },
-    )
-    .toBe(true)
-  return server
-}
+const startServer = (config: string) => start(config, PORT)
 
 let fresh: { folder: string; config: string }
 test.beforeEach(() => (fresh = freshConfig()))
