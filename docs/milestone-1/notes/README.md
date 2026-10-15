@@ -66,4 +66,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P46 | [About and Power tabs](P46-about-and-power.md) | Done |
 | P47 | [Visual fidelity and accessibility pass](P47-visual-and-accessibility.md) | Done |
 | P48 | [End-to-end, soak and performance](P48-end-to-end-soak-performance.md) | Done |
-| P49 | [Packaging and milestone close-out](P49-packaging.md) | In review |
+| P49 | [Packaging and milestone close-out](P49-packaging.md) | Done |

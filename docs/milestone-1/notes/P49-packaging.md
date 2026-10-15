@@ -1,6 +1,6 @@
 # P49: Packaging and milestone close-out
 
-- Status: In review
+- Status: Done
 - Pull request: [#62](https://github.com/lucaswewa/microscope/pull/62)
 - ADRs: [ADR-0035](../../adr/0035-release-packaging-and-third-party-notices.md)
 - Spec: [phases.md#p49](../phases.md#p49)

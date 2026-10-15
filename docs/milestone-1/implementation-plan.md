@@ -484,7 +484,7 @@ Sizes follow [§7](#7-how-phases-work). The detailed specs are in [phases.md](ph
 | P46 | About and Power tabs | P11, P44 | M | — | Done |
 | P47 | Visual fidelity and accessibility pass | P05, all tabs | L | 0034 | Done |
 | P48 | End-to-end, soak and performance | all | L | — | Done |
-| P49 | Packaging and milestone close-out | P45, P48 | M | 0035 | In review |
+| P49 | Packaging and milestone close-out | P45, P48 | M | 0035 | Done |
 
 **Order.** The table order is the planned sequence, and phases run one at a time ([§7](#7-how-phases-work)). A few phases depend only on early ones, so they could be moved earlier if a reorder ever helps: P13, P14, P22, P34 and P38 (pure Rust), and P44. Any reorder is agreed first and recorded in [Appendix D](#appendix-d-change-log).
 
