@@ -65,4 +65,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P45 | [Local launcher](P45-local-launcher.md) | Done |
 | P46 | [About and Power tabs](P46-about-and-power.md) | Done |
 | P47 | [Visual fidelity and accessibility pass](P47-visual-and-accessibility.md) | Done |
-| P48 | [End-to-end, soak and performance](P48-end-to-end-soak-performance.md) | In review |
+| P48 | [End-to-end, soak and performance](P48-end-to-end-soak-performance.md) | Done |
+| P49 | [Packaging and milestone close-out](P49-packaging.md) | In review |

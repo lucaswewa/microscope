@@ -1,0 +1,18 @@
+# cargo-about's configuration (ADR-0035): the licences the release accepts
+# for the Rust crates it ships, in order of preference where a crate offers
+# a choice. Crates that aren't published, ours and teta-wot's, are left
+# out: NOTICE names teta-wot.
+accepted = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Zlib",
+    "0BSD",
+    "Unicode-3.0",
+    "BSL-1.0",
+    "Unlicense",
+]
+targets = ["x86_64-pc-windows-msvc"]
+ignore-dev-dependencies = true
+private = { ignore = true }

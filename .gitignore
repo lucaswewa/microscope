@@ -35,3 +35,6 @@ web/dist/
 docs/reference/ofm/
 docs/reference/microscope/
 docs/reference/compare.html
+
+# The release zip and its staging folder (P49)
+release-out/

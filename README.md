@@ -7,18 +7,79 @@ Microscope control software. A Rust backend serves the microscope's camera, stag
 
 ## Status
 
-Early development. The server runs with a placeholder System Thing, logging and its API docs. The web app has its shell: the navigation rail, light, dark and system themes, and the UI components the pages will be built from. The pages themselves come in later phases. The [plan's phase overview](docs/milestone-1/implementation-plan.md#8-phase-overview) shows where each phase stands.
+**Milestone 1 is complete:** the whole application, against a simulated camera and XYZ stage, whose images depend on the stage position and focus.
 
-**Milestone 1** builds the application against a simulated camera and XYZ stage, whose images depend on the stage position and focus. It aims for feature parity with the OpenFlexure Microscope: live view, stage control, autofocus, calibration, slide scanning with stitching, timelapse sequences, a gallery, and the Settings, Logging, About and Power pages. It also ships a local launcher and supports connecting to remote microscopes. Real cameras and stages follow in milestone 2, and the web app will later be reused in a Tauri desktop app.
+- **Its features match** the OpenFlexure Microscope's: live view, stage control, autofocus, calibration, slide scanning with stitching, timelapse sequences, a gallery, and the Settings, Logging, About and Power pages.
+- **It ships a local launcher,** and the app connects to remote microscopes too.
+- **The [plan's phase overview](docs/milestone-1/implementation-plan.md#8-phase-overview)** lists every phase, and the [retrospective](docs/milestone-1/retrospective.md) looks back on them.
+- **Next:** real cameras and stages follow in milestone 2 ([readiness checklist](docs/milestone-2/readiness.md)), and the web app will later be reused in a Tauri desktop app.
 
 Milestone 1 targets Windows x86_64 ([ADR-0003](docs/adr/0003-milestone-1-platform-windows-x86-64.md)).
+
+## Using the microscope
+
+### Getting it
+
+Download `microscope-<version>-windows-x86_64.zip` from the [releases](https://github.com/lucaswewa/microscope/releases), and unzip it anywhere. It holds:
+
+- `microscope-launcher.exe`, which you run;
+- `microscope-server.exe`, which serves the microscope and the app;
+- the default configuration, in `configs\`;
+- this README, the licence, `NOTICE`, and the licences of the third-party software it includes.
+
+### Running it
+
+1. **Double-click `microscope-launcher.exe`.** A console window opens, and so does the app, in your browser, at <http://127.0.0.1:5000/>, or at another port if 5000 is taken. The window shows the server's messages; keep it open while you work.
+2. **The first time,** the calibration wizard opens: follow it to calibrate the camera and how the stage moves in the image.
+3. **To stop,** close the window or press Ctrl+C in it, or use the app's Power tab.
+4. **Restart,** in the Power tab, starts the server again, and the app reconnects by itself. If the server ever crashes, the launcher starts it again.
+
+Only one launcher runs at a time; a second one says so and ends.
+
+### Where your data lives
+
+Everything is in `%LOCALAPPDATA%\Microscope\` (paste that into File Explorer's address bar):
+
+| Folder or file | What |
+|---|---|
+| `data\` | Your captures, scans and sequences, which the Gallery shows |
+| `settings\` | Calibrations and settings |
+| `logs\` | The server's daily logs, and `launcher.log`, everything the window showed |
+| `generated-config.json` | The configuration the launcher gives the server; it's written at each start |
+
+### Connecting from another computer
+
+The launcher's server only answers this computer, unless you ask otherwise:
+
+```powershell
+.\microscope-launcher.exe --host 0.0.0.0
+```
+
+Then, on another computer on the same network, open `http://<this computer's name>:5000/` in a browser. From an app that's already open, use **Settings → Connection → Another microscope** with the same address, such as `lab-pc:5000`.
+
+**There's no password:** anyone who can reach the computer can use the microscope. Do this only on a network you trust. Windows may ask whether to let the server through its firewall.
+
+### Resetting
+
+- **Settings and calibrations:** stop the launcher, delete `%LOCALAPPDATA%\Microscope\settings\`, and start it again. The calibration wizard opens, as the first time. Your captures and scans are kept.
+- **Everything,** your captures and scans included: delete the whole `%LOCALAPPDATA%\Microscope\` folder.
+
+### Other options
+
+`microscope-launcher.exe --help` lists them:
+
+- `-c <file>` uses another configuration;
+- `--root <folder>` keeps the data somewhere other than `%LOCALAPPDATA%\Microscope\`;
+- `--port <number>` prefers another port;
+- `--no-browser` doesn't open the app.
 
 ## Documentation
 
 - [Milestone 1 goals](docs/milestone-1/goals.md)
 - [Milestone 1 implementation plan](docs/milestone-1/implementation-plan.md) and [phase specifications](docs/milestone-1/phases.md)
 - [Architecture decision records](docs/adr/README.md)
-- [Implementation notes](docs/milestone-1/notes/README.md), one per phase
+- [Implementation notes](docs/milestone-1/notes/README.md), one per phase, and the [milestone's retrospective](docs/milestone-1/retrospective.md)
+- [Milestone 2 readiness checklist](docs/milestone-2/readiness.md)
 
 ## Development
 
@@ -62,6 +123,16 @@ cargo build --release -p microscope-server
 ```
 
 `target/release/microscope-server.exe -c configs/simulation.json` then serves the API and the app on its own.
+
+The zip a user downloads also needs the launcher's release build and [cargo-about](https://github.com/EmbarkStudios/cargo-about), which lists the Rust crates' licences ([ADR-0035](docs/adr/0035-release-packaging-and-third-party-notices.md)):
+
+```powershell
+cargo build --release -p microscope-server -p microscope-launcher --locked
+cargo install cargo-about --version 0.9.2 --features cli --locked
+./release/package.ps1 -Version 0.1.0
+```
+
+It's written to `release-out\`. Pushing a tag such as `v0.1.0` has the release workflow build it, check that its launcher starts, and publish it.
 
 ### Run the launcher
 

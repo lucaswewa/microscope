@@ -1,6 +1,6 @@
 # P48: End-to-end, soak and performance
 
-- Status: In review
+- Status: Done
 - Pull request: [#61](https://github.com/lucaswewa/microscope/pull/61)
 - ADRs: none new
 - Spec: [phases.md#p48](../phases.md#p48)

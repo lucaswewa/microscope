@@ -39,21 +39,27 @@ struct Launcher {
 
 /// Starts a launcher for `config`, preferring `port`: 0 for any.
 fn launch(config: &str, port: u16) -> Launcher {
+    launch_with(config, port, &[])
+}
+
+/// As `launch`, with `more` arguments.
+fn launch_with(config: &str, port: u16, more: &[&str]) -> Launcher {
     build_server();
     let root = tempfile::tempdir().expect("a folder");
     let file = root.path().join("config.json");
     std::fs::write(&file, config).expect("written");
-    let (child, lines) = start(root.path(), &file, port);
+    let (child, lines) = start(root.path(), &file, port, more);
     Launcher { child, lines, root }
 }
 
-fn start(root: &Path, config: &Path, port: u16) -> (Child, Receiver<String>) {
+fn start(root: &Path, config: &Path, port: u16, more: &[&str]) -> (Child, Receiver<String>) {
     let mut child = Command::new(LAUNCHER)
         .arg("--root")
         .arg(root)
         .arg("-c")
         .arg(config)
         .args(["--port", &port.to_string(), "--no-browser"])
+        .args(more)
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()
@@ -203,6 +209,14 @@ fn a_restart_keeps_the_port_the_server_chose() {
     assert!(!address.ends_with(&format!(":{port}")), "{address}");
     assert_eq!(post(&address, "system/restart"), "HTTP/1.1 201 Created");
     assert_eq!(launcher.ready().0, address);
+}
+
+#[test]
+fn the_server_listens_where_asked() {
+    // IPv6's loopback, which the default, 127.0.0.1, isn't.
+    let launcher = launch_with(CONFIG, 0, &["--host", "[::1]"]);
+    let (address, _) = launcher.ready();
+    assert!(address.starts_with("[::1]:"), "{address}");
 }
 
 #[test]

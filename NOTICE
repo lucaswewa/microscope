@@ -11,3 +11,18 @@ Material Symbols
   Licensed under the Apache License, Version 2.0:
   https://www.apache.org/licenses/LICENSE-2.0
   The web app bundles the icons it uses, unmodified.
+
+OpenSeadragon
+  The gallery's deep-zoom viewer (https://openseadragon.github.io).
+  Copyright (C) 2009 CodePlex Foundation, and (C) 2010-2025 OpenSeadragon
+  contributors. Licensed under the BSD 3-Clause License, whose text is in
+  THIRD-PARTY-NPM.txt in a release.
+  The web app bundles it, unmodified.
+
+teta-wot
+  The Web of Things framework the server is built on
+  (https://github.com/lucaswewa/teta-wot).
+  Copyright (c) 2026 Lucas Wang. Licensed under the MIT License.
+
+A release also holds the licence of every Rust crate and npm package it
+includes: THIRD-PARTY-RUST.txt and THIRD-PARTY-NPM.txt.
