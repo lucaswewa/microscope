@@ -2,7 +2,7 @@
 //! starts the microscope and opens the app.
 //!
 //! ```text
-//! microscope-launcher [-c config.json] [--root PATH] [--port 5000] [--server PATH] [--no-browser]
+//! microscope-launcher [-c config.json] [--root PATH] [--port 5000] [--host 127.0.0.1] [--server PATH] [--no-browser]
 //! ```
 //!
 //! - **It prepares** the root folder, `%LOCALAPPDATA%\Microscope` by
@@ -52,6 +52,11 @@ pub struct Args {
     /// The port to prefer. If it's taken, the server chooses another.
     #[arg(long, default_value_t = 5000)]
     pub port: u16,
+    /// The address the server listens on: this computer alone by default.
+    /// `0.0.0.0` lets other computers reach it, with no password, so only on
+    /// a network you trust.
+    #[arg(long, default_value = "127.0.0.1")]
+    pub host: String,
     /// The server binary: by default, `microscope-server` beside the
     /// launcher.
     #[arg(long, value_name = "PATH")]
@@ -104,6 +109,7 @@ fn prepare(args: Args) -> Result<supervise::Options, String> {
         server: args.server.map_or_else(setup::default_server, Ok)?,
         config: generated,
         port: args.port,
+        host: args.host,
         open_browser: !args.no_browser,
         log: supervise::Log::new(file),
     })

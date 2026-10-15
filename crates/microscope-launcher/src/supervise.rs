@@ -30,6 +30,8 @@ pub struct Options {
     pub config: PathBuf,
     /// The port to prefer.
     pub port: u16,
+    /// The address the server listens on.
+    pub host: String,
     /// Whether to open the app in a browser once the server is first ready.
     pub open_browser: bool,
     /// The launcher's log.
@@ -120,7 +122,13 @@ async fn serve_once(
     command
         .arg("-c")
         .arg(&options.config)
-        .args(["--managed", "--port", &port.to_string()])
+        .args([
+            "--managed",
+            "--port",
+            &port.to_string(),
+            "--host",
+            &options.host,
+        ])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
