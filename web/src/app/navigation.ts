@@ -19,21 +19,18 @@ export interface Destination {
   readonly group: 'top' | 'bottom'
   /** The Things it needs: it's hidden while the microscope lacks any of them. */
   readonly requires: readonly string[]
-  /** The phase that builds its page; until then a placeholder says so. */
-  readonly builtIn: string
 }
 
 /** The rail's destinations, in order: Shift+↑ and Shift+↓ follow it. */
 export const DESTINATIONS: readonly Destination[] = [
-  { id: 'view', label: 'View', icon: view, group: 'top', requires: [], builtIn: 'P18b' },
-  { id: 'control', label: 'Control', icon: control, group: 'top', requires: [], builtIn: 'P20' },
+  { id: 'view', label: 'View', icon: view, group: 'top', requires: [] },
+  { id: 'control', label: 'Control', icon: control, group: 'top', requires: [] },
   {
     id: 'slide-scan',
     label: 'Slide Scan',
     icon: slideScan,
     group: 'top',
     requires: ['smart_scan'],
-    builtIn: 'P40',
   },
   {
     id: 'sequence',
@@ -41,7 +38,6 @@ export const DESTINATIONS: readonly Destination[] = [
     icon: sequence,
     group: 'top',
     requires: ['sequence'],
-    builtIn: 'P42',
   },
   {
     id: 'gallery',
@@ -49,7 +45,6 @@ export const DESTINATIONS: readonly Destination[] = [
     icon: gallery,
     group: 'top',
     requires: ['gallery'],
-    builtIn: 'P32',
   },
   {
     id: 'settings',
@@ -57,9 +52,8 @@ export const DESTINATIONS: readonly Destination[] = [
     icon: settings,
     group: 'bottom',
     requires: [],
-    builtIn: 'P28',
   },
-  { id: 'logging', label: 'Logging', icon: logging, group: 'bottom', requires: [], builtIn: 'P43' },
-  { id: 'about', label: 'About', icon: about, group: 'bottom', requires: [], builtIn: 'P46' },
-  { id: 'power', label: 'Power', icon: power, group: 'bottom', requires: [], builtIn: 'P46' },
+  { id: 'logging', label: 'Logging', icon: logging, group: 'bottom', requires: [] },
+  { id: 'about', label: 'About', icon: about, group: 'bottom', requires: [] },
+  { id: 'power', label: 'Power', icon: power, group: 'bottom', requires: [] },
 ]

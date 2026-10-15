@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Covers the page while the microscope can't be reached, saying why and when
 // the app tries again. Retry tries at once; the Connect screen, which it
-// leaves uncovered, can choose another microscope.
+// leaves uncovered, can choose another microscope. Once this app has shut
+// the server down, it says so instead, and Reconnect tries again (P46).
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -20,7 +21,7 @@ const router = useRouter()
 
 const shown = computed(
   () =>
-    (connection.state === 'lost' || connection.state === 'reconnecting') &&
+    (connection.state === 'lost' || connection.state === 'reconnecting' || connection.shutDown) &&
     route.name !== 'connect',
 )
 const reconnecting = computed(() => connection.state === 'reconnecting')
@@ -31,7 +32,17 @@ const origin = computed(
 
 <template>
   <div v-if="shown" class="offline-overlay">
-    <AppCard class="offline-overlay__card" role="alert">
+    <AppCard v-if="connection.shutDown" class="offline-overlay__card" role="alert">
+      <SectionHeading :level="2">The microscope has shut down</SectionHeading>
+      <p>Its server at {{ origin }} was shut down from this app. Start it again, then reconnect.</p>
+      <div class="offline-overlay__actions">
+        <AppButton variant="primary" @click="connection.connect(connection.profile!)">
+          Reconnect
+        </AppButton>
+        <AppButton @click="router.push({ name: 'connect' })">Choose a microscope</AppButton>
+      </div>
+    </AppCard>
+    <AppCard v-else class="offline-overlay__card" role="alert">
       <SectionHeading :level="2">
         {{ connection.descriptions ? 'Connection lost' : 'Can’t reach the microscope' }}
       </SectionHeading>

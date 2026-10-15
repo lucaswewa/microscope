@@ -193,6 +193,19 @@ fn it_keeps_the_server_running_until_it_stops() {
 }
 
 #[test]
+fn a_restart_keeps_the_port_the_server_chose() {
+    // The preferred port is taken, so the server chooses one; after a
+    // restart, the app finds it there again.
+    let taken = std::net::TcpListener::bind("127.0.0.1:0").expect("binds");
+    let port = taken.local_addr().expect("an address").port();
+    let launcher = launch(CONFIG, port);
+    let (address, _) = launcher.ready();
+    assert!(!address.ends_with(&format!(":{port}")), "{address}");
+    assert_eq!(post(&address, "system/restart"), "HTTP/1.1 201 Created");
+    assert_eq!(launcher.ready().0, address);
+}
+
+#[test]
 fn the_server_doesnt_outlive_the_launcher() {
     let mut launcher = launch(CONFIG, 0);
     let (_, pid) = launcher.ready();

@@ -62,4 +62,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P42 | [Sequence tab](P42-sequence-tab.md) | Done |
 | P43 | [Logging tab](P43-logging-tab.md) | Done |
 | P44 | [Sidecar process contract](P44-sidecar-contract.md) | Done |
-| P45 | [Local launcher](P45-local-launcher.md) | In review |
+| P45 | [Local launcher](P45-local-launcher.md) | Done |
+| P46 | [About and Power tabs](P46-about-and-power.md) | In review |
