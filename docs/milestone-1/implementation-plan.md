@@ -496,8 +496,8 @@ Added after `v0.1.0`, at the project owner's request: fixes and improvements to 
 | P51 | Slide Scan: an autofocus switch | P37, P40 | M | — | Done |
 | P52 | Sequence viewer: smooth switching and playback | P33, P42 | M | — | Done |
 | P53 | Overlay layers, with image outlines on stitched scans | P39, P40 | L | 0036 | Done |
-| P53b | Overlay layers in the deep-zoom viewer | P33, P53 | M | — | In review |
-| P54 | Autofocus accuracy | P21, P36 | L | 0037 | Planned |
+| P53b | Overlay layers in the deep-zoom viewer | P33, P53 | M | — | Done |
+| P54 | Autofocus accuracy | P21, P36 | L | 0037 | In review |
 
 **Order.** The table order is the planned sequence, and phases run one at a time ([§7](#7-how-phases-work)). A few phases depend only on early ones, so they could be moved earlier if a reorder ever helps: P13, P14, P22, P34 and P38 (pure Rust), and P44. Any reorder is agreed first and recorded in [Appendix D](#appendix-d-change-log).
 

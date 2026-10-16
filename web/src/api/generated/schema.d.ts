@@ -2899,12 +2899,14 @@ export interface paths {
         get: operations["list_invocations_api_v1_autofocus_fast_autofocus_get"];
         put?: never;
         /**
-         * Sweeps `dz` steps up through focus, then moves to the sharpest point,
-         * @description ## Sweeps `dz` steps up through focus, then moves to the sharpest point,
+         * Sweeps `dz` steps up through focus, then moves to focus, approaching
+         * @description ## Sweeps `dz` steps up through focus, then moves to focus, approaching
          *
-         *     Sweeps `dz` steps up through focus, then moves to the sharpest point,
-         *     approaching it from below as the sweep did. With `start` "centre", the
-         *     sweep is centred on where the stage is.
+         *     Sweeps `dz` steps up through focus, then moves to focus, approaching
+         *     it from below as the sweep did. With `start` "centre", the sweep is
+         *     centred on where the stage is. If the image hardly changes, there's
+         *     nothing to focus on: it goes back to where it started, and the curve
+         *     has no focus.
          *
          *     ## Important note
          *

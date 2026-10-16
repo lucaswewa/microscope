@@ -5,7 +5,9 @@
 //! image has more detail, which compresses less. While the stage moves in z,
 //! a monitor records each frame's size and when it was taken, and samples
 //! the stage's z every 20 ms. A frame's z is interpolated between the
-//! samples either side of it.
+//! samples either side of it. Focus is the curve's centroid, between its
+//! frames, and a curve that hardly rises has nothing to focus on (P54,
+//! ADR-0037, [`microscope_core::focus`]).
 //!
 //! Stacks (P36) take images a set distance apart in z: a smart stack until
 //! the sharpest is well inside its latest images, a basic stack a set
@@ -18,6 +20,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use chrono::{DateTime, TimeDelta, Utc};
+use microscope_core::focus;
 use microscope_core::stack::{self, Counts, Verdict, judge};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -133,6 +136,14 @@ struct Shot {
     capture: Capture,
     at: Position,
     sharpness: f64,
+}
+
+/// Why looping autofocus found no focus.
+enum Missed {
+    /// The image hardly changed: there's nothing to focus on.
+    Flat,
+    /// Its sweeps' focus never came well inside one.
+    OutOfReach,
 }
 
 /// One attempt at a smart stack.
@@ -333,9 +344,11 @@ pub struct Autofocus {
 
 #[thing_impl]
 impl Autofocus {
-    /// Sweeps `dz` steps up through focus, then moves to the sharpest point,
-    /// approaching it from below as the sweep did. With `start` "centre", the
-    /// sweep is centred on where the stage is.
+    /// Sweeps `dz` steps up through focus, then moves to focus, approaching
+    /// it from below as the sweep did. With `start` "centre", the sweep is
+    /// centred on where the stage is. If the image hardly changes, there's
+    /// nothing to focus on: it goes back to where it started, and the curve
+    /// has no focus.
     #[action]
     async fn fast_autofocus(
         &self,
@@ -355,9 +368,13 @@ impl Autofocus {
         #[param(default = 2000)] dz: i64,
         #[param(default)] start: SweepStart,
     ) -> Result<FocusCurve, ActionError> {
-        let focused = self.looping(dz, start).await?;
-        focused.ok_or_else(|| {
-            ActionError::handled(format!("no focus found within {MAX_SWEEPS} sweeps"))
+        self.looping(dz, start).await?.map_err(|missed| {
+            ActionError::handled(match missed {
+                Missed::Flat => {
+                    "nothing to focus on: the image hardly changed through the sweep".to_owned()
+                }
+                Missed::OutOfReach => format!("no focus found within {MAX_SWEEPS} sweeps"),
+            })
         })
     }
 
@@ -395,7 +412,7 @@ impl Autofocus {
             let back = Position::new(0, 0, attempt.first_z - here.z);
             self.stage.move_relative(back).await?;
             let refocused = self.looping(autofocus_dz, SweepStart::Centre).await?;
-            if refocused.is_none() {
+            if refocused.is_err() {
                 tracing::warn!("autofocus found no focus, so the stack stops trying");
                 break (shots, sharpest, false);
             }
@@ -476,24 +493,31 @@ impl Autofocus {
 }
 
 impl Autofocus {
-    /// `looping_autofocus`'s sweeps: the last, or none if it found no focus.
-    async fn looping(&self, dz: i64, start: SweepStart) -> Result<Option<FocusCurve>, ActionError> {
+    /// `looping_autofocus`'s sweeps: the last, or why it found no focus.
+    async fn looping(
+        &self,
+        dz: i64,
+        start: SweepStart,
+    ) -> Result<Result<FocusCurve, Missed>, ActionError> {
         let mut monitor = Monitor::start(self.camera.lores_stream());
         let mut start = start;
         for sweeps in 1..=MAX_SWEEPS {
             let mut curve = self.sweep(&mut monitor, dz, start).await?;
             curve.sweeps = sweeps;
+            // Nothing to focus on, so sweeping again won't find any.
+            let Some(focus) = curve.focus_z else {
+                return Ok(Err(Missed::Flat));
+            };
             let zs = curve.points.iter().map(|point| point.z);
             let low = zs.clone().fold(f64::INFINITY, f64::min);
             let high = zs.fold(f64::NEG_INFINITY, f64::max);
             let margin = dz as f64 / 5.0;
-            let focus = curve.focus_z.unwrap_or_default() as f64;
-            if low + margin < focus && focus < high - margin {
-                return Ok(Some(curve));
+            if low + margin < focus as f64 && (focus as f64) < high - margin {
+                return Ok(Ok(curve));
             }
             start = SweepStart::Centre;
         }
-        Ok(None)
+        Ok(Err(Missed::OutOfReach))
     }
 
     /// One attempt at a smart stack, from below where the stage is.
@@ -526,7 +550,19 @@ impl Autofocus {
                 Verdict::Continue => continue,
                 Verdict::Restart => break,
                 Verdict::Focused(i) => {
-                    let sharpest = shots.len() - n + i;
+                    // The image nearest the curve's focus, which can be
+                    // between images, rather than the sharpest (P54).
+                    let curve: Vec<(f64, f64)> =
+                        shots.iter().map(|s| (s.at.z as f64, s.sharpness)).collect();
+                    let nearest = focus::peak(&curve).map(|z| {
+                        (0..shots.len())
+                            .min_by(|&a, &b| {
+                                let off = |k: usize| (shots[k].at.z as f64 - z).abs();
+                                off(a).total_cmp(&off(b))
+                            })
+                            .unwrap_or(0)
+                    });
+                    let sharpest = nearest.unwrap_or(shots.len() - n + i);
                     // Enough above it to save.
                     while shots.len() - 1 - sharpest < side {
                         stage.move_relative(Position::new(0, 0, dz)).await?;
@@ -579,26 +615,30 @@ impl Autofocus {
             ));
         }
         let stage = &**self.stage;
+        let began = stage.position().await?.z;
         if start == SweepStart::Centre {
             stage.move_relative(Position::new(0, 0, -dz / 2)).await?;
         }
         let span = monitor.move_z(stage, dz).await?;
         let points = monitor.curve(span).await;
-        let Some(sharpest) = points.iter().max_by_key(|point| point.sharpness) else {
+        if points.is_empty() {
             return Err(ActionError::handled(
                 "no frames arrived during the sweep: is the camera streaming?",
             ));
-        };
-        let focus_z = sharpest.z.round() as i64;
-        // Back below the range, then up to the focus: approached from below,
-        // as in the sweep, the stage's backlash lies the same way.
+        }
+        let curve: Vec<(f64, f64)> = points.iter().map(|p| (p.z, p.sharpness as f64)).collect();
+        let focus_z = focus::peak(&curve).map(|z| z.round() as i64);
+        // Back below the range, then up to the focus, or to where it began if
+        // there's nothing to focus on: approached from below, as in the
+        // sweep, the stage's backlash lies the same way.
         let base = stage.move_relative(Position::new(0, 0, -dz)).await?;
+        let target = focus_z.unwrap_or(began);
         stage
-            .move_relative(Position::new(0, 0, focus_z - base.z))
+            .move_relative(Position::new(0, 0, target - base.z))
             .await?;
         Ok(FocusCurve {
             points,
-            focus_z: Some(focus_z),
+            focus_z,
             sweeps: 1,
         })
     }
