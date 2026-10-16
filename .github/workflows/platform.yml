@@ -75,7 +75,8 @@ jobs:
             others=$(cargo metadata --no-deps --format-version 1 --locked \
               | jq -r --arg slow "$slow" '.packages[] | select(.name == "microscope-things")
                   | .targets[] | select(.kind == ["test"]) | .name
-                  | select(. as $name | $slow | split(" ") | index($name) | not)')
+                  | select(. as $name | $slow | split(" ") | index($name) | not)' \
+              | tr -d '\r')  # jq on Windows ends its lines with CRLF
             cargo test --locked -p microscope-things --lib $(printf -- '--test %s ' $others)
             cargo test --locked -p microscope-things --doc
           fi
