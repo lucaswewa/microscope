@@ -32,7 +32,8 @@ A microscope service: a Rust backend on [`teta-wot`](https://github.com/lucaswew
   - hash routing, and no direct platform APIs outside `src/host/`;
   - only design tokens for styles;
   - only `src/ui/` imports `reka-ui`.
-- **Platforms:** Windows x86_64, Linux x86_64, and Linux ARM64 on a Raspberry Pi 5 (ADR-0038). CI builds and tests on all three.
+- **Platforms:** Windows x86_64, Linux x86_64, and Linux ARM64 on a Raspberry Pi 5 (ADR-0038).
+  - CI checks Windows on every pull request, and Linux when asked (ADR-0040): label the pull request `linux` when it changes platform-specific code, the launcher, packaging, Linux or the Pi, and at each checkpoint. The Linux workflow can also be run by hand on a branch.
   - Keep platform-specific code in small `cfg` blocks, each with an equivalent elsewhere or a clear message where there's none.
   - Line endings are LF. Scripts that write files on Windows must not turn them into CRLF.
   - Playwright's visual baselines are Windows images (`*-chromium-win32.png`), so they don't match on Linux, and are checked on Windows only.
@@ -45,7 +46,7 @@ A microscope service: a Rust backend on [`teta-wot`](https://github.com/lucaswew
 
 ## Checks before opening a pull request
 
-These match CI (`.github/workflows/ci.yml`):
+These match CI (`.github/workflows/ci.yml` for Windows, `linux.yml` for Linux, both through `platform.yml`):
 
 ```sh
 cargo fmt --all --check

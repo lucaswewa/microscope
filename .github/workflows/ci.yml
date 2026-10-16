@@ -6,72 +6,15 @@ on:
   pull_request:
   workflow_dispatch:
 
-# The platforms (ADR-0038): Windows x86_64, Linux x86_64 and Linux ARM64,
-# each on its own runner. The visual baselines are Windows images (ADR-0034),
-# so the end-to-end job checks them on Windows only.
+# Windows x86_64 on every pull request (ADR-0038, ADR-0040). Linux runs when
+# asked, through linux.yml.
 jobs:
-  rust:
-    name: Rust (${{ matrix.name }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { name: Windows x86_64, os: windows-latest }
-          - { name: Linux x86_64, os: ubuntu-latest }
-          - { name: Linux ARM64, os: ubuntu-24.04-arm }
-    steps:
-      - uses: actions/checkout@v7
-      # rustup reads rust-toolchain.toml and installs the pinned toolchain.
-      - name: Install the pinned toolchain
-        run: rustup toolchain install
-      - uses: Swatinem/rust-cache@v2
-      - name: Format
-        run: cargo fmt --all --check
-      - name: Clippy
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Test
-        run: cargo test --workspace --locked
-      - name: Documentation
-        run: cargo doc --workspace --no-deps --locked
-        env:
-          RUSTDOCFLAGS: -D warnings
-
-  web:
-    name: Web app (${{ matrix.name }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { name: Windows x86_64, os: windows-latest }
-          - { name: Linux x86_64, os: ubuntu-latest }
-          - { name: Linux ARM64, os: ubuntu-24.04-arm }
-    defaults:
-      run:
-        working-directory: web
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: web/.nvmrc
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Install
-        run: npm ci
-      - name: Format
-        run: npm run format:check
-      - name: Lint
-        run: npm run lint
-      - name: Type check
-        run: npm run typecheck
-      # The Rust job checks openapi.json against the server (ADR-0021).
-      - name: Generated API types are up to date
-        run: npm run api:types -- --check
-      - name: Unit tests
-        run: npm run test:unit
-      - name: Build
-        run: npm run build
+  windows:
+    name: Windows x86_64
+    uses: ./.github/workflows/platform.yml
+    with:
+      os: windows-latest
+      exe: .exe
 
   contract:
     name: Contract (Windows x86_64)
@@ -108,48 +51,3 @@ jobs:
           Stop-Process -Id $server.Id
           if ($status -ne 0) { Get-Content ../server.log, ../server.err.log }
           exit $status
-
-  e2e:
-    name: End to end (${{ matrix.name }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { name: Windows x86_64, os: windows-latest, exe: .exe }
-          - { name: Linux x86_64, os: ubuntu-latest, exe: '' }
-    steps:
-      - uses: actions/checkout@v7
-      - name: Install the pinned toolchain
-        run: rustup toolchain install
-      - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: web/.nvmrc
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Install
-        run: npm ci
-        working-directory: web
-      # The web app first: the release build embeds web/dist (ADR-0016).
-      - name: Build the web app
-        run: npm run build
-        working-directory: web
-      - name: Build the server, with the web app embedded, and the launcher
-        run: cargo build --release -p microscope-server -p microscope-launcher --locked
-      # On Linux, Chromium needs system libraries too.
-      - name: Install Chromium
-        run: npx playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} chromium
-        working-directory: web
-      - name: End-to-end tests against the served app, and on Windows the visual ones
-        run: npx playwright test
-        working-directory: web
-        env:
-          MICROSCOPE_SERVER: target/release/microscope-server${{ matrix.exe }}
-          MICROSCOPE_LAUNCHER: target/release/microscope-launcher${{ matrix.exe }}
-      - name: Test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-results-${{ runner.os }}
-          path: web/test-results

@@ -1,6 +1,6 @@
 # ADR-0038: Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5
 
-- Status: Accepted
+- Status: Accepted; superseded in part by [ADR-0040](0040-linux-ci-on-request-and-parallel-tests.md), which runs Linux CI on request
 - Date: 2026-10-16
 - Phase: P00 (milestone 2)
 - Supersedes: [ADR-0003](0003-milestone-1-platform-windows-x86-64.md)

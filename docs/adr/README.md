@@ -52,7 +52,8 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0035](0035-release-packaging-and-third-party-notices.md) | Release packaging and third-party notices | Accepted | P49 |
 | [0036](0036-image-overlay-layers.md) | Image overlay layers | Accepted | P53 |
 | [0037](0037-autofocus-accuracy.md) | Autofocus accuracy: focus at the curve's centroid | Accepted | P54 |
-| [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted | M2 P00 |
+| [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted; superseded in part by ADR-0040 | M2 P00 |
 | [0039](0039-teta-wot-on-linux.md) | `teta-wot` on Linux | Accepted | M2 P01 |
+| [0040](0040-linux-ci-on-request-and-parallel-tests.md) | Linux CI on request, and the Rust tests in parallel | Accepted | M2, after P01 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

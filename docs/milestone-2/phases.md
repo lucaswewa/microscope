@@ -78,14 +78,14 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P03: The driver framework
 
 **Goal.** What every real driver shares, ready before the first one.
-**Depends on** P01 · **Size** M · **ADRs** 0040
+**Depends on** P01 · **Size** M · **ADRs** 0041
 
 **Scope**
 - **Device actors:** the pattern for a driver's handle in a `teta-wot` `Device<D>`, with its errors, reconnection and shutdown.
 - **SDKs at run time:**
   - checking that pylon's and Vimba X's C APIs load on all three platforms;
   - the loader, which reports a missing SDK clearly;
-  - the decision in ADR-0040 ([plan §10](implementation-plan.md#10-points-for-your-review)).
+  - the decision in ADR-0041 ([plan §10](implementation-plan.md#10-points-for-your-review)).
 - **A serial-port abstraction** with a fake, for the stages' protocol tests.
 - **Hardware tests:** the convention (an environment variable names the device; the test is skipped without one), and a test helper.
 - **Configurations:** how one names a device (a camera by serial number, a stage by port), and `configs/` laid out per hardware set.
@@ -103,10 +103,10 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P04: Zaber stages
 
 **Goal.** A Zaber XYZ stage drives the microscope.
-**Depends on** P03 · **Size** L · **ADRs** 0041
+**Depends on** P03 · **Size** L · **ADRs** 0042
 
 **Scope**
-- `ZaberStage`, providing `StageApi`, over Zaber's ASCII protocol on a serial port: the `zproto` crate, or our own client (ADR-0041).
+- `ZaberStage`, providing `StageApi`, over Zaber's ASCII protocol on a serial port: the `zproto` crate, or our own client (ADR-0042).
 - **Axes:** three, found by their device and axis numbers, in microsteps.
   - `axis_scale` comes from each axis's microstep size, so the stage is µm-native (ADR-0019).
 - **Moves:** relative and absolute, waiting until idle; `stop`; homing; the device's own limits.
@@ -146,7 +146,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P06: The SDK camera pipeline
 
 **Goal.** What every SDK camera shares: frames in, previews and captures out.
-**Depends on** P03 · **Size** M · **ADRs** 0042
+**Depends on** P03 · **Size** M · **ADRs** 0043
 
 **Scope**
 - **A shared struct:**
@@ -170,7 +170,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 **Depends on** P06 · **Size** L · **ADRs** —
 
 **Scope**
-- `BaslerCamera`, providing `CameraApi`, through pylon (loaded as ADR-0040 decides), in a device actor.
+- `BaslerCamera`, providing `CameraApi`, through pylon (loaded as ADR-0041 decides), in a device actor.
 - **Opening** a camera by serial number; listing those found.
 - **Grabbing** continuously for the preview, and captures at full resolution.
 - **Its features:** exposure, gain, pixel format, white balance, and a region of interest.
@@ -202,10 +202,10 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P09: The Raspberry Pi camera
 
 **Goal.** The Pi camera is the microscope's camera on a Pi 5.
-**Depends on** P06, P02 · **Size** L · **ADRs** 0043
+**Depends on** P06, P02 · **Size** L · **ADRs** 0044
 
 **Scope**
-- Trying libcamera through Rust bindings, and `rpicam-vid` as a child process giving MJPEG, and recording the choice in ADR-0043.
+- Trying libcamera through Rust bindings, and `rpicam-vid` as a child process giving MJPEG, and recording the choice in ADR-0044.
 - `PiCamera`, providing `CameraApi`:
   - the preview at the streams' sizes;
   - captures at full resolution;
@@ -268,7 +268,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P12: Correlation placement
 
 **Goal.** Where each image of a mosaic really is, from its overlaps.
-**Depends on** P03 · **Size** L · **ADRs** 0044
+**Depends on** P03 · **Size** L · **ADRs** 0045
 
 **Scope**
 - In `microscope-core`, pure and tested without hardware:
@@ -312,13 +312,13 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P14: Authentication on the server
 
 **Goal.** A microscope only answers those with its token.
-**Depends on** P02 · **Size** M · **ADRs** 0045
+**Depends on** P02 · **Size** M · **ADRs** 0046
 
 **Scope**
 - **A token** made at the first start, kept in the settings folder, shown in the launcher's or service's log, and changeable.
 - **`teta-wot`'s `security` configuration:** a bearer token from an environment variable, which the launcher and the service set.
 - **Every route asks for it,** including this app's own (logs, the data route, health's details), except the web app's files and a bare health check.
-- **ADR-0045:** tokens, where they're kept, and HTTPS (a trusted network in milestone 2, or TLS).
+- **ADR-0046:** tokens, where they're kept, and HTTPS (a trusted network in milestone 2, or TLS).
 
 **Tests**
 - Every route, with a token, without one, and with a wrong one.
@@ -351,7 +351,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P16: mDNS adverts
 
 **Goal.** Microscopes say they're there.
-**Depends on** P14 · **Size** S · **ADRs** 0046
+**Depends on** P14 · **Size** S · **ADRs** 0047
 
 **Scope**
 - The server advertises `_microscope._tcp` with a pure-Rust mDNS crate. Its TXT record holds:
@@ -370,7 +370,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P17: The Tauri desktop app
 
 **Goal.** The web app as a desktop app, with its own local microscope.
-**Depends on** P15 · **Size** L · **ADRs** 0047
+**Depends on** P15 · **Size** L · **ADRs** 0048
 
 **Scope**
 - **Tauri 2** around the web app's build, in a new `desktop/` folder.
@@ -406,7 +406,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P19: Desktop installers and signing
 
 **Goal.** The desktop app installs cleanly and runs without warnings.
-**Depends on** P17 · **Size** M · **ADRs** 0048
+**Depends on** P17 · **Size** M · **ADRs** 0049
 
 **Scope**
 - **Installers** in the release workflow:
