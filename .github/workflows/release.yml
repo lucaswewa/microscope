@@ -2,9 +2,10 @@ name: Release
 
 # The Windows zip (P49, ADR-0035): the launcher, the server with the web app
 # embedded, the default configurations, the README, the licence, NOTICE and
-# the third-party licences. A tag `v*` publishes it as a GitHub release. A
-# manual run, or a pull request that changes the packaging, keeps it as an
-# artifact.
+# the third-party licences. The same in a Linux archive for x86_64 and ARM64,
+# and a .deb that runs the server as a systemd service (P02). A tag `v*`
+# publishes them as a GitHub release. A manual run, or a pull request that
+# changes the packaging, keeps them as artifacts.
 on:
   push:
     tags: ['v*']
@@ -18,7 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  package:
+  windows:
     name: Windows zip
     runs-on: windows-latest
     steps:
@@ -64,9 +65,97 @@ jobs:
         with:
           name: windows-zip
           path: release-out/*.zip
-      - name: Publish the release
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: gh release create $env:TAG (Get-Item release-out/*.zip).FullName --title "Microscope $env:TAG" --notes "See README.md in the zip to get started."
+
+  linux:
+    name: Linux ${{ matrix.arch }} archive and .deb
+    # The oldest supported Ubuntu, so the binaries need an older glibc:
+    # Debian 12's, and so Raspberry Pi OS's, is enough.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - { arch: x86_64, os: ubuntu-22.04 }
+          - { arch: arm64, os: ubuntu-22.04-arm }
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      - name: Build the web app
+        run: npm run build
+        working-directory: web
+      - name: Build the server, with the web app embedded, and the launcher
+        run: cargo build --release -p microscope-server -p microscope-launcher --locked
+      - name: Install cargo-about
+        run: cargo install cargo-about --version 0.9.2 --features cli --locked
+      - name: Package
+        run: bash release/package.sh "$VERSION"
+        env:
+          VERSION: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'dev' }}
+      - name: The archive's launcher starts its server, and SIGTERM stops both
+        run: |
+          mkdir smoke
+          tar -xzf release-out/*.tar.gz -C smoke
+          smoke/*/microscope-launcher --root "$PWD/smoke-root" --port 0 --no-browser > smoke.log 2>&1 &
+          launcher=$!
+          url=
+          for i in $(seq 60); do
+            url=$(sed -n 's/^launcher: the microscope is at //p' smoke.log | head -1)
+            [ -n "$url" ] && break
+            sleep 1
+          done
+          ok=false
+          [ -n "$url" ] && curl -sf "$url/api/v1/health" | jq -e '.status == "ok"' && ok=true
+          kill -TERM $launcher
+          wait $launcher || ok=false
+          $ok || { cat smoke.log; exit 1; }
+      - name: The .deb's service serves, restarts when the app asks, and stops when removed
+        run: |
+          sudo apt-get install -y ./release-out/microscope_*.deb
+          api=http://127.0.0.1:5000/api/v1
+          healthy() {
+            for i in $(seq 60); do
+              curl -sf "$api/health" | jq -e '.status == "ok"' > /dev/null && return 0
+              sleep 1
+            done
+            sudo journalctl -u microscope --no-pager
+            return 1
+          }
+          healthy
+          first=$(systemctl show -p MainPID --value microscope)
+          curl -sf -X POST -H 'Content-Type: application/json' -d '{}' "$api/system/restart"
+          sleep 3
+          healthy
+          [ "$(systemctl show -p MainPID --value microscope)" != "$first" ]
+          sudo apt-get remove -y microscope
+          if systemctl is-active --quiet microscope; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: |
+            release-out/*.tar.gz
+            release-out/*.deb
+
+  publish:
+    name: Publish the release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Publish
+        run: gh release create "$TAG" assets/* --repo "$GITHUB_REPOSITORY" --title "Microscope $TAG" --notes "See README.md in the zip or the archive to get started. On Linux, the .deb runs the microscope as a service."
         env:
           TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}

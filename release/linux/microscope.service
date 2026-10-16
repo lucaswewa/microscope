@@ -1,0 +1,41 @@
+# The microscope server as a systemd service (P02): headless, started at
+# boot, and restarted as the launcher restarts it (ADR-0033). Its settings
+# and data are in /var/lib/microscope, its logs in /var/log/microscope and
+# the journal, its microscope in /etc/microscope/config.json, and its address
+# and port in /etc/default/microscope.
+[Unit]
+Description=Microscope server
+Documentation=file:///usr/share/doc/microscope/README.md
+After=network-online.target
+Wants=network-online.target
+# The sixth crash in a minute stops it.
+StartLimitIntervalSec=60
+StartLimitBurst=6
+
+[Service]
+User=microscope
+Group=microscope
+# For serial stages and cameras.
+SupplementaryGroups=dialout video
+Environment=MICROSCOPE_HOST=127.0.0.1 MICROSCOPE_PORT=5000
+EnvironmentFile=-/etc/default/microscope
+ExecStart=/usr/bin/microscope-server --service -c /etc/microscope/config.json --host ${MICROSCOPE_HOST} --port ${MICROSCOPE_PORT}
+StateDirectory=microscope
+LogsDirectory=microscope
+WorkingDirectory=/var/lib/microscope
+# Exit code 75 is a restart the app asked for; 0, a shutdown, which it
+# stays after until it's started again; 2 and 3, a configuration to fix.
+Restart=on-failure
+RestartSec=1
+SuccessExitStatus=75
+RestartForceExitStatus=75
+RestartPreventExitStatus=2 3
+# SIGTERM stops it, within its grace period, and the server's own deadline.
+TimeoutStopSec=30
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

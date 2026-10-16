@@ -77,6 +77,23 @@ Then, on another computer on the same network, open `http://<this computer's nam
 - `--port <number>` prefers another port;
 - `--no-browser` doesn't open the app.
 
+### On Linux
+
+Linux x86_64 and ARM64, the Raspberry Pi 5 included, have two downloads.
+
+**`microscope-<version>-linux-<arch>.tar.gz`** runs the microscope as on Windows. Unpack it, and run `./microscope-launcher` in a terminal. Everything is in `~/.local/share/microscope/` (or in `$XDG_DATA_HOME`, if that's set), in the same folders as above. Ctrl+C, or closing the terminal, stops it.
+
+**`microscope_<version>_<arch>.deb`** runs the microscope as a service, started at boot, such as on a Pi with no screen:
+
+```sh
+sudo apt install ./microscope_0.2.0_arm64.deb
+```
+
+- **It serves** <http://127.0.0.1:5000/>, to this machine alone, as the server has no password yet. To reach it from other computers, on a network you trust, set `MICROSCOPE_HOST=0.0.0.0` in `/etc/default/microscope`, then run `sudo systemctl restart microscope`.
+- **Its microscope** is in `/etc/microscope/config.json`: the simulated one, at first. Its settings and data are in `/var/lib/microscope/`, and its logs in `/var/log/microscope/` and in `journalctl -u microscope`.
+- **Restart,** in the Power tab, starts it again. **Shut down** stops it until `sudo systemctl start microscope`, or the next boot. If it crashes, systemd starts it again; the sixth crash in a minute stops it.
+- **Removing it,** `sudo apt remove microscope`, stops the service and keeps `/var/lib/microscope/`.
+
 ## Documentation
 
 - [Milestone 1 goals](docs/milestone-1/goals.md)
@@ -136,11 +153,11 @@ cargo install cargo-about --version 0.9.2 --features cli --locked
 ./release/package.ps1 -Version 0.1.0
 ```
 
-It's written to `release-out\`. Pushing a tag such as `v0.1.0` has the release workflow build it, check that its launcher starts, and publish it.
+It's written to `release-out\`. On Linux, `bash release/package.sh 0.1.0` builds the archive and the `.deb` there instead, with `jq` and `dpkg-deb`. Pushing a tag such as `v0.1.0` has the release workflow build them all, check that each launcher starts and that the `.deb`'s service serves and restarts, and publish them.
 
 ### Run the launcher
 
-The launcher is the one command a user needs ([ADR-0033](docs/adr/0033-local-launcher-and-its-tauri-successor.md)). It keeps the server's settings, data and logs in `%LOCALAPPDATA%\Microscope`, starts the server on port 5000 (or another, if that's taken), and opens the app in the browser. It starts the server again when the server asks to restart, or after a crash. Ctrl-C stops both.
+The launcher is the one command a user needs ([ADR-0033](docs/adr/0033-local-launcher-and-its-tauri-successor.md)). It keeps the server's settings, data and logs in `%LOCALAPPDATA%\Microscope`, or on Linux in `~/.local/share/microscope`, starts the server on port 5000 (or another, if that's taken), and opens the app in the browser. It starts the server again when the server asks to restart, or after a crash. Ctrl-C stops both.
 
 ```powershell
 cargo build -p microscope-server -p microscope-launcher

@@ -1,6 +1,7 @@
 //! What the launcher prepares before it starts the server: its folder, the
 //! configuration it gives the server, its single-instance lock and a port.
 
+use std::ffi::OsString;
 use std::fs::{File, OpenOptions, TryLockError};
 use std::net::TcpListener;
 use std::path::{Path, PathBuf};
@@ -10,13 +11,30 @@ use serde_json::{Value, json};
 /// The configuration used without `--config`: the simulated microscope's.
 pub const SIMULATION: &str = include_str!("../../../configs/simulation.json");
 
-/// `%LOCALAPPDATA%\Microscope`, where the launcher keeps the server's
-/// settings, data and logs (plan §5.9), or `.microscope` without it.
+/// Where the launcher keeps the server's settings, data and logs (plan
+/// §5.9): `%LOCALAPPDATA%\Microscope` on Windows, and elsewhere `microscope`
+/// in XDG's data folder, `~/.local/share` by default; or `.microscope`
+/// without them.
 pub fn default_root() -> PathBuf {
-    std::env::var_os("LOCALAPPDATA").map_or_else(
-        || PathBuf::from(".microscope"),
-        |local| PathBuf::from(local).join("Microscope"),
-    )
+    root_from(cfg!(windows), |name| std::env::var_os(name))
+}
+
+/// The root folder, from the environment variables `var` gives.
+fn root_from(windows: bool, var: impl Fn(&str) -> Option<OsString>) -> PathBuf {
+    let var = |name| {
+        var(name)
+            .filter(|value| !value.is_empty())
+            .map(PathBuf::from)
+    };
+    let (base, name) = if windows {
+        (var("LOCALAPPDATA"), "Microscope")
+    } else {
+        // XDG asks for a relative data folder to be ignored.
+        let data = var("XDG_DATA_HOME").filter(|path| path.has_root());
+        let data = data.or_else(|| Some(var("HOME")?.join(".local").join("share")));
+        (data, "microscope")
+    };
+    base.map_or_else(|| PathBuf::from(".microscope"), |base| base.join(name))
 }
 
 /// The configuration `text`, with its settings, data and log folders made
@@ -109,6 +127,32 @@ mod tests {
         );
         assert!(resolve("[1]", root).is_err());
         assert!(resolve("{", root).is_err());
+    }
+
+    #[test]
+    fn the_root_is_in_the_platforms_data_folder() {
+        let env = |vars: &'static [(&str, &str)]| {
+            move |name: &str| {
+                let found = vars.iter().find(|(key, _)| *key == name);
+                found.map(|(_, value)| OsString::from(value))
+            }
+        };
+        let local = r"C:\Users\me\AppData\Local";
+        let windows = env(&[("LOCALAPPDATA", r"C:\Users\me\AppData\Local")]);
+        assert_eq!(
+            root_from(true, windows),
+            Path::new(local).join("Microscope")
+        );
+        let xdg = env(&[("XDG_DATA_HOME", "/data"), ("HOME", "/home/me")]);
+        assert_eq!(root_from(false, xdg), Path::new("/data").join("microscope"));
+        // Without XDG's data folder, or with a relative one, it's in the home.
+        let home = Path::new("/home/me").join(".local").join("share");
+        let unset = env(&[("XDG_DATA_HOME", ""), ("HOME", "/home/me")]);
+        assert_eq!(root_from(false, unset), home.join("microscope"));
+        let relative = env(&[("XDG_DATA_HOME", "data"), ("HOME", "/home/me")]);
+        assert_eq!(root_from(false, relative), home.join("microscope"));
+        assert_eq!(root_from(false, env(&[])), Path::new(".microscope"));
+        assert_eq!(root_from(true, env(&[])), Path::new(".microscope"));
     }
 
     #[test]
