@@ -1,6 +1,6 @@
 # ADR-0003: Milestone-1 platform: Windows x86_64
 
-- Status: Accepted
+- Status: Superseded by [ADR-0038](0038-milestone-2-platforms.md)
 - Date: 2026-10-08
 - Phase: P00
 

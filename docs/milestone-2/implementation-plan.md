@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | Draft for review |
+| Status | Approved 2026-10-16; a living document, updated as phases land (change log) |
 | Date | 2026-10-16 |
 | Covers | Milestone 2: real cameras and stages, Linux and the Raspberry Pi 5, correlation stitching, authentication, and the desktop app with discovery |
 | Inputs | [`goals.md`](goals.md), the [readiness checklist](readiness.md), the planning Q&A (recorded in [§3](#3-decisions-made-while-planning)), and [milestone 1](../milestone-1/implementation-plan.md) |
@@ -184,7 +184,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P00 | Milestone 2 groundwork | — | S | 0038 | Planned |
+| P00 | Milestone 2 groundwork | — | S | 0038 | In review |
 | P01 | Linux builds and CI | P00 | M | 0039 | Planned |
 | P02 | The Linux service and packages | P01 | M | — | Planned |
 
@@ -304,3 +304,4 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-16 | Approved. §10's points stand as proposed, except two still open: whether `teta-wot` may change for Linux (asked in P01) and the owner's hardware models (asked in P00, recorded in [hardware.md](hardware.md)) |
