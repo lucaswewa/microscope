@@ -1,6 +1,6 @@
 # P53b: Overlay layers in the deep-zoom viewer
 
-- Status: In review
+- Status: Done
 - Pull request: [#67](https://github.com/lucaswewa/microscope/pull/67)
 - ADRs: none new (ADR-0036)
 - Spec: [phases.md#p53b](../phases.md#p53b)

@@ -36,7 +36,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0019](0019-stage-units-integer-steps-with-a-um-scale.md) | Stage units: integer steps with a µm scale | Accepted | P15 |
 | [0020](0020-camera-frame-pipeline.md) | Camera frame pipeline | Accepted | P17 |
 | [0021](0021-generated-api-types.md) | Generated API types | Accepted | P19 |
-| [0022](0022-sharpness-metric-and-fast-autofocus.md) | Sharpness metric and fast autofocus | Accepted | P21 |
+| [0022](0022-sharpness-metric-and-fast-autofocus.md) | Sharpness metric and fast autofocus | Superseded in part by ADR-0037 | P21 |
 | [0023](0023-image-registration-by-phase-correlation.md) | Image registration by phase correlation | Accepted | P22 |
 | [0024](0024-server-described-ui-elements.md) | Server-described UI elements | Accepted | P24 |
 | [0025](0025-data-folder-layout-and-capture-metadata.md) | Data folder layout and capture metadata | Accepted | P26 |
@@ -51,5 +51,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0034](0034-visual-regression-baselines.md) | Visual regression baselines | Accepted | P47 |
 | [0035](0035-release-packaging-and-third-party-notices.md) | Release packaging and third-party notices | Accepted | P49 |
 | [0036](0036-image-overlay-layers.md) | Image overlay layers | Accepted | P53 |
+| [0037](0037-autofocus-accuracy.md) | Autofocus accuracy: focus at the curve's centroid | Accepted | P54 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

@@ -12,6 +12,7 @@
 pub mod background;
 pub mod dzi;
 pub mod fft;
+pub mod focus;
 pub mod mapping;
 pub mod mosaic;
 pub mod registration;

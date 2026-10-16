@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// Autofocus: sweeps through focus and moves to the sharpest point, from the
-// button or the `a` key while the Control tab is open. While it runs, the
-// button cancels it.
+// Autofocus: sweeps through focus and moves to focus, from the button or
+// the `a` key while the Control tab is open. While it runs, the button
+// cancels it. If the image hardly changes, there's nothing to focus on, and
+// the stage goes back to where it was (P54).
 import { shallowRef } from 'vue'
 
 import { useThing, type TypedInvocation } from '@/api/things'
@@ -21,7 +22,10 @@ async function run() {
   if (!autofocus.value || running.value) return
   try {
     running.value = await autofocus.value.invoke('fast_autofocus', { dz: DZ })
-    await running.value.output()
+    const curve = (await running.value.output()) as { focus_z?: number | null } | null
+    if (curve && curve.focus_z == null) {
+      toast.info('Nothing to focus on here: move to the sample and try again.')
+    }
   } catch (error) {
     if (error instanceof ApiError && error.kind === 'cancelled') return
     toast.error('Autofocus failed.', {

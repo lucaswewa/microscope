@@ -1,6 +1,8 @@
 //! Autofocus (P21) against the simulated camera and stage: it converges
 //! from offsets around focus, with backlash on and off, loops back into
-//! range, measures sharpness along moves, and can be cancelled.
+//! range, measures sharpness along moves, and can be cancelled. With
+//! nothing in view to focus on (P54), it says so and goes back to where it
+//! began.
 
 use std::time::Duration;
 
@@ -130,6 +132,42 @@ async fn looping_autofocus_sweeps_again_when_focus_is_at_the_edge() {
         "{} µm out",
         defocus_um(&stage)
     );
+    harness.stop().await;
+}
+
+#[tokio::test]
+async fn with_nothing_to_focus_on_it_goes_back_to_where_it_began() {
+    let _turn = ONE_AT_A_TIME.lock().await;
+    let harness = start(true).await;
+    let client = harness.client();
+    // An empty slide.
+    put(client, "/camera/blob_density", json!(0.0)).await;
+    let (stage, autofocus) = (stage(&harness), harness.thing());
+    let began = Position::new(0, 0, 120);
+    stage.move_absolute(began).await.expect("moved");
+    let curve = autofocus
+        .fast_autofocus(DZ, SweepStart::Centre)
+        .await
+        .expect("it ran");
+    assert!(curve.points.len() >= 5, "{} frames", curve.points.len());
+    assert_eq!(curve.focus_z, None);
+    assert_eq!(StageApi::position(&stage).await.expect("known"), began);
+    // Looping autofocus says so after one sweep, rather than trying ten.
+    let swept = std::time::Instant::now();
+    let missed = autofocus
+        .looping_autofocus(DZ, SweepStart::Centre)
+        .await
+        .expect_err("no focus");
+    assert!(
+        missed.to_string().contains("nothing to focus on"),
+        "{missed}"
+    );
+    assert!(
+        swept.elapsed() < Duration::from_secs(15),
+        "{:?}",
+        swept.elapsed()
+    );
+    assert_eq!(StageApi::position(&stage).await.expect("known"), began);
     harness.stop().await;
 }
 

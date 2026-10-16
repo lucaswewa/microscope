@@ -77,6 +77,8 @@ let received: Received[]
 let finished: boolean
 /** Whether the autofocus invocation has been cancelled. */
 let focusCancelled: boolean
+/** What autofocus returns, once it has; it runs until then. */
+let focusOutput: object | undefined
 /** The frames' size when the mapping was calibrated, if it was. */
 let resolution: number[] | null
 /** The events the stage's `moving` sends. */
@@ -95,6 +97,7 @@ beforeEach(() => {
   window.localStorage.clear()
   finished = false
   focusCancelled = false
+  focusOutput = undefined
   resolution = [820, 616]
   movingEvents = []
   const server = fakeServer({
@@ -123,7 +126,11 @@ beforeEach(() => {
     'POST /api/v1/stage/jog': () => json(record('j', 'completed'), 201),
     'POST /api/v1/autofocus/fast_autofocus': () => json(record('f', 'running'), 201),
     'GET /api/v1/action_invocations/f': () =>
-      json(record('f', focusCancelled ? 'cancelled' : 'running')),
+      json(
+        focusOutput
+          ? { ...record('f', 'completed'), output: focusOutput }
+          : record('f', focusCancelled ? 'cancelled' : 'running'),
+      ),
     'DELETE /api/v1/action_invocations/f': () => {
       focusCancelled = true
       return json(null)
@@ -255,6 +262,15 @@ describe('the Control tab', () => {
     await button('Autofocus').trigger('click')
     await flushPromises()
     expect(autofocusRuns()).toHaveLength(2)
+  })
+
+  it('says when there is nothing to focus on', async () => {
+    focusOutput = { points: [], focus_z: null, sweeps: 1 }
+    await open()
+    await button('Autofocus').trigger('click')
+    await vi.advanceTimersByTimeAsync(1000)
+    const toast = document.querySelector('.overlay-toast__text')
+    expect(toast?.textContent).toContain('Nothing to focus on here')
   })
 
   it('jogs and focuses as the navigation preferences say', async () => {

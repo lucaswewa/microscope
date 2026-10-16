@@ -4658,8 +4658,8 @@
         }
       },
       "post": {
-        "summary": "Sweeps `dz` steps up through focus, then moves to the sharpest point,",
-        "description": "## Sweeps `dz` steps up through focus, then moves to the sharpest point,\n\nSweeps `dz` steps up through focus, then moves to the sharpest point,\napproaching it from below as the sweep did. With `start` \"centre\", the\nsweep is centred on where the stage is.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
+        "summary": "Sweeps `dz` steps up through focus, then moves to focus, approaching",
+        "description": "## Sweeps `dz` steps up through focus, then moves to focus, approaching\n\nSweeps `dz` steps up through focus, then moves to focus, approaching\nit from below as the sweep did. With `start` \"centre\", the sweep is\ncentred on where the stage is. If the image hardly changes, there's\nnothing to focus on: it goes back to where it started, and the curve\nhas no focus.\n\n## Important note\n\nThis `POST` request starts an action: the server may carry on after answering. The answer is always a 201 with the invocation, whose `href` can be polled to follow it, and whose `output` link gives the result when it has completed.",
         "operationId": "start_action_api_v1_autofocus_fast_autofocus_post",
         "requestBody": {
           "content": {

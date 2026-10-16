@@ -1,6 +1,6 @@
 # ADR-0022: Sharpness metric and fast autofocus
 
-- Status: Accepted
+- Status: Superseded in part by [ADR-0037](0037-autofocus-accuracy.md): where a sweep's focus is, and what happens when there's none
 - Date: 2026-10-10
 - Phase: P21
 
