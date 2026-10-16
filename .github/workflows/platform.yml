@@ -1,0 +1,150 @@
+name: Platform
+
+# Every check on one platform (ADR-0038): ci.yml calls it for Windows on
+# every pull request, and linux.yml for Linux when asked (ADR-0040). The Rust
+# tests run as three jobs at once: the two slowest groups of simulator tests,
+# and the rest, which takes every other test target, new ones included.
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: The runner
+        type: string
+        required: true
+      exe:
+        description: The binaries' suffix
+        type: string
+        default: ''
+      e2e:
+        description: Whether to run the end-to-end suite
+        type: boolean
+        default: true
+
+jobs:
+  checks:
+    name: Rust checks
+    runs-on: ${{ inputs.os }}
+    steps:
+      - uses: actions/checkout@v7
+      # rustup reads rust-toolchain.toml and installs the pinned toolchain.
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Documentation
+        run: cargo doc --workspace --no-deps --locked
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  tests:
+    name: Rust tests (${{ matrix.part }})
+    runs-on: ${{ inputs.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: simulator 1
+            targets: workflows mapping autofocus
+          - part: simulator 2
+            targets: stage_measure smart_scan stack
+          - part: the rest
+            targets: ''
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: tests
+          # The rest builds everything, so its cache serves the others.
+          save-if: ${{ matrix.part == 'the rest' }}
+      - name: Test
+        shell: bash
+        run: |
+          if [ -n "${{ matrix.targets }}" ]; then
+            cargo test --locked -p microscope-things $(printf -- '--test %s ' ${{ matrix.targets }})
+          else
+            # The other crates whole, then microscope-things' unit and doc tests and
+            # every test target of its but the simulator groups'. Other crates have
+            # targets of the same names (`stack`), so they're left out by crate.
+            cargo test --workspace --locked --exclude microscope-things
+            slow="workflows mapping autofocus stage_measure smart_scan stack"
+            others=$(cargo metadata --no-deps --format-version 1 --locked \
+              | jq -r --arg slow "$slow" '.packages[] | select(.name == "microscope-things")
+                  | .targets[] | select(.kind == ["test"]) | .name
+                  | select(. as $name | $slow | split(" ") | index($name) | not)')
+            cargo test --locked -p microscope-things --lib $(printf -- '--test %s ' $others)
+            cargo test --locked -p microscope-things --doc
+          fi
+
+  web:
+    name: Web app
+    runs-on: ${{ inputs.os }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Format
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run typecheck
+      # The Rust tests check openapi.json against the server (ADR-0021).
+      - name: Generated API types are up to date
+        run: npm run api:types -- --check
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Build
+        run: npm run build
+
+  e2e:
+    name: End to end
+    if: inputs.e2e
+    runs-on: ${{ inputs.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      # The web app first: the release build embeds web/dist (ADR-0016).
+      - name: Build the web app
+        run: npm run build
+        working-directory: web
+      - name: Build the server, with the web app embedded, and the launcher
+        run: cargo build --release -p microscope-server -p microscope-launcher --locked
+      # On Linux, Chromium needs system libraries too.
+      - name: Install Chromium
+        run: npx playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} chromium
+        working-directory: web
+      - name: End-to-end tests against the served app, and on Windows the visual ones
+        run: npx playwright test
+        working-directory: web
+        env:
+          MICROSCOPE_SERVER: target/release/microscope-server${{ inputs.exe }}
+          MICROSCOPE_LAUNCHER: target/release/microscope-launcher${{ inputs.exe }}
+      - name: Test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ runner.os }}
+          path: web/test-results

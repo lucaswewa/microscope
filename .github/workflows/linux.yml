@@ -1,0 +1,32 @@
+name: Linux
+
+# Linux x86_64 and ARM64 (ADR-0038), when asked (ADR-0040): label a pull
+# request `linux`, and it runs on that pull request and each push to it; or
+# run this workflow by hand on any branch. Adding another label doesn't rerun it.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+jobs:
+  x86_64:
+    name: Linux x86_64
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.pull_request.labels.*.name, 'linux') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'linux'))
+    uses: ./.github/workflows/platform.yml
+    with:
+      os: ubuntu-latest
+
+  arm64:
+    name: Linux ARM64
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.pull_request.labels.*.name, 'linux') &&
+      (github.event.action != 'labeled' || github.event.label.name == 'linux'))
+    uses: ./.github/workflows/platform.yml
+    with:
+      os: ubuntu-24.04-arm
+      # The end-to-end suite runs on Linux x86_64; ARM64 has the same app.
+      e2e: false
