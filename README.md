@@ -1,3 +1,7 @@
+[![CI](https://github.com/lucaswewa/microscope/actions/workflows/ci.yml/badge.svg)](https://github.com/lucaswewa/microscope/actions/workflows/ci.yml)
+[![Nightly](https://github.com/lucaswewa/microscope/actions/workflows/nightly.yml/badge.svg)](https://github.com/lucaswewa/microscope/actions/workflows/nightly.yml)
+[![Release](https://github.com/lucaswewa/microscope/actions/workflows/release.yml/badge.svg)](https://github.com/lucaswewa/microscope/actions/workflows/release.yml)
+
 # microscope
 
 Microscope control software. A Rust backend serves the microscope's camera, stage and the routines built on them (autofocus, calibration, slide scanning, timelapse) as [W3C Web of Things](https://www.w3.org/WoT/) Things over HTTP. A Vue 3 and TypeScript web app is the user interface.
