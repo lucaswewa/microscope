@@ -26,7 +26,7 @@ use crate::capture::{self, CAPTURES, Sidecar, StageRecord, THUMBNAILS};
 use crate::data;
 use crate::sequence::{self, SEQUENCES, Sequence};
 use crate::smart_scan::{SCANS, SmartScan};
-use crate::stitch::{MOSAIC, STITCHED};
+use crate::stitch::{MOSAIC, STITCHED, TILES};
 use crate::ui::{ActionButton, DownloadButton, DownloadSource};
 
 /// What a URL's path segment can hold unencoded: letters, digits and `-._~`.
@@ -78,6 +78,9 @@ pub enum Viewer {
         /// The path of its `.dzi` file, with its tiles beside it in
         /// `<name>_files/`.
         path: String,
+        /// The path of its `tiles.json`, where each image went (ADR-0036),
+        /// if stitching recorded it.
+        tiles: Option<String>,
     },
     /// As images shown one at a time, such as a timelapse's (P41).
     Directory {
@@ -482,7 +485,14 @@ impl Provider for Scans {
             let scan = entry.path();
             entry.file_type().ok()?.is_dir().then(|| {
                 let mosaic = scan.join(STITCHED).join(format!("{MOSAIC}.dzi"));
-                let stamp = stamp(&[&scan.join("scan.json"), &scan.join("images"), &mosaic]);
+                let tiles = scan.join(STITCHED).join(TILES);
+                let files: [&Path; 4] = [
+                    &scan.join("scan.json"),
+                    &scan.join("images"),
+                    &mosaic,
+                    &tiles,
+                ];
+                let stamp = stamp(&files);
                 (format!("{SCANS}/{name}"), stamp)
             })
         };
@@ -506,6 +516,7 @@ impl Provider for Scans {
         images.sort();
         let stitched = format!("{path}/{STITCHED}");
         let mosaic = started.folder.join(&stitched);
+        let tiles = (mosaic.join(TILES).is_file()).then(|| format!("{stitched}/{TILES}"));
         let mosaic = mosaic.join(format!("{MOSAIC}.dzi")).is_file();
         let first = images.first().map(|first| scan.join("images").join(first));
         let Run {
@@ -547,16 +558,20 @@ impl Provider for Scans {
         if let Some(smart_scan) = &started.smart_scan {
             let input = json!({ "scan_name": name });
             if mosaic {
-                let tiles = DownloadSource::Action {
+                let zip = DownloadSource::Action {
                     thing: smart_scan.clone(),
                     action: "download_stitched_zip".to_owned(),
-                    input,
+                    input: input.clone(),
                 };
                 let filename = format!("{name}-mosaic.zip");
-                download_buttons.push(download("Mosaic tiles (ZIP)", tiles, &filename));
-            } else if !images.is_empty() {
+                download_buttons.push(download("Mosaic tiles (ZIP)", zip, &filename));
+            }
+            // Not stitched, or stitched before where each image went was
+            // recorded (P53b).
+            if !images.is_empty() && (!mosaic || tiles.is_none()) {
+                let label = if mosaic { "Stitch again" } else { "Stitch" };
                 let stitch = json!({
-                    "thing": smart_scan, "action": "stitch_scan", "label": "Stitch",
+                    "thing": smart_scan, "action": "stitch_scan", "label": label,
                     "input": input, "success": {"message": "Stitched."}, "refresh": true,
                 });
                 card_actions.push(serde_json::from_value(stitch).expect("a button"));
@@ -577,6 +592,7 @@ impl Provider for Scans {
             viewer: if mosaic {
                 Viewer::Dzi {
                     path: format!("{stitched}/{MOSAIC}.dzi"),
+                    tiles,
                 }
             } else {
                 Viewer::Directory {

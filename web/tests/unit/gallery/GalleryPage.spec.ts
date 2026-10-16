@@ -13,14 +13,17 @@ import { mountApp } from '../mountApp'
 
 // OpenSeadragon draws with WebGL, which the tests' DOM lacks: a fake records
 // what it's asked. Its world holds a sequence's images (P52), each loaded
-// when its test says so.
+// when its test says so, and is placed on screen where `at` says (P53b).
 const osd = vi.hoisted(() => {
   /** An image in the world: its URL, its opacity, and whether it's in. */
   type Item = { url: string; opacity: number; removed: boolean; load: () => void }
+  type Rect = { x: number; y: number; width: number; height: number }
   const viewers: {
     options: { tileSources: unknown }
     viewport: Record<'zoomBy' | 'applyConstraints' | 'goHome', ReturnType<typeof vi.fn>>
     items: Item[]
+    /** Where the world's images are, in the view's pixels. */
+    at: Rect
     destroy: ReturnType<typeof vi.fn>
     fire: (event: string) => void
   }[] = []
@@ -28,32 +31,41 @@ const osd = vi.hoisted(() => {
   const create = vi.fn((options: (typeof viewers)[number]['options']) => {
     const handlers: Record<string, () => void> = {}
     const items: Item[] = []
+    const tiled = (item: Item) => ({
+      whenFullyLoaded: (callback: () => void) => (item.load = callback),
+      setOpacity: (value: number) => (item.opacity = value),
+      getOpacity: () => item.opacity,
+      getBounds: () => item,
+      item,
+    })
+    const inWorld = () => items.filter((item) => !item.removed)
     const viewer = {
       options,
-      viewport: { zoomBy: vi.fn(), applyConstraints: vi.fn(), goHome: vi.fn() },
-      items,
-      addTiledImage: ({ tileSource, opacity, success }: Added) => {
-        let loaded = () => {}
-        const item: Item = {
-          url: tileSource.url,
-          opacity,
-          removed: false,
-          load: () => loaded(),
-        }
-        items.push(item)
-        success({
-          item: {
-            whenFullyLoaded: (callback: () => void) => (loaded = callback),
-            setOpacity: (value: number) => (item.opacity = value),
-            item,
-          },
-        })
+      viewport: {
+        zoomBy: vi.fn(),
+        applyConstraints: vi.fn(),
+        goHome: vi.fn(),
+        viewportToViewerElementRectangle: () => ({ ...viewer.at }),
       },
-      world: { removeItem: ({ item }: { item: Item }) => (item.removed = true) },
+      items,
+      at: { x: 0, y: 0, width: 100, height: 100 },
+      addTiledImage: ({ tileSource, opacity, success }: Added) => {
+        const item: Item = { url: tileSource.url, opacity, removed: false, load: () => {} }
+        items.push(item)
+        success({ item: tiled(item) })
+      },
+      world: {
+        removeItem: ({ item }: { item: Item }) => (item.removed = true),
+        getItemCount: () => inWorld().length,
+        getItemAt: (index: number) => tiled(inWorld()[index]!),
+      },
       destroy: vi.fn(),
       addHandler: (event: string, handler: () => void) => (handlers[event] = handler),
       fire: (event: string) => handlers[event]?.(),
     }
+    // One image or a DZI is opened at once.
+    const [source] = options.tileSources as (string | { url: string })[]
+    if (source) items.push({ url: String(source), opacity: 1, removed: false, load: () => {} })
     viewers.push(viewer)
     return viewer
   })
@@ -128,6 +140,13 @@ beforeEach(() => {
     'POST /api/v1/gallery/delete_all_data': () => done('d'),
     'DELETE /api/v1/gallery/captures/capture-1.jpeg': () => new Response(null, { status: 204 }),
     'GET /api/v1/data/captures/capture-2.jpeg': () => new Response('image'),
+    'GET /api/v1/data/scans/s/stitched/tiles.json': {
+      size: [300, 100],
+      tiles: [
+        { image: 'img_0_0_5.jpeg', number: 1, x: 0, y: 0, width: 200, height: 100 },
+        { image: 'img_9_0_5.jpeg', number: 2, x: 100, y: 0, width: 200, height: 100 },
+      ],
+    },
     'GET /api/v1/data/captures/a%20b%23.jpeg': () => new Response('image'),
     'GET /api/v1/gallery/captures/capture-1.jpeg/zip': () => new Response('zip'),
   })
@@ -411,6 +430,38 @@ describe('the viewer', () => {
     await vi.advanceTimersByTimeAsync(1000)
     expect(dialog.textContent).toContain('3 of 3')
     expect(dialog.querySelector('[aria-label="Play"]')).not.toBeNull()
+  })
+
+  it('outlines a stitched scan’s images over it, following the view', async () => {
+    const stitched = { type: 'dzi', path: 'scans/s/stitched/mosaic.dzi' } as const
+    list = [
+      capture(1, { viewer: { ...stitched, tiles: 'scans/s/stitched/tiles.json' } }),
+      capture(2, { viewer: stitched }),
+    ]
+    await open()
+    const { dialog, viewer } = await view(0)
+    // Drawn at twice the size, 10 pixels in and 20 down (P53b).
+    viewer.at = { x: 10, y: 20, width: 600, height: 200 }
+    viewer.fire('open')
+    await flushPromises()
+    const outlines = () => [...dialog.querySelectorAll('.overlay-layers__stroke')]
+    const left = () => outlines().map((rect) => Number(rect.getAttribute('x')))
+    expect(left()).toEqual([10, 210])
+    expect(dialog.querySelector('.overlay-layers title')!.textContent).toBe('1: img_0_0_5.jpeg')
+    // Zoomed in twice as far, and panned: they follow.
+    viewer.at = { x: -290, y: 20, width: 1200, height: 400 }
+    viewer.fire('update-viewport')
+    await flushPromises()
+    expect(left()).toEqual([-290, 110])
+    expect(Number(outlines()[0]!.getAttribute('width'))).toBe(800)
+
+    expect(dialog.textContent).toContain('Layers')
+
+    // A mosaic stitched before P53, without its layout, has no Layers menu.
+    press('Close')
+    await flushPromises()
+    const older = await view(1)
+    expect(older.dialog.textContent).not.toContain('Layers')
   })
 
   it('changes the brightness, contrast and saturation, and resets them', async () => {

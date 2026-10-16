@@ -1,6 +1,6 @@
 # P53: Overlay layers, with image outlines on stitched scans
 
-- Status: In review
+- Status: Done
 - Pull request: [#66](https://github.com/lucaswewa/microscope/pull/66)
 - ADRs: [ADR-0036](../../adr/0036-image-overlay-layers.md)
 - Spec: [phases.md#p53](../phases.md#p53)

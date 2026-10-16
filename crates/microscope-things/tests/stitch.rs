@@ -200,7 +200,11 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
     let card = entry(client, "grid").await;
     assert_eq!(
         card["viewer"],
-        json!({"type": "dzi", "path": "scans/grid/stitched/mosaic.dzi"})
+        json!({
+            "type": "dzi",
+            "path": "scans/grid/stitched/mosaic.dzi",
+            "tiles": "scans/grid/stitched/tiles.json"
+        })
     );
     assert_eq!(card["thumbnail"], "scans/grid/stitched/thumbnail.jpeg");
     assert_eq!(card["card_actions"], json!([]));
@@ -236,7 +240,12 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
     }
     assert!(names.len() > 10, "{names:?}");
 
-    // Stitched again, it's replaced.
+    // Stitched before where each image went was recorded (P53b), its card
+    // offers to stitch it again, which replaces it.
+    std::fs::remove_file(folder.join("stitched/tiles.json")).expect("removed");
+    let card = entry(client, "grid").await;
+    assert_eq!(card["viewer"]["tiles"], Value::Null);
+    assert_eq!(card["card_actions"][0]["label"], "Stitch again");
     let again = run(
         client,
         "/smart_scan/stitch_scan",
@@ -244,6 +253,9 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
     )
     .await;
     assert_eq!(again["status"], "completed", "{again}");
+    let card = entry(client, "grid").await;
+    assert_eq!(card["viewer"]["tiles"], "scans/grid/stitched/tiles.json");
+    assert_eq!(card["card_actions"], json!([]));
 
     // Only scans in `scans/`, and only stitched ones' mosaics.
     for name in ["../scans/grid", "missing", ""] {

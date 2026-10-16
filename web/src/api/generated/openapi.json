@@ -17514,6 +17514,17 @@
                       "description": "The path of its `.dzi` file, with its tiles beside it in\n`<name>_files/`.",
                       "type": "string"
                     },
+                    "tiles": {
+                      "description": "The path of its `tiles.json`, where each image went (ADR-0036),\nif stitching recorded it.",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
                     "type": {
                       "const": "dzi",
                       "type": "string"

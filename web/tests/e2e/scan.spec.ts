@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test'
 
 // Checkpoint D: a scan from the Slide Scan tab shows its live stitching
 // preview, its images outlined (P53), then ends as a stitched deep-zoom image
-// in the gallery; one with autofocus off (P51) takes one image a site. They
-// hold the microscope, so they run in turn, once the other tests have
-// finished.
+// in the gallery, outlined too (P53b); one with autofocus off (P51) takes one
+// image a site. They hold the microscope, so they run in turn, once the other
+// tests have finished.
 test.describe.configure({ mode: 'serial' })
 test.use({ viewport: { width: 1280, height: 800 } })
 
@@ -61,6 +61,14 @@ test('a scan from the Slide Scan tab ends stitched in the gallery', async ({ pag
   await card.getByRole('button', { name: 'View', exact: true }).click()
   await mosaic
   await expect(page.locator('.deep-zoom')).toHaveAttribute('data-status', 'shown')
+  // Its images outlined over it (P53b), following the zoom.
+  const dialog = page.getByRole('dialog')
+  const strokes = dialog.locator('.overlay-layers__stroke')
+  await expect(strokes).toHaveCount(2)
+  const width = async () => Number(await strokes.first().getAttribute('width'))
+  const before = await width()
+  await dialog.getByRole('button', { name: 'Zoom in' }).click()
+  await expect.poll(width).toBeGreaterThan(before * 1.4)
 })
 
 test('a scan with autofocus off takes one image a site, where the stage is', async ({

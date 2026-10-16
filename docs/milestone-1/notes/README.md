@@ -70,4 +70,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P50 | [Control pane: a steady layout and the wide pane](P50-control-pane.md) | Done |
 | P51 | [Slide Scan: an autofocus switch](P51-scan-autofocus-switch.md) | Done |
 | P52 | [Sequence viewer: smooth switching and playback](P52-sequence-playback.md) | Done |
-| P53 | [Overlay layers, with image outlines on stitched scans](P53-overlay-layers.md) | In review |
+| P53 | [Overlay layers, with image outlines on stitched scans](P53-overlay-layers.md) | Done |
+| P53b | [Overlay layers in the deep-zoom viewer](P53b-deep-zoom-layers.md) | In review |

@@ -107,7 +107,7 @@ function onOpen(open: boolean) {
 }
 
 .app-menu__list {
-  z-index: var(--z-dropdown);
+  z-index: var(--z-menu);
   min-width: 160px;
   padding: var(--space-1) 0;
   border: var(--border-width) solid var(--color-border-strong);

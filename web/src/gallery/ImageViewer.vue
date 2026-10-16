@@ -2,6 +2,8 @@
 // The viewer (ADR-0027): an item's image in a dialog, to zoom and pan. It's
 // one image, a deep-zoom image, or a sequence stepped through with a slider,
 // or played, each image for a number of seconds, once or in a loop (P52).
+// A stitched scan's images are outlined over it, in overlay layers that its
+// Layers menu turns on and off (P53b).
 // Its brightness, contrast and saturation can be changed and reset, and it
 // can fill the screen. Its controls are the app's, so they follow the theme.
 import fitIcon from '@material-symbols/svg-400/outlined/fit_screen.svg?raw'
@@ -11,11 +13,15 @@ import pauseIcon from '@material-symbols/svg-400/outlined/pause.svg?raw'
 import playIcon from '@material-symbols/svg-400/outlined/play_arrow.svg?raw'
 import zoomInIcon from '@material-symbols/svg-400/outlined/zoom_in.svg?raw'
 import zoomOutIcon from '@material-symbols/svg-400/outlined/zoom_out.svg?raw'
-import { computed, onBeforeUnmount, reactive, ref, useTemplateRef } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, useTemplateRef, watch } from 'vue'
 
 import type { GalleryEntry } from '@/api/things'
 import { useConnectionStore } from '@/connection/store'
 import { useHost } from '@/host'
+import { imageOutlines, type TileLayout } from '@/overlay/imageOutlines'
+import { useOverlayLayers } from '@/overlay/layers'
+import LayersMenu from '@/overlay/LayersMenu.vue'
+import type { OverlayLayer } from '@/overlay/types'
 import { dataUrl } from '@/server-ui/download'
 import AppButton from '@/ui/AppButton.vue'
 import AppCheckbox from '@/ui/AppCheckbox.vue'
@@ -42,6 +48,26 @@ const sources = computed(() => {
 const page = ref(props.entry.viewer.type === 'directory' ? props.entry.viewer.start : 0)
 const playback = usePlayback(page, () => sources.value.length)
 const { playing, seconds, loop } = playback
+
+// Where each image of a stitched scan went, if stitching recorded it.
+const layers = ref<OverlayLayer[]>([])
+const layersChosen = useOverlayLayers()
+watch(
+  () => props.entry.viewer,
+  async (viewer) => {
+    layers.value = []
+    if (viewer.type !== 'dzi' || !viewer.tiles) return
+    try {
+      const layout = (await connection.client!.request(
+        dataUrl(viewer.tiles, connection.client!.baseUrl),
+      )) as TileLayout
+      layers.value = [imageOutlines(layout)]
+    } catch {
+      // Without it, the mosaic shows alone.
+    }
+  },
+  { immediate: true },
+)
 
 const LOOKS = { brightness: 100, contrast: 100, saturation: 100 }
 const looks = reactive({ ...LOOKS })
@@ -84,12 +110,14 @@ const open = computed({ get: () => true, set: (open) => open || emit('close') })
           size="sm"
           @click="fillScreen(!full)"
         />
+        <LayersMenu v-if="layers.length" class="image-viewer__layers" :layers="layers" />
       </div>
       <DeepZoom
         ref="view"
         :sources="sources"
         :page="page"
         :filter="filter"
+        :layers="layersChosen.visible(layers)"
         class="image-viewer__view"
         :class="{ 'image-viewer__view--full': full }"
         @shown="playback.shown"
@@ -138,6 +166,10 @@ const open = computed({ get: () => true, set: (open) => open || emit('close') })
 
 .image-viewer__view {
   height: 60vh;
+}
+
+.image-viewer__layers {
+  margin-left: auto;
 }
 
 .image-viewer__view--full {
