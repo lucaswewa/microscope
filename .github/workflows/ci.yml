@@ -6,11 +6,20 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Windows x86_64 is the only supported platform in milestone 1 (ADR-0003).
+# The platforms (ADR-0038): Windows x86_64, Linux x86_64 and Linux ARM64,
+# each on its own runner. The visual baselines are Windows images (ADR-0034),
+# so the end-to-end job checks them on Windows only.
 jobs:
   rust:
-    name: Rust (Windows x86_64)
-    runs-on: windows-latest
+    name: Rust (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows x86_64, os: windows-latest }
+          - { name: Linux x86_64, os: ubuntu-latest }
+          - { name: Linux ARM64, os: ubuntu-24.04-arm }
     steps:
       - uses: actions/checkout@v7
       # rustup reads rust-toolchain.toml and installs the pinned toolchain.
@@ -29,8 +38,15 @@ jobs:
           RUSTDOCFLAGS: -D warnings
 
   web:
-    name: Web app (Windows x86_64)
-    runs-on: windows-latest
+    name: Web app (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows x86_64, os: windows-latest }
+          - { name: Linux x86_64, os: ubuntu-latest }
+          - { name: Linux ARM64, os: ubuntu-24.04-arm }
     defaults:
       run:
         working-directory: web
@@ -94,8 +110,14 @@ jobs:
           exit $status
 
   e2e:
-    name: End to end (Windows x86_64)
-    runs-on: windows-latest
+    name: End to end (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows x86_64, os: windows-latest, exe: .exe }
+          - { name: Linux x86_64, os: ubuntu-latest, exe: '' }
     steps:
       - uses: actions/checkout@v7
       - name: Install the pinned toolchain
@@ -115,18 +137,19 @@ jobs:
         working-directory: web
       - name: Build the server, with the web app embedded, and the launcher
         run: cargo build --release -p microscope-server -p microscope-launcher --locked
+      # On Linux, Chromium needs system libraries too.
       - name: Install Chromium
-        run: npx playwright install chromium
+        run: npx playwright install ${{ runner.os == 'Linux' && '--with-deps' || '' }} chromium
         working-directory: web
-      - name: End-to-end and visual tests against the served app
+      - name: End-to-end tests against the served app, and on Windows the visual ones
         run: npx playwright test
         working-directory: web
         env:
-          MICROSCOPE_SERVER: target/release/microscope-server.exe
-          MICROSCOPE_LAUNCHER: target/release/microscope-launcher.exe
+          MICROSCOPE_SERVER: target/release/microscope-server${{ matrix.exe }}
+          MICROSCOPE_LAUNCHER: target/release/microscope-launcher${{ matrix.exe }}
       - name: Test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-results
+          name: playwright-results-${{ runner.os }}
           path: web/test-results

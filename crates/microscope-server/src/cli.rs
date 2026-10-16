@@ -112,9 +112,34 @@ impl Failure {
 }
 
 /// Parses the process's arguments and serves until Ctrl-C (or the other
-/// ways Windows asks a console program to stop), returning the exit code.
+/// ways Windows asks a console program to stop, or SIGTERM elsewhere),
+/// returning the exit code.
 pub async fn main() -> ExitCode {
-    run(std::env::args_os(), shutdown_signal()).await
+    run(std::env::args_os(), stop_signal()).await
+}
+
+/// `teta-wot`'s shutdown signal and, on Unix, SIGTERM too, which service
+/// managers such as systemd send to stop a program (ADR-0039).
+async fn stop_signal() {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{SignalKind, signal};
+        let terminate = async {
+            match signal(SignalKind::terminate()) {
+                Ok(mut terminate) => {
+                    terminate.recv().await;
+                    tracing::info!("received SIGTERM");
+                }
+                Err(_) => std::future::pending().await,
+            }
+        };
+        tokio::select! {
+            () = shutdown_signal() => {}
+            () = terminate => {}
+        }
+    }
+    #[cfg(not(unix))]
+    shutdown_signal().await;
 }
 
 /// Parses `args` (the first is the program name) and serves until

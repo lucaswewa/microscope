@@ -10,4 +10,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 
 | Phase | Notes | Status |
 |---|---|---|
-| P00 | [Milestone 2 groundwork](P00-groundwork.md) | In review |
+| P00 | [Milestone 2 groundwork](P00-groundwork.md) | Done |
+| P01 | [Linux builds and CI](P01-linux-ci.md) | In review |
