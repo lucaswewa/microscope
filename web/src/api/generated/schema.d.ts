@@ -8689,6 +8689,11 @@ export interface components {
                  *     `<name>_files/`.
                  */
                 path: string;
+                /**
+                 * @description The path of its `tiles.json`, where each image went (ADR-0036),
+                 *     if stitching recorded it.
+                 */
+                tiles?: string | null;
                 /** @constant */
                 type: "dzi";
             } | {

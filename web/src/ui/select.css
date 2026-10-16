@@ -26,7 +26,7 @@
 }
 
 .app-select__list {
-  z-index: var(--z-dropdown);
+  z-index: var(--z-menu);
   min-width: var(--reka-select-trigger-width);
   max-height: var(--reka-select-content-available-height);
   padding: var(--space-1) 0;

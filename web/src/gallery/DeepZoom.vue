@@ -8,8 +8,14 @@
 // new page is shown once it's fully loaded, and only then is the one before
 // it hidden, so the view never empties; the zoom and pan stay as they were.
 // The next pages are loaded ahead, hidden. `shown` says when a page is drawn.
+//
+// Overlay layers (ADR-0036, P53b) are drawn over the image shown, placed
+// again whenever the view pans, zooms or changes size.
 import type OpenSeadragon from 'openseadragon'
 import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue'
+
+import OverlayLayers from '@/overlay/OverlayLayers.vue'
+import type { OverlayLayer, Placement } from '@/overlay/types'
 
 type Source = string | { type: 'image'; url: string }
 
@@ -19,6 +25,8 @@ const props = defineProps<{
   /** The image shown, when there are several. */
   page: number
   filter: string
+  /** Drawn over the image, in its pixels. */
+  layers?: OverlayLayer[]
 }>()
 const emit = defineEmits<{ shown: [page: number] }>()
 
@@ -29,6 +37,8 @@ const element = useTemplateRef<HTMLElement>('element')
 const status = ref<'loading' | 'shown' | 'failed'>('loading')
 /** The page drawn, once one is. */
 const drawn = ref<number>()
+/** Where the image shown is, in the view's pixels. */
+const placement = ref<Placement>()
 let viewer: OpenSeadragon.Viewer | undefined
 let unmounted = false
 /** A sequence's pages in the viewer, loaded or loading: none if one failed. */
@@ -83,7 +93,22 @@ async function show(page: number) {
   }
   status.value = 'shown'
   drawn.value = page
+  place()
   emit('shown', page)
+}
+
+/** Measures where the image shown is now. */
+function place() {
+  const count = viewer?.world.getItemCount() ?? 0
+  for (let i = count - 1; i >= 0; i--) {
+    const item = viewer!.world.getItemAt(i)
+    if (item.getOpacity() === 0) continue
+    const { x, y, width, height } = viewer!.viewport.viewportToViewerElementRectangle(
+      item.getBounds(true),
+    )
+    placement.value = { x, y, width, height }
+    return
+  }
 }
 
 onMounted(async () => {
@@ -101,12 +126,15 @@ onMounted(async () => {
     crossOriginPolicy: 'Anonymous',
     visibilityRatio: 1,
   })
+  viewer.addHandler('update-viewport', place)
+  viewer.addHandler('resize', place)
   if (sequence) {
     void show(props.page)
   } else {
     viewer.addHandler('open', () => {
       status.value = 'shown'
       drawn.value = 0
+      place()
     })
     viewer.addHandler('open-failed', () => (status.value = 'failed'))
   }
@@ -134,6 +162,7 @@ defineExpose({
 <template>
   <div class="deep-zoom" :data-status="status" :data-page="drawn">
     <div ref="element" class="deep-zoom__view" :style="{ filter }" />
+    <OverlayLayers :layers="layers ?? []" :placement="placement" />
     <p v-if="status === 'failed'" class="deep-zoom__failed">It couldn't be shown.</p>
   </div>
 </template>
