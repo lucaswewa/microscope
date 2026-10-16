@@ -42,7 +42,7 @@
 
 ## Consequences
 
-- **A shorter wait:** the slowest of the three test jobs, not their sum. Expected about 6–7 minutes a pull request; its pull request reports the measured time.
+- **A shorter wait:** the slowest job, not the tests' sum. On this change's pull request, Windows CI took 8.8–9.2 minutes, against 13.4–15 before: one run without caches, one with a flaky end-to-end test retried. With neither, about 7: the first simulator group and the end-to-end suite each take about 6.5.
 - **More runner time for Windows,** as each test job builds the workspace: their cache is shared, saved by the job that builds everything.
 - **`main` isn't checked on Linux unless asked.** A change that breaks only Linux shows up at the next labelled pull request, or a manual run.
 - **Job names change:** "Windows x86_64 / Rust tests (simulator 1)" and so on. Nothing requires checks by name (the ruleset on `main` only forbids deleting it and force-pushing).
