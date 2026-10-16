@@ -1,6 +1,6 @@
-//! The command line, through the built binary: exit codes and the fallback
-//! server. Each run is in a temporary folder, since the server writes log
-//! files to `.microscope/logs` by default.
+//! The command line, through the built binary: exit codes, the fallback
+//! server, and on Unix SIGTERM. Each run is in a temporary folder, since the
+//! server writes log files to `.microscope/logs` by default.
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
@@ -127,6 +127,39 @@ fn fallback_serves_an_error_page_with_the_log_instead_of_exiting() {
             .any(|name| name.starts_with("microscope.") && name.ends_with(".log")),
         "{log_files:?}"
     );
+}
+
+/// SIGTERM, which service managers such as systemd send, stops the server
+/// as Ctrl-C does: cleanly, exiting 0 (ADR-0039).
+#[cfg(unix)]
+#[test]
+fn sigterm_stops_the_server_cleanly() {
+    let folder = tempfile::tempdir().expect("a temporary folder");
+    let mut child = Command::new(SERVER)
+        .current_dir(folder.path())
+        .args(["--port", "0", "-j", r#"{"things": {}}"#])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("the server binary runs");
+    // Read on, so the server never writes to a closed pipe.
+    let stdout = child.stdout.take().expect("stdout is piped");
+    let (listening, heard) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        for line in BufReader::new(stdout).lines().map_while(Result::ok) {
+            if line.starts_with("listening on http://") {
+                let _ = listening.send(());
+            }
+        }
+    });
+    heard
+        .recv_timeout(std::time::Duration::from_secs(30))
+        .expect("the server printed its address");
+    let pid = child.id().to_string();
+    let killed = Command::new("kill").args(["-TERM", &pid]).status();
+    assert!(killed.expect("kill runs").success());
+    let status = child.wait().expect("it ends");
+    assert_eq!(status.code(), Some(0), "{status:?}");
 }
 
 #[test]

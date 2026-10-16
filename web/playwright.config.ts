@@ -42,6 +42,10 @@ const serverCommand = process.env.MICROSCOPE_SERVER
   ? `"${path.resolve(root, process.env.MICROSCOPE_SERVER)}" -c ${config} --port ${port}`
   : `npm --prefix web run build && cargo run -q -p microscope-server -- -c ${config} --port ${port} --webapp-dir web/dist`
 
+// The visual baselines are Windows images (ADR-0034): elsewhere, fonts are
+// drawn differently, so they're left out (ADR-0038).
+const visual = process.platform === 'win32' ? [] : [/visual\/.*\.spec\.ts$/]
+
 // End-to-end and visual tests, against the app as the server serves it, and
 // on request the long ones. (tests/unit is Vitest's.)
 export default defineConfig({
@@ -66,7 +70,7 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
-      testIgnore: /e2e\/(scan|sequence|workflows)\.spec\.ts$/,
+      testIgnore: [/e2e\/(scan|sequence|workflows)\.spec\.ts$/, ...visual],
     },
     // A scan holds the microscope for a while, so it runs once the others have finished.
     {

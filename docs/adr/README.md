@@ -53,5 +53,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0036](0036-image-overlay-layers.md) | Image overlay layers | Accepted | P53 |
 | [0037](0037-autofocus-accuracy.md) | Autofocus accuracy: focus at the curve's centroid | Accepted | P54 |
 | [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted | M2 P00 |
+| [0039](0039-teta-wot-on-linux.md) | `teta-wot` on Linux | Accepted | M2 P01 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

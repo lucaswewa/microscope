@@ -24,13 +24,15 @@ pub fn data_folder(server: &Server) -> PathBuf {
 }
 
 /// `relative` inside `folder`, if it stays there: a relative path to a file,
-/// with no root, drive or `..`.
+/// with no root, drive or `..`. Its parts are separated by `/`: a `\` or a
+/// `:`, a separator or a drive on Windows, is refused on every platform, so
+/// a path means the same everywhere (ADR-0038).
 pub fn resolve(folder: &Path, relative: &str) -> Result<PathBuf, String> {
     let path = Path::new(relative);
     let inside = path
         .components()
         .all(|part| matches!(part, Component::Normal(_) | Component::CurDir));
-    if !inside || path.file_name().is_none() {
+    if !inside || path.file_name().is_none() || relative.contains(['\\', ':']) {
         return Err(format!(
             "`{relative}` isn't a file path inside the data folder"
         ));

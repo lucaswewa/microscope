@@ -83,7 +83,9 @@ mod tests {
 
     #[test]
     fn the_folders_are_absolute_and_in_the_root_unless_given_so() {
-        let root = Path::new(r"C:\Users\someone\AppData\Local\Microscope");
+        // Absolute paths on every platform.
+        let base = std::env::temp_dir();
+        let root = &base.join("Microscope");
         let config = resolve(SIMULATION, root).expect("resolved");
         assert_eq!(config["settings_folder"], json!(root.join("settings")));
         assert_eq!(
@@ -97,9 +99,10 @@ mod tests {
         // The rest is as given.
         assert_eq!(config["things"]["sequence"], "microscope.sequence:Sequence");
 
-        let given = r#"{"things": {}, "settings_folder": "D:\\lab\\settings"}"#;
-        let config = resolve(given, root).expect("resolved");
-        assert_eq!(config["settings_folder"], r"D:\lab\settings");
+        let elsewhere = base.join("lab").join("settings");
+        let given = json!({"things": {}, "settings_folder": elsewhere}).to_string();
+        let config = resolve(&given, root).expect("resolved");
+        assert_eq!(config["settings_folder"], json!(elsewhere));
         assert_eq!(
             config["application_config"]["data_folder"],
             json!(root.join("data"))

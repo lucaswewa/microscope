@@ -1,6 +1,6 @@
 # P00: Milestone 2 groundwork
 
-- Status: In review
+- Status: Done
 - Pull request: [#71](https://github.com/lucaswewa/microscope/pull/71)
 - ADRs: [ADR-0038](../../adr/0038-milestone-2-platforms.md), superseding ADR-0003
 - Spec: [phases.md#p00](../phases.md#p00)

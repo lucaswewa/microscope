@@ -67,14 +67,20 @@ async fn nothing_outside_the_data_folder_is_served() {
     let data = root.path().join("data");
     write(&data.join("inside.txt"), "inside");
     write(&root.path().join("secret.txt"), "secret");
-    // A junction inside the folder to the folder above it.
-    let junction = std::process::Command::new("cmd")
-        .args(["/C", "mklink", "/J"])
-        .arg(data.join("up"))
-        .arg(root.path())
-        .output()
-        .expect("mklink runs");
-    assert!(junction.status.success(), "{junction:?}");
+    // A link inside the folder to the folder above it: a junction on
+    // Windows, which needs no privilege, and a symbolic link elsewhere.
+    #[cfg(windows)]
+    {
+        let junction = std::process::Command::new("cmd")
+            .args(["/C", "mklink", "/J"])
+            .arg(data.join("up"))
+            .arg(root.path())
+            .output()
+            .expect("mklink runs");
+        assert!(junction.status.success(), "{junction:?}");
+    }
+    #[cfg(unix)]
+    std::os::unix::fs::symlink(root.path(), data.join("up")).expect("linked");
     let router = data_routes("/api/v1", data);
 
     let absolute = root.path().join("secret.txt");
