@@ -1,6 +1,6 @@
 # P54: Autofocus accuracy
 
-- Status: In review
+- Status: Done
 - Pull request: [#68](https://github.com/lucaswewa/microscope/pull/68)
 - ADRs: [ADR-0037](../../adr/0037-autofocus-accuracy.md), superseding [ADR-0022](../../adr/0022-sharpness-metric-and-fast-autofocus.md) in part
 - Spec: [phases.md#p54](../phases.md#p54)

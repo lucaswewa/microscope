@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // The fixed-width column of controls beside a page's main view: narrow
-// (Settings) or wide (Control, Slide Scan, Sequence).
+// (Settings) or wide (Control, Slide Scan, Sequence). It scrolls when its
+// controls are taller than it, so they keep their heights even where a page
+// lays them out in a flex column.
 withDefaults(defineProps<{ width?: 'narrow' | 'wide' }>(), { width: 'narrow' })
 </script>
 
@@ -19,6 +21,11 @@ withDefaults(defineProps<{ width?: 'narrow' | 'wide' }>(), { width: 'narrow' })
   border-right: var(--border-width) solid var(--color-border);
   background: var(--color-surface-panel);
   scrollbar-gutter: stable;
+}
+
+/* A flex column's children would otherwise shrink to fit, buttons too. */
+.control-pane > :slotted(*) {
+  flex-shrink: 0;
 }
 
 .control-pane--narrow {

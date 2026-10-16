@@ -66,3 +66,20 @@ test('in a wide window there is no notice', async ({ page }) => {
   await page.goto('/#/view')
   await expect(page.getByRole('note')).toBeHidden()
 })
+
+test.describe('in a short window', () => {
+  test.use({ viewport: { width: 1280, height: 600 } })
+
+  test("a pane that scrolls keeps its controls' heights", async ({ page }) => {
+    // The histo scan's settings and the stitching's, open: taller than the pane.
+    await page.goto('/#/slide-scan')
+    const pane = page.locator('.control-pane')
+    await pane.getByRole('combobox').click()
+    await page.getByRole('option', { name: 'Histo scan' }).click()
+    await pane.getByRole('button', { name: 'Scan settings' }).click()
+    await pane.getByRole('button', { name: /^Stitching settings/ }).click()
+    const start = pane.getByRole('button', { name: 'Start Smart Scan' })
+    await start.scrollIntoViewIfNeeded()
+    expect((await start.boundingBox())!.height).toBeCloseTo(40, 0)
+  })
+})
