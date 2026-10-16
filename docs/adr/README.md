@@ -17,7 +17,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 |---|---|---|---|
 | [0001](0001-record-architecture-decisions.md) | Record architecture decisions | Accepted | P00 |
 | [0002](0002-independent-implementation-of-openflexure-inspired-behaviour.md) | Independent implementation of OpenFlexure-inspired behaviour | Accepted | P00 |
-| [0003](0003-milestone-1-platform-windows-x86-64.md) | Milestone-1 platform: Windows x86_64 | Accepted | P00 |
+| [0003](0003-milestone-1-platform-windows-x86-64.md) | Milestone-1 platform: Windows x86_64 | Superseded by ADR-0038 | P00 |
 | [0004](0004-depend-on-teta-wot-v0-1-0-without-upstream-changes.md) | Depend on `teta-wot` v0.1.0 without upstream changes | Accepted | P00 |
 | [0005](0005-repository-layout-and-crate-boundaries.md) | Repository layout and crate boundaries | Accepted | P01 |
 | [0006](0006-own-the-server-lifecycle-around-teta-wots-runtime.md) | Own the server lifecycle around `teta-wot`'s runtime | Accepted | P02 |
@@ -52,5 +52,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0035](0035-release-packaging-and-third-party-notices.md) | Release packaging and third-party notices | Accepted | P49 |
 | [0036](0036-image-overlay-layers.md) | Image overlay layers | Accepted | P53 |
 | [0037](0037-autofocus-accuracy.md) | Autofocus accuracy: focus at the curve's centroid | Accepted | P54 |
+| [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted | M2 P00 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

@@ -9,8 +9,9 @@
 | [Milestone 2 implementation plan](milestone-2/implementation-plan.md) | Milestone 2's scope, decisions, architecture, phases and risks: real hardware, Linux and the Pi 5, correlation stitching, authentication, and the desktop app |
 | [Milestone 2 phase specifications](milestone-2/phases.md) | The goal, scope and tests for each phase, P00–P20 |
 | [Milestone 2 readiness checklist](milestone-2/readiness.md) | What milestone 1 left in place for milestone 2, and what it must decide |
+| [Milestone 2 hardware](milestone-2/hardware.md) | The owner's devices, the SDKs, and the hardware tests' environment variables |
 | [Architecture decision records](adr/README.md) | One record per significant decision, numbered across the project |
-| [Implementation notes](milestone-1/notes/README.md) | One file per phase: what was built, how to try it, deviations and follow-ups |
+| Implementation notes: [milestone 1](milestone-1/notes/README.md), [milestone 2](milestone-2/notes/README.md) | One file per phase: what was built, how to try it, deviations and follow-ups, and in milestone 2 the hardware it was tried on |
 | [Reference screenshots](reference/README.md) | How to capture OpenFlexure's interface, and this app's, for side-by-side visual review. The screenshots themselves are git-ignored |
 
 See the plan's [documentation conventions](milestone-1/implementation-plan.md#9-documentation-conventions) for how these documents are organised.
