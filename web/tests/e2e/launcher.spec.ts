@@ -17,9 +17,6 @@ test.use({ viewport: { width: 1280, height: 800 } })
 test('Restart from the Power tab goes through the launcher, and the app reconnects', async ({
   page,
 }) => {
-  // Only Windows's Job Object ends the server with the launcher; on Linux,
-  // that's P02 of milestone 2.
-  test.skip(process.platform !== 'win32', 'the launcher ends its server with it on Windows only')
   test.setTimeout(240_000)
   // Locally, the debug build, beside the server Playwright's runs build; CI
   // builds release ones. Only the launcher is built here: other tests run

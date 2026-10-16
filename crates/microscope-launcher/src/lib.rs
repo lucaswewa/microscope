@@ -6,7 +6,8 @@
 //! ```
 //!
 //! - **It prepares** the root folder, `%LOCALAPPDATA%\Microscope` by
-//!   default, and holds a lock there so only one launcher uses it. It writes
+//!   default, or on Linux `~/.local/share/microscope` (XDG's data folder),
+//!   and holds a lock there so only one launcher uses it. It writes
 //!   `generated-config.json` there: the given configuration, or the
 //!   simulated microscope's, with absolute settings, data and log folders.
 //! - **It starts** `microscope-server` with `--managed` (ADR-0032), on the
@@ -15,9 +16,10 @@
 //! - **It keeps it running:** at once after a restart (exit code 75), after
 //!   a growing delay after a crash, and not after it stops (0), can't start
 //!   (2 or 3), or crashes too often ([`policy`]).
-//! - **It stops it** on Ctrl-C, or when its window closes, by closing the
-//!   server's standard input. A Windows Job Object ends the server if the
-//!   launcher ends any other way.
+//! - **It stops it** on Ctrl-C, or when its window closes, or on Linux on
+//!   SIGTERM or SIGHUP, by closing the server's standard input. If the
+//!   launcher ends any other way, a Windows Job Object ends the server; on
+//!   Linux, the server ends by itself once its standard input has closed.
 //! - **Everything the server prints** goes to the console and to
 //!   `logs\launcher.log` in the root.
 
@@ -46,7 +48,7 @@ pub struct Args {
     #[arg(short, long, value_name = "PATH")]
     pub config: Option<PathBuf>,
     /// Where the settings, data and logs go: by default,
-    /// `%LOCALAPPDATA%\Microscope`.
+    /// `%LOCALAPPDATA%\Microscope`, or on Linux `~/.local/share/microscope`.
     #[arg(long, value_name = "PATH")]
     pub root: Option<PathBuf>,
     /// The port to prefer. If it's taken, the server chooses another.
@@ -115,7 +117,8 @@ fn prepare(args: Args) -> Result<supervise::Options, String> {
     })
 }
 
-/// Completes on Ctrl-C or Ctrl-Break, or when the console window closes.
+/// Completes on Ctrl-C or Ctrl-Break, or when the console window closes;
+/// on Linux, on Ctrl-C, SIGTERM, or SIGHUP when the terminal closes.
 async fn stopped() {
     #[cfg(windows)]
     {
@@ -128,6 +131,16 @@ async fn stopped() {
             else => std::future::pending().await,
         }
     }
-    #[cfg(not(windows))]
-    let _ = tokio::signal::ctrl_c().await;
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{SignalKind, signal};
+        let term = signal(SignalKind::terminate()).ok();
+        let (mut term, mut hangup) = (term, signal(SignalKind::hangup()).ok());
+        tokio::select! {
+            Ok(()) = tokio::signal::ctrl_c() => {}
+            Some(()) = async { term.as_mut()?.recv().await } => {}
+            Some(()) = async { hangup.as_mut()?.recv().await } => {}
+            else => std::future::pending().await,
+        }
+    }
 }

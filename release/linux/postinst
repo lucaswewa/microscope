@@ -1,0 +1,17 @@
+#!/bin/sh
+# After installing or upgrading: the service's user, and the service,
+# started now and at boot.
+set -e
+if [ "$1" = configure ]; then
+    if ! getent passwd microscope >/dev/null; then
+        useradd --system --user-group --home-dir /var/lib/microscope \
+            --shell /usr/sbin/nologin --comment "Microscope server" microscope
+    fi
+    if [ -d /run/systemd/system ]; then
+        systemctl daemon-reload
+    fi
+    systemctl enable microscope.service
+    if [ -d /run/systemd/system ]; then
+        systemctl restart microscope.service
+    fi
+fi

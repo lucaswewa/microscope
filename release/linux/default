@@ -1,0 +1,8 @@
+# The microscope service's address and port, read when it starts:
+#
+#   sudo systemctl restart microscope
+#
+# 127.0.0.1 is this machine alone. 0.0.0.0 lets other computers reach it,
+# with no password, so only on a network you trust.
+MICROSCOPE_HOST=127.0.0.1
+MICROSCOPE_PORT=5000

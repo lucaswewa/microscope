@@ -185,8 +185,8 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P00 | Milestone 2 groundwork | — | S | 0038 | Done |
-| P01 | Linux builds and CI | P00 | M | 0039 | In review |
-| P02 | The Linux service and packages | P01 | M | — | Planned |
+| P01 | Linux builds and CI | P00 | M | 0039 | Done |
+| P02 | The Linux service and packages | P01 | M | — | In review |
 
 ### Stage 1: Driver groundwork
 

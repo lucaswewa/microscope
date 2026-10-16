@@ -1,0 +1,8 @@
+#!/bin/sh
+# After removing: systemd forgets the unit. The settings and data in
+# /var/lib/microscope, and the user, stay, even on a purge: images aren't
+# deleted without asking.
+set -e
+if [ "$1" = remove ] && [ -d /run/systemd/system ]; then
+    systemctl daemon-reload
+fi

@@ -1,0 +1,16 @@
+Package: microscope
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: lucaswewa <lucaswewa@users.noreply.github.com>
+Depends: libc6 (>= @GLIBC@)
+Section: science
+Priority: optional
+Homepage: https://github.com/lucaswewa/microscope
+Description: Microscope control software, as a service
+ The microscope server, which systemd runs as the microscope service. It
+ serves the camera, the stage, the routines built on them and the web app,
+ on port 5000 of this machine. Its address and port are set in
+ /etc/default/microscope, and its microscope in /etc/microscope/config.json.
+ .
+ microscope-launcher is installed too, to run a microscope without the
+ service.
