@@ -72,4 +72,4 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P52 | [Sequence viewer: smooth switching and playback](P52-sequence-playback.md) | Done |
 | P53 | [Overlay layers, with image outlines on stitched scans](P53-overlay-layers.md) | Done |
 | P53b | [Overlay layers in the deep-zoom viewer](P53b-deep-zoom-layers.md) | Done |
-| P54 | [Autofocus accuracy](P54-autofocus-accuracy.md) | In review |
+| P54 | [Autofocus accuracy](P54-autofocus-accuracy.md) | Done |
