@@ -128,7 +128,12 @@ const swatchGroups = ['palette', 'color'] as const
         <h3>Layout, layers and motion</h3>
         <ul class="tokens__list">
           <li
-            v-for="token in [...TOKEN_GROUPS.layout, ...TOKEN_GROUPS.layer, ...TOKEN_GROUPS.motion]"
+            v-for="token in [
+              ...TOKEN_GROUPS.layout,
+              ...TOKEN_GROUPS.annotation,
+              ...TOKEN_GROUPS.layer,
+              ...TOKEN_GROUPS.motion,
+            ]"
             :key="token"
             class="tokens__row"
           >

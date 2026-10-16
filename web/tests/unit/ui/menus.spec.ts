@@ -70,6 +70,23 @@ describe('AppMenu and ButtonMenu', () => {
     expect(Object.values(run).some((action) => action.mock.calls.length > 0)).toBe(false)
   })
 
+  it('ticks the choices that are on, and turns one over without closing', async () => {
+    const toggle = vi.fn()
+    const items: MenuItems = [
+      { label: 'Outlines', checked: true, toggle },
+      { label: 'Scale', checked: false, toggle },
+    ]
+    mount(() => h(ButtonMenu, { label: 'Layers', items }), { attachTo: document.body })
+    const trigger = document.querySelector('button')!
+    trigger.focus()
+    await key(trigger, 'Enter')
+    const choices = all('[role="menuitemcheckbox"]')
+    expect(choices.map((choice) => choice.getAttribute('aria-checked'))).toEqual(['true', 'false'])
+    await key(choices[1]!, 'Enter')
+    expect(toggle).toHaveBeenCalledExactlyOnceWith(true)
+    expect(document.querySelector('[role="menu"]')).not.toBeNull()
+  })
+
   it('opens from any trigger it is given', async () => {
     mount(AppMenu, {
       props: { items: [{ label: 'Delete', run: () => {} }] },

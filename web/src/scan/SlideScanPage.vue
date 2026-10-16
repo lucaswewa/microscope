@@ -5,13 +5,18 @@
 // ID. While one runs, wherever it was started, the pane shows its details,
 // log and a Cancel that names its phase, and the main view its live
 // stitching preview, or the live image until there is one. Once it ends, it
-// can be downloaded, and Close goes back to the settings.
+// can be downloaded, and Close goes back to the settings. The preview's
+// overlay layers (P53) outline each image, numbered as they were taken.
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 
 import { ApiError } from '@/api/wot/errors'
 import { useConnectionStore } from '@/connection/store'
 import LiveImage from '@/live/LiveImage.vue'
 import MiniStream from '@/live/MiniStream.vue'
+import { imageOutlines, type TileLayout } from '@/overlay/imageOutlines'
+import { useOverlayLayers } from '@/overlay/layers'
+import LayersMenu from '@/overlay/LayersMenu.vue'
+import OverlaidImage from '@/overlay/OverlaidImage.vue'
 import DownloadButton from '@/server-ui/DownloadButton.vue'
 import ServerInterface from '@/server-ui/ServerInterface.vue'
 import { followProperty } from '@/server-ui/follow'
@@ -135,6 +140,25 @@ const preview = computed(() => {
   url.searchParams.set('drawn', time)
   return url.href
 })
+// Where each image is in the preview, read again as it's drawn again.
+const tiles = ref<TileLayout>()
+watch(
+  () => current.value?.preview_stitch_time,
+  async (time) => {
+    const client = connection.client
+    if (!time || !client) return (tiles.value = undefined)
+    const url = new URL('smart_scan/latest_preview_tiles.json', client.baseUrl)
+    url.searchParams.set('drawn', time)
+    try {
+      tiles.value = (await client.request(url)) as TileLayout
+    } catch {
+      // Without them, the preview shows alone.
+    }
+  },
+  { immediate: true },
+)
+const layersChosen = useOverlayLayers()
+const layers = computed(() => (tiles.value ? [imageOutlines(tiles.value)] : []))
 
 // The log follows its latest line.
 const logList = useTemplateRef<HTMLOListElement>('log')
@@ -189,8 +213,14 @@ watch(log, async () => {
         <AppButton variant="primary" @click="scan.start(sampleId)">Start Smart Scan</AppButton>
       </template>
     </ControlPane>
-    <MainView v-if="preview">
-      <img class="slide-scan__preview" :src="preview" alt="The scan's live stitching preview" />
+    <MainView v-if="preview" class="slide-scan__main">
+      <LayersMenu v-if="layers.length" class="slide-scan__layers" :layers="layers" />
+      <OverlaidImage
+        class="slide-scan__preview"
+        :src="preview"
+        alt="The scan's live stitching preview"
+        :layers="layersChosen.visible(layers)"
+      />
     </MainView>
     <LiveImage v-else />
   </div>
@@ -231,9 +261,19 @@ watch(log, async () => {
   font-size: var(--font-size-sm);
 }
 
+.slide-scan__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.slide-scan__layers {
+  align-self: flex-end;
+}
+
+/* The space below the Layers menu. */
 .slide-scan__preview {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  flex: 1 1 0;
+  min-height: 0;
 }
 </style>

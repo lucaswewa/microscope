@@ -1,6 +1,6 @@
 # P52: Sequence viewer: smooth switching and playback
 
-- Status: In review
+- Status: Done
 - Pull request: [#65](https://github.com/lucaswewa/microscope/pull/65)
 - ADRs: none new
 - Spec: [phases.md#p52](../phases.md#p52)

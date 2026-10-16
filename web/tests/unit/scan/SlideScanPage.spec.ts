@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LiveScanDetails } from '@/api/things'
 import type { ThingDescription } from '@/api/wot/td'
 import { useConnectionStore } from '@/connection/store'
+import OverlaidImage from '@/overlay/OverlaidImage.vue'
 
 import { fakeServer, json, type Received } from '../api/fakeServer'
 import { mountApp } from '../mountApp'
@@ -100,6 +101,10 @@ beforeEach(() => {
       return json(null)
     },
     'GET /api/v1/smart_scan/latest_scan_live_details': () => json(details),
+    'GET /api/v1/smart_scan/latest_preview_tiles.json': {
+      size: [300, 100],
+      tiles: [{ image: 'img_0_0_5.jpeg', number: 1, x: 0, y: 0, width: 200, height: 100 }],
+    },
     'GET /api/v1/smart_scan/sample_scan': () => json(ongoing),
     'POST /api/v1/smart_scan/sample_scan': () => {
       status = 'running'
@@ -200,8 +205,16 @@ describe('the Slide Scan tab', () => {
     await vi.advanceTimersByTimeAsync(1000)
     expect(pane().text()).toMatch(/Images captured\s*3/)
     expect(pane().text()).toMatch(/Duration\s*1:15/)
-    const preview = wrapper!.get('.slide-scan__preview').attributes('src')
-    expect(preview).toContain('/api/v1/smart_scan/latest_preview_stitch.jpg?drawn=2026-10-14')
+    const preview = wrapper!.getComponent(OverlaidImage)
+    expect(preview.props('src')).toContain(
+      '/api/v1/smart_scan/latest_preview_stitch.jpg?drawn=2026-10-14',
+    )
+    // Over it, each image's outline, from the layout drawn with it (P53).
+    const tiles = received.find((r) => r.url.pathname.endsWith('/latest_preview_tiles.json'))
+    expect(tiles!.url.searchParams.get('drawn')).toBe('2026-10-14T10:00:00.000Z')
+    const [outlines] = preview.props('layers')
+    expect([outlines!.id, outlines!.shapes.length]).toEqual(['image-outlines', 1])
+    expect(button('Layers')).toBeDefined()
     await button('Cancel scan')!.trigger('click')
     await flushPromises()
     expect(received.some((r) => r.method === 'DELETE')).toBe(true)

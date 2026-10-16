@@ -2,7 +2,9 @@
 //! the stage positions and camera–stage mapping their sidecars record
 //! (ADR-0025). While a scan runs, a small preview is blended again after
 //! each site; once it's stitched, its `stitched/` folder holds a deep-zoom
-//! image, `mosaic.dzi`, with `overview.jpeg` and `thumbnail.jpeg`.
+//! image, `mosaic.dzi`, with `overview.jpeg` and `thumbnail.jpeg`. Both
+//! record where each image went (P53, ADR-0036): the mosaic's in
+//! `stitched/tiles.json`.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -21,6 +23,8 @@ use crate::capture::{MappingRecord, Sidecar};
 pub const STITCHED: &str = "stitched";
 /// The mosaic's name: `mosaic.dzi`, with its tiles in `mosaic_files/`.
 pub const MOSAIC: &str = "mosaic";
+/// The file, in `stitched/`, of where each image went.
+pub const TILES: &str = "tiles.json";
 /// The longer side of the live preview, at most.
 const PREVIEW_SIDE: u32 = 1024;
 /// How many times smaller the live preview keeps each image.
@@ -37,10 +41,39 @@ pub struct Stitched {
     pub images: u32,
 }
 
-/// An image to stitch, and where it was taken.
+/// Where each image of a mosaic went: the mosaic's size, and each image's
+/// rectangle in it, in its pixels.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+pub struct TileLayout {
+    /// The mosaic's size, in pixels: width and height.
+    pub size: [u32; 2],
+    /// Each image, in the order they were taken.
+    pub tiles: Vec<PlacedImage>,
+}
+
+/// An image's place in a mosaic.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+pub struct PlacedImage {
+    /// Its file name, in the scan's `images/`.
+    pub image: String,
+    /// Its number in the scan: 1 for the first taken.
+    pub number: u32,
+    /// Its left edge, in the mosaic's pixels.
+    pub x: u32,
+    /// Its top edge, in the mosaic's pixels.
+    pub y: u32,
+    /// Its width, in the mosaic's pixels.
+    pub width: u32,
+    /// Its height, in the mosaic's pixels.
+    pub height: u32,
+}
+
+/// An image to stitch, and where and when it was taken.
 struct Site {
     path: PathBuf,
     at: [i64; 2],
+    /// When: RFC 3339, in UTC, so in order as text.
+    acquired: String,
     size: [u32; 2],
     mapping: Option<MappingRecord>,
 }
@@ -71,6 +104,7 @@ fn sites(scan: &Path) -> Result<Vec<Site>, ActionError> {
             Site {
                 path: images.join(&sidecar.image),
                 at,
+                acquired: sidecar.acquired,
                 size: [sidecar.width, sidecar.height],
                 mapping: sidecar.camera_stage_mapping,
             },
@@ -99,6 +133,28 @@ fn layout(sites: &[Site], size: [u32; 2]) -> Result<Layout, ActionError> {
     Layout::new(&at, matrix, mapping.image_resolution, size).map_err(ActionError::handled)
 }
 
+/// Where `sites` went in `layout`, numbered in the order they were taken.
+fn placed(sites: &[Site], layout: &Layout) -> TileLayout {
+    let mut order: Vec<usize> = (0..sites.len()).collect();
+    order.sort_by_key(|&i| (&sites[i].acquired, &sites[i].path));
+    let tiles = (order.iter().zip(1..))
+        .map(|(&i, number)| PlacedImage {
+            image: (sites[i].path.file_name())
+                .map(|name| name.to_string_lossy().into_owned())
+                .unwrap_or_default(),
+            number,
+            x: layout.origins[i][0],
+            y: layout.origins[i][1],
+            width: layout.tile[0],
+            height: layout.tile[1],
+        })
+        .collect();
+    TileLayout {
+        size: layout.size,
+        tiles,
+    }
+}
+
 /// Stitches `scan` into its `stitched/` folder, replacing any it had. It's
 /// written beside, then moved into place, so it's never seen half done.
 pub fn stitch(scan: &Path) -> Result<Stitched, ActionError> {
@@ -116,6 +172,9 @@ pub fn stitch(scan: &Path) -> Result<Stitched, ActionError> {
         &mut |file: DziFile| write(&partial.join(&file.path), &file.bytes),
     )
     .map_err(ActionError::handled)?;
+    let tiles =
+        serde_json::to_vec_pretty(&placed(&sites, &layout)).map_err(ActionError::handled)?;
+    write(&partial.join(TILES), &tiles).map_err(ActionError::handled)?;
     for (name, picture) in [
         ("overview.jpeg", &pyramid.overview),
         ("thumbnail.jpeg", &pyramid.thumbnail),
@@ -152,8 +211,9 @@ pub struct Preview {
 
 impl Preview {
     /// Takes in `scan`'s new images, and draws the preview again: a JPEG
-    /// whose longer side is at most 1024 pixels.
-    pub fn update(&mut self, scan: &Path) -> Result<Vec<u8>, ActionError> {
+    /// whose longer side is at most 1024 pixels, and where each image went,
+    /// in the pixels of the mosaic it was shrunk from.
+    pub fn update(&mut self, scan: &Path) -> Result<(Vec<u8>, TileLayout), ActionError> {
         let sites = sites(scan)?;
         let small_size = sites[0].size.map(|n| (n / PREVIEW_SHRINK).max(1));
         for site in &sites {
@@ -169,6 +229,7 @@ impl Preview {
         let preview = layout.preview(PREVIEW_SIDE, &mut |index| {
             Ok(self.small[&sites[index].at].1.clone())
         });
-        dzi::jpeg(&preview.map_err(ActionError::handled)?).map_err(ActionError::handled)
+        let jpeg = dzi::jpeg(&preview.map_err(ActionError::handled)?);
+        Ok((jpeg.map_err(ActionError::handled)?, placed(&sites, &layout)))
     }
 }

@@ -68,6 +68,8 @@ export async function fix(page: Page) {
 export interface Shot {
   name: string
   route: string
+  /** More answers, for this shot alone. */
+  answers?: (page: Page) => Promise<void>
   /** What shows once the page has loaded. */
   ready: (page: Page) => Locator
   /** A state reached from the page, such as an open dialog. */
@@ -76,10 +78,70 @@ export interface Shot {
   large?: boolean
 }
 const text = (words: string) => (page: Page) => page.getByText(words, { exact: true }).first()
+
+/**
+ * A scan running, as the Slide Scan tab finds it, with its preview: the
+ * fixture's picture as four images in a snake, overlapping, and where each
+ * went (P53).
+ */
+async function scanning(page: Page) {
+  const record = (url: string) => ({
+    id: 'visual-scan',
+    status: 'running',
+    action: '/api/v1/smart_scan/sample_scan',
+    href: new URL('/api/v1/action_invocations/visual-scan', url).href,
+    log: [{ message: 'Scanning with snake_workflow from x 0, y 0, z 0' }],
+  })
+  await page.route('**/api/v1/smart_scan/sample_scan', (route) =>
+    route.fulfill({ json: [record(route.request().url())] }),
+  )
+  await page.route('**/api/v1/action_invocations/visual-scan', (route) =>
+    route.fulfill({ json: record(route.request().url()) }),
+  )
+  await page.route('**/api/v1/smart_scan/latest_scan_live_details', (route) =>
+    route.fulfill({
+      json: {
+        name: 'slide-2',
+        scan_phase: 'scanning',
+        image_count: 4,
+        duration_seconds: 75,
+        workflow: 'snake_workflow',
+        settings: { x_count: 2, y_count: 2 },
+        result: null,
+        preview_stitch_time: '2026-10-14T09:30:00.000Z',
+      },
+    }),
+  )
+  await page.route('**/api/v1/smart_scan/latest_preview_stitch.jpg*', (route) =>
+    route.fulfill({ path: IMAGE }),
+  )
+  const tile = (number: number, x: number, y: number) => ({
+    image: `img_${x}_${y}_0.jpeg`,
+    number,
+    x,
+    y,
+    width: 160,
+    height: 125,
+  })
+  await page.route('**/api/v1/smart_scan/latest_preview_tiles.json*', (route) =>
+    route.fulfill({
+      json: {
+        size: [256, 200],
+        tiles: [tile(1, 0, 0), tile(2, 96, 0), tile(3, 96, 75), tile(4, 0, 75)],
+      },
+    }),
+  )
+}
 export const SHOTS: Shot[] = [
   { name: 'view', route: 'view', ready: text('Turn it on') },
   { name: 'control', route: 'control', ready: text('On capture'), large: true },
   { name: 'slide-scan', route: 'slide-scan', ready: text('Start Smart Scan'), large: true },
+  {
+    name: 'slide-scan-outlines',
+    route: 'slide-scan',
+    answers: scanning,
+    ready: (page) => page.locator('.overlay-layers [data-layer="image-outlines"] > g').nth(3),
+  },
   { name: 'sequence', route: 'sequence', ready: text('Autofocus range (steps)') },
   { name: 'gallery', route: 'gallery', ready: text('capture-1'), large: true },
   {
@@ -132,6 +194,7 @@ export const SHOTS: Shot[] = [
 /** Opens `shot`'s page, and its state, once it has loaded. */
 export async function open(page: Page, shot: Shot) {
   await fix(page)
+  await shot.answers?.(page)
   await page.goto(`/#/${shot.route}`)
   await expect(page.locator('.connection-indicator')).toHaveAttribute('data-state', 'connected')
   await expect(shot.ready(page)).toBeVisible()

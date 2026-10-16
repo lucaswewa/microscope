@@ -112,6 +112,13 @@
   --pane-width-narrow: 180px;
   --pane-width-wide: 400px;
 
+  /* Annotations over images (ADR-0036): the same in both themes, as the
+     images are, with a dark halo so they show on light and dark ones. */
+  --color-annotation: var(--palette-amber-300);
+  --color-annotation-halo: rgb(0 0 0 / 65%);
+  --annotation-stroke-width: 1.5px;
+  --annotation-halo-width: 4px;
+
   /* Layers. */
   --z-rail: 10;
   --z-dropdown: 100;

@@ -174,6 +174,8 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     // No live preview before a scan; this one is stitched once it ends (P39).
     let preview = "/smart_scan/latest_preview_stitch.jpg";
     assert_eq!(client.get(preview).await.status.as_u16(), 404);
+    let preview_tiles = "/smart_scan/latest_preview_tiles.json";
+    assert_eq!(client.get(preview_tiles).await.status.as_u16(), 404);
     put(client, "/smart_scan/stitch_automatically", json!(true)).await;
     assert_eq!(
         client.get("/smart_scan/autofocus_enabled").await.json(),
@@ -262,6 +264,34 @@ async fn a_scan_visits_its_grid_and_keeps_its_images_and_record() {
     assert!(
         drawn.width() <= 1024 && drawn.width() > drawn.height(),
         "{drawn:?}"
+    );
+    // Where each image is in it (P53): the four, numbered as they were
+    // taken, inside the mosaic it was shrunk from, in its proportions.
+    let tiles = client.get(preview_tiles).await.json();
+    let [width, height] = [0, 1].map(|i| tiles["size"][i].as_u64().unwrap());
+    let ratio = |w: u64, h: u64| w as f64 / h as f64;
+    let (mosaic, shown) = (
+        ratio(width, height),
+        ratio(drawn.width().into(), drawn.height().into()),
+    );
+    assert!((mosaic - shown).abs() < 0.01, "{tiles} for {drawn:?}");
+    let placed = tiles["tiles"].as_array().expect("tiles");
+    let numbers: Vec<u64> = placed
+        .iter()
+        .map(|t| t["number"].as_u64().unwrap())
+        .collect();
+    assert_eq!(numbers, [1, 2, 3, 4]);
+    for tile in placed {
+        let [x, y, w, h] = ["x", "y", "width", "height"].map(|k| tile[k].as_u64().unwrap());
+        assert!(x + w <= width && y + h <= height, "{tiles}");
+        assert!(jpegs.iter().any(|jpeg| **jpeg == tile["image"]), "{tiles}");
+    }
+    // The first taken is at the start: the first move's site.
+    let first = &moves(&scan)[0];
+    let name = placed[0]["image"].as_str().unwrap();
+    assert!(
+        name.starts_with(&format!("img_{}_{}_", first[0], first[1])),
+        "{name}"
     );
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(60);
     while !scan.join("stitched/mosaic.dzi").exists() {

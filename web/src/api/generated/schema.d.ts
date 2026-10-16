@@ -6356,6 +6356,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/smart_scan/latest_preview_tiles.json": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Preview Tiles
+         * @description Where each image is in the latest scan's live preview, in the pixels
+         *     of the mosaic it was shrunk from (ADR-0036).
+         */
+        get: operations["latest_preview_tiles_api_v1_smart_scan_latest_preview_tiles_json_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/smart_scan/latest_scan_live_details": {
         parameters: {
             query?: never;
@@ -18375,6 +18396,24 @@ export interface operations {
         };
     };
     latest_preview_stitch_api_v1_smart_scan_latest_preview_stitch_jpg_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    latest_preview_tiles_api_v1_smart_scan_latest_preview_tiles_json_get: {
         parameters: {
             query?: never;
             header?: never;

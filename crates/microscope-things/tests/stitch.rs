@@ -1,7 +1,7 @@
 //! Stitching scans on request (P39): a scan's images, one a site, become a
 //! deep-zoom mosaic in its `stitched/` folder, which its gallery card then
-//! shows and offers to download. `stitch_all_scans` stitches those that
-//! aren't.
+//! shows and offers to download, with where each image went (P53).
+//! `stitch_all_scans` stitches those that aren't.
 
 use std::path::{Path, PathBuf};
 
@@ -27,8 +27,9 @@ fn picture() -> RgbImage {
 }
 
 /// A scan's folder as a scan leaves it: tiles cut from `picture`, each with
-/// its sidecar, where the stage steps are the picture's pixels. The middle
-/// site has a stack of three, the middle one right.
+/// its sidecar, where the stage steps are the picture's pixels, taken in a
+/// snake: along the first row, back along the second, and along the third.
+/// The middle site has a stack of three, the middle one right.
 fn scan(data: &Path, name: &str) -> PathBuf {
     let images = data.join("scans").join(name).join("images");
     std::fs::create_dir_all(&images).expect("created");
@@ -45,21 +46,23 @@ fn scan(data: &Path, name: &str) -> PathBuf {
             } else {
                 vec![(50, &tile)]
             };
+            let taken = j * 3 + if j == 1 { 2 - i } else { i };
             for (z, image) in stack {
-                save(&images, [i64::from(x), i64::from(y), z], image);
+                let acquired = format!("2026-01-01T00:00:{:02}.{z:03}Z", taken);
+                save(&images, [i64::from(x), i64::from(y), z], image, &acquired);
             }
         }
     }
     data.join("scans").join(name)
 }
 
-fn save(images: &Path, [x, y, z]: [i64; 3], image: &RgbImage) {
+fn save(images: &Path, [x, y, z]: [i64; 3], image: &RgbImage, acquired: &str) {
     let name = format!("img_{x}_{y}_{z}.jpeg");
     image.save(images.join(&name)).expect("saved");
     let sidecar = json!({
         "format": 1,
         "image": name,
-        "acquired": "2026-01-01T00:00:00Z",
+        "acquired": acquired,
         "width": TILE[0],
         "height": TILE[1],
         "um_per_pixel": null,
@@ -160,6 +163,38 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
     let worst = pairs.map(|(a, b)| a.abs_diff(b)).max().unwrap_or(0);
     assert!(worst < 40, "{worst}");
     assert!(!data.join("scans/grid/stitched.partial").exists());
+    // Where each image went, numbered as they were taken.
+    let tiles: Value = serde_json::from_slice(
+        &std::fs::read(folder.join("stitched/tiles.json")).expect("the tiles' record"),
+    )
+    .expect("JSON");
+    assert_eq!(tiles["size"], json!([400, 300]));
+    let snake = [
+        [0, 0],
+        [1, 0],
+        [2, 0],
+        [2, 1],
+        [1, 1],
+        [0, 1],
+        [0, 2],
+        [1, 2],
+        [2, 2],
+    ];
+    let placed: Vec<Value> = (snake.iter().zip(1..))
+        .map(|([i, j], number)| {
+            let (x, y) = (i * STEP[0], j * STEP[1]);
+            // The middle site's is the middle of its stack, at 50 too.
+            json!({
+                "image": format!("img_{x}_{y}_50.jpeg"),
+                "number": number,
+                "x": x,
+                "y": y,
+                "width": TILE[0],
+                "height": TILE[1],
+            })
+        })
+        .collect();
+    assert_eq!(tiles["tiles"], json!(placed));
 
     // The card shows the mosaic, and offers it to download.
     let card = entry(client, "grid").await;
