@@ -10,8 +10,16 @@ export interface MenuAction {
   run: () => void
 }
 
-/** A menu's items: actions, and 'separator' between groups of them. */
-export type MenuItems = readonly (MenuAction | 'separator')[]
+/** One choice in an AppMenu, on or off, such as a layer to show. */
+export interface MenuCheck {
+  label: string
+  checked: boolean
+  disabled?: boolean
+  toggle: (checked: boolean) => void
+}
+
+/** A menu's items: actions and choices, and 'separator' between groups of them. */
+export type MenuItems = readonly (MenuAction | MenuCheck | 'separator')[]
 </script>
 
 <script setup lang="ts">
@@ -19,10 +27,14 @@ export type MenuItems = readonly (MenuAction | 'separator')[]
 // on Reka UI's DropdownMenu (ADR-0013). ↑ and ↓ move between the actions,
 // skipping disabled ones; Enter, Space or a click runs one; typing jumps to an
 // action by its label; Escape closes the menu and gives the focus back to the
-// trigger.
+// trigger. A choice is ticked when it's on, and turning it over leaves the
+// menu open, for the next.
+import checkIcon from '@material-symbols/svg-400/outlined/check.svg?raw'
 import {
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuItemIndicator,
   DropdownMenuPortal,
   DropdownMenuRoot,
   DropdownMenuSeparator,
@@ -56,6 +68,21 @@ function onOpen(open: boolean) {
         >
           <template v-for="(item, index) in items" :key="index">
             <DropdownMenuSeparator v-if="item === 'separator'" class="app-menu__separator" />
+            <DropdownMenuCheckboxItem
+              v-else-if="'checked' in item"
+              :model-value="item.checked"
+              :disabled="item.disabled"
+              class="app-menu__item"
+              @update:model-value="(on) => item.toggle(on === true)"
+              @select="(event: Event) => event.preventDefault()"
+            >
+              <span class="app-menu__check">
+                <DropdownMenuItemIndicator>
+                  <AppIcon :svg="checkIcon" size="var(--icon-size-sm)" />
+                </DropdownMenuItemIndicator>
+              </span>
+              {{ item.label }}
+            </DropdownMenuCheckboxItem>
             <DropdownMenuItem
               v-else
               :disabled="item.disabled"
@@ -104,6 +131,11 @@ function onOpen(open: boolean) {
 
 .app-menu__item[data-highlighted] {
   background: var(--color-accent-subtle);
+}
+
+.app-menu__check {
+  display: inline-flex;
+  width: var(--icon-size-sm);
 }
 
 .app-menu__item--danger {

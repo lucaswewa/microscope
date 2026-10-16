@@ -117,6 +117,12 @@ export const TOKEN_GROUPS = {
     '--focus-ring-offset',
   ],
   layout: ['--rail-width', '--rail-item-height', '--pane-width-narrow', '--pane-width-wide'],
+  annotation: [
+    '--color-annotation',
+    '--color-annotation-halo',
+    '--annotation-stroke-width',
+    '--annotation-halo-width',
+  ],
   layer: ['--z-rail', '--z-dropdown', '--z-dialog', '--z-toast'],
   elevation: ['--shadow-sm', '--shadow-md', '--shadow-lg'],
   motion: ['--duration-fast', '--duration-normal', '--easing-standard'],

@@ -8,7 +8,8 @@
 //! one image at each site where the stage is.
 //!
 //! Stitching (P39, [`crate::stitch`]): while a scan runs, its live preview
-//! is drawn again after each site that saves an image. Once it ends, it's
+//! is drawn again after each site that saves an image, with where each image
+//! went (P53). Once it ends, it's
 //! stitched in the background if `stitch_automatically` is set.
 //! `stitch_scan` and `stitch_all_scans` stitch scans on request. Like the
 //! downloads, they don't take the global lock.
@@ -33,7 +34,7 @@ use teta_wot::prelude::*;
 
 use crate::data;
 use crate::hardware::{Position, StageApi};
-use crate::stitch::{self, Preview, STITCHED, Stitched};
+use crate::stitch::{self, Preview, STITCHED, Stitched, TileLayout};
 use crate::workflow::{Begun, ScanWorkflow};
 
 /// The folder, in the data folder, that scans are saved in.
@@ -112,9 +113,10 @@ pub struct SmartScan {
     /// Held while a scan runs, so only one does.
     running: tokio::sync::Mutex<()>,
     latest: Mutex<Option<Latest>>,
-    /// The latest scan's live preview, and its JPEG.
+    /// The latest scan's live preview, and its JPEG with where each image
+    /// went.
     preview: Arc<Mutex<Preview>>,
-    preview_jpeg: Mutex<Option<Vec<u8>>>,
+    drawn_preview: Mutex<Option<(Vec<u8>, TileLayout)>>,
     /// The scans being stitched, by name.
     stitching: Arc<Mutex<HashSet<String>>>,
 }
@@ -159,13 +161,28 @@ impl SmartScan {
     /// The latest scan's live preview: its mosaic so far, as a JPEG.
     #[endpoint(get, "latest_preview_stitch.jpg")]
     async fn latest_preview_stitch(&self) -> Response {
-        match self.preview_jpeg.lock().expect("not poisoned").clone() {
-            Some(jpeg) => {
+        match self.drawn_preview.lock().expect("not poisoned").clone() {
+            Some((jpeg, _)) => {
                 let headers = [
                     (header::CONTENT_TYPE, "image/jpeg"),
                     (header::CACHE_CONTROL, "no-store"),
                 ];
                 (headers, jpeg).into_response()
+            }
+            None => {
+                let detail = json!({"detail": "there's no preview yet"});
+                (StatusCode::NOT_FOUND, Json(detail)).into_response()
+            }
+        }
+    }
+
+    /// Where each image is in the latest scan's live preview, in the pixels
+    /// of the mosaic it was shrunk from (ADR-0036).
+    #[endpoint(get, "latest_preview_tiles.json")]
+    async fn latest_preview_tiles(&self) -> Response {
+        match self.drawn_preview.lock().expect("not poisoned").clone() {
+            Some((_, tiles)) => {
+                ([(header::CACHE_CONTROL, "no-store")], Json(tiles)).into_response()
             }
             None => {
                 let detail = json!({"detail": "there's no preview yet"});
@@ -212,7 +229,7 @@ impl SmartScan {
             preview_stitch_time: None,
         };
         *self.preview.lock().expect("not poisoned") = Preview::default();
-        *self.preview_jpeg.lock().expect("not poisoned") = None;
+        *self.drawn_preview.lock().expect("not poisoned") = None;
         *self.latest.lock().expect("not poisoned") = Some(Latest {
             details,
             started: Instant::now(),
@@ -390,8 +407,8 @@ impl SmartScan {
             .map_err(ActionError::handled)
             .and_then(|drawn| drawn)
         {
-            Ok(jpeg) => {
-                *self.preview_jpeg.lock().expect("not poisoned") = Some(jpeg);
+            Ok(drawn) => {
+                *self.drawn_preview.lock().expect("not poisoned") = Some(drawn);
                 let now = Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true);
                 self.update(|details| details.preview_stitch_time = Some(now));
             }

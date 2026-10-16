@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 // Checkpoint D: a scan from the Slide Scan tab shows its live stitching
-// preview, then ends as a stitched deep-zoom image in the gallery; one with
-// autofocus off (P51) takes one image a site. They hold the microscope, so
-// they run in turn, once the other tests have finished.
+// preview, its images outlined (P53), then ends as a stitched deep-zoom image
+// in the gallery; one with autofocus off (P51) takes one image a site. They
+// hold the microscope, so they run in turn, once the other tests have
+// finished.
 test.describe.configure({ mode: 'serial' })
 test.use({ viewport: { width: 1280, height: 800 } })
 
@@ -34,6 +35,17 @@ test('a scan from the Slide Scan tab ends stitched in the gallery', async ({ pag
   await expect(page.locator('.slide-scan__preview')).toBeVisible({ timeout: 120_000 })
   await expect(pane.getByText('The scan has finished.')).toBeVisible({ timeout: 120_000 })
   await expect(pane).toContainText(name)
+  // Each image outlined over the preview (P53), which the Layers menu turns off and on.
+  const outlines = page.locator('.overlay-layers [data-layer="image-outlines"] > g')
+  await expect(outlines).toHaveCount(2)
+  await expect(outlines.first().locator('title')).toHaveText(/^1: img_/)
+  await page.getByRole('button', { name: 'Layers' }).click()
+  const choice = page.getByRole('menuitemcheckbox', { name: 'Image outlines' })
+  await choice.click()
+  await expect(outlines).toHaveCount(0)
+  await choice.click()
+  await expect(outlines).toHaveCount(2)
+  await page.keyboard.press('Escape')
   await pane.getByRole('button', { name: 'Close' }).click()
   await expect(pane.getByRole('button', { name: 'Start Smart Scan' })).toBeVisible()
 
