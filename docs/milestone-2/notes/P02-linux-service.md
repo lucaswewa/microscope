@@ -114,7 +114,10 @@ None: the phase has no hardware. It ran on GitHub's Ubuntu runners: 22.04 x86_64
   - the archive's launcher starts its server, which answers its health check, and SIGTERM stops the launcher with 0;
   - the `.deb` installs; its service answers; the app's restart brings it back as a new process; and removing the package stops it.
 - **On Windows,** locally and in CI, everything as before.
-- **A flaky test, not this phase's:** in one of the two Linux runs on the first push, `smart_scan`'s `a_scan_that_fails_goes_back_to_the_start` failed on Linux x86_64, as its scan's folder was gone. It passed in the other run, and in every other run since 14 October. A scan that ends with no image removes its folder, so this scan failed at its first site, before the stage limit the test sets. The test doesn't show that error; see the follow-ups.
+- **Flaky simulator tests, not this phase's:** this phase changes nothing they run, yet two failed once each on Linux, and passed when run again:
+  - **`smart_scan`'s `a_scan_that_fails_goes_back_to_the_start`,** on x86_64. Its scan's folder was gone: a scan that ends with no image removes its folder, so this scan failed at its first site, before the stage limit the test sets. The test doesn't show that error.
+  - **`stack`'s `smart_stacks_on_a_tilted_sample_keep_the_sharpest_planes`,** on ARM64: the smart stack 0.4 mm from the centre didn't succeed.
+  - **Since 14 October,** four simulator tests have failed once each in about sixty Rust test jobs, on Windows before P01 as well as on Linux; each is a different test. See the follow-ups.
 
 ## Follow-ups and known gaps
 
@@ -122,7 +125,7 @@ None: the phase has no hardware. It ran on GitHub's Ubuntu runners: 22.04 x86_64
 - **P11:** the installation guide for the Pi, and the app's wording for a server that a service manages.
 - **P14:** listening on the network by default, once there's a token.
 - **The AppImage** is P19's, with the desktop app.
-- **The flaky scan test:** a small pull request of its own, to show the scan's error when it fails, and so find out why its first site can fail.
+- **The flaky simulator tests:** a small pull request of its own, to have them show why they fail (the scan's error, the stack's attempts), and then to fix the causes.
 
 ## Independent implementation
 
