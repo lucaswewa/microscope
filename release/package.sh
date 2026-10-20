@@ -60,4 +60,5 @@ glibc=$(objdump -T "$bin/microscope-launcher" "$bin/microscope-server" \
     | grep -o 'GLIBC_[0-9.]*' | cut -d_ -f2 | sort -uV | tail -1)
 sed -e "s/@VERSION@/$deb_version/" -e "s/@ARCH@/$deb_arch/" -e "s/@GLIBC@/$glibc/" \
     release/linux/control > "$deb/DEBIAN/control"
-dpkg-deb --root-owner-group --build "$deb" "$out/microscope_${deb_version}_$deb_arch.deb"
+dpkg-deb -Zxz --root-owner-group --build "$deb" "$out/microscope_${deb_version}_$deb_arch.deb"
+dpkg-deb --info "$out/microscope_${deb_version}_$deb_arch.deb"
