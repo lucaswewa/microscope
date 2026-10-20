@@ -1,7 +1,7 @@
 //! The command line.
 //!
 //! ```text
-//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist] [--managed]
+//! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist] [--managed | --service]
 //! microscope-server -j '{"things": {…}}'
 //! microscope-server -c config.json --print-openapi
 //! ```
@@ -16,7 +16,12 @@
 //! `MICROSCOPE_READY {"url": …, "pid": …, "version": …}`, which gives the
 //! port `--port 0` chose. It stops when standard input closes, and
 //! `system.restart` stops it with exit code 75, for the supervisor to start
-//! it again.
+//! it again. Once standard input has closed, as it does when the supervisor
+//! ends however it ends, the server ends within [`STOP_DEADLINE`], even if
+//! its shutdown hangs.
+//!
+//! With `--service`, a service manager such as systemd runs it: the same,
+//! except that standard input is ignored. SIGTERM stops it.
 //!
 //! | Code | When |
 //! |---|---|
@@ -33,6 +38,7 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
+use std::time::Duration;
 
 use clap::Parser;
 use microscope_things::system::{Control, Exit, MicroscopeSystem};
@@ -74,7 +80,15 @@ pub struct Args {
     /// exit code 75 (ADR-0032).
     #[arg(long)]
     pub managed: bool,
+    /// Run under a service manager, such as systemd: as `--managed`, but
+    /// standard input doesn't stop the server; SIGTERM does.
+    #[arg(long, conflicts_with = "managed")]
+    pub service: bool,
 }
+
+/// How long a managed server may take to stop once its standard input has
+/// closed: well past its grace period. Then it ends regardless.
+pub const STOP_DEADLINE: Duration = Duration::from_secs(30);
 
 /// Why serving failed, and so the exit code.
 #[derive(Debug)]
@@ -171,6 +185,7 @@ where
         webapp_dir,
         print_openapi,
         managed,
+        service,
     } = match Args::try_parse_from(args) {
         Ok(args) => args,
         Err(error) => {
@@ -181,13 +196,12 @@ where
     };
 
     if managed {
-        // A supervisor closes standard input to stop the server. What it
-        // writes there is ignored.
         let request = Arc::clone(&request);
         std::thread::spawn(move || {
-            let mut buffer = [0; 256];
-            while std::io::stdin().read(&mut buffer).is_ok_and(|n| n > 0) {}
-            request(Exit::Stop);
+            stop_when_closed(std::io::stdin(), &*request, STOP_DEADLINE, || {
+                eprintln!("Error: the server didn't stop within {STOP_DEADLINE:?}, so it ends");
+                std::process::exit(1);
+            });
         });
     }
 
@@ -196,7 +210,7 @@ where
     let mut logs = None;
     let source = webapp_dir.map_or(WebApp::Embedded, WebApp::Dir);
     let control = Control {
-        managed,
+        managed: managed || service,
         stop: request,
     };
     let outcome = if print_openapi {
@@ -321,6 +335,23 @@ async fn serve(
     }
 }
 
+/// Reads `input` until it closes, then asks the server to stop, and calls
+/// `end` if the process is still running `deadline` later. A supervisor
+/// closes standard input to stop the server; what it writes there is
+/// ignored.
+fn stop_when_closed(
+    mut input: impl Read,
+    request: &dyn Fn(Exit),
+    deadline: Duration,
+    end: impl FnOnce(),
+) {
+    let mut buffer = [0; 256];
+    while input.read(&mut buffer).is_ok_and(|n| n > 0) {}
+    request(Exit::Stop);
+    std::thread::sleep(deadline);
+    end();
+}
+
 /// The ready line's JSON: where the server is, its process and its version.
 /// A server listening on every address is reached on the loopback one.
 fn ready_line(addr: SocketAddr) -> serde_json::Value {
@@ -412,5 +443,16 @@ mod tests {
         let line = ready_line("127.0.0.1:5000".parse().expect("an address"));
         assert_eq!(line["pid"], std::process::id());
         assert_eq!(line["version"], env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn closed_input_stops_the_server_and_then_ends_it() {
+        let asked = std::sync::Mutex::new(Vec::new());
+        let mut ended = false;
+        let input = &b"what a supervisor writes is ignored"[..];
+        let request = |exit| asked.lock().expect("unpoisoned").push(exit);
+        stop_when_closed(input, &request, Duration::ZERO, || ended = true);
+        assert_eq!(*asked.lock().expect("unpoisoned"), [Exit::Stop]);
+        assert!(ended);
     }
 }

@@ -1,6 +1,6 @@
 # P01: Linux builds and CI
 
-- Status: In review
+- Status: Done
 - Pull request: [#72](https://github.com/lucaswewa/microscope/pull/72)
 - ADRs: [ADR-0039](../../adr/0039-teta-wot-on-linux.md)
 - Spec: [phases.md#p01](../phases.md#p01)

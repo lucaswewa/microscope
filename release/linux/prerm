@@ -1,0 +1,10 @@
+#!/bin/sh
+# Before removing: the service stopped, and not started at boot. An upgrade
+# restarts it instead, once the new files are in place.
+set -e
+if [ "$1" = remove ]; then
+    if [ -d /run/systemd/system ]; then
+        systemctl stop microscope.service || true
+    fi
+    systemctl disable microscope.service || true
+fi

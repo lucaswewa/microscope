@@ -2,7 +2,6 @@
 //! says where it is, starts it again after a restart and after a crash,
 //! refuses a second launcher for its folder, ends when the server stops or
 //! can't start, and doesn't let the server outlive it.
-#![cfg(windows)]
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
@@ -129,6 +128,7 @@ fn post(address: &str, path: &str) -> String {
     answer.lines().next().unwrap_or_default().to_owned()
 }
 
+#[cfg(windows)]
 fn alive(pid: u32) -> bool {
     let filter = format!("PID eq {pid}");
     let output = (Command::new("tasklist")
@@ -136,6 +136,31 @@ fn alive(pid: u32) -> bool {
         .output())
     .expect("runs");
     String::from_utf8_lossy(&output.stdout).contains(&pid.to_string())
+}
+
+#[cfg(unix)]
+fn alive(pid: u32) -> bool {
+    // A zombie has ended, and only waits for its parent to notice.
+    let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"));
+    stat.is_ok_and(|stat| {
+        !stat
+            .rsplit(')')
+            .next()
+            .is_some_and(|s| s.trim_start().starts_with('Z'))
+    })
+}
+
+/// Ends process `pid` at once, as a crash would.
+fn kill(pid: u32) {
+    let (program, options) = if cfg!(windows) {
+        ("taskkill", ["/F", "/PID"])
+    } else {
+        ("kill", ["-s", "KILL"])
+    };
+    let killed = (Command::new(program).args(options).arg(pid.to_string()))
+        .stdout(Stdio::null())
+        .status();
+    assert!(killed.expect("runs").success());
 }
 
 #[test]
@@ -179,11 +204,7 @@ fn it_keeps_the_server_running_until_it_stops() {
     let (_, restarted) = launcher.ready();
     assert_ne!(restarted, first);
     // A crash: started again after a second.
-    let pid = restarted.to_string();
-    let killed = (Command::new("taskkill").args(["/F", "/PID", &pid]))
-        .stdout(Stdio::null())
-        .status();
-    assert!(killed.expect("runs").success());
+    kill(restarted);
     assert_eq!(
         launcher.next("launcher: starting the server again in "),
         "1s"
@@ -233,6 +254,18 @@ fn the_server_doesnt_outlive_the_launcher() {
         );
         std::thread::sleep(Duration::from_millis(100));
     }
+}
+
+#[cfg(unix)]
+#[test]
+fn sigterm_stops_the_launcher_and_its_server() {
+    let mut launcher = launch(CONFIG, 0);
+    let (_, pid) = launcher.ready();
+    let launcher_pid = launcher.child.id().to_string();
+    let sent = Command::new("kill").args(["-TERM", &launcher_pid]).status();
+    assert!(sent.expect("runs").success());
+    assert_eq!(launcher.exit_code(Duration::from_secs(15)), 0);
+    assert!(!alive(pid), "the server outlived the launcher");
 }
 
 #[test]

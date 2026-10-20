@@ -136,6 +136,8 @@ async fn serve_once(
     // Ctrl-C reaches the launcher alone: it stops the server itself.
     #[cfg(windows)]
     command.creation_flags(CREATE_NEW_PROCESS_GROUP);
+    #[cfg(unix)]
+    command.process_group(0);
     let mut child =
         (command.spawn()).map_err(|e| format!("can't start {}: {e}", options.server.display()))?;
     #[cfg(windows)]

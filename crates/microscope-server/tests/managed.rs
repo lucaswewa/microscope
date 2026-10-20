@@ -1,7 +1,8 @@
 //! The sidecar contract (ADR-0032), through the built binary: with
 //! `--managed`, the ready line once serving, exit code 75 for a restart, 0
-//! for a shutdown, and a graceful stop when standard input closes. Without
-//! it, none of that but the shutdown.
+//! for a shutdown, and a graceful stop when standard input closes. With
+//! `--service`, the same but the stop. Without either, none of that but the
+//! shutdown.
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
@@ -29,22 +30,21 @@ struct Running {
     _folder: tempfile::TempDir,
 }
 
-/// Starts a server, managed or not, and waits for the line that says it's
-/// serving: the ready line, or else where it's listening.
-fn start(managed: bool) -> Running {
+/// Starts a server, with `--managed`, `--service` or neither, and waits for
+/// the line that says it's serving: the ready line, or else where it's
+/// listening.
+fn start(supervised: Option<&str>) -> Running {
     let folder = tempfile::tempdir().expect("a temporary folder");
     let mut command = Command::new(SERVER);
     command.args(["--port", "0", "-j", CONFIG]);
-    if managed {
-        command.arg("--managed");
-    }
+    command.args(supervised);
     let mut child = (command.current_dir(folder.path()))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
         .spawn()
         .expect("the server binary runs");
-    let prefix = if managed {
+    let prefix = if supervised.is_some() {
         "MICROSCOPE_READY "
     } else {
         "listening on "
@@ -141,7 +141,7 @@ impl Drop for Running {
 
 #[test]
 fn a_managed_server_says_where_it_is_once_ready() {
-    let server = start(true);
+    let server = start(Some("--managed"));
     let ready: serde_json::Value = serde_json::from_str(&server.line).expect("JSON");
     assert_eq!(ready["pid"], server.child.id());
     assert_eq!(ready["version"], env!("CARGO_PKG_VERSION"));
@@ -154,14 +154,14 @@ fn a_managed_server_says_where_it_is_once_ready() {
 
 #[test]
 fn closing_standard_input_stops_a_managed_server_with_0() {
-    let mut server = start(true);
+    let mut server = start(Some("--managed"));
     drop(server.stdin.take());
     assert_eq!(server.exit_code(GRACE), 0);
 }
 
 #[test]
 fn a_restart_stops_a_managed_server_with_75() {
-    let mut server = start(true);
+    let mut server = start(Some("--managed"));
     assert_eq!(
         server.request("POST", "system/restart").0,
         "HTTP/1.1 201 Created"
@@ -171,7 +171,7 @@ fn a_restart_stops_a_managed_server_with_75() {
 
 #[test]
 fn a_shutdown_stops_a_managed_server_with_0() {
-    let mut server = start(true);
+    let mut server = start(Some("--managed"));
     assert_eq!(
         server.request("POST", "system/shutdown").0,
         "HTTP/1.1 201 Created"
@@ -180,8 +180,21 @@ fn a_shutdown_stops_a_managed_server_with_0() {
 }
 
 #[test]
+fn a_service_ignores_standard_input_and_restarts_with_75() {
+    let mut server = start(Some("--service"));
+    drop(server.stdin.take());
+    std::thread::sleep(Duration::from_millis(300));
+    assert_eq!(server.request("GET", "system/managed").1, "true");
+    assert_eq!(
+        server.request("POST", "system/restart").0,
+        "HTTP/1.1 201 Created"
+    );
+    assert_eq!(server.exit_code(GRACE), 75);
+}
+
+#[test]
 fn an_unmanaged_server_ignores_standard_input_and_wont_restart() {
-    let mut server = start(false);
+    let mut server = start(None);
     drop(server.stdin.take());
     std::thread::sleep(Duration::from_millis(300));
     assert_eq!(server.request("GET", "system/managed").1, "false");
