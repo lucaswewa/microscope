@@ -93,12 +93,12 @@ None: the phase has no hardware. It ran on GitHub's Ubuntu runners: 22.04 x86_64
   - **a requested restart waits 1 s,** like a crash's.
 - **The launcher's folder** is one root, as on Windows: everything in `~/.local/share/microscope`, logs included, rather than spreading them over XDG's data, state and configuration folders. One place to find, back up or delete.
 - **Built on Ubuntu 22.04,** whose glibc (2.35) is older than Debian 12's (2.36), and so than Raspberry Pi OS's. `package.sh` reads the newest glibc version the binaries need, and puts it in the `.deb`'s `Depends`.
-- **The `.deb` is made by hand** with `dpkg-deb`, rather than with `cargo-deb` or debhelper: a dozen lines, and no new tool. Its scripts do what debhelper's would: the user (`useradd --system`), then `systemctl enable` and `restart`, and on removal `stop` and `disable`.
+- **The `.deb` is made by hand** with `dpkg-deb`, rather than with `cargo-deb` or debhelper: a dozen lines, and no new tool. Its scripts do what debhelper's would: the user (`useradd --system`), then `systemctl enable` and `restart`, and on removal `stop` and `disable`. It's compressed with xz, which every `dpkg` reads, rather than Ubuntu 22.04's default, zstd.
 - **A purge keeps** `/var/lib/microscope` and the `microscope` user, so images are never deleted without asking.
 - **Hardening:** `NoNewPrivileges`, `ProtectSystem=full`, `ProtectHome` and `PrivateTmp`. A camera's SDK that needs more can loosen them with a drop-in (P07–P09).
 - **The `.deb`'s maintainer** is `lucaswewa <lucaswewa@users.noreply.github.com>`, GitHub's address for the account, rather than a personal one.
 - **The app says "launcher"** when a service manages the server: About's "Managed by the launcher", and Power's "The launcher stops with it". Changing the wording changes the visual baselines, so it's left for P11, the Pi's installation phase.
-- **Size:** 500 changed lines (448 added, 52 removed) of hand-written code, scripts and workflow, within M's 600.
+- **Size:** 501 changed lines (449 added, 52 removed) of hand-written code, scripts and workflow, within M's 600.
 
 ## Tests
 
@@ -114,6 +114,7 @@ None: the phase has no hardware. It ran on GitHub's Ubuntu runners: 22.04 x86_64
   - the archive's launcher starts its server, which answers its health check, and SIGTERM stops the launcher with 0;
   - the `.deb` installs; its service answers; the app's restart brings it back as a new process; and removing the package stops it.
 - **On Windows,** locally and in CI, everything as before.
+- **A flaky test, not this phase's:** in one of the two Linux runs on the first push, `smart_scan`'s `a_scan_that_fails_goes_back_to_the_start` failed on Linux x86_64, as its scan's folder was gone. It passed in the other run, and in every other run since 14 October. A scan that ends with no image removes its folder, so this scan failed at its first site, before the stage limit the test sets. The test doesn't show that error; see the follow-ups.
 
 ## Follow-ups and known gaps
 
@@ -121,6 +122,7 @@ None: the phase has no hardware. It ran on GitHub's Ubuntu runners: 22.04 x86_64
 - **P11:** the installation guide for the Pi, and the app's wording for a server that a service manages.
 - **P14:** listening on the network by default, once there's a token.
 - **The AppImage** is P19's, with the desktop app.
+- **The flaky scan test:** a small pull request of its own, to show the scan's error when it fails, and so find out why its first site can fail.
 
 ## Independent implementation
 
