@@ -1,6 +1,6 @@
 # ADR-0005: Repository layout and crate boundaries
 
-- Status: Accepted
+- Status: Accepted; amended by [ADR-0041](0041-hardware-drivers.md), which adds `microscope-sdk` (P03b), the one crate allowed unsafe code
 - Date: 2026-10-08
 - Phase: P01
 

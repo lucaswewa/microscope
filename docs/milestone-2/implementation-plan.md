@@ -80,7 +80,7 @@ The work is split into **21 phases (P00–P20)** in **9 stages**, with three dem
 | HTTPS in the server | Decided in P14's ADR: tokens over the trusted network in milestone 2, TLS or a reverse proxy later |
 | Users and roles | Later. One token per microscope |
 | Z-stack and multi-position sequences, pyramidal TIFF | As in milestone 1: after milestone 2 |
-| Other cameras and stages (other SDKs, other controllers) | Later. The driver framework (P03) is meant to make them small additions |
+| Other cameras and stages (other SDKs, other controllers) | Later. The driver framework (P03a, P03b) is meant to make them small additions |
 
 ## 3. Decisions made while planning
 
@@ -89,7 +89,7 @@ The work is split into **21 phases (P00–P20)** in **9 stages**, with three dem
 | D1 | AutoDiscovery | Microscopes on the network: each server advertises itself over mDNS, and the desktop app lists those it finds. A browser can't use mDNS, so the browser app keeps connecting by address | ADR-0047 (P16), P18 |
 | D2 | Raspberry Pi 5 | The server runs on a Pi 5 with either hardware set: the Pi camera and a Sangaboard (OpenFlexure hardware), or the USB 3 / GigE cameras and a Zaber stage | ADR-0038 (P00) |
 | D3 | Zaber stages | Zaber's ASCII protocol, in Rust (the MIT `zproto` crate, or our own client), rather than the C++ Zaber Motion Library: nothing to install, and the same on every platform | ADR-0042 (P04) |
-| D4 | Camera SDKs | Basler through pylon, Allied Vision through Vimba X. The user installs the SDK; the project doesn't redistribute it | ADR-0041 (P03) |
+| D4 | Camera SDKs | Basler through pylon, Allied Vision through Vimba X. The user installs the SDK; the project doesn't redistribute it | ADR-0041 (P03a, P03b) |
 | D5 | Platforms | Windows x86_64, Linux x86_64 and Linux ARM64. The desktop app is for Windows and Linux PCs; the Pi runs headless | ADR-0038 (P00) |
 | D6 | Signing | The release workflow signs the Windows installer and binaries, with a certificate (or Azure Trusted Signing) the owner sets up | ADR-0049 (P19) |
 | D7 | Authentication | A bearer token per microscope, which the desktop app and the launcher handle; the readiness checklist's gaps (our own routes, images) are closed | ADR-0046 (P14) |
@@ -130,7 +130,7 @@ Milestone 1's rules stand ([milestone 1 §4](../milestone-1/implementation-plan.
   - an SDK camera's frame pipeline, from the SDK's callback to `PreviewFrames`, with conversion to 8-bit RGB (P06);
   - backlash compensation, for the Sangaboard;
   - the capture buffer.
-- **SDKs load at run time** (to be confirmed in P03, [§10](#10-points-for-your-review)): one server binary runs with or without pylon and Vimba X. A driver whose SDK isn't installed says so when it starts. CI builds every driver without the SDKs.
+- **SDKs load at run time** (checked in P03b, [§10](#10-points-for-your-review)): one server binary runs with or without pylon and Vimba X. A driver whose SDK isn't installed says so when it starts. CI builds every driver without the SDKs.
 - **Settings panels come from the devices:** a camera's exposure, gain and so on are described by the server (ADR-0024), built from the features the SDK reports. The web app needs no change per camera.
 - **A configuration per hardware set** in `configs/`, beside `simulation.json`, choosing a camera by serial number and a stage by port.
 
@@ -186,26 +186,27 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P00 | Milestone 2 groundwork | — | S | 0038 | Done |
 | P01 | Linux builds and CI | P00 | M | 0039 | Done |
-| P02 | The Linux service and packages | P01 | M | — | In review |
+| P02 | The Linux service and packages | P01 | M | — | Done |
 
 ### Stage 1: Driver groundwork
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P03 | The driver framework | P01 | M | 0041 | Planned |
+| P03a | Device actors and serial ports | P01 | M | 0041 | In review |
+| P03b | The SDKs at run time, and listing devices | P03a | L | 0041 | Planned |
 
 ### Stage 2: Stages
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P04 | Zaber stages | P03 | L | 0042 | Planned |
-| P05 | The Sangaboard | P03 | L | — | Planned |
+| P04 | Zaber stages | P03a | L | 0042 | Planned |
+| P05 | The Sangaboard | P03a | L | — | Planned |
 
 ### Stage 3: Cameras
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P06 | The SDK camera pipeline | P03 | M | 0043 | Planned |
+| P06 | The SDK camera pipeline | P03b | M | 0043 | Planned |
 | P07 | Basler cameras | P06 | L | — | Planned |
 | P08 | Allied Vision cameras | P06 | L | — | Planned |
 | P09 | The Raspberry Pi camera | P06, P02 | L | 0044 | Planned |
@@ -223,7 +224,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P12 | Correlation placement | P03 | L | 0045 | Planned |
+| P12 | Correlation placement | P03a | L | 0045 | Planned |
 | P13 | Correlation in stitching | P12, P10 | M | — | Planned |
 
 **Checkpoint B, "Seamless mosaics":** a scan on the Zaber stage and one on the Sangaboard stitch without visible seams, and the overlay shows how far correlation moved each image.
@@ -263,7 +264,7 @@ Numbers are provisional, assigned in the order written.
 | 0038 | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 (superseding 0003) | P00 |
 | 0039 | `teta-wot` on Linux | P01 |
 | 0040 | Linux CI on request, and the Rust tests in parallel (superseding part of 0038) | after P01 |
-| 0041 | Hardware drivers: SDKs, device actors and hardware tests | P03 |
+| 0041 | Hardware drivers: SDKs, device actors and hardware tests | P03a |
 | 0042 | Zaber stages through the ASCII protocol | P04 |
 | 0043 | The SDK camera frame pipeline | P06 |
 | 0044 | The Raspberry Pi camera through libcamera | P09 |
@@ -305,5 +306,6 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-20 | P03 split into P03a (device actors, serial ports, hardware tests) and P03b (the SDKs at run time, listing devices): written whole, it came to about 1,200 lines. P04, P05 and P12 depend on P03a, P06 on P03b |
 | 2026-10-16 | ADR-0040, after P01: Linux CI on request, and the Rust tests split into parallel jobs. The later planned ADRs' numbers move up by one |
 | 2026-10-16 | Approved. §10's points stand as proposed, except two still open: whether `teta-wot` may change for Linux (asked in P01) and the owner's hardware models (asked in P00, recorded in [hardware.md](hardware.md)) |

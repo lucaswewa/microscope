@@ -28,7 +28,7 @@ pylon's camera emulator can stand in for a Basler camera on a computer with pylo
 
 ## Hardware tests
 
-Tests that need a device run only when an environment variable names it, and are skipped otherwise, so CI never needs hardware. P03 sets the convention; the variables are:
+Tests that need a device run only when an environment variable names it, and are skipped otherwise, so CI never needs hardware. P03a sets the convention; the variables are:
 
 | Variable | Names | Phase |
 |---|---|---|
@@ -39,3 +39,5 @@ Tests that need a device run only when an environment variable names it, and are
 | `MICROSCOPE_PI_CAMERA` | Set on a Pi with a camera | P09 |
 
 The names may change as each driver phase writes its tests; this table follows them.
+
+The helper is `microscope_things::drivers::hardware_device("MICROSCOPE_ZABER_PORT")`: it gives the device's name, or `None`, and the test then returns at once, saying it was skipped (ADR-0041).

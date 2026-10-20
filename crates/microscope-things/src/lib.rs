@@ -5,7 +5,8 @@
 //! the [`hardware`] interfaces through which Things use one another (so a
 //! configuration can swap the simulator for real drivers), and the model for
 //! server-described UI elements ([`ui`]). [`registry()`] lists the Things a
-//! configuration can name; [`fakes`] has a test Thing for each interface.
+//! configuration can name; [`fakes`] has a test Thing for each interface;
+//! [`drivers`] has what real hardware's drivers share.
 //! The Things' names mirror the OpenFlexure Microscope's where practical.
 //!
 //! The algorithms live in `microscope-core` and the simulator in
@@ -17,6 +18,7 @@ pub mod c_chip;
 pub mod camera;
 pub mod capture;
 pub mod data;
+pub mod drivers;
 pub mod fakes;
 pub mod gallery;
 pub mod hardware;

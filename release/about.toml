@@ -13,6 +13,12 @@ accepted = [
     "BSL-1.0",
     "Unlicense",
 ]
-targets = ["x86_64-pc-windows-msvc"]
+# Every platform a release is built for (ADR-0038), so each package lists
+# its platform's crates.
+targets = [
+    "x86_64-pc-windows-msvc",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+]
 ignore-dev-dependencies = true
 private = { ignore = true }

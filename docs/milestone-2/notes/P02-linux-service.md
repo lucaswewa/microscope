@@ -1,6 +1,6 @@
 # P02: The Linux service and packages
 
-- Status: In review
+- Status: Done
 - Pull request: [#74](https://github.com/lucaswewa/microscope/pull/74)
 - ADRs: none
 - Spec: [phases.md#p02](../phases.md#p02)
