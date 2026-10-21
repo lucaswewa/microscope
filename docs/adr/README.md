@@ -57,5 +57,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0040](0040-linux-ci-on-request-and-parallel-tests.md) | Linux CI on request, and the Rust tests in parallel | Accepted | M2, after P01 |
 | [0041](0041-hardware-drivers.md) | Hardware drivers: SDKs, device actors and hardware tests | Accepted | M2 P03a |
 | [0042](0042-zaber-stages-through-the-ascii-protocol.md) | Zaber stages through the ASCII protocol | Accepted | M2 P04 |
+| [0043](0043-the-sdk-camera-frame-pipeline.md) | The SDK camera frame pipeline | Accepted | M2 P06 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

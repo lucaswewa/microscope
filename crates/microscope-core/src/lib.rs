@@ -15,6 +15,7 @@ pub mod fft;
 pub mod focus;
 pub mod mapping;
 pub mod mosaic;
+pub mod pixels;
 pub mod registration;
 pub mod scan;
 pub mod sequence;

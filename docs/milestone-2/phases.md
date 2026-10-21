@@ -164,7 +164,7 @@ P03, the driver framework, was split in two: written whole, it came to about 1,2
 ### P06: The SDK camera pipeline
 
 **Goal.** What every SDK camera shares: frames in, previews and captures out.
-**Depends on** P03b · **Size** M · **ADRs** 0043
+**Depends on** P03b · **Size** L · **ADRs** 0043
 
 **Scope**
 - **A shared struct:**
