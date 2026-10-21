@@ -154,22 +154,34 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn the_preview_takes_a_frame_at_most_every_interval_shrunk_to_fit() {
+    async fn the_preview_takes_a_frame_at_most_every_interval() {
+        let (pipeline, main, lores) = (
+            FramePipeline::default(),
+            MjpegStream::new(),
+            MjpegStream::new(),
+        );
+        // Small frames, which convert at once, whatever the build.
+        let data = grey(64, 48, 90);
+        for _ in 0..5 {
+            (pipeline.deliver(&mono(64, 48, &data), Utc::now(), &main, &lores)).expect("taken");
+        }
+        assert_eq!(main.latest_frame().expect("a frame").index, 0);
+        assert!(lores.latest_frame().is_some());
+        std::thread::sleep(PREVIEW_INTERVAL);
+        (pipeline.deliver(&mono(64, 48, &data), Utc::now(), &main, &lores)).expect("taken");
+        assert_eq!(main.latest_frame().expect("a frame").index, 1);
+    }
+
+    #[tokio::test]
+    async fn a_large_frame_is_shrunk_to_fit_the_preview() {
         let (pipeline, main, lores) = (
             FramePipeline::default(),
             MjpegStream::new(),
             MjpegStream::new(),
         );
         let data = grey(2048, 1536, 90);
-        for _ in 0..5 {
-            (pipeline.deliver(&mono(2048, 1536, &data), Utc::now(), &main, &lores)).expect("taken");
-        }
-        assert_eq!(main.latest_frame().expect("a frame").index, 0);
-        assert_eq!(pipeline.preview_size(), Some((1024, 768)));
-        assert!(lores.latest_frame().is_some());
-        std::thread::sleep(PREVIEW_INTERVAL);
         (pipeline.deliver(&mono(2048, 1536, &data), Utc::now(), &main, &lores)).expect("taken");
-        assert_eq!(main.latest_frame().expect("a frame").index, 1);
+        assert_eq!(pipeline.preview_size(), Some((1024, 768)));
     }
 
     #[tokio::test]
