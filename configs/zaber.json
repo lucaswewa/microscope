@@ -1,0 +1,38 @@
+{
+    "things": {
+        "system": "microscope.system:MicroscopeSystem",
+        "stage": {
+            "class": "microscope.stage:ZaberStage",
+            "kwargs": {
+                "port": "COM3",
+                "axes": {
+                    "x": {"device": 1, "axis": 1, "microstep_um": null},
+                    "y": {"device": 2, "axis": 1, "microstep_um": null},
+                    "z": {"device": 3, "axis": 1, "microstep_um": null}
+                }
+            }
+        },
+        "simulated_stage": "microscope.stage:SimulatedStage",
+        "camera": {"class": "microscope.camera:SimulatedCamera", "thing_slots": {"stage": "simulated_stage"}},
+        "illumination": "microscope.illumination:SimulatedIllumination",
+        "autofocus": "microscope.autofocus:Autofocus",
+        "camera_stage_mapping": "microscope.camera_stage_mapping:CameraStageMapping",
+        "bg_color_channels_luv": "microscope.background:ColourChannelDetector",
+        "bg_channel_deviations_luv": "microscope.background:ChannelDeviationDetector",
+        "stage_measure": "microscope.stage_measure:StageMeasure",
+        "gallery": "microscope.gallery:Gallery",
+        "snake_workflow": {"class": "microscope.workflows:GridWorkflow", "kwargs": {"order": "snake"}},
+        "raster_workflow": {"class": "microscope.workflows:GridWorkflow", "kwargs": {"order": "raster"}},
+        "histo_scan_workflow": "microscope.workflows:HistoScanWorkflow",
+        "c_chip_workflow": "microscope.workflows:CChipWorkflow",
+        "smart_scan": "microscope.smart_scan:SmartScan",
+        "sequence": "microscope.sequence:Sequence"
+    },
+    "settings_folder": ".microscope/settings",
+    "api_prefix": "/api/v1",
+    "enable_global_lock": true,
+    "application_config": {
+        "data_folder": ".microscope/data",
+        "log_folder": ".microscope/logs"
+    }
+}

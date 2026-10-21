@@ -193,13 +193,13 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P03a | Device actors and serial ports | P01 | M | 0041 | Done |
-| P03b | The SDKs at run time, and listing devices | P03a | L | 0041 | In review |
+| P03b | The SDKs at run time, and listing devices | P03a | L | 0041 | Done |
 
 ### Stage 2: Stages
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P04 | Zaber stages | P03a | L | 0042 | Planned |
+| P04 | Zaber stages | P03a | L | 0042 | In review |
 | P05 | The Sangaboard | P03a | L | — | Planned |
 
 ### Stage 3: Cameras

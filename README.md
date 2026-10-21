@@ -77,6 +77,17 @@ Then, on another computer on the same network, open `http://<this computer's nam
 - `--port <number>` prefers another port;
 - `--no-browser` doesn't open the app.
 
+### A Zaber stage
+
+[`configs/zaber.json`](configs/zaber.json) drives a Zaber XYZ stage, with the simulated camera ([ADR-0042](docs/adr/0042-zaber-stages-through-the-ascii-protocol.md)):
+
+1. **Find its port:** `microscope-server --list-devices` lists the serial ports.
+2. **Configure it:** in a copy of the file, set `port`, such as `COM3` or `/dev/ttyUSB0`. Check each axis's `device` and `axis` numbers; the defaults suit three integrated stages, daisy-chained. Set each axis's `microstep_um`, from its datasheet, for distances in µm.
+3. **Run it:** `microscope-launcher -c my-zaber.json`.
+4. **Home it,** once the stage is clear, from Settings → Stage. z homes too.
+
+The simulated camera's image doesn't follow the Zaber stage, so autofocus and scans won't work with this file. A real camera's configuration follows with its driver.
+
 ### On Linux
 
 Linux x86_64 and ARM64, the Raspberry Pi 5 included, have two downloads.
