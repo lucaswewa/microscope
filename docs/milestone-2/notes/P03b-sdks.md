@@ -105,6 +105,7 @@ The camera SDKs load at run time where they're installed, and say how to get the
 - **The SDKs, where installed:** pylon counts its cameras; Vimba X gives a version of three numbers and counts its cameras. Both ran on the owner's PC; CI skips them, saying so.
 - **`list_devices`:** each driver's heading, and either what it found or "isn't installed".
 - **`--list-devices`:** exits 0, with each heading.
+- **A flaky camera test, not this phase's:** on the first push, `camera`'s `saving_needs_no_global_lock` failed on Windows and on Linux x86_64, and passed when both were run again. It saves an image while a flash holds the global lock for a second, and expects the flash to be still running when the save ends. On these runs, the camera tests took 16 s and 12.5 s, against 7–11 s before, so the save outlasted the flash. Locally it passed five times out of five, in 5 s. It joins the flaky simulator tests for their own pull request.
 
 ## Follow-ups and known gaps
 
