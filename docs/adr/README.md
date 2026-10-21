@@ -19,7 +19,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0002](0002-independent-implementation-of-openflexure-inspired-behaviour.md) | Independent implementation of OpenFlexure-inspired behaviour | Accepted | P00 |
 | [0003](0003-milestone-1-platform-windows-x86-64.md) | Milestone-1 platform: Windows x86_64 | Superseded by ADR-0038 | P00 |
 | [0004](0004-depend-on-teta-wot-v0-1-0-without-upstream-changes.md) | Depend on `teta-wot` v0.1.0 without upstream changes | Accepted | P00 |
-| [0005](0005-repository-layout-and-crate-boundaries.md) | Repository layout and crate boundaries | Accepted | P01 |
+| [0005](0005-repository-layout-and-crate-boundaries.md) | Repository layout and crate boundaries | Accepted; amended by ADR-0041 | P01 |
 | [0006](0006-own-the-server-lifecycle-around-teta-wots-runtime.md) | Own the server lifecycle around `teta-wot`'s runtime | Accepted | P02 |
 | [0007](0007-api-prefix-and-openflexure-mirrored-names.md) | API prefix `/api/v1` and OpenFlexure-mirrored names | Accepted | P02 |
 | [0008](0008-server-logging-and-log-endpoints.md) | Server logging and log endpoints | Accepted | P03 |
@@ -55,5 +55,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted; superseded in part by ADR-0040 | M2 P00 |
 | [0039](0039-teta-wot-on-linux.md) | `teta-wot` on Linux | Accepted | M2 P01 |
 | [0040](0040-linux-ci-on-request-and-parallel-tests.md) | Linux CI on request, and the Rust tests in parallel | Accepted | M2, after P01 |
+| [0041](0041-hardware-drivers.md) | Hardware drivers: SDKs, device actors and hardware tests | Accepted | M2 P03a |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

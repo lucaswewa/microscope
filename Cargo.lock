@@ -840,6 +840,7 @@ dependencies = [
 name = "microscope-things"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "gethostname",
  "image",
@@ -850,6 +851,7 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "serial2",
  "teta-wot",
  "tokio",
  "tracing",
@@ -1466,6 +1468,17 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "serial2"
+version = "0.2.38"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b16809bc35793b19ce4e0c53924bc0dce3937f15487997cfdaed936004180730"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "windows-sys",
 ]
 
 [[package]]

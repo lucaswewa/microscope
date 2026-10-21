@@ -5,7 +5,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ## Contents
 
 - [Stage 0: Platforms](#stage-0-platforms): [P00](#p00) [P01](#p01) [P02](#p02)
-- [Stage 1: Driver groundwork](#stage-1-driver-groundwork): [P03](#p03)
+- [Stage 1: Driver groundwork](#stage-1-driver-groundwork): [P03a](#p03a), [P03b](#p03b)
 - [Stage 2: Stages](#stage-2-stages): [P04](#p04) [P05](#p05)
 - [Stage 3: Cameras](#stage-3-cameras): [P06](#p06) [P07](#p07) [P08](#p08) [P09](#p09)
 - [Stage 4: Real microscopes](#stage-4-real-microscopes): [P10](#p10) [P11](#p11)
@@ -75,25 +75,43 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ## Stage 1: Driver groundwork
 
 <a id="p03"></a>
-### P03: The driver framework
+P03, the driver framework, was split in two: written whole, it came to about 1,200 lines.
 
-**Goal.** What every real driver shares, ready before the first one.
+<a id="p03a"></a>
+### P03a: Device actors and serial ports
+
+**Goal.** What every driver shares, ready before the first one: the stages' half.
 **Depends on** P01 · **Size** M · **ADRs** 0041
 
 **Scope**
 - **Device actors:** the pattern for a driver's handle in a `teta-wot` `Device<D>`, with its errors, reconnection and shutdown.
-- **SDKs at run time:**
-  - checking that pylon's and Vimba X's C APIs load on all three platforms;
-  - the loader, which reports a missing SDK clearly;
-  - the decision in ADR-0041 ([plan §10](implementation-plan.md#10-points-for-your-review)).
 - **A serial-port abstraction** with a fake, for the stages' protocol tests.
 - **Hardware tests:** the convention (an environment variable names the device; the test is skipped without one), and a test helper.
 - **Configurations:** how one names a device (a camera by serial number, a stage by port), and `configs/` laid out per hardware set.
-- **Listing devices:** each driver can list what it finds, for writing a configuration.
+- **ADR-0041,** for both halves ([plan §10](implementation-plan.md#10-points-for-your-review)).
+
+**Tests**
+- The serial fake's scripted conversations.
+- A driver in a device actor, over the fake: its errors, reconnecting, and closing.
+
+---
+
+<a id="p03b"></a>
+### P03b: The SDKs at run time, and listing devices
+
+**Goal.** The camera SDKs, loaded when they're installed; and what every driver finds, listed.
+**Depends on** P03a · **Size** L · **ADRs** 0041
+
+**Scope**
+- **SDKs at run time:**
+  - checking that pylon's and Vimba X's C APIs load on all three platforms;
+  - the loader, which reports a missing SDK clearly;
+  - `microscope-sdk`, the one crate allowed unsafe code (ADR-0041).
+- **Listing devices:** each driver can list what it finds, for writing a configuration (`microscope-server --list-devices`).
 
 **Tests**
 - The loader with a missing library.
-- The serial fake's scripted conversations.
+- The SDKs, where they're installed.
 
 ---
 
@@ -103,7 +121,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P04: Zaber stages
 
 **Goal.** A Zaber XYZ stage drives the microscope.
-**Depends on** P03 · **Size** L · **ADRs** 0042
+**Depends on** P03a · **Size** L · **ADRs** 0042
 
 **Scope**
 - `ZaberStage`, providing `StageApi`, over Zaber's ASCII protocol on a serial port: the `zproto` crate, or our own client (ADR-0042).
@@ -125,7 +143,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P05: The Sangaboard
 
 **Goal.** An OpenFlexure Sangaboard drives the microscope, on the Pi.
-**Depends on** P03 · **Size** L · **ADRs** —
+**Depends on** P03a · **Size** L · **ADRs** —
 
 **Scope**
 - `SangaboardStage`, providing `StageApi`, over the Sangaboard's serial protocol, written from its published documentation (ADR-0002).
@@ -146,7 +164,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P06: The SDK camera pipeline
 
 **Goal.** What every SDK camera shares: frames in, previews and captures out.
-**Depends on** P03 · **Size** M · **ADRs** 0043
+**Depends on** P03b · **Size** M · **ADRs** 0043
 
 **Scope**
 - **A shared struct:**
@@ -268,7 +286,7 @@ Companion to the [implementation plan](implementation-plan.md). Each phase lists
 ### P12: Correlation placement
 
 **Goal.** Where each image of a mosaic really is, from its overlaps.
-**Depends on** P03 · **Size** L · **ADRs** 0045
+**Depends on** P03a · **Size** L · **ADRs** 0045
 
 **Scope**
 - In `microscope-core`, pure and tested without hardware:
