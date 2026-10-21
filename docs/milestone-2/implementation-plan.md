@@ -180,6 +180,8 @@ As in milestone 1 ([its §7](../milestone-1/implementation-plan.md#7-how-phases-
 
 Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](phases.md). Status runs Planned → In progress → In review → Done.
 
+**The order since P04:** the cameras, P06 to P08, come before the Sangaboard, P05, and the Pi camera, P09, which wait for the owner to have them. P04 is *In review* until it's tried on the owner's Zaber stage.
+
 ### Stage 0: Platforms
 
 | ID | Phase | Depends on | Size | ADRs | Status |
@@ -200,16 +202,16 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P04 | Zaber stages | P03a | L | 0042 | In review |
-| P05 | The Sangaboard | P03a | L | — | Planned |
+| P05 | The Sangaboard | P03a | L | — | Planned: after P08, once there's a board |
 
 ### Stage 3: Cameras
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P06 | The SDK camera pipeline | P03b | M | 0043 | Planned |
+| P06 | The SDK camera pipeline | P03b | L | 0043 | In review |
 | P07 | Basler cameras | P06 | L | — | Planned |
 | P08 | Allied Vision cameras | P06 | L | — | Planned |
-| P09 | The Raspberry Pi camera | P06, P02 | L | 0044 | Planned |
+| P09 | The Raspberry Pi camera | P06, P02 | L | 0044 | Planned: once there's a Pi camera |
 
 ### Stage 4: Real microscopes (ends with Checkpoint A)
 
@@ -306,6 +308,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-21 | Cameras first: P06 to P08 before P05 and P09, which wait for a Sangaboard and a Pi camera. P06 is L, not M |
 | 2026-10-20 | P03 split into P03a (device actors, serial ports, hardware tests) and P03b (the SDKs at run time, listing devices): written whole, it came to about 1,200 lines. P04, P05 and P12 depend on P03a, P06 on P03b |
 | 2026-10-16 | ADR-0040, after P01: Linux CI on request, and the Rust tests split into parallel jobs. The later planned ADRs' numbers move up by one |
 | 2026-10-16 | Approved. §10's points stand as proposed, except two still open: whether `teta-wot` may change for Linux (asked in P01) and the owner's hardware models (asked in P00, recorded in [hardware.md](hardware.md)) |

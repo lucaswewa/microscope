@@ -14,7 +14,8 @@
 //!   `ThingRef<Self>`.
 //! - **Shared behaviour lives in plain structs** that each driver's Thing
 //!   composes: capture buffers, streams, backlash compensation, the jog
-//!   queue.
+//!   queue; an SDK camera's frames ([`FramePipeline`]) and settings
+//!   ([`settings_panel`]).
 //! - **A vendor SDK that needs a thread of its own** runs behind a `teta-wot`
 //!   `Device<D>` actor (milestone 2).
 //! - **Names mirror OpenFlexure's** where they fit (ADR-0007): the Things are
@@ -27,6 +28,8 @@ mod background;
 mod backlash;
 mod camera;
 mod capture_buffer;
+mod features;
+mod frames;
 mod illumination;
 mod preview;
 mod stage;
@@ -35,6 +38,8 @@ pub use background::BackgroundDetector;
 pub use backlash::BacklashCompensation;
 pub use camera::{CameraApi, Capture, CaptureMetadata, CaptureMode, StreamInfo};
 pub use capture_buffer::CaptureBuffer;
+pub use features::{Feature, FeatureKind, STANDARD_FEATURES, settings_panel};
+pub use frames::{CAPTURE_WAIT, FramePipeline, PREVIEW_INTERVAL, PREVIEW_MAX};
 pub use illumination::IlluminationApi;
 pub use preview::{LORES_SIZE, PreviewFrames, encode_jpeg};
 pub use stage::{AxisScale, Position, StageApi};

@@ -5,10 +5,17 @@
 //! - [`FakeStage`] moves at once and remembers every move;
 //! - [`FakeCamera`] returns plain grey frames of the size it is configured
 //!   with, and counts its captures;
-//! - [`FakeIllumination`] remembers whether it is on.
+//! - [`FakeIllumination`] remembers whether it is on;
+//! - [`FakeSdkCamera`], not a Thing, delivers frames to a callback, as an
+//!   SDK does.
 
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use std::sync::{Arc, Mutex};
+use std::thread::JoinHandle;
+use std::time::Duration;
+
+use chrono::{DateTime, Utc};
+use microscope_core::pixels::{PixelFormat, RawFrame};
 
 use image::{Rgb, RgbImage};
 use schemars::JsonSchema;
@@ -202,5 +209,59 @@ impl IlluminationApi for ThingRef<FakeIllumination> {
 
     fn led_on(&self) -> bool {
         ThingRef::thing(self).on.load(Ordering::SeqCst)
+    }
+}
+
+/// A fake SDK camera, for tests: a thread that delivers frames to a
+/// callback, as an SDK's does, until it's dropped. Every byte of a frame is
+/// its number, from 0, so a test can tell frames apart.
+pub struct FakeSdkCamera {
+    stop: Arc<AtomicBool>,
+    thread: Option<JoinHandle<()>>,
+}
+
+impl FakeSdkCamera {
+    /// Delivers a `width` × `height` frame in `format` to `deliver` every
+    /// `interval`.
+    pub fn start(
+        (width, height): (u32, u32),
+        format: PixelFormat,
+        interval: Duration,
+        mut deliver: impl FnMut(&RawFrame, DateTime<Utc>) + Send + 'static,
+    ) -> FakeSdkCamera {
+        let stop = Arc::new(AtomicBool::new(false));
+        let thread = std::thread::spawn({
+            let stop = Arc::clone(&stop);
+            move || {
+                let size = width as usize * height as usize * format.bytes_per_pixel();
+                for number in (0..=u8::MAX).cycle() {
+                    if stop.load(Ordering::Relaxed) {
+                        break;
+                    }
+                    let data = vec![number; size];
+                    deliver(
+                        &RawFrame {
+                            width,
+                            height,
+                            format,
+                            data: &data,
+                        },
+                        Utc::now(),
+                    );
+                    std::thread::sleep(interval);
+                }
+            }
+        });
+        let thread = Some(thread);
+        FakeSdkCamera { stop, thread }
+    }
+}
+
+impl Drop for FakeSdkCamera {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Relaxed);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+        }
     }
 }
