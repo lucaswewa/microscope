@@ -101,8 +101,9 @@ async fn smart_stacks_on_a_tilted_sample_keep_the_sharpest_planes() {
             .run_smart_stack(folder.clone(), settings(8, 9), false, 2000)
             .await
             .expect("stacked");
-        assert!(success, "at {x}");
-        assert_eq!(attempts, tries, "at {x}");
+        let tried = format!("at {x}: {attempts} attempts, sharpest at {sharpest_z}, {saved:?}");
+        assert!(success, "{tried}");
+        assert_eq!(attempts, tries, "{tried}");
         let zs: Vec<i64> = saved.iter().map(|name| z_of(name)).collect();
         let around: Vec<i64> = (-4..=4).map(|k| sharpest_z + k * DZ).collect();
         assert_eq!(zs, around, "at {x}");

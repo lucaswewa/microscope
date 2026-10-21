@@ -4,7 +4,9 @@
 // minutes and seconds for a duration, a switch, a number field within the
 // schema's limits, a text field, or else the value, read-only. It follows the
 // value if the property is observable. A committed edit is written at once,
-// and read back after `read_back_ms` if the panel asks. While the value
+// and read back after `read_back_ms` if the panel asks. Until the last write
+// is done, values the Thing sends are older than the edits, so they're passed
+// over, and the value is read once it is. While the value
 // differs from the schema's default, the label is highlighted. If the Thing
 // lacks the property, the control says so.
 import { computed, ref, watch, watchEffect } from 'vue'
@@ -37,6 +39,8 @@ const target = computed(() => {
 
 const value = ref<unknown>()
 const unreadable = ref(false)
+/** How many writes are on their way. */
+let writing = 0
 
 async function read() {
   const property = target.value
@@ -53,7 +57,9 @@ watchEffect((onCleanup) => {
   if (!property) return
   void read()
   if (!property.schema.observable) return
-  const follow = (next: unknown) => (value.value = next)
+  const follow = (next: unknown) => {
+    if (writing === 0) value.value = next
+  }
   onCleanup(followProperty(property.thing, props.control.property, follow))
 })
 
@@ -62,17 +68,21 @@ async function write(next: unknown) {
   if (!property || same(next, value.value)) return
   const previous = value.value
   value.value = next
+  writing += 1
   try {
     await property.thing.writeProperty(props.control.property, next)
-    if (props.control.read_back_ms === undefined) return
-    await sleep(props.control.read_back_ms)
-    await read()
+    if (props.control.read_back_ms !== undefined) await sleep(props.control.read_back_ms)
   } catch (error) {
     value.value = previous
     toast.error(`Couldn't set ${props.control.label}.`, {
       details: error instanceof ApiError ? (error.body ?? error.message) : error,
     })
+    return
+  } finally {
+    writing -= 1
   }
+  const passedOver = property.schema.observable
+  if (writing === 0 && (passedOver || props.control.read_back_ms !== undefined)) await read()
 }
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)

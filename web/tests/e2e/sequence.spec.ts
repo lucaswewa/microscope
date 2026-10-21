@@ -5,6 +5,13 @@ import { expect, test } from '@playwright/test'
 // image-sequence viewer. It holds the microscope, so it runs after the scan.
 test.use({ viewport: { width: 1280, height: 800 } })
 
+// A failed attempt leaves its hour-long sequence running, which would hold
+// the microscope through the retries: it's cancelled.
+test.afterEach(async ({ page }) => {
+  const cancel = page.locator('.control-pane').getByRole('button', { name: 'Cancel' })
+  if (await cancel.isVisible().catch(() => false)) await cancel.click()
+})
+
 test('a timelapse with autofocus runs, is cancelled, and opens in the gallery', async ({
   page,
 }) => {
