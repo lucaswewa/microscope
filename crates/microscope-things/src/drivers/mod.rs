@@ -14,10 +14,14 @@
 //!   resets its device: the driver is closed, and made again from the
 //!   configuration. A call that panics faults the device until then.
 //! - **A configuration** names a stage by its serial port (`port`) and a
-//!   camera by its serial number (`serial_number`).
+//!   camera by its serial number (`serial_number`), as [`list_devices`]
+//!   finds them.
 //! - **Hardware tests** run only where [`hardware_device`] finds their
 //!   device named in the environment.
 
+use microscope_sdk::SdkError;
+use microscope_sdk::pylon::Pylon;
+use microscope_sdk::vimba::VimbaX;
 use teta_wot::{ActionError, DeviceError};
 
 pub mod serial;
@@ -63,6 +67,62 @@ pub fn hardware_device(variable: &str) -> Option<String> {
     device
 }
 
+/// What a driver finds on this computer.
+#[derive(Debug)]
+pub struct Found {
+    /// What it looks for.
+    pub what: &'static str,
+    /// What it found, a line each, or why it couldn't look.
+    pub found: Result<Vec<String>, String>,
+}
+
+/// What each driver finds on this computer, for writing a configuration
+/// (`microscope-server --list-devices`).
+pub fn list_devices() -> Vec<Found> {
+    let text = |error: SdkError| error.to_string();
+    vec![
+        Found {
+            what: "Serial ports, a stage's `port`",
+            found: serial::ports().map_err(|error| error.to_string()),
+        },
+        Found {
+            what: "Basler cameras, through pylon",
+            found: pylon().map_err(text),
+        },
+        Found {
+            what: "Allied Vision cameras, through Vimba X",
+            found: vimba().map_err(text),
+        },
+    ]
+}
+
+fn pylon() -> Result<Vec<String>, SdkError> {
+    let pylon = Pylon::load()?;
+    let count = pylon.count_cameras()?;
+    let at = pylon.path().display();
+    Ok(vec![format!(
+        "{} found, with pylon at {at}",
+        cameras(count)
+    )])
+}
+
+fn vimba() -> Result<Vec<String>, SdkError> {
+    let vimba = VimbaX::load()?;
+    let (version, count) = (vimba.version()?, vimba.count_cameras()?);
+    let at = vimba.path().display();
+    let found = cameras(count as usize);
+    Ok(vec![format!(
+        "{found} found, with Vimba X {version} at {at}"
+    )])
+}
+
+fn cameras(count: usize) -> String {
+    match count {
+        1 => "1 camera".to_owned(),
+        count => format!("{count} cameras"),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
@@ -102,5 +162,25 @@ mod tests {
         assert_eq!(hardware_device("MICROSCOPE_NO_SUCH_DEVICE"), None);
         // Cargo names the package's folder for its tests.
         assert!(hardware_device("CARGO_MANIFEST_DIR").is_some());
+    }
+
+    #[test]
+    fn every_driver_says_what_it_found_or_why_not() {
+        let found = list_devices();
+        let what: Vec<_> = found.iter().map(|found| found.what).collect();
+        assert_eq!(
+            what,
+            [
+                "Serial ports, a stage's `port`",
+                "Basler cameras, through pylon",
+                "Allied Vision cameras, through Vimba X"
+            ]
+        );
+        for found in &found[1..] {
+            match &found.found {
+                Ok(lines) => assert!(lines[0].contains(" found, with "), "{lines:?}"),
+                Err(why) => assert!(why.contains("isn't installed"), "{why}"),
+            }
+        }
     }
 }

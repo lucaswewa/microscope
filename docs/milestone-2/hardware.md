@@ -41,3 +41,7 @@ Tests that need a device run only when an environment variable names it, and are
 The names may change as each driver phase writes its tests; this table follows them.
 
 The helper is `microscope_things::drivers::hardware_device("MICROSCOPE_ZABER_PORT")`: it gives the device's name, or `None`, and the test then returns at once, saying it was skipped (ADR-0041).
+
+- **The SDKs' tests** in `microscope-sdk` need no camera: they run wherever the SDK is installed, and are skipped where it isn't, as in CI.
+- **The SDKs' libraries** are found where their installers put them. `MICROSCOPE_PYLON_LIBRARY` and `MICROSCOPE_VIMBA_X_LIBRARY` name them elsewhere.
+- **`microscope-server --list-devices`** prints the serial ports and the cameras each SDK finds. On the owner's Windows PC on 2026-10-20: no serial ports, no pylon cameras, and 3 cameras through Vimba X.

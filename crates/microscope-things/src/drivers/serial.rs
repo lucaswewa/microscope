@@ -15,6 +15,16 @@ pub trait Line {
     fn receive(&mut self, timeout: Duration) -> io::Result<String>;
 }
 
+/// The serial ports on this computer: `COM3` on Windows, `/dev/ttyUSB0` on
+/// Linux.
+pub fn ports() -> io::Result<Vec<String>> {
+    let ports = serial2::SerialPort::available_ports()?;
+    Ok(ports
+        .iter()
+        .map(|port| port.display().to_string())
+        .collect())
+}
+
 /// A serial port, as a [`Line`].
 pub struct SerialPort {
     port: serial2::SerialPort,

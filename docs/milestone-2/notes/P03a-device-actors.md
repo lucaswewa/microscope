@@ -1,6 +1,6 @@
 # P03a: Device actors and serial ports
 
-- Status: In review
+- Status: Done
 - Pull request: [#75](https://github.com/lucaswewa/microscope/pull/75)
 - ADRs: [ADR-0041](../../adr/0041-hardware-drivers.md)
 - Spec: [phases.md#p03a](../phases.md#p03a)

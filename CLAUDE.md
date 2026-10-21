@@ -28,6 +28,7 @@ A microscope service: a Rust backend on [`teta-wot`](https://github.com/lucaswew
   - Their licences must allow MIT distribution.
   - Install only versions at least two weeks old: `npm install --before=<date two weeks ago>`.
   - Check new packages' licences, and `npm audit` against `main`.
+- **Unsafe code** only in `microscope-sdk`, which calls the camera SDKs' C APIs (ADR-0041). Each unsafe block has a `SAFETY:` comment.
 - **The web app** keeps the rules in ADR-0010, ADR-0011 and ADR-0013, which ESLint partly enforces:
   - hash routing, and no direct platform APIs outside `src/host/`;
   - only design tokens for styles;

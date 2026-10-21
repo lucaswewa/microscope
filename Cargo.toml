@@ -15,6 +15,7 @@ publish = false
 [workspace.dependencies]
 # Internal crates. The dependency rules between them are in ADR-0005.
 microscope-core = { path = "crates/microscope-core" }
+microscope-sdk = { path = "crates/microscope-sdk" }
 microscope-sim = { path = "crates/microscope-sim" }
 microscope-things = { path = "crates/microscope-things" }
 
@@ -30,6 +31,8 @@ gethostname = "1"
 http-body-util = "0.1.5"
 # Images: PNG for the simulator's examples, JPEG for the camera's streams.
 image = { version = "0.25.10", default-features = false, features = ["jpeg", "png", "tiff"] }
+# The camera SDKs' C libraries, loaded at run time (ADR-0041).
+libloading = "0.9"
 os_info = { version = "3", default-features = false }
 percent-encoding = "2.3"
 # 8.12, not 8.13: dependencies must be at least two weeks old (CLAUDE.md).

@@ -36,6 +36,20 @@ fn version_exits_0() {
 }
 
 #[test]
+fn list_devices_says_what_each_driver_finds() {
+    let output = run(&["--list-devices"]);
+    assert_eq!(code(&output), 0);
+    let listed = text(&output.stdout);
+    for heading in [
+        "Serial ports, a stage's `port`:",
+        "Basler cameras, through pylon:",
+        "Allied Vision cameras, through Vimba X:",
+    ] {
+        assert!(listed.contains(heading), "{listed}");
+    }
+}
+
+#[test]
 fn an_invalid_command_line_exits_2() {
     assert_eq!(code(&run(&["--no-such-option"])), 2);
 }
