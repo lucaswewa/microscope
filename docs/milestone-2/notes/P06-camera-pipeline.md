@@ -60,7 +60,7 @@ None: the phase has no hardware. P07 and P08 bring it to the owner's Basler and 
 - **Fixed properties for the features:** a Thing's properties can't be made at run time. The five standard ones cover what the plan asks; a camera's others aren't shown.
 - **No limits in the panel:** a property control can't carry a camera's own range, so the camera clamps or refuses a value, and the control reads back what it took.
 - **A capture is the stream's next frame,** not a triggered exposure: simpler, and the same settings as the preview. A driver can add triggering if it needs it.
-- **The size:** 782 changed lines (779 added, 3 removed), within L's 900. The owner chose one L pull request, over M's 600, when I estimated 850.
+- **The size:** 794 changed lines (791 added, 3 removed), within L's 900. The owner chose one L pull request, over M's 600, when I estimated 850.
 
 ## Tests
 
