@@ -4,12 +4,15 @@
 //! microscope-server -c config.json [--host 127.0.0.1] [--port 5000] [--fallback] [--debug] [--webapp-dir web/dist] [--managed | --service]
 //! microscope-server -j '{"things": {…}}'
 //! microscope-server -c config.json --print-openapi
+//! microscope-server --list-devices
 //! ```
 //!
 //! The options, messages and exit codes are `teta-wot`'s (and LabThings'),
 //! plus `--webapp-dir`, which serves the web app from a folder instead of the
 //! build in the binary (ADR-0016), and `--print-openapi`, which writes the
-//! configured Things' OpenAPI document instead of serving them (ADR-0021).
+//! configured Things' OpenAPI document instead of serving them (ADR-0021),
+//! and `--list-devices`, which prints the serial ports and cameras the
+//! drivers find, for writing a configuration (ADR-0041).
 //!
 //! With `--managed`, a supervisor such as the launcher runs the server
 //! (ADR-0032). Once serving, it prints one line to standard output,
@@ -84,6 +87,10 @@ pub struct Args {
     /// standard input doesn't stop the server; SIGTERM does.
     #[arg(long, conflicts_with = "managed")]
     pub service: bool,
+    /// List the serial ports and cameras the drivers find on this computer,
+    /// for writing a configuration, and exit.
+    #[arg(long)]
+    pub list_devices: bool,
 }
 
 /// How long a managed server may take to stop once its standard input has
@@ -186,6 +193,7 @@ where
         print_openapi,
         managed,
         service,
+        list_devices,
     } = match Args::try_parse_from(args) {
         Ok(args) => args,
         Err(error) => {
@@ -194,6 +202,10 @@ where
             return ExitCode::from(u8::try_from(error.exit_code()).unwrap_or(2));
         }
     };
+    if list_devices {
+        print_devices();
+        return ExitCode::SUCCESS;
+    }
 
     if managed {
         let request = Arc::clone(&request);
@@ -332,6 +344,18 @@ async fn serve(
             things,
         }),
         Err(other) => Err(Failure::Other(other.to_string())),
+    }
+}
+
+/// Prints what each driver finds (`--list-devices`).
+fn print_devices() {
+    for found in microscope_things::drivers::list_devices() {
+        println!("{}:", found.what);
+        match found.found {
+            Ok(lines) if lines.is_empty() => println!("  none"),
+            Ok(lines) => lines.iter().for_each(|line| println!("  {line}")),
+            Err(why) => println!("  {why}"),
+        }
     }
 }
 

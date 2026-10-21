@@ -131,6 +131,8 @@ It listens on <http://127.0.0.1:5000/> (`--host` and `--port` change that). The 
 
 The server also serves the web app, at <http://127.0.0.1:5000/> ([ADR-0016](docs/adr/0016-serving-and-embedding-the-web-app.md)). A debug build reads it from `web/dist`, so build the web app first (`npm run build` in `web/`); without a build, `/` shows a placeholder page. `--webapp-dir <path>` serves it from another folder.
 
+`--list-devices` prints the serial ports and the cameras the drivers find, for writing a configuration ([configs/README.md](configs/README.md)). Basler cameras need [pylon](https://www.baslerweb.com/pylon), and Allied Vision's [Vimba X](https://www.alliedvision.com/en/products/software/vimba-x-sdk/), installed; the server runs without them ([ADR-0041](docs/adr/0041-hardware-drivers.md)).
+
 ### Build a release
 
 Build the web app first, then the server, which embeds `web/dist`:

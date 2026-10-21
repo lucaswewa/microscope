@@ -130,7 +130,7 @@ Milestone 1's rules stand ([milestone 1 §4](../milestone-1/implementation-plan.
   - an SDK camera's frame pipeline, from the SDK's callback to `PreviewFrames`, with conversion to 8-bit RGB (P06);
   - backlash compensation, for the Sangaboard;
   - the capture buffer.
-- **SDKs load at run time** (checked in P03b, [§10](#10-points-for-your-review)): one server binary runs with or without pylon and Vimba X. A driver whose SDK isn't installed says so when it starts. CI builds every driver without the SDKs.
+- **SDKs load at run time** (checked in P03b on Windows, [§10](#10-points-for-your-review)): one server binary runs with or without pylon and Vimba X. A driver whose SDK isn't installed says so when it starts. CI builds every driver without the SDKs.
 - **Settings panels come from the devices:** a camera's exposure, gain and so on are described by the server (ADR-0024), built from the features the SDK reports. The web app needs no change per camera.
 - **A configuration per hardware set** in `configs/`, beside `simulation.json`, choosing a camera by serial number and a stage by port.
 
@@ -192,8 +192,8 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P03a | Device actors and serial ports | P01 | M | 0041 | In review |
-| P03b | The SDKs at run time, and listing devices | P03a | L | 0041 | Planned |
+| P03a | Device actors and serial ports | P01 | M | 0041 | Done |
+| P03b | The SDKs at run time, and listing devices | P03a | L | 0041 | In review |
 
 ### Stage 2: Stages
 

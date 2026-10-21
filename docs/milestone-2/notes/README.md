@@ -13,4 +13,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P00 | [Milestone 2 groundwork](P00-groundwork.md) | Done |
 | P01 | [Linux builds and CI](P01-linux-ci.md) | Done |
 | P02 | [The Linux service and packages](P02-linux-service.md) | Done |
-| P03a | [Device actors and serial ports](P03a-device-actors.md) | In review |
+| P03a | [Device actors and serial ports](P03a-device-actors.md) | Done |
+| P03b | [The SDKs at run time, and listing devices](P03b-sdks.md) | In review |

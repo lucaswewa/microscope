@@ -12,3 +12,5 @@ Each driver phase adds its set's, named for its devices: `basler-zaber.json`, `a
 
 - **A stage** by its serial port, `port`: `COM3` on Windows, `/dev/ttyUSB0` on Linux. On Linux, its `/dev/serial/by-id/…` name stays the same when it's plugged in again.
 - **A camera** by its serial number, `serial_number`, as its SDK reports it.
+
+`microscope-server --list-devices` prints the serial ports and the cameras the drivers find on this computer.
