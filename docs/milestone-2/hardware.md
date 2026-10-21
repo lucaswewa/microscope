@@ -35,7 +35,7 @@ Tests that need a device run only when an environment variable names it, and are
 | `MICROSCOPE_ZABER_PORT` | The Zaber stage's serial port, such as `COM3` or `/dev/ttyUSB0` | P04 |
 | `MICROSCOPE_ZABER_HOMING` | Set to let a test home the Zaber stage, once it's clear | P04 |
 | `MICROSCOPE_SANGABOARD_PORT` | The Sangaboard's serial port | P05 |
-| `MICROSCOPE_BASLER_SERIAL` | The Basler camera's serial number | P07 |
+| `MICROSCOPE_BASLER_SERIAL` | The Basler camera's serial number; `0815-0000` for pylon's camera emulator, with `PYLON_CAMEMU=1` | P07 |
 | `MICROSCOPE_ALLIED_VISION_ID` | The Allied Vision camera's ID | P08 |
 | `MICROSCOPE_PI_CAMERA` | Set on a Pi with a camera | P09 |
 

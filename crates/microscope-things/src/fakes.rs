@@ -7,8 +7,10 @@
 //!   with, and counts its captures;
 //! - [`FakeIllumination`] remembers whether it is on;
 //! - [`FakeSdkCamera`], not a Thing, delivers frames to a callback, as an
-//!   SDK does.
+//!   SDK does;
+//! - [`FakeCameraSdk`], also not a Thing, is a camera's SDK for `SdkCamera`.
 
+use std::collections::BTreeMap;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
@@ -24,9 +26,10 @@ use teta_wot::prelude::*;
 use teta_wot::server::ThingRegistry;
 
 use crate::hardware::{
-    AxisScale, CameraApi, Capture, CaptureMetadata, CaptureMode, IlluminationApi, Position,
-    StageApi, StreamInfo,
+    AxisScale, CameraApi, Capture, CaptureMetadata, CaptureMode, Feature, FeatureKind,
+    IlluminationApi, Position, STANDARD_FEATURES, StageApi, StreamInfo,
 };
+use crate::sdk_camera::{CameraSdk, Deliver};
 
 /// `registry` with the fakes added, under `microscope.fakes:<Type>`.
 pub fn register(registry: ThingRegistry) -> ThingRegistry {
@@ -213,8 +216,10 @@ impl IlluminationApi for ThingRef<FakeIllumination> {
 }
 
 /// A fake SDK camera, for tests: a thread that delivers frames to a
-/// callback, as an SDK's does, until it's dropped. Every byte of a frame is
-/// its number, from 0, so a test can tell frames apart.
+/// callback, as an SDK's does, until it's dropped. A frame's first bytes are
+/// its number, from 0, so a test can tell frames apart, and each pair of
+/// bytes after them rises by one, for 64 pairs, then starts again: a
+/// texture, as a slide's image has.
 pub struct FakeSdkCamera {
     stop: Arc<AtomicBool>,
     thread: Option<JoinHandle<()>>,
@@ -238,7 +243,9 @@ impl FakeSdkCamera {
                     if stop.load(Ordering::Relaxed) {
                         break;
                     }
-                    let data = vec![number; size];
+                    let data: Vec<u8> = (0..size)
+                        .map(|i| number.wrapping_add(((i / 2) % 64) as u8))
+                        .collect();
                     deliver(
                         &RawFrame {
                             width,
@@ -263,5 +270,137 @@ impl Drop for FakeSdkCamera {
         if let Some(thread) = self.thread.take() {
             let _ = thread.join();
         }
+    }
+}
+
+/// A fake camera SDK, for testing `SdkCamera` without a camera: a mono
+/// camera, its features kept by name, sending frames from a
+/// [`FakeSdkCamera`]. Its clones share it, so a test keeps one to look at it,
+/// or to unplug it.
+#[derive(Clone)]
+pub struct FakeCameraSdk(Arc<Mutex<FakeSdkState>>);
+
+struct FakeSdkState {
+    size: (u32, u32),
+    features: BTreeMap<String, String>,
+    camera: Option<FakeSdkCamera>,
+    deliver: Option<Arc<Mutex<Deliver>>>,
+    starts: u32,
+}
+
+/// The pixel formats it offers: `Mono12p` is packed, which can't be shown.
+const FAKE_FORMATS: [&str; 3] = ["Mono8", "Mono12", "Mono12p"];
+
+impl FakeCameraSdk {
+    /// A camera sending `size` frames in `Mono8`, exposed for 1000 µs at no
+    /// gain, with automatic exposure, which sets 2000 µs.
+    pub fn new(size: (u32, u32)) -> FakeCameraSdk {
+        let features = [
+            ("ExposureTime", "1000"),
+            ("Gain", "0"),
+            ("PixelFormat", "Mono8"),
+            ("ExposureAuto", "Off"),
+        ];
+        let features = features.map(|(name, value)| (name.to_owned(), value.to_owned()));
+        let state = FakeSdkState {
+            size,
+            features: features.into(),
+            camera: None,
+            deliver: None,
+            starts: 0,
+        };
+        FakeCameraSdk(Arc::new(Mutex::new(state)))
+    }
+
+    /// The feature `name`'s value now.
+    pub fn feature(&self, name: &str) -> Option<String> {
+        self.state().features.get(name).cloned()
+    }
+
+    /// How many times it has started grabbing.
+    pub fn starts(&self) -> u32 {
+        self.state().starts
+    }
+
+    /// Stops its frames, as a camera unplugged does, until it next starts.
+    pub fn unplug(&self) {
+        drop(self.state().camera.take());
+    }
+
+    fn state(&self) -> std::sync::MutexGuard<'_, FakeSdkState> {
+        self.0.lock().unwrap_or_else(|error| error.into_inner())
+    }
+
+    /// Sends frames in its pixel format, if they can be.
+    fn grab(state: &mut FakeSdkState) {
+        drop(state.camera.take());
+        let format = PixelFormat::from_genicam(&state.features["PixelFormat"]);
+        let (Some(deliver), Some(format)) = (state.deliver.clone(), format) else {
+            return;
+        };
+        let interval = Duration::from_millis(20);
+        let camera = FakeSdkCamera::start(state.size, format, interval, move |frame, taken| {
+            (deliver.lock().unwrap_or_else(|error| error.into_inner()))(frame, taken);
+        });
+        state.camera = Some(camera);
+    }
+}
+
+impl CameraSdk for FakeCameraSdk {
+    fn describe(&self) -> String {
+        "a fake camera".to_owned()
+    }
+
+    fn has(&mut self, name: &str) -> bool {
+        self.state().features.contains_key(name)
+    }
+
+    fn features(&mut self) -> Vec<Feature> {
+        (STANDARD_FEATURES.iter())
+            .filter(|(name, ..)| self.has(name))
+            .map(|(name, ..)| Feature {
+                name: (*name).to_owned(),
+                kind: match *name {
+                    "PixelFormat" => FeatureKind::Choice(FAKE_FORMATS.map(String::from).to_vec()),
+                    _ => FeatureKind::Number { step: None },
+                },
+            })
+            .collect()
+    }
+
+    fn get(&mut self, name: &str) -> Result<String, String> {
+        let value = self.state().features.get(name).cloned();
+        value.ok_or_else(|| format!("the camera has no {name}"))
+    }
+
+    fn set(&mut self, name: &str, value: &str) -> Result<(), String> {
+        let mut state = self.state();
+        if !state.features.contains_key(name) {
+            return Err(format!("the camera has no {name}"));
+        }
+        if name == "PixelFormat" && !FAKE_FORMATS.contains(&value) {
+            return Err(format!("the camera can't send {value}"));
+        }
+        let (name, value) = match (name, value) {
+            ("ExposureAuto", "Once") => ("ExposureTime", "2000"),
+            other => other,
+        };
+        state.features.insert(name.to_owned(), value.to_owned());
+        if name == "PixelFormat" && state.camera.is_some() {
+            FakeCameraSdk::grab(&mut state);
+        }
+        Ok(())
+    }
+
+    fn start(&mut self, deliver: Deliver) -> Result<(), String> {
+        let mut state = self.state();
+        state.starts += 1;
+        state.deliver = Some(Arc::new(Mutex::new(deliver)));
+        FakeCameraSdk::grab(&mut state);
+        Ok(())
+    }
+
+    fn stop(&mut self) {
+        drop(self.state().camera.take());
     }
 }

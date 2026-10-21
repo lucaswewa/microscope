@@ -21,6 +21,7 @@
 //! | `histo_scan_workflow`, `c_chip_workflow` | `microscope.workflows:HistoScanWorkflow`, `microscope.workflows:CChipWorkflow` | P37 (here) |
 //! | `sequence` | `microscope.sequence:Sequence` | P41 (here) |
 //! | `stage`, on a Zaber stage | `microscope.stage:ZaberStage` | M2 P04 (here) |
+//! | `camera`, through an SDK (pylon) | `microscope.camera:SdkCamera` | M2 P07 (here) |
 //!
 //! The test fakes ([`crate::fakes`]) are never here.
 
@@ -34,6 +35,7 @@ use crate::gallery::Gallery;
 use crate::histo::HistoScanWorkflow;
 use crate::illumination::SimulatedIllumination;
 use crate::mapping::CameraStageMapping;
+use crate::sdk_camera::SdkCamera;
 use crate::sequence::Sequence;
 use crate::smart_scan::SmartScan;
 use crate::stage::SimulatedStage;
@@ -49,6 +51,7 @@ pub fn registry() -> ThingRegistry {
         .register::<SimulatedStage>("microscope.stage:SimulatedStage")
         .register::<ZaberStage>("microscope.stage:ZaberStage")
         .register::<SimulatedCamera>("microscope.camera:SimulatedCamera")
+        .register::<SdkCamera>("microscope.camera:SdkCamera")
         .register::<SimulatedIllumination>("microscope.illumination:SimulatedIllumination")
         .register::<Autofocus>("microscope.autofocus:Autofocus")
         .register::<CameraStageMapping>("microscope.camera_stage_mapping:CameraStageMapping")

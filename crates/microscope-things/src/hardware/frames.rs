@@ -39,6 +39,8 @@ pub struct FramePipeline {
     preview: PreviewFrames,
     /// When the preview last took a frame, and its size.
     last_preview: Mutex<Option<(Instant, (u32, u32))>>,
+    /// When the SDK last delivered a frame.
+    delivered: Mutex<Option<Instant>>,
     /// The captures waiting for the next frame.
     waiting: Mutex<Vec<oneshot::Sender<Result<Whole, String>>>>,
 }
@@ -54,6 +56,7 @@ impl FramePipeline {
         main: &MjpegStream,
         lores: &MjpegStream,
     ) -> Result<(), String> {
+        *self.delivered.lock().expect("not poisoned") = Some(Instant::now());
         let waiting = std::mem::take(&mut *self.waiting.lock().expect("not poisoned"));
         let last = *self.last_preview.lock().expect("not poisoned");
         let due = last.is_none_or(|(at, _)| at.elapsed() >= PREVIEW_INTERVAL);
@@ -89,6 +92,11 @@ impl FramePipeline {
             .await
             .map_err(ActionError::handled)?;
         Ok(RgbImage::clone(&frame))
+    }
+
+    /// When the SDK last delivered a frame, if it has.
+    pub fn last_delivered(&self) -> Option<Instant> {
+        *self.delivered.lock().expect("not poisoned")
     }
 
     /// The preview's frame size, once it has had a frame.

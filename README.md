@@ -88,6 +88,18 @@ Then, on another computer on the same network, open `http://<this computer's nam
 
 The simulated camera's image doesn't follow the Zaber stage, so autofocus and scans won't work with this file. A real camera's configuration follows with its driver.
 
+### A Basler camera
+
+[`configs/basler-zaber.json`](configs/basler-zaber.json) drives a Basler camera, through [pylon](https://www.baslerweb.com/pylon), and a Zaber stage ([ADR-0044](docs/adr/0044-one-camera-thing-for-every-sdk.md)):
+
+1. **Install pylon,** and plug the camera in. `microscope-server --list-devices` lists it, by serial number.
+2. **Configure it:** in a copy of the file, set the camera's `serial_number`, or leave it out for the first camera found, and the stage as above.
+3. **Run it,** and calibrate the camera from Settings → Camera, looking at the empty slide: the camera's own automatic exposure and white balance run once, then the background is set.
+
+Settings → Camera has the camera's exposure, gain, pixel format, white balance and binning, as far as it has them. If the camera is unplugged, the server opens it again once it's back.
+
+Without a camera, pylon's emulator stands in: set `PYLON_CAMEMU=1` before starting the server, and the camera `0815-0000` appears.
+
 ### On Linux
 
 Linux x86_64 and ARM64, the Raspberry Pi 5 included, have two downloads.

@@ -99,12 +99,11 @@ pub fn list_devices() -> Vec<Found> {
 
 fn pylon() -> Result<Vec<String>, SdkError> {
     let pylon = Pylon::load()?;
-    let count = pylon.count_cameras()?;
+    let found = pylon.cameras()?;
     let at = pylon.path().display();
-    Ok(vec![format!(
-        "{} found, with pylon at {at}",
-        cameras(count)
-    )])
+    let heading = format!("{} found, with pylon at {at}", cameras(found.len()));
+    let each = (found.iter()).map(|camera| format!("{}: {}", camera.serial_number, camera.model));
+    Ok(std::iter::once(heading).chain(each).collect())
 }
 
 fn vimba() -> Result<Vec<String>, SdkError> {
