@@ -11,6 +11,7 @@ import { type LiveSequenceDetails, type TypedInvocation, useThing } from '@/api/
 import { ApiError } from '@/api/wot/errors'
 import type { InvocationRecord } from '@/api/wot/invocation'
 import { splitDuration } from '@/server-ui/duration'
+import { settled } from '@/server-ui/writes'
 
 /** How often the details are read, in ms. */
 const POLL_MS = 1000
@@ -88,6 +89,8 @@ export function useSequence(onRefused: (error: unknown) => void) {
     if (!thing || shown.value) return
     details.value = null
     try {
+      // The settings just edited, first.
+      await settled()
       show(await thing.invoke('run_sequence', { name }, { onUpdate }), false)
     } catch (error) {
       onRefused(error)

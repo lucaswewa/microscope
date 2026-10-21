@@ -24,6 +24,7 @@ import { useToast } from '@/ui/overlays'
 import DurationField from './DurationField.vue'
 import { followProperty } from './follow'
 import type { PropertyControlElement } from './types'
+import { track } from './writes'
 
 const props = defineProps<{ control: PropertyControlElement }>()
 const connection = useConnectionStore()
@@ -70,7 +71,7 @@ async function write(next: unknown) {
   value.value = next
   writing += 1
   try {
-    await property.thing.writeProperty(props.control.property, next)
+    await track(property.thing.writeProperty(props.control.property, next))
     if (props.control.read_back_ms !== undefined) await sleep(props.control.read_back_ms)
   } catch (error) {
     value.value = previous
