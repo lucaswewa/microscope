@@ -10,6 +10,7 @@ import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { type LiveScanDetails, type TypedInvocation, useThing } from '@/api/things'
 import { ApiError } from '@/api/wot/errors'
 import type { InvocationRecord } from '@/api/wot/invocation'
+import { settled } from '@/server-ui/writes'
 
 /** How often the details are read, in ms. */
 const POLL_MS = 1000
@@ -74,6 +75,8 @@ export function useScan(onRefused: (error: unknown) => void) {
     if (!thing || shown.value) return
     details.value = null
     try {
+      // The settings just edited, first.
+      await settled()
       show(await thing.invoke('sample_scan', { scan_name: scanName }, { onUpdate }), false)
     } catch (error) {
       onRefused(error)

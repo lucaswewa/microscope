@@ -492,11 +492,12 @@ async fn saving_needs_no_global_lock() {
     let harness = start_with(json!({"data_folder": data})).await;
     let client = harness.client();
     run(client, "/camera/capture_to_memory", json!({})).await;
-    // A flash holds the global lock for a second.
+    // A flash holds the global lock for 4 s: far longer than a save takes,
+    // even on a busy runner.
     let flash = client
         .post_json(
             "/illumination/flash",
-            Some(&json!({"number_of_flashes": 1, "dt": 0.5})),
+            Some(&json!({"number_of_flashes": 1, "dt": 2.0})),
         )
         .await;
     let flash = format!(

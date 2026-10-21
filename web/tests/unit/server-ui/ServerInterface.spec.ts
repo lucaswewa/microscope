@@ -231,6 +231,19 @@ describe('ServerInterface', () => {
     expect(streams()[0]!.signal?.aborted).toBe(true)
   })
 
+  it('keeps an edit that a value sent during its write would undo', async () => {
+    await show([panel[3] as UiElement])
+    const exposure = control('Exposure').get('input')
+    await exposure.setValue('20000')
+    await exposure.trigger('keydown', { key: 'Enter' })
+    // The value from before the write, arriving while it's on its way.
+    sendExposure(10_000)
+    await flushPromises()
+    expect(control('Exposure').get('input').element.value).toBe('20000')
+    await vi.advanceTimersByTimeAsync(500)
+    expect(control('Exposure').get('input').element.value).toBe('20000')
+  })
+
   it('offers the panel’s options, and the schema’s enum', async () => {
     await show([
       panel[4]!.children![1] as UiElement,

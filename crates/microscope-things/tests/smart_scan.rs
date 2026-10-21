@@ -450,6 +450,9 @@ async fn a_scan_that_fails_goes_back_to_the_start() {
     )
     .await;
     assert_eq!(record["status"], "error", "{record}");
+    // At the second column, not before the first image.
+    let error = record["error"].to_string();
+    assert!(error.contains("end of its travel"), "{record}");
     assert_eq!(client.get("/stage/position").await.json(), begin);
     let saved = read_json(&data.join("scans/edge/scan.json"));
     assert!(
