@@ -412,9 +412,9 @@ describe('server-described buttons', () => {
 })
 
 describe('ServerPanel', () => {
-  const showPanel = async () => {
+  const showPanel = async (optional = false) => {
     wrapper = mount(ServerPanel, {
-      props: { thing: 'camera', path: 'manual_camera_settings' },
+      props: { thing: 'camera', path: 'manual_camera_settings', optional },
       global: { provide: { [toastKey]: toaster, [hostKey]: host, [confirmKey]: confirm } },
       attachTo: document.body,
     })
@@ -436,5 +436,12 @@ describe('ServerPanel', () => {
     panelServed = false
     await showPanel()
     expect(wrapper!.text()).toContain("This panel isn't available.")
+  })
+
+  it('shows nothing for an optional panel the Thing doesn’t serve', async () => {
+    panelServed = false
+    await showPanel(true)
+    expect(panelFetches).toBe(1)
+    expect(wrapper!.text()).toBe('')
   })
 })

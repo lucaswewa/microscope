@@ -20,6 +20,7 @@
 //! | `smart_scan`, `snake_workflow`, `raster_workflow` | `microscope.smart_scan:SmartScan`, `microscope.workflows:GridWorkflow` (with its `order`) | P35 (here) |
 //! | `histo_scan_workflow`, `c_chip_workflow` | `microscope.workflows:HistoScanWorkflow`, `microscope.workflows:CChipWorkflow` | P37 (here) |
 //! | `sequence` | `microscope.sequence:Sequence` | P41 (here) |
+//! | `stage`, on a Zaber stage | `microscope.stage:ZaberStage` | M2 P04 (here) |
 //!
 //! The test fakes ([`crate::fakes`]) are never here.
 
@@ -39,12 +40,14 @@ use crate::stage::SimulatedStage;
 use crate::stage_measure::StageMeasure;
 use crate::system::MicroscopeSystem;
 use crate::workflow::GridWorkflow;
+use crate::zaber::ZaberStage;
 
 /// Every Thing type a configuration file can name, under its class name.
 pub fn registry() -> ThingRegistry {
     ThingRegistry::new()
         .register::<MicroscopeSystem>("microscope.system:MicroscopeSystem")
         .register::<SimulatedStage>("microscope.stage:SimulatedStage")
+        .register::<ZaberStage>("microscope.stage:ZaberStage")
         .register::<SimulatedCamera>("microscope.camera:SimulatedCamera")
         .register::<SimulatedIllumination>("microscope.illumination:SimulatedIllumination")
         .register::<Autofocus>("microscope.autofocus:Autofocus")

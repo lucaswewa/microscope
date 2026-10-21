@@ -34,5 +34,6 @@ pub mod stitch;
 pub mod system;
 pub mod ui;
 pub mod workflow;
+pub mod zaber;
 
 pub use registry::registry;

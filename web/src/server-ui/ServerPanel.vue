@@ -2,7 +2,9 @@
 // A panel a Thing serves (ADR-0024) from one of its endpoints, such as the
 // camera's `manual_camera_settings`, drawn by ServerInterface. It's fetched
 // again when one of its actions asks for a refresh, which it passes on, and
-// when the connection changes.
+// when the connection changes. An `optional` panel, which only some Things of
+// a kind serve, shows nothing until it's loaded, and nothing where it isn't
+// served.
 import { ref, watchEffect } from 'vue'
 
 import { ApiError } from '@/api/wot/errors'
@@ -12,7 +14,7 @@ import AppSpinner from '@/ui/AppSpinner.vue'
 import ServerInterface from './ServerInterface.vue'
 import type { UiElement } from './types'
 
-const props = defineProps<{ thing: string; path: string }>()
+const props = defineProps<{ thing: string; path: string; optional?: boolean }>()
 const emit = defineEmits<{ refresh: [] }>()
 const connection = useConnectionStore()
 const elements = ref<UiElement[]>()
@@ -31,6 +33,7 @@ watchEffect(async (onCleanup) => {
     failure.value = undefined
   } catch (error) {
     if (controller.signal.aborted) return
+    if (props.optional && error instanceof ApiError && error.status === 404) return
     failure.value = error instanceof ApiError ? error.message : String(error)
   }
 })
@@ -44,7 +47,7 @@ function refresh() {
 <template>
   <p v-if="failure" class="server-panel__failure">This panel isn't available. {{ failure }}</p>
   <ServerInterface v-else-if="elements" :elements="elements" @refresh="refresh" />
-  <AppSpinner v-else label="Loading the panel" />
+  <AppSpinner v-else-if="!optional" label="Loading the panel" />
 </template>
 
 <style scoped>

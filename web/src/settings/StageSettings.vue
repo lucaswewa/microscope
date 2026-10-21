@@ -1,10 +1,13 @@
 <script setup lang="ts">
 // Settings, Stage: which way the z axis counts, and a button that turns it
-// round; then the range of motion, measured from the image (P30).
+// round; the stage's own settings, where it serves them (a Zaber stage's
+// speeds and homing); then the range of motion, measured from the image
+// (P30).
 import { ref, watchEffect } from 'vue'
 
 import { useThing } from '@/api/things'
 import ActionButton from '@/server-ui/ActionButton.vue'
+import ServerPanel from '@/server-ui/ServerPanel.vue'
 import type { ActionButtonElement } from '@/server-ui/types'
 
 import StageMeasure from './StageMeasure.vue'
@@ -44,6 +47,7 @@ const invert: ActionButtonElement = {
       again.
     </p>
     <ActionButton :button="invert" />
+    <ServerPanel thing="stage" path="settings_ui" optional />
     <StageMeasure />
   </div>
 </template>

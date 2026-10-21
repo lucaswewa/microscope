@@ -25,6 +25,7 @@ use microscope_sdk::vimba::VimbaX;
 use teta_wot::{ActionError, DeviceError};
 
 pub mod serial;
+pub mod zaber;
 
 /// An action's error for a device's: what went wrong, and what to do.
 pub fn device_error(error: DeviceError) -> ActionError {

@@ -8,7 +8,7 @@ The devices milestone 2's drivers are tried on, the SDKs they use, and how the h
 |---|---|---|---|---|
 | Basler camera | *to record* | *USB 3 or GigE* | *to record* | P07 |
 | Allied Vision camera | *to record* | *USB 3 or GigE* | *to record* | P08 |
-| Zaber XYZ stage | *controller and axes, to record* | *USB serial* | *to record* | P04 |
+| Zaber XYZ stage | Three integrated stages, daisy-chained as devices 1, 2 and 3; *models and microstep sizes, to record* | *USB serial* | *to record* | P04 |
 | Raspberry Pi 5 | *memory, to record* | — | *Raspberry Pi OS version, to record* | P02, P09, P11 |
 | Raspberry Pi camera | *module, to record* | CSI | — | P09 |
 | Sangaboard | *version, to record* | *USB serial* | *to record* | P05 |
@@ -33,6 +33,7 @@ Tests that need a device run only when an environment variable names it, and are
 | Variable | Names | Phase |
 |---|---|---|
 | `MICROSCOPE_ZABER_PORT` | The Zaber stage's serial port, such as `COM3` or `/dev/ttyUSB0` | P04 |
+| `MICROSCOPE_ZABER_HOMING` | Set to let a test home the Zaber stage, once it's clear | P04 |
 | `MICROSCOPE_SANGABOARD_PORT` | The Sangaboard's serial port | P05 |
 | `MICROSCOPE_BASLER_SERIAL` | The Basler camera's serial number | P07 |
 | `MICROSCOPE_ALLIED_VISION_ID` | The Allied Vision camera's ID | P08 |

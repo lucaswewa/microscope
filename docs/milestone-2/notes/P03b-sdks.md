@@ -1,6 +1,6 @@
 # P03b: The SDKs at run time, and listing devices
 
-- Status: In review
+- Status: Done
 - Pull request: [#76](https://github.com/lucaswewa/microscope/pull/76)
 - ADRs: [ADR-0041](../../adr/0041-hardware-drivers.md), from P03a
 - Spec: [phases.md#p03b](../phases.md#p03b)
