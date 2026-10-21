@@ -1,6 +1,6 @@
 # ADR-0018: Hardware abstraction through `teta-wot` interfaces
 
-- Status: Accepted
+- Status: Accepted; superseded in part by [ADR-0044](0044-one-camera-thing-for-every-sdk.md): one camera Thing for every SDK
 - Date: 2026-10-09
 - Phase: P15
 

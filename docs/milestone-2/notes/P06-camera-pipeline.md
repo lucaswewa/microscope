@@ -1,6 +1,6 @@
 # P06: The SDK camera pipeline
 
-- Status: In review
+- Status: Done
 - Pull request: [#79](https://github.com/lucaswewa/microscope/pull/79)
 - ADRs: [ADR-0043](../../adr/0043-the-sdk-camera-frame-pipeline.md)
 - Spec: [phases.md#p06](../phases.md#p06)

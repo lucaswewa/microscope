@@ -16,4 +16,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P03a | [Device actors and serial ports](P03a-device-actors.md) | Done |
 | P03b | [The SDKs at run time, and listing devices](P03b-sdks.md) | Done |
 | P04 | [Zaber stages](P04-zaber.md) | In review, until tried on the stage |
-| P06 | [The SDK camera pipeline](P06-camera-pipeline.md) | In review |
+| P06 | [The SDK camera pipeline](P06-camera-pipeline.md) | Done |
+| P07 | [Basler cameras](P07-basler.md) | In review, until tried on the camera |

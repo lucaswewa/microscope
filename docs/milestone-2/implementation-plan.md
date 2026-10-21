@@ -86,13 +86,13 @@ The work is split into **21 phases (P00–P20)** in **9 stages**, with three dem
 
 | # | Topic | Decision | Recorded in |
 |---|---|---|---|
-| D1 | AutoDiscovery | Microscopes on the network: each server advertises itself over mDNS, and the desktop app lists those it finds. A browser can't use mDNS, so the browser app keeps connecting by address | ADR-0047 (P16), P18 |
+| D1 | AutoDiscovery | Microscopes on the network: each server advertises itself over mDNS, and the desktop app lists those it finds. A browser can't use mDNS, so the browser app keeps connecting by address | ADR-0048 (P16), P18 |
 | D2 | Raspberry Pi 5 | The server runs on a Pi 5 with either hardware set: the Pi camera and a Sangaboard (OpenFlexure hardware), or the USB 3 / GigE cameras and a Zaber stage | ADR-0038 (P00) |
 | D3 | Zaber stages | Zaber's ASCII protocol, in Rust (the MIT `zproto` crate, or our own client), rather than the C++ Zaber Motion Library: nothing to install, and the same on every platform | ADR-0042 (P04) |
 | D4 | Camera SDKs | Basler through pylon, Allied Vision through Vimba X. The user installs the SDK; the project doesn't redistribute it | ADR-0041 (P03a, P03b) |
 | D5 | Platforms | Windows x86_64, Linux x86_64 and Linux ARM64. The desktop app is for Windows and Linux PCs; the Pi runs headless | ADR-0038 (P00) |
-| D6 | Signing | The release workflow signs the Windows installer and binaries, with a certificate (or Azure Trusted Signing) the owner sets up | ADR-0049 (P19) |
-| D7 | Authentication | A bearer token per microscope, which the desktop app and the launcher handle; the readiness checklist's gaps (our own routes, images) are closed | ADR-0046 (P14) |
+| D6 | Signing | The release workflow signs the Windows installer and binaries, with a certificate (or Azure Trusted Signing) the owner sets up | ADR-0050 (P19) |
+| D7 | Authentication | A bearer token per microscope, which the desktop app and the launcher handle; the readiness checklist's gaps (our own routes, images) are closed | ADR-0047 (P14) |
 | D8 | Order | Hardware first: platforms, then drivers, checked on real hardware; then stitching; then security; then the desktop app and discovery | [§7](#7-phase-overview) |
 | D9 | Test hardware | The owner has a Basler camera, an Allied Vision camera, a Zaber XYZ stage and a Raspberry Pi 5. Their models are recorded in P00 | P00 |
 | D10 | Delivery | As milestone 1: one branch and pull request per phase, merged after the owner approves it, with size budgets | [§6](#6-how-phases-work) |
@@ -208,10 +208,10 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P06 | The SDK camera pipeline | P03b | L | 0043 | In review |
-| P07 | Basler cameras | P06 | L | — | Planned |
+| P06 | The SDK camera pipeline | P03b | L | 0043 | Done |
+| P07 | Basler cameras | P06 | L | 0044 | In review |
 | P08 | Allied Vision cameras | P06 | L | — | Planned |
-| P09 | The Raspberry Pi camera | P06, P02 | L | 0044 | Planned: once there's a Pi camera |
+| P09 | The Raspberry Pi camera | P06, P02 | L | 0045 | Planned: once there's a Pi camera |
 
 ### Stage 4: Real microscopes (ends with Checkpoint A)
 
@@ -226,7 +226,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P12 | Correlation placement | P03a | L | 0045 | Planned |
+| P12 | Correlation placement | P03a | L | 0046 | Planned |
 | P13 | Correlation in stitching | P12, P10 | M | — | Planned |
 
 **Checkpoint B, "Seamless mosaics":** a scan on the Zaber stage and one on the Sangaboard stitch without visible seams, and the overlay shows how far correlation moved each image.
@@ -235,17 +235,17 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P14 | Authentication on the server | P02 | M | 0046 | Planned |
+| P14 | Authentication on the server | P02 | M | 0047 | Planned |
 | P15 | Authentication in the web app | P14 | M | — | Planned |
 
 ### Stage 7: The desktop app and discovery (ends with Checkpoint C)
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P16 | mDNS adverts | P14 | S | 0047 | Planned |
-| P17 | The Tauri desktop app | P15 | L | 0048 | Planned |
+| P16 | mDNS adverts | P14 | S | 0048 | Planned |
+| P17 | The Tauri desktop app | P15 | L | 0049 | Planned |
 | P18 | Discovery in the desktop app | P16, P17 | M | — | Planned |
-| P19 | Desktop installers and signing | P17 | M | 0049 | Planned |
+| P19 | Desktop installers and signing | P17 | M | 0050 | Planned |
 
 **Checkpoint C, "Desktop app":** on a Windows or Linux PC, the desktop app finds the Pi and a PC microscope on the network, signs in with their tokens, and drives both.
 
@@ -269,12 +269,13 @@ Numbers are provisional, assigned in the order written.
 | 0041 | Hardware drivers: SDKs, device actors and hardware tests | P03a |
 | 0042 | Zaber stages through the ASCII protocol | P04 |
 | 0043 | The SDK camera frame pipeline | P06 |
-| 0044 | The Raspberry Pi camera through libcamera | P09 |
-| 0045 | Correlation stitching (superseding part of 0030) | P12 |
-| 0046 | Authentication by token | P14 |
-| 0047 | mDNS adverts and discovery | P16 |
-| 0048 | The Tauri desktop app (superseding part of 0033) | P17 |
-| 0049 | Code signing and desktop distribution | P19 |
+| 0044 | One camera Thing for every SDK, and Basler cameras through pylon (superseding part of 0018) | P07 |
+| 0045 | The Raspberry Pi camera through libcamera | P09 |
+| 0046 | Correlation stitching (superseding part of 0030) | P12 |
+| 0047 | Authentication by token | P14 |
+| 0048 | mDNS adverts and discovery | P16 |
+| 0049 | The Tauri desktop app (superseding part of 0033) | P17 |
+| 0050 | Code signing and desktop distribution | P19 |
 
 ## 9. Risks
 
@@ -308,6 +309,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-21 | One `SdkCamera` Thing for every SDK camera (ADR-0044, P07), so P08 adds only Vimba X's half. The later planned ADRs' numbers move up by one |
 | 2026-10-21 | Cameras first: P06 to P08 before P05 and P09, which wait for a Sangaboard and a Pi camera. P06 is L, not M |
 | 2026-10-20 | P03 split into P03a (device actors, serial ports, hardware tests) and P03b (the SDKs at run time, listing devices): written whole, it came to about 1,200 lines. P04, P05 and P12 depend on P03a, P06 on P03b |
 | 2026-10-16 | ADR-0040, after P01: Linux CI on request, and the Rust tests split into parallel jobs. The later planned ADRs' numbers move up by one |

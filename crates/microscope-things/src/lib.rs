@@ -26,6 +26,7 @@ pub mod histo;
 pub mod illumination;
 pub mod mapping;
 pub mod registry;
+pub mod sdk_camera;
 pub mod sequence;
 pub mod smart_scan;
 pub mod stage;

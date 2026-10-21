@@ -110,7 +110,7 @@ async fn frames_from_the_sdk_reach_both_streams_and_captures() {
     let capture = camera.pipeline.capture(metadata).await.expect("captured");
     assert_eq!(capture.image.dimensions(), (2048, 1536));
     assert_eq!(capture.metadata.camera_settings["exposure_time"], 1000.0);
-    // Each frame's every byte is its number, n: 12 bits of n·257, as 8 bits.
+    // A frame's first two bytes are its number, n: 12 bits of n·257, as 8.
     let level = capture.image.get_pixel(0, 0).0[0];
     let from = |n: u16| ((n * 257) >> 4).min(255) as u8;
     assert!((0..=255).any(|n| from(n) == level), "{level}");

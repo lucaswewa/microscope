@@ -78,7 +78,7 @@ const REPEAT_PERIOD_UM: f64 = 2_000.0;
 
 /// The background detector the camera uses unless told otherwise, if the
 /// server has it.
-const DEFAULT_DETECTOR: &str = "bg_channel_deviations_luv";
+pub(crate) const DEFAULT_DETECTOR: &str = "bg_channel_deviations_luv";
 
 /// The colours of `BlobConfig::default()`.
 const DEFAULT_COLOURS: &str = "#965aaa; #d278a0; #6e78be; #be96c8";

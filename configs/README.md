@@ -5,6 +5,7 @@ Each file here is a server configuration for one set of hardware (ADR-0041):
 | File | Hardware | Phase |
 |---|---|---|
 | `simulation.json` | The simulated camera, stage and light | Milestone 1 |
+| `basler-zaber.json` | A Basler camera, through pylon, and a Zaber stage: the owner's PC set | M2 P07 |
 | `zaber.json` | A Zaber stage, with the simulated camera and light. The camera's image comes from a simulated stage of its own, so it doesn't follow the Zaber stage: this is for driving the stage | M2 P04 |
 
 Each driver phase adds its set's, named for its devices: `basler-zaber.json`, `allied-vision-zaber.json`, `pi-sangaboard.json`.

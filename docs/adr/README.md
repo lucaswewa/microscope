@@ -32,7 +32,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0015](0015-connection-model.md) | Connection model | Accepted | P11 |
 | [0016](0016-serving-and-embedding-the-web-app.md) | Serving and embedding the web app | Accepted | P12 |
 | [0017](0017-simulator-architecture.md) | Simulator architecture | Accepted | P13 |
-| [0018](0018-hardware-abstraction-through-teta-wot-interfaces.md) | Hardware abstraction through `teta-wot` interfaces | Accepted | P15 |
+| [0018](0018-hardware-abstraction-through-teta-wot-interfaces.md) | Hardware abstraction through `teta-wot` interfaces | Accepted; superseded in part by ADR-0044 | P15 |
 | [0019](0019-stage-units-integer-steps-with-a-um-scale.md) | Stage units: integer steps with a µm scale | Accepted | P15 |
 | [0020](0020-camera-frame-pipeline.md) | Camera frame pipeline | Accepted | P17 |
 | [0021](0021-generated-api-types.md) | Generated API types | Accepted | P19 |
@@ -58,5 +58,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0041](0041-hardware-drivers.md) | Hardware drivers: SDKs, device actors and hardware tests | Accepted | M2 P03a |
 | [0042](0042-zaber-stages-through-the-ascii-protocol.md) | Zaber stages through the ASCII protocol | Accepted | M2 P04 |
 | [0043](0043-the-sdk-camera-frame-pipeline.md) | The SDK camera frame pipeline | Accepted | M2 P06 |
+| [0044](0044-one-camera-thing-for-every-sdk.md) | One camera Thing for every SDK, and Basler cameras through pylon | Accepted | M2 P07 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

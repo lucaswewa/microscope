@@ -48,6 +48,8 @@ pub enum SdkError {
         function: &'static str,
         /// Its error code.
         code: i32,
+        /// What the SDK said of it, if anything.
+        detail: String,
     },
 }
 
@@ -78,10 +80,17 @@ impl fmt::Display for SdkError {
                 sdk,
                 function,
                 code,
-            } => write!(
-                f,
-                "{sdk}'s {function} failed with error {code} ({code:#010x})"
-            ),
+                detail,
+            } => {
+                write!(
+                    f,
+                    "{sdk}'s {function} failed with error {code} ({code:#010x})"
+                )?;
+                match detail.is_empty() {
+                    true => Ok(()),
+                    false => write!(f, ": {detail}"),
+                }
+            }
         }
     }
 }
@@ -203,6 +212,7 @@ fn check(sdk: &'static str, function: &'static str, code: i32) -> Result<(), Sdk
             sdk,
             function,
             code,
+            detail: String::new(),
         }),
     }
 }
