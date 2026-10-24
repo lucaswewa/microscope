@@ -44,7 +44,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0027](0027-deep-zoom-viewer.md) | Deep-zoom viewer | Accepted | P33 |
 | [0028](0028-scan-planning-model.md) | Scan planning model | Accepted | P34 |
 | [0029](0029-scan-engine-and-workflow-things.md) | Scan engine and workflow Things | Accepted | P35 |
-| [0030](0030-position-based-stitching-with-dzi-output.md) | Position-based stitching with DZI output | Accepted | P38 |
+| [0030](0030-position-based-stitching-with-dzi-output.md) | Position-based stitching with DZI output | Accepted; superseded in part by ADR-0046 | P38 |
 | [0031](0031-sequence-model.md) | Sequence model | Accepted | P41 |
 | [0032](0032-sidecar-process-contract.md) | Sidecar process contract | Accepted | P44 |
 | [0033](0033-local-launcher-and-its-tauri-successor.md) | Local launcher and its Tauri successor | Accepted | P45 |
@@ -59,5 +59,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0042](0042-zaber-stages-through-the-ascii-protocol.md) | Zaber stages through the ASCII protocol | Accepted | M2 P04 |
 | [0043](0043-the-sdk-camera-frame-pipeline.md) | The SDK camera frame pipeline | Accepted | M2 P06 |
 | [0044](0044-one-camera-thing-for-every-sdk.md) | One camera Thing for every SDK, and Basler cameras through pylon | Accepted | M2 P07 |
+| [0046](0046-correlation-stitching.md) | Correlation stitching | Accepted | M2 P12 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

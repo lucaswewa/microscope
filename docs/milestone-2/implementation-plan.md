@@ -180,7 +180,9 @@ As in milestone 1 ([its §7](../milestone-1/implementation-plan.md#7-how-phases-
 
 Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](phases.md). Status runs Planned → In progress → In review → Done.
 
-**The order since P04:** the cameras, P06 to P08, come before the Sangaboard, P05, and the Pi camera, P09, which wait for the owner to have them. P04 is *In review* until it's tried on the owner's Zaber stage.
+**The order since P04:** the cameras, P06 to P08, come before the Sangaboard, P05, and the Pi camera, P09, which wait for the owner to have them. P04 and P07 are *In review* until they're tried on the owner's Zaber stage and Basler camera.
+
+**Since P07:** the owner skips P08 to P11 for now, and P12 comes next. Checkpoint A waits for them, and P13 depends on P10.
 
 ### Stage 0: Platforms
 
@@ -202,7 +204,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
 | P04 | Zaber stages | P03a | L | 0042 | In review |
-| P05 | The Sangaboard | P03a | L | — | Planned: after P08, once there's a board |
+| P05 | The Sangaboard | P03a | L | — | Planned: once there's a board |
 
 ### Stage 3: Cameras
 
@@ -210,15 +212,15 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 |---|---|---|---|---|---|
 | P06 | The SDK camera pipeline | P03b | L | 0043 | Done |
 | P07 | Basler cameras | P06 | L | 0044 | In review |
-| P08 | Allied Vision cameras | P06 | L | — | Planned |
-| P09 | The Raspberry Pi camera | P06, P02 | L | 0045 | Planned: once there's a Pi camera |
+| P08 | Allied Vision cameras | P06 | L | — | Planned: skipped for now |
+| P09 | The Raspberry Pi camera | P06, P02 | L | 0045 | Planned: skipped for now, until there's a Pi camera |
 
 ### Stage 4: Real microscopes (ends with Checkpoint A)
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P10 | Calibration and tuning on hardware | P04, P05, P07, P08, P09 | M | — | Planned |
-| P11 | The Raspberry Pi 5: performance and installing | P02, P05, P09 | M | — | Planned |
+| P10 | Calibration and tuning on hardware | P04, P05, P07, P08, P09 | M | — | Planned: skipped for now |
+| P11 | The Raspberry Pi 5: performance and installing | P02, P05, P09 | M | — | Planned: skipped for now |
 
 **Checkpoint A, "Real microscopes":** Basler with Zaber, and Allied Vision with Zaber, on a PC; the Pi camera with a Sangaboard on a Pi 5. Each calibrates, autofocuses, scans and stitches.
 
@@ -226,7 +228,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P12 | Correlation placement | P03a | L | 0046 | Planned |
+| P12 | Correlation placement | P03a | L | 0046 | In review |
 | P13 | Correlation in stitching | P12, P10 | M | — | Planned |
 
 **Checkpoint B, "Seamless mosaics":** a scan on the Zaber stage and one on the Sangaboard stitch without visible seams, and the overlay shows how far correlation moved each image.
@@ -309,6 +311,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-21 | The owner skips P08 to P11 for now, and P12 comes next, as §7's order allows. Checkpoint A waits for them, and P13 still depends on P10 |
 | 2026-10-21 | One `SdkCamera` Thing for every SDK camera (ADR-0044, P07), so P08 adds only Vimba X's half. The later planned ADRs' numbers move up by one |
 | 2026-10-21 | Cameras first: P06 to P08 before P05 and P09, which wait for a Sangaboard and a Pi camera. P06 is L, not M |
 | 2026-10-20 | P03 split into P03a (device actors, serial ports, hardware tests) and P03b (the SDKs at run time, listing devices): written whole, it came to about 1,200 lines. P04, P05 and P12 depend on P03a, P06 on P03b |

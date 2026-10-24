@@ -7603,6 +7603,46 @@ export interface components {
                     max: number;
                 };
             };
+            /**
+             * @description Whether the axes drift: they lose steps, and the sample creeps.
+             * @default false
+             */
+            drift?: boolean;
+            /**
+             * @description How much, when they do.
+             * @default {
+             *       "lost_steps": {
+             *         "x": 0.005,
+             *         "y": 0.005,
+             *         "z": 0
+             *       },
+             *       "creep": {
+             *         "x": 0.2,
+             *         "y": -0.1,
+             *         "z": 0
+             *       }
+             *     }
+             */
+            drift_size?: {
+                /** @description The share of each move's steps that each axis loses. */
+                lost_steps: {
+                    /** @description The x axis's. */
+                    x: number;
+                    /** @description The y axis's. */
+                    y: number;
+                    /** @description The z axis's. */
+                    z: number;
+                };
+                /** @description How fast the sample creeps along each axis, in steps per second. */
+                creep: {
+                    /** @description The x axis's. */
+                    x: number;
+                    /** @description The y axis's. */
+                    y: number;
+                    /** @description The z axis's. */
+                    z: number;
+                };
+            };
         };
         /**
          * @description How far one step moves each axis, in µm, where the stage knows it: a

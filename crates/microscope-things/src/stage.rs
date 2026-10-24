@@ -14,9 +14,10 @@
 //!   does `halt`.
 //! - **Tracking:** while the stage moves, a task refreshes `position` and
 //!   `moving` every 20 ms; `arrived` is emitted when a move ends.
-//! - **Simulation:** the `simulation` setting switches backlash and travel
-//!   limits on and off, and sets the speed and the µm per step, which the
-//!   simulated camera uses to draw where the sample really is.
+//! - **Simulation:** the `simulation` setting switches backlash, travel
+//!   limits and drift (P12) on and off, and sets the speed and the µm per
+//!   step, which the simulated camera uses to draw where the sample really
+//!   is.
 //! - **Calibration:** `calibration_required` until the z direction is
 //!   checked; `z_direction_check` describes the check for the calibration
 //!   wizard (P29).
@@ -72,6 +73,26 @@ pub struct Travel {
     pub max: i64,
 }
 
+/// How a drifting stage's sample strays from where the stage says it is.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, JsonSchema)]
+pub struct Drift {
+    /// The share of each move's steps that each axis loses.
+    pub lost_steps: PerAxis<f64>,
+    /// How fast the sample creeps along each axis, in steps per second.
+    pub creep: PerAxis<f64>,
+}
+
+impl Default for Drift {
+    /// 0.5% of the steps lost in x and y, and a creep of 0.2 steps a second
+    /// in x and −0.1 in y; none in z, which autofocus would hide.
+    fn default() -> Self {
+        Self {
+            lost_steps: PerAxis::new(0.005, 0.005, 0.0),
+            creep: PerAxis::new(0.2, -0.1, 0.0),
+        }
+    }
+}
+
 /// An axis.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "lowercase")]
@@ -100,12 +121,18 @@ pub struct StageSimulation {
     pub limits: bool,
     /// Each axis's travel, when they do.
     pub travel: PerAxis<Travel>,
+    /// Whether the axes drift: they lose steps, and the sample creeps.
+    #[serde(default)]
+    pub drift: bool,
+    /// How much, when they do.
+    #[serde(default)]
+    pub drift_size: Drift,
 }
 
 impl Default for StageSimulation {
     /// 0.1 µm steps in x and y and 0.05 µm in z, at 1,000 and 500 steps a
     /// second; no backlash (80 steps when on); no limits (±10 mm in x and y,
-    /// ±1 mm in z when on).
+    /// ±1 mm in z when on); no drift ([`Drift::default`] when on).
     fn default() -> Self {
         let xy = Travel {
             min: -100_000,
@@ -125,6 +152,8 @@ impl Default for StageSimulation {
                     max: 20_000,
                 },
             ),
+            drift: false,
+            drift_size: Drift::default(),
         }
     }
 }
@@ -145,6 +174,16 @@ impl StageSimulation {
             } else {
                 [None; 3]
             },
+            lost_steps: self.drifting(self.drift_size.lost_steps),
+            creep: self.drifting(self.drift_size.creep),
+        }
+    }
+
+    fn drifting(&self, size: PerAxis<f64>) -> [f64; 3] {
+        if self.drift {
+            size.to_array()
+        } else {
+            [0.0; 3]
         }
     }
 }

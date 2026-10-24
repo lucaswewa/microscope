@@ -1,6 +1,6 @@
 # ADR-0030: Position-based stitching with DZI output
 
-- Status: Accepted
+- Status: Accepted; superseded in part by [ADR-0046](0046-correlation-stitching.md): images placed by correlation
 - Date: 2026-10-14
 - Phase: P38
 

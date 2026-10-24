@@ -244,3 +244,30 @@ fn imperfections_can_be_switched_at_runtime() {
     assert_eq!(stage.reported(SECOND * 3), [500, 0, 0]);
     assert_eq!(stage.outcome(SECOND * 3), Ok(()));
 }
+
+#[test]
+fn a_drifting_stage_loses_steps_and_creeps() {
+    let mut stage = StageModel::new(StageConfig {
+        lost_steps: [0.01, 0.0, 0.0],
+        creep: [0.0, 2.0, 0.0],
+        ..StageConfig::default()
+    });
+    let near = |a: [f64; 3], b: [f64; 3]| (0..3).all(|axis| (a[axis] - b[axis]).abs() < 1e-9);
+    stage.move_to(Duration::ZERO, [1000, 0, 0]);
+    // Half way, it has lost 5 of the first 500 steps.
+    let half = stage.true_position(ms(500));
+    assert!(near(half, [495.0, 1.0, 0.0]), "{half:?}");
+    // 10 of the 1,000 steps lost, and 2 steps of creep a second.
+    assert_eq!(stage.reported(SECOND), [1000, 0, 0]);
+    let there = stage.true_position(SECOND);
+    assert!(near(there, [990.0, 2.0, 0.0]), "{there:?}");
+    // Coming back, it loses as many the other way.
+    stage.move_to(SECOND, [0, 0, 0]);
+    let back = stage.true_position(SECOND * 3);
+    assert!(near(back, [0.0, 6.0, 0.0]), "{back:?}");
+    // Switched off, it keeps what it strayed, and strays no further.
+    stage.set_config(SECOND * 3, StageConfig::default());
+    stage.move_to(SECOND * 3, [1000, 0, 0]);
+    let later = stage.true_position(SECOND * 10);
+    assert!(near(later, [1000.0, 6.0, 0.0]), "{later:?}");
+}

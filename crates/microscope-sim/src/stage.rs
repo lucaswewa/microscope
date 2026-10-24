@@ -10,6 +10,10 @@
 //! - **the reported position,** the motors' position minus the zero offset,
 //!   which is what the stage tells its users.
 //!
+//! A drifting stage's sample also strays from the carriage: each move loses
+//! a share of its steps, and the sample creeps slowly, as a worn or warming
+//! stage's does.
+//!
 //! Every method takes the time, `now` (see [`crate::clock`]): the model
 //! never reads a clock, so tests decide exactly what time it is. A new move
 //! interrupts the one in progress from wherever the motors are: the latest
@@ -30,16 +34,24 @@ pub struct StageConfig {
     /// Each axis's travel: the lowest and highest motor positions, in steps
     /// from where the stage started. `None` for none.
     pub limits: [Option<(i64, i64)>; 3],
+    /// The share of each move's steps that each axis loses: the sample moves
+    /// that much less than the motors. 0 for none.
+    pub lost_steps: [f64; 3],
+    /// How fast the sample creeps along each axis, in steps per second. 0
+    /// for not at all.
+    pub creep: [f64; 3],
 }
 
 impl Default for StageConfig {
-    /// 1,000 steps a second in x and y and 500 in z, with no backlash and
-    /// no limits.
+    /// 1,000 steps a second in x and y and 500 in z, with no backlash, no
+    /// limits and no drift.
     fn default() -> Self {
         Self {
             speed: [1000.0, 1000.0, 500.0],
             backlash: [0.0; 3],
             limits: [None; 3],
+            lost_steps: [0.0; 3],
+            creep: [0.0; 3],
         }
     }
 }
@@ -110,6 +122,10 @@ pub struct StageModel {
     carriage: [f64; 3],
     /// The motor position that reads as 0.
     zero: [i64; 3],
+    /// How far the sample has strayed from the carriage, by `since`: steps
+    /// lost, and creep.
+    strayed: [f64; 3],
+    since: Duration,
     motion: Option<Motion>,
     /// How the last move ended.
     outcome: Result<(), MoveError>,
@@ -123,6 +139,8 @@ impl StageModel {
             motor: [0.0; 3],
             carriage: [0.0; 3],
             zero: [0; 3],
+            strayed: [0.0; 3],
+            since: Duration::ZERO,
             motion: None,
             outcome: Ok(()),
         }
@@ -133,10 +151,13 @@ impl StageModel {
         &self.config
     }
 
-    /// Changes how the stage behaves. A move in progress stops first, and the
-    /// carriage keeps within the new backlash.
+    /// Changes how the stage behaves. A move in progress stops first, the
+    /// carriage keeps within the new backlash, and the sample keeps what it
+    /// has strayed.
     pub fn set_config(&mut self, now: Duration, config: StageConfig) {
         self.stop(now);
+        self.strayed = self.strayed_at(now);
+        self.since = now;
         self.config = config;
         self.carriage =
             std::array::from_fn(|axis| self.follow(axis, self.carriage[axis], self.motor[axis]));
@@ -229,13 +250,24 @@ impl StageModel {
         std::array::from_fn(|axis| motor[axis].round() as i64 - self.zero[axis])
     }
 
-    /// The true position: where the carriage really is, in steps from where
+    /// The true position: where the sample really is, in steps from where
     /// the stage started. It differs from the reported one by the zero
-    /// offset and the backlash.
+    /// offset, the backlash, and how far the sample has strayed.
     pub fn true_position(&mut self, now: Duration) -> [f64; 3] {
         self.settle(now);
         let motor = self.motor_at(now);
-        std::array::from_fn(|axis| self.follow(axis, self.carriage[axis], motor[axis]))
+        let strayed = self.strayed_at(now);
+        std::array::from_fn(|axis| {
+            // The steps lost so far in a move in progress.
+            let lost = self.config.lost_steps[axis] * (motor[axis] - self.motor[axis]);
+            self.follow(axis, self.carriage[axis], motor[axis]) + strayed[axis] - lost
+        })
+    }
+
+    /// How far the sample has strayed from the carriage by `now`.
+    fn strayed_at(&self, now: Duration) -> [f64; 3] {
+        let seconds = now.saturating_sub(self.since).as_secs_f64();
+        std::array::from_fn(|axis| self.strayed[axis] + self.config.creep[axis] * seconds)
     }
 
     /// Makes the position now read as 0, without moving.
@@ -272,6 +304,8 @@ impl StageModel {
 
     fn finish(&mut self, motion: &Motion, time: Duration) {
         let motor = motion.at(time);
+        let lost = |axis: usize| self.config.lost_steps[axis] * (motor[axis] - self.motor[axis]);
+        self.strayed = std::array::from_fn(|axis| self.strayed[axis] - lost(axis));
         self.carriage =
             std::array::from_fn(|axis| self.follow(axis, self.carriage[axis], motor[axis]));
         self.motor = motor;
