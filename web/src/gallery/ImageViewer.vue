@@ -2,8 +2,9 @@
 // The viewer (ADR-0027): an item's image in a dialog, to zoom and pan. It's
 // one image, a deep-zoom image, or a sequence stepped through with a slider,
 // or played, each image for a number of seconds, once or in a loop (P52).
-// A stitched scan's images are outlined over it, in overlay layers that its
-// Layers menu turns on and off (P53b).
+// A stitched scan's images are outlined over it, with how far correlation
+// moved each (P13), in overlay layers that its Layers menu turns on and off
+// (P53b).
 // Its brightness, contrast and saturation can be changed and reset, and it
 // can fill the screen. Its controls are the app's, so they follow the theme.
 import fitIcon from '@material-symbols/svg-400/outlined/fit_screen.svg?raw'
@@ -18,6 +19,7 @@ import { computed, onBeforeUnmount, reactive, ref, useTemplateRef, watch } from 
 import type { GalleryEntry } from '@/api/things'
 import { useConnectionStore } from '@/connection/store'
 import { useHost } from '@/host'
+import { corrections } from '@/overlay/corrections'
 import { imageOutlines, type TileLayout } from '@/overlay/imageOutlines'
 import { useOverlayLayers } from '@/overlay/layers'
 import LayersMenu from '@/overlay/LayersMenu.vue'
@@ -61,7 +63,8 @@ watch(
       const layout = (await connection.client!.request(
         dataUrl(viewer.tiles, connection.client!.baseUrl),
       )) as TileLayout
-      layers.value = [imageOutlines(layout)]
+      const moved = corrections(layout)
+      layers.value = moved ? [imageOutlines(layout), moved] : [imageOutlines(layout)]
     } catch {
       // Without it, the mosaic shows alone.
     }

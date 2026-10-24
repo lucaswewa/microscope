@@ -15,6 +15,9 @@ export interface TileLayout {
     y: number
     width: number
     height: number
+    /** Where the stage put it (P13), where correlation may have moved it; not in older layouts. */
+    stage_x?: number
+    stage_y?: number
   }[]
 }
 

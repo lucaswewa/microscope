@@ -10,7 +10,8 @@
 //! Stitching (P39, [`crate::stitch`]): while a scan runs, its live preview
 //! is drawn again after each site that saves an image, with where each image
 //! went (P53). Once it ends, it's
-//! stitched in the background if `stitch_automatically` is set.
+//! stitched in the background if `stitch_automatically` is set, and its
+//! images refined by correlation if `refine_with_correlation` is (P13).
 //! `stitch_scan` and `stitch_all_scans` stitch scans on request. Like the
 //! downloads, they don't take the global lock.
 
@@ -106,6 +107,11 @@ pub struct SmartScan {
     /// Whether each scan is stitched once it ends.
     #[setting(default = true)]
     stitch_automatically: Prop<bool>,
+    /// Whether a scan's stitched mosaic has its images where their overlaps
+    /// put them, by correlation, rather than where the stage put them
+    /// (ADR-0046). The live preview keeps the stage's positions.
+    #[setting(default = true)]
+    refine_with_correlation: Prop<bool>,
     /// Whether a scan autofocuses: at its start, and at each site.
     /// Off, it takes one image at each site, where the stage is.
     #[setting(default = true)]
@@ -317,7 +323,7 @@ impl SmartScan {
         let _stitching = Stitching::start(&self.stitching, &scan_name).ok_or_else(|| {
             ActionError::handled(format!("`{scan_name}` is already being stitched"))
         })?;
-        stitch::stitch(&scan)
+        stitch::stitch(&scan, self.refine_with_correlation.get())
     }
 
     /// Stitches every scan that isn't stitched, but the one being scanned.
@@ -337,7 +343,7 @@ impl SmartScan {
             else {
                 continue;
             };
-            match stitch::stitch(&scans.join(&name)) {
+            match stitch::stitch(&scans.join(&name), self.refine_with_correlation.get()) {
                 Ok(_) => stitched.push(name),
                 Err(error) => tracing::warn!("couldn't stitch `{name}`: {error}"),
             }
@@ -383,13 +389,12 @@ impl SmartScan {
         let Some(stitching) = Stitching::start(&self.stitching, name) else {
             return;
         };
+        let refine = self.refine_with_correlation.get();
         tokio::task::spawn_blocking(move || {
             let _stitching = stitching;
             let log = ScanLog(folder.join("scan.log"));
-            match stitch::stitch(&folder) {
-                Ok(Stitched { size: [w, h], .. }) => {
-                    log.write(&format!("Stitched: {w} × {h} pixels"))
-                }
+            match stitch::stitch(&folder, refine) {
+                Ok(stitched) => log.write(&stitched.summary()),
                 Err(error) => log.write(&format!("Stitching failed: {error}")),
             }
         });

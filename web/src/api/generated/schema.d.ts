@@ -6432,6 +6432,60 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/smart_scan/refine_with_correlation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Whether a scan's stitched mosaic has its images where their overlaps
+         * @description ## Whether a scan's stitched mosaic has its images where their overlaps
+         *
+         *     Whether a scan's stitched mosaic has its images where their overlaps
+         *     put them, by correlation, rather than where the stage put them
+         *     (ADR-0046). The live preview keeps the stage's positions.
+         */
+        get: operations["get_property_api_v1_smart_scan_refine_with_correlation_get"];
+        /**
+         * Set Whether a scan's stitched mosaic has its images where their overlaps
+         * @description ## Whether a scan's stitched mosaic has its images where their overlaps
+         *
+         *     Whether a scan's stitched mosaic has its images where their overlaps
+         *     put them, by correlation, rather than where the stage put them
+         *     (ADR-0046). The live preview keeps the stage's positions.
+         */
+        put: operations["set_property_api_v1_smart_scan_refine_with_correlation_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/smart_scan/refine_with_correlation/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Whether a scan's stitched mosaic has its images where their overlaps.
+         * @description ## Reset Whether a scan's stitched mosaic has its images where their overlaps
+         *
+         *     Resets the property to its default value, which the Thing Description gives.
+         */
+        post: operations["reset_api_v1_smart_scan_refine_with_correlation_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/smart_scan/sample_scan": {
         parameters: {
             query?: never;
@@ -9065,6 +9119,7 @@ export interface components {
             log: components["schemas"]["LogRecordModel"][];
             error?: components["schemas"]["ProblemDetails"] | null;
         };
+        smart_scan_refine_with_correlation_value: boolean;
         smart_scan_sample_scan_input: {
             /** @default  */
             scan_name?: string;
@@ -9121,6 +9176,13 @@ export interface components {
             levels: number;
             /** @description How many images it's made of: one a site. */
             images: number;
+            /** @description How far correlation moved its images, if it refined them. */
+            correlation?: {
+                /** @description How many it moved by a pixel or more. */
+                moved: number;
+                /** @description The furthest it moved one, in pixels. */
+                largest: number;
+            } | null;
         };
         smart_scan_stitch_scan_invocation: {
             status: components["schemas"]["InvocationStatus"];
@@ -18556,6 +18618,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_v1_smart_scan_refine_with_correlation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Value of refine_with_correlation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["smart_scan_refine_with_correlation_value"];
+                    "text/event-stream": string;
+                };
+            };
+        };
+    };
+    set_property_api_v1_smart_scan_refine_with_correlation_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["smart_scan_refine_with_correlation_value"];
+            };
+        };
+        responses: {
+            /** @description Property set successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_smart_scan_refine_with_correlation_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };

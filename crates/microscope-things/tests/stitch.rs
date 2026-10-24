@@ -1,7 +1,9 @@
 //! Stitching scans on request (P39): a scan's images, one a site, become a
 //! deep-zoom mosaic in its `stitched/` folder, which its gallery card then
 //! shows and offers to download, with where each image went (P53).
-//! `stitch_all_scans` stitches those that aren't.
+//! `stitch_all_scans` stitches those that aren't. These place the images
+//! where the stage put them: refining by correlation (P13) is tested on a
+//! drifting stage's scan, in `smart_scan.rs`.
 
 use std::path::{Path, PathBuf};
 
@@ -83,7 +85,7 @@ fn save(images: &Path, [x, y, z]: [i64; 3], image: &RgbImage, acquired: &str) {
 }
 
 async fn start(data: &Path) -> Harness<Gallery> {
-    Harness::builder("gallery", Gallery::default())
+    let harness = Harness::builder("gallery", Gallery::default())
         .thing("camera", SimulatedCamera::default())
         .thing("stage", SimulatedStage::default())
         .thing("illumination", SimulatedIllumination::default())
@@ -92,7 +94,15 @@ async fn start(data: &Path) -> Harness<Gallery> {
         .global_lock(true)
         .start()
         .await
-        .expect("the harness starts")
+        .expect("the harness starts");
+    // A smooth picture, through JPEG, has little but the JPEG's blocks for
+    // correlation to go by.
+    let refine = json!(false);
+    let response = (harness.client())
+        .put_json("/smart_scan/refine_with_correlation", &refine)
+        .await;
+    assert!(response.status.is_success(), "{}", response.text());
+    harness
 }
 
 /// Runs an action over HTTP: its final record.
@@ -151,7 +161,7 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
     assert_eq!(stitched["status"], "completed", "{stitched}");
     assert_eq!(
         stitched["output"],
-        json!({"size": [400, 300], "levels": 10, "images": 9})
+        json!({"size": [400, 300], "levels": 10, "images": 9, "correlation": null})
     );
     // The middle of the middle site's stack, so the picture again.
     let overview = image::open(folder.join("stitched/overview.jpeg")).expect("an overview");
@@ -191,6 +201,8 @@ async fn a_scan_is_stitched_into_its_mosaic_which_its_card_then_shows() {
                 "y": y,
                 "width": TILE[0],
                 "height": TILE[1],
+                "stage_x": x,
+                "stage_y": y,
             })
         })
         .collect();

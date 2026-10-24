@@ -145,7 +145,7 @@ beforeEach(() => {
       tiles: [
         { image: 'img_0_0_5.jpeg', number: 1, x: 0, y: 0, width: 200, height: 100 },
         { image: 'img_9_0_5.jpeg', number: 2, x: 100, y: 0, width: 200, height: 100 },
-      ],
+      ].map((tile, index) => ({ ...tile, stage_x: tile.x - 3 * index, stage_y: 4 * index })),
     },
     'GET /api/v1/data/captures/a%20b%23.jpeg': () => new Response('image'),
     'GET /api/v1/gallery/captures/capture-1.jpeg/zip': () => new Response('zip'),
@@ -432,7 +432,7 @@ describe('the viewer', () => {
     expect(dialog.querySelector('[aria-label="Play"]')).not.toBeNull()
   })
 
-  it('outlines a stitched scan’s images over it, following the view', async () => {
+  it('outlines a stitched scan’s images over it, and how far each moved, following the view', async () => {
     const stitched = { type: 'dzi', path: 'scans/s/stitched/mosaic.dzi' } as const
     list = [
       capture(1, { viewer: { ...stitched, tiles: 'scans/s/stitched/tiles.json' } }),
@@ -444,10 +444,15 @@ describe('the viewer', () => {
     viewer.at = { x: 10, y: 20, width: 600, height: 200 }
     viewer.fire('open')
     await flushPromises()
-    const outlines = () => [...dialog.querySelectorAll('.overlay-layers__stroke')]
+    const outlines = () => [
+      ...dialog.querySelectorAll('[data-layer="image-outlines"] .overlay-layers__stroke'),
+    ]
     const left = () => outlines().map((rect) => Number(rect.getAttribute('x')))
     expect(left()).toEqual([10, 210])
     expect(dialog.querySelector('.overlay-layers title')!.textContent).toBe('1: img_0_0_5.jpeg')
+    // And how far correlation moved each from where the stage put it (P13).
+    const moves = dialog.querySelectorAll('[data-layer="corrections"] text')
+    expect([...moves].map((label) => label.textContent)).toEqual(['0 px', '5 px'])
     // Zoomed in twice as far, and panned: they follow.
     viewer.at = { x: -290, y: 20, width: 1200, height: 400 }
     viewer.fire('update-viewport')

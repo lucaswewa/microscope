@@ -182,7 +182,7 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 **The order since P04:** the cameras, P06 to P08, come before the Sangaboard, P05, and the Pi camera, P09, which wait for the owner to have them. P04 and P07 are *In review* until they're tried on the owner's Zaber stage and Basler camera.
 
-**Since P07:** the owner skips P08 to P11 for now, and P12 comes next. Checkpoint A waits for them, and P13 depends on P10.
+**Since P07:** the owner skips P08 to P11 for now, and P12 and P13 come next. Checkpoint A waits for them. P13 is built on the simulator without P10, and its scans on hardware, for Checkpoint B, wait for P05 and P10.
 
 ### Stage 0: Platforms
 
@@ -228,8 +228,8 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P12 | Correlation placement | P03a | L | 0046 | In review |
-| P13 | Correlation in stitching | P12, P10 | M | — | Planned |
+| P12 | Correlation placement | P03a | L | 0046 | Done |
+| P13 | Correlation in stitching | P12, P10 | M | — | In review |
 
 **Checkpoint B, "Seamless mosaics":** a scan on the Zaber stage and one on the Sangaboard stitch without visible seams, and the overlay shows how far correlation moved each image.
 
@@ -311,6 +311,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 | Date | Change |
 |---|---|
 | 2026-10-16 | First draft for review |
+| 2026-10-24 | P13 comes after P12, without P10: built and tested on the simulator, with its scans on the Zaber stage and the Sangaboard left for Checkpoint B |
 | 2026-10-21 | The owner skips P08 to P11 for now, and P12 comes next, as §7's order allows. Checkpoint A waits for them, and P13 still depends on P10 |
 | 2026-10-21 | One `SdkCamera` Thing for every SDK camera (ADR-0044, P07), so P08 adds only Vimba X's half. The later planned ADRs' numbers move up by one |
 | 2026-10-21 | Cameras first: P06 to P08 before P05 and P09, which wait for a Sangaboard and a Pi camera. P06 is L, not M |

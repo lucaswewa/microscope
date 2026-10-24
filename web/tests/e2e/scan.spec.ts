@@ -63,7 +63,7 @@ test('a scan from the Slide Scan tab ends stitched in the gallery', async ({ pag
   await expect(page.locator('.deep-zoom')).toHaveAttribute('data-status', 'shown')
   // Its images outlined over it (P53b), following the zoom.
   const dialog = page.getByRole('dialog')
-  const strokes = dialog.locator('.overlay-layers__stroke')
+  const strokes = dialog.locator('[data-layer="image-outlines"] .overlay-layers__stroke')
   await expect(strokes).toHaveCount(2)
   const width = async () => Number(await strokes.first().getAttribute('width'))
   const before = await width()

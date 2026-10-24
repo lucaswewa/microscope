@@ -49,31 +49,40 @@ const descriptions = ref<Record<string, string>>({})
 const sampleId = ref('')
 // Closed, so Start Smart Scan shows without scrolling (P47).
 const open = ref<string[]>([])
-const automatic = ref<boolean>()
+// The stitching settings, as the server has them, followed as they change.
+const STITCHING = ['stitch_automatically', 'refine_with_correlation'] as const
+const stitchingSettings = ref<Record<string, unknown>>({})
 
 watch(
   smartScan,
   async (thing, _, onCleanup) => {
     if (!thing) return
-    const follow = (value: unknown) => (automatic.value = value as boolean)
-    onCleanup(followProperty(thing.thing, 'stitch_automatically', follow))
+    const stops = STITCHING.map((name) =>
+      followProperty(thing.thing, name, (value) => (stitchingSettings.value[name] = value)),
+    )
+    onCleanup(() => stops.forEach((stop) => stop()))
     try {
-      ;[workflow.value, names.value, descriptions.value, automatic.value] = await Promise.all([
+      const settings = Promise.all(STITCHING.map((name) => thing.read(name)))
+      ;[workflow.value, names.value, descriptions.value] = await Promise.all([
         thing.read('workflow_name'),
         thing.read('workflow_display_names'),
         thing.read('workflow_descriptions'),
-        thing.read('stitch_automatically'),
       ])
+      const values = await settings
+      STITCHING.forEach((name, index) => (stitchingSettings.value[name] = values[index]))
     } catch (error) {
       toast.error('The workflows couldn’t be read.', { details: error })
     }
   },
   { immediate: true },
 )
-const stitchingChanged = computed(() => {
-  const fallback = smartScan.value?.thing.td.properties?.stitch_automatically?.default
-  return automatic.value !== undefined && fallback !== undefined && automatic.value !== fallback
-})
+const stitchingChanged = computed(() =>
+  STITCHING.some((name) => {
+    const fallback = smartScan.value?.thing.td.properties?.[name]?.default
+    const value = stitchingSettings.value[name]
+    return value !== undefined && fallback !== undefined && value !== fallback
+  }),
+)
 
 const options = computed(() =>
   Object.entries(names.value).map(([value, label]) => ({ value, label })),
@@ -97,6 +106,14 @@ const stitching: UiElement[] = [
     thing: 'smart_scan',
     property: 'stitch_automatically',
     label: 'Stitch the scan once it ends',
+  },
+  // Where the images' overlaps put them, not the stage (P13); the live
+  // preview keeps the stage's positions.
+  {
+    kind: 'property_control',
+    thing: 'smart_scan',
+    property: 'refine_with_correlation',
+    label: 'Refine with image correlation',
   },
 ]
 // Off, a scan takes one image at each site, where the stage is (P51).

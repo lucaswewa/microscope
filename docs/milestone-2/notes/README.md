@@ -18,4 +18,5 @@ A phase's notes are marked *In review* in its own pull request. The next phase's
 | P04 | [Zaber stages](P04-zaber.md) | In review, until tried on the stage |
 | P06 | [The SDK camera pipeline](P06-camera-pipeline.md) | Done |
 | P07 | [Basler cameras](P07-basler.md) | In review, until tried on the camera |
-| P12 | [Correlation placement](P12-correlation-placement.md) | In review |
+| P12 | [Correlation placement](P12-correlation-placement.md) | Done |
+| P13 | [Correlation in stitching](P13-correlation-in-stitching.md) | In review |
