@@ -51,6 +51,32 @@
   user-select: none;
 }
 
+.app-select__group {
+  padding: var(--space-1) var(--space-2) 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.app-select__separator {
+  height: var(--border-width);
+  margin: var(--space-1) 0;
+  background: var(--color-border);
+}
+
+.app-select__text {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.app-select__swatch {
+  flex: none;
+  width: var(--space-4);
+  height: var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
 .app-select__option[data-highlighted] {
   background: var(--color-accent-subtle);
 }

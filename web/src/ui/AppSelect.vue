@@ -2,22 +2,26 @@
 // A drop-down list of options, on Reka UI's Select (ADR-0013), which handles
 // the keyboard, typeahead, focus and ARIA. `v-model` is the chosen option's
 // value; until one is chosen, `placeholder` shows. In a FormField it takes
-// the field's id, description and error state.
+// the field's id, description and error state. Options in a `group` are
+// listed under its name, and one with a `swatch` shows that colour.
 import check from '@material-symbols/svg-400/outlined/check.svg?raw'
 import chevron from '@material-symbols/svg-400/outlined/keyboard_arrow_down.svg?raw'
 import {
   SelectContent,
+  SelectGroup,
   SelectIcon,
   SelectItem,
   SelectItemIndicator,
   SelectItemText,
+  SelectLabel,
   SelectPortal,
   SelectRoot,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
   SelectViewport,
 } from 'reka-ui'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import AppIcon from './AppIcon.vue'
 import { useFieldControl } from './field'
@@ -26,7 +30,13 @@ import { regionTheme } from './regionTheme'
 const model = defineModel<T>()
 const props = withDefaults(
   defineProps<{
-    options: readonly { value: T; label: string; disabled?: boolean }[]
+    options: readonly {
+      value: T
+      label: string
+      disabled?: boolean
+      group?: string
+      swatch?: string
+    }[]
     placeholder?: string
     size?: 'sm' | 'md'
     invalid?: boolean
@@ -36,6 +46,17 @@ const props = withDefaults(
 )
 
 const field = useFieldControl(() => props.invalid)
+
+// The options in their groups, in order: one group without a name if none has one.
+const groups = computed(() => {
+  const groups: { name?: string; options: (typeof props.options)[number][] }[] = []
+  for (const option of props.options) {
+    const last = groups.at(-1)
+    if (last && last.name === option.group) last.options.push(option)
+    else groups.push({ name: option.group, options: [option] })
+  }
+  return groups
+})
 
 // The list is moved to <body> so no scrolling pane clips it, in the theme of
 // its trigger's region.
@@ -69,18 +90,33 @@ function onOpen(open: boolean) {
           class="app-select__list"
         >
           <SelectViewport>
-            <SelectItem
-              v-for="option in options"
-              :key="option.value"
-              :value="option.value"
-              :disabled="option.disabled"
-              class="app-select__option"
-            >
-              <SelectItemText>{{ option.label }}</SelectItemText>
-              <SelectItemIndicator as-child>
-                <AppIcon :svg="check" size="var(--icon-size-sm)" />
-              </SelectItemIndicator>
-            </SelectItem>
+            <template v-for="(group, index) in groups" :key="group.name ?? index">
+              <SelectSeparator v-if="index > 0" class="app-select__separator" />
+              <SelectGroup>
+                <SelectLabel v-if="group.name" class="app-select__group">{{
+                  group.name
+                }}</SelectLabel>
+                <SelectItem
+                  v-for="option in group.options"
+                  :key="option.value"
+                  :value="option.value"
+                  :disabled="option.disabled"
+                  class="app-select__option"
+                >
+                  <SelectItemText class="app-select__text">
+                    <span
+                      v-if="option.swatch"
+                      class="app-select__swatch"
+                      :style="{ background: option.swatch }"
+                    />
+                    {{ option.label }}
+                  </SelectItemText>
+                  <SelectItemIndicator as-child>
+                    <AppIcon :svg="check" size="var(--icon-size-sm)" />
+                  </SelectItemIndicator>
+                </SelectItem>
+              </SelectGroup>
+            </template>
           </SelectViewport>
         </SelectContent>
       </SelectPortal>

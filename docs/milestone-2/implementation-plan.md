@@ -86,13 +86,13 @@ The work is split into **21 phases (P00–P20)** in **9 stages**, with three dem
 
 | # | Topic | Decision | Recorded in |
 |---|---|---|---|
-| D1 | AutoDiscovery | Microscopes on the network: each server advertises itself over mDNS, and the desktop app lists those it finds. A browser can't use mDNS, so the browser app keeps connecting by address | ADR-0048 (P16), P18 |
+| D1 | AutoDiscovery | Microscopes on the network: each server advertises itself over mDNS, and the desktop app lists those it finds. A browser can't use mDNS, so the browser app keeps connecting by address | ADR-0049 (P16), P18 |
 | D2 | Raspberry Pi 5 | The server runs on a Pi 5 with either hardware set: the Pi camera and a Sangaboard (OpenFlexure hardware), or the USB 3 / GigE cameras and a Zaber stage | ADR-0038 (P00) |
 | D3 | Zaber stages | Zaber's ASCII protocol, in Rust (the MIT `zproto` crate, or our own client), rather than the C++ Zaber Motion Library: nothing to install, and the same on every platform | ADR-0042 (P04) |
 | D4 | Camera SDKs | Basler through pylon, Allied Vision through Vimba X. The user installs the SDK; the project doesn't redistribute it | ADR-0041 (P03a, P03b) |
 | D5 | Platforms | Windows x86_64, Linux x86_64 and Linux ARM64. The desktop app is for Windows and Linux PCs; the Pi runs headless | ADR-0038 (P00) |
-| D6 | Signing | The release workflow signs the Windows installer and binaries, with a certificate (or Azure Trusted Signing) the owner sets up | ADR-0050 (P19) |
-| D7 | Authentication | A bearer token per microscope, which the desktop app and the launcher handle; the readiness checklist's gaps (our own routes, images) are closed | ADR-0047 (P14) |
+| D6 | Signing | The release workflow signs the Windows installer and binaries, with a certificate (or Azure Trusted Signing) the owner sets up | ADR-0051 (P19) |
+| D7 | Authentication | A bearer token per microscope, which the desktop app and the launcher handle; the readiness checklist's gaps (our own routes, images) are closed | ADR-0048 (P14) |
 | D8 | Order | Hardware first: platforms, then drivers, checked on real hardware; then stitching; then security; then the desktop app and discovery | [§7](#7-phase-overview) |
 | D9 | Test hardware | The owner has a Basler camera, an Allied Vision camera, a Zaber XYZ stage and a Raspberry Pi 5. Their models are recorded in P00 | P00 |
 | D10 | Delivery | As milestone 1: one branch and pull request per phase, merged after the owner approves it, with size budgets | [§6](#6-how-phases-work) |
@@ -237,17 +237,17 @@ Sizes follow [§6](#6-how-phases-work). The detailed specs are in [phases.md](ph
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P14 | Authentication on the server | P02 | M | 0047 | Planned |
+| P14 | Authentication on the server | P02 | M | 0048 | Planned |
 | P15 | Authentication in the web app | P14 | M | — | Planned |
 
 ### Stage 7: The desktop app and discovery (ends with Checkpoint C)
 
 | ID | Phase | Depends on | Size | ADRs | Status |
 |---|---|---|---|---|---|
-| P16 | mDNS adverts | P14 | S | 0048 | Planned |
-| P17 | The Tauri desktop app | P15 | L | 0049 | Planned |
+| P16 | mDNS adverts | P14 | S | 0049 | Planned |
+| P17 | The Tauri desktop app | P15 | L | 0050 | Planned |
 | P18 | Discovery in the desktop app | P16, P17 | M | — | Planned |
-| P19 | Desktop installers and signing | P17 | M | 0050 | Planned |
+| P19 | Desktop installers and signing | P17 | M | 0051 | Planned |
 
 **Checkpoint C, "Desktop app":** on a Windows or Linux PC, the desktop app finds the Pi and a PC microscope on the network, signs in with their tokens, and drives both.
 
@@ -274,10 +274,11 @@ Numbers are provisional, assigned in the order written.
 | 0044 | One camera Thing for every SDK, and Basler cameras through pylon (superseding part of 0018) | P07 |
 | 0045 | The Raspberry Pi camera through libcamera | P09 |
 | 0046 | Correlation stitching (superseding part of 0030) | P12 |
-| 0047 | Authentication by token | P14 |
-| 0048 | mDNS adverts and discovery | P16 |
-| 0049 | The Tauri desktop app (superseding part of 0033) | P17 |
-| 0050 | Code signing and desktop distribution | P19 |
+| 0047 | Accent colours a person can choose (superseding part of 0011) | Outside a phase |
+| 0048 | Authentication by token | P14 |
+| 0049 | mDNS adverts and discovery | P16 |
+| 0050 | The Tauri desktop app (superseding part of 0033) | P17 |
+| 0051 | Code signing and desktop distribution | P19 |
 
 ## 9. Risks
 
@@ -310,6 +311,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 
 | Date | Change |
 |---|---|
+| 2026-10-24 | ADR-0047, outside a phase: accent colours a person can choose, in Settings, Display. The later planned ADRs' numbers move up by one |
 | 2026-10-16 | First draft for review |
 | 2026-10-24 | P13 comes after P12, without P10: built and tested on the simulator, with its scans on the Zaber stage and the Sangaboard left for Checkpoint B |
 | 2026-10-21 | The owner skips P08 to P11 for now, and P12 comes next, as §7's order allows. Checkpoint A waits for them, and P13 still depends on P10 |
