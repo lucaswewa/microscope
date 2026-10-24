@@ -1,10 +1,14 @@
 <script setup lang="ts">
-// The design tokens in both themes, side by side. For development only:
-// the route exists only in development builds (src/router/index.ts).
+// The design tokens in both themes, side by side, with their contrasts, and
+// accent colours to try. For development only: the route exists only in
+// development builds (src/router/index.ts).
 import { onMounted, ref, useTemplateRef } from 'vue'
 
+import { CONTRAST_PAIRS, contrast } from '@/theme/contrast'
 import { useThemeStore, type Theme, type ThemePreference } from '@/theme/store'
 import { TOKEN_GROUPS } from '@/theme/tokens'
+
+import AccentPicker from './AccentPicker.vue'
 
 const theme = useThemeStore()
 const choices: { value: ThemePreference; label: string }[] = [
@@ -17,7 +21,8 @@ const themes: Theme[] = ['light', 'dark']
 const panels = useTemplateRef<HTMLElement[]>('panels')
 const values = ref<Record<string, Record<string, string>>>({})
 
-onMounted(() => {
+/** Reads each token's value in each panel: at first, and for each accent. */
+function measure() {
   for (const panel of panels.value ?? []) {
     const style = getComputedStyle(panel)
     const name = panel.dataset.theme ?? ''
@@ -27,7 +32,15 @@ onMounted(() => {
         .map((token) => [token, style.getPropertyValue(token).trim()]),
     )
   }
-})
+}
+onMounted(measure)
+
+/** A pair's contrast in theme `name`, once both are read as #rrggbb. */
+function ratio(name: string, foreground: string, background: string): number | undefined {
+  const [a, b] = [foreground, background].map((token) => values.value[name]?.[token] ?? '')
+  const hex = /^#[0-9a-f]{6}$/i
+  return hex.test(a!) && hex.test(b!) ? contrast(a!, b!) : undefined
+}
 
 const swatchGroups = ['palette', 'color'] as const
 </script>
@@ -53,6 +66,7 @@ const swatchGroups = ['palette', 'color'] as const
         </label>
         <span class="tokens__note">Applied: {{ theme.theme }}</span>
       </fieldset>
+      <AccentPicker @change="measure" />
     </header>
 
     <div class="tokens__panels">
@@ -75,6 +89,31 @@ const swatchGroups = ['palette', 'color'] as const
             </li>
           </ul>
         </template>
+
+        <h3>Contrast</h3>
+        <ul class="tokens__list">
+          <li
+            v-for="[foreground, background, minimum] in CONTRAST_PAIRS"
+            :key="foreground + background"
+            class="tokens__row"
+          >
+            <span
+              class="tokens__pair"
+              :style="{ color: `var(${foreground})`, background: `var(${background})` }"
+              >Aa</span
+            >
+            <code>{{ foreground }} on {{ background }}</code>
+            <span
+              class="tokens__value"
+              :class="{
+                'tokens__value--failing': (ratio(name, foreground, background) ?? 21) < minimum,
+              }"
+            >
+              {{ ratio(name, foreground, background)?.toFixed(1) ?? '–' }}:1, at least
+              {{ minimum }}
+            </span>
+          </li>
+        </ul>
 
         <h3>Typography</h3>
         <p
@@ -196,6 +235,19 @@ const swatchGroups = ['palette', 'color'] as const
   color: var(--color-text-muted);
   font-family: var(--font-family-mono);
   font-size: var(--font-size-xs);
+}
+
+.tokens__value--failing {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+.tokens__pair {
+  flex: none;
+  padding: 0 var(--space-2);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .tokens__swatch {
