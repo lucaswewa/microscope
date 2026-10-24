@@ -39,7 +39,7 @@ At each image's middle, how far correlation moved it, such as "14 px", and a lin
 
    ```powershell
    cargo test -p microscope-core placement
-   cargo test -p microscope-things --test smart_scan drifting -- --nocapture
+   cargo test -p microscope-things --test correlation -- --nocapture
    ```
 
 2. **In the app,** with the server and the web app run as usual:
@@ -71,7 +71,7 @@ None yet. P13 has no driver, and was tried on the simulator, on Windows. Checkpo
 ## Tests
 
 - **Placement** (`microscope-core`): images read as they're needed are each read once, placed as `place` places them, and an error reading one is the placement's.
-- **A drifting stage's scan** (`smart_scan.rs`):
+- **A drifting stage's scan** (`correlation.rs`, moved there after P13 from `smart_scan.rs`, so it doesn't run beside the other scans and slow their cameras):
   - a 3 × 3 snake on the default sample, autofocused and captured whole, as scans are by default, with 2% of the steps lost;
   - stitched once it ends, refined: within 2.04 pixels of where the images really are, by their sidecars, the corner image the furthest. The test asks for 2.5. Its log says how many moved, and `tiles.json` records where the stage put them;
   - stitched again without refinement: 28.6 pixels out. The test asks for more than 10.
