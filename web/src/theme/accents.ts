@@ -5,15 +5,26 @@
 // of lightness (tokens.css), so the colours stay as different as they are.
 
 /**
- * The accents to try: the app's own, then blues, violets and greens. The
- * greens are as Wikipedia's "Shades of green" gives them.
+ * The accents to try: the app's own, then other magentas, blues, violets
+ * and greens. The other magentas and the greens are as Wikipedia's "Shades
+ * of magenta" and "Shades of green" give them.
  */
 export const ACCENTS = [
   { id: 'magenta', label: 'Magenta, the app’s', hex: '#ce2283' },
+  { id: 'magentadye', label: 'Magenta dye', hex: '#ca1f7b' },
+  { id: 'subtractivemagenta', label: 'Magenta (subtractive primary)', hex: '#ff0090' },
+  { id: 'africanviolet', label: 'African violet', hex: '#b284be' },
+  { id: 'amaranthpurple', label: 'Amaranth purple', hex: '#ab274f' },
+  { id: 'chineseviolet', label: 'Chinese violet', hex: '#856088' },
+  { id: 'magentahaze', label: 'Magenta haze', hex: '#9f4576' },
+  { id: 'telemagenta', label: 'Telemagenta', hex: '#cf3476' },
   { id: 'midnightblue', label: 'Midnight blue', hex: '#191970' },
   { id: 'darkblue', label: 'Dark blue', hex: '#00008b' },
   { id: 'navyblue', label: 'Navy blue', hex: '#000080' },
   { id: 'mediumblue', label: 'Medium blue', hex: '#0000cd' },
+  { id: 'inkblue', label: 'Ink blue', hex: '#2e2787' },
+  { id: 'duskblue', label: 'Dusk blue', hex: '#545aa7' },
+  { id: 'harbourblue', label: 'Harbour blue', hex: '#205896' },
   { id: 'violet', label: 'Violet', hex: '#ee82ee' },
   { id: 'vividviolet', label: 'Vivid violet', hex: '#9f00ff' },
   { id: 'electricviolet', label: 'Electric violet', hex: '#8f00ff' },
