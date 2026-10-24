@@ -2,6 +2,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import { corrections } from '@/overlay/corrections'
 import { imageOutlines } from '@/overlay/imageOutlines'
 import { useOverlayLayers } from '@/overlay/layers'
 import OverlaidImage from '@/overlay/OverlaidImage.vue'
@@ -112,5 +113,54 @@ describe('overlay layers', () => {
     setActivePinia(createPinia())
     const again = useOverlayLayers()
     expect([again.shown('image-outlines'), again.shown('scale')]).toEqual([false, true])
+  })
+
+  it('shows how far correlation moved each image from where the stage put it (P13)', () => {
+    const tile = (number: number, x: number, stage_x?: number, stage_y?: number) => ({
+      image: `img_${number}.jpeg`,
+      ...{ number, x, y: 0, width: 200, height: 100, stage_x, stage_y },
+    })
+    // The second is 4 right of and 3 below where the stage put it.
+    const moved = corrections({ size: [300, 100], tiles: [tile(1, 0, 0, 0), tile(2, 100, 96, -3)] })
+    expect([moved!.id, moved!.label]).toEqual(['corrections', 'Corrections'])
+    expect(moved!.shapes).toEqual([
+      {
+        kind: 'line',
+        points: [
+          [100, 50],
+          [100, 50],
+        ],
+        title: '1: img_1.jpeg, 0 px from where the stage put it',
+      },
+      {
+        kind: 'label',
+        x: 100,
+        y: 50,
+        text: '0 px',
+        title: '1: img_1.jpeg, 0 px from where the stage put it',
+      },
+      {
+        kind: 'line',
+        points: [
+          [196, 47],
+          [200, 50],
+        ],
+        title: '2: img_2.jpeg, 5 px from where the stage put it',
+      },
+      {
+        kind: 'label',
+        x: 200,
+        y: 50,
+        text: '5 px',
+        title: '2: img_2.jpeg, 5 px from where the stage put it',
+      },
+    ])
+    // None where no image moved, or the layout doesn't say where the stage put them.
+    expect(
+      corrections({ size: [300, 100], tiles: [tile(1, 0, 0, 0), tile(2, 100, 100, 0)] }),
+    ).toBeUndefined()
+    expect(
+      corrections({ size: [300, 100], tiles: [tile(1, 0), tile(2, 100, 96, 0)] }),
+    ).toBeUndefined()
   })
 })

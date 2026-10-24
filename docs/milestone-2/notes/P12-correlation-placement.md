@@ -1,6 +1,6 @@
 # P12: Correlation placement
 
-- Status: In review
+- Status: Done
 - Pull request: [#81](https://github.com/lucaswewa/microscope/pull/81)
 - ADRs: [ADR-0046](../../adr/0046-correlation-stitching.md)
 - Spec: [phases.md#p12](../phases.md#p12)

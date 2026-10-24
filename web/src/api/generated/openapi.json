@@ -9811,6 +9811,83 @@
         }
       }
     },
+    "/api/v1/smart_scan/refine_with_correlation": {
+      "get": {
+        "summary": "Whether a scan's stitched mosaic has its images where their overlaps",
+        "description": "## Whether a scan's stitched mosaic has its images where their overlaps\n\nWhether a scan's stitched mosaic has its images where their overlaps\nput them, by correlation, rather than where the stage put them\n(ADR-0046). The live preview keeps the stage's positions.",
+        "operationId": "get_property_api_v1_smart_scan_refine_with_correlation_get",
+        "responses": {
+          "200": {
+            "description": "Value of refine_with_correlation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/smart_scan_refine_with_correlation_value"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events: each new value as JSON in a `data:` line. Ask for them with `Accept: text/event-stream`."
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Set Whether a scan's stitched mosaic has its images where their overlaps",
+        "description": "## Whether a scan's stitched mosaic has its images where their overlaps\n\nWhether a scan's stitched mosaic has its images where their overlaps\nput them, by correlation, rather than where the stage put them\n(ADR-0046). The live preview keeps the stage's positions.",
+        "operationId": "set_property_api_v1_smart_scan_refine_with_correlation_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/smart_scan_refine_with_correlation_value"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Property set successfully",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/smart_scan/refine_with_correlation/reset": {
+      "post": {
+        "summary": "Reset Whether a scan's stitched mosaic has its images where their overlaps.",
+        "description": "## Reset Whether a scan's stitched mosaic has its images where their overlaps\n\nResets the property to its default value, which the Thing Description gives.",
+        "operationId": "reset_api_v1_smart_scan_refine_with_correlation_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/smart_scan/sample_scan": {
       "get": {
         "summary": "All invocations of sample_scan.",
@@ -18863,6 +18940,9 @@
           "log"
         ]
       },
+      "smart_scan_refine_with_correlation_value": {
+        "type": "boolean"
+      },
       "smart_scan_sample_scan_input": {
         "type": "object",
         "properties": {
@@ -19130,6 +19210,33 @@
             "description": "How many images it's made of: one a site.",
             "type": "integer",
             "minimum": 0
+          },
+          "correlation": {
+            "description": "How far correlation moved its images, if it refined them.",
+            "oneOf": [
+              {
+                "description": "How far correlation moved a mosaic's images from where the stage put\nthem.",
+                "type": "object",
+                "properties": {
+                  "moved": {
+                    "description": "How many it moved by a pixel or more.",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "largest": {
+                    "description": "The furthest it moved one, in pixels.",
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "moved",
+                  "largest"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [

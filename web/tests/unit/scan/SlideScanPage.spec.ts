@@ -49,6 +49,7 @@ const scanning = (phase: LiveScanDetails['scan_phase'], more: Partial<LiveScanDe
 
 let workflow: string
 let automatic: boolean
+let refining: boolean
 let focusing: boolean
 let details: LiveScanDetails | null
 let status: string
@@ -60,6 +61,7 @@ let wrapper: VueWrapper | undefined
 beforeEach(() => {
   vi.useFakeTimers()
   ;[workflow, automatic, details, status, log, ongoing] = ['snake_workflow', true, null, '', [], []]
+  refining = true
   focusing = true
   const server = fakeServer({
     'GET /api/v1/thing_descriptions/': {
@@ -73,6 +75,7 @@ beforeEach(() => {
           workflow_descriptions: {},
           latest_scan_live_details: {},
           stitch_automatically: { type: 'boolean', default: true },
+          refine_with_correlation: { type: 'boolean', default: true },
           autofocus_enabled: { type: 'boolean', default: true },
         },
         ['sample_scan', 'download_zip'],
@@ -95,6 +98,7 @@ beforeEach(() => {
       snake_workflow: 'Back and forth.',
     },
     'GET /api/v1/smart_scan/stitch_automatically': () => json(automatic),
+    'GET /api/v1/smart_scan/refine_with_correlation': () => json(refining),
     'GET /api/v1/smart_scan/autofocus_enabled': () => json(focusing),
     'PUT /api/v1/smart_scan/autofocus_enabled': (r) => {
       focusing = JSON.parse(r.body!)
@@ -171,6 +175,15 @@ describe('the Slide Scan tab', () => {
     expect(workflow).toBe('raster_workflow')
     expect(pane().text()).toContain('Row by row.')
     expect(pane().text()).toContain('Raster panel')
+  })
+
+  it('offers to refine the stitch by image correlation, its change shown', async () => {
+    refining = false
+    await open()
+    expect(pane().text()).toContain('Stitching settings (changed)')
+    await button('Stitching settings (changed)')!.trigger('click')
+    await flushPromises()
+    expect(pane().text()).toContain('Refine with image correlation')
   })
 
   it('turns autofocus off for the scans it starts', async () => {

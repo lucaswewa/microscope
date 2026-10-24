@@ -15,8 +15,13 @@
 //!    pair used keeps its stage placement, and a group of tiles keeps
 //!    theirs on average.
 //!
-//! [`place`] does all three for tiles in memory. [`pair`] and [`solve`] do
-//! them a step at a time, for tiles read as they're needed.
+//! [`place`] does all three for tiles in memory, and [`place_with`] for
+//! tiles read as they're needed. [`pair`] and [`solve`] do them a step at a
+//! time.
+
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+use std::convert::Infallible;
 
 use crate::registration::{Gray, Options, register};
 
@@ -92,14 +97,53 @@ impl Placement {
 /// one size.
 pub fn place(tiles: &[Gray], expected: &[[f64; 2]], options: &PlacementOptions) -> Placement {
     assert_eq!(tiles.len(), expected.len(), "a placement for each tile");
-    let pairs: Vec<Pair> = (0..tiles.len())
-        .flat_map(|a| (a + 1..tiles.len()).map(move |b| (a, b)))
-        .filter_map(|(a, b)| pair((a, &tiles[a]), (b, &tiles[b]), expected, options))
+    let size = tiles
+        .first()
+        .map_or([0; 2], |tile| [tile.width, tile.height]);
+    let read = &mut |index: usize| Ok::<_, Infallible>(tiles[index].clone());
+    match place_with(expected, size, read, options) {
+        Ok(placement) => placement,
+    }
+}
+
+/// [`place`] for tiles `size` pixels each (width and height), which `tile`
+/// reads by index. Each is read once, when its first pair is registered, and
+/// dropped after its last, so a scan's images, taken in order, are held a
+/// row or two at a time. The first error reading one is returned.
+pub fn place_with<E>(
+    expected: &[[f64; 2]],
+    size: [usize; 2],
+    tile: &mut dyn FnMut(usize) -> Result<Gray, E>,
+    options: &PlacementOptions,
+) -> Result<Placement, E> {
+    let n = expected.len();
+    let candidates: Vec<(usize, usize)> = (0..n)
+        .flat_map(|a| (a + 1..n).map(move |b| (a, b)))
+        .filter(|&(a, b)| overlap(size, stage(expected, a, b).map(f64::round), options).is_some())
         .collect();
-    Placement {
+    let mut last = vec![0; n];
+    for (k, &(a, b)) in candidates.iter().enumerate() {
+        (last[a], last[b]) = (k, k);
+    }
+    let (mut held, mut pairs) = (HashMap::new(), Vec::new());
+    for (k, &(a, b)) in candidates.iter().enumerate() {
+        for index in [a, b] {
+            if let Entry::Vacant(entry) = held.entry(index) {
+                entry.insert(tile(index)?);
+            }
+        }
+        pairs.extend(pair((a, &held[&a]), (b, &held[&b]), expected, options));
+        held.retain(|&index, _| last[index] > k);
+    }
+    Ok(Placement {
         origins: solve(expected, &pairs, options.anchor),
         pairs,
-    }
+    })
+}
+
+/// How far `b`'s stage placement is from `a`'s.
+fn stage(expected: &[[f64; 2]], a: usize, b: usize) -> [f64; 2] {
+    [0, 1].map(|axis| expected[b][axis] - expected[a][axis])
 }
 
 /// Tiles `a` and `b`, by index, registered on their overlap, or `None` if
@@ -110,7 +154,7 @@ pub fn pair(
     expected: &[[f64; 2]],
     options: &PlacementOptions,
 ) -> Option<Pair> {
-    let stage = [0, 1].map(|axis| expected[b][axis] - expected[a][axis]);
+    let stage = stage(expected, a, b);
     let first = offset([tile_a, tile_b], stage.map(f64::round), options)?;
     let near = |offset: [f64; 2]| {
         let correction = [0, 1].map(|axis| offset[axis] - stage[axis]);
@@ -142,17 +186,11 @@ fn offset(
     guess: [f64; 2],
     options: &PlacementOptions,
 ) -> Option<([f64; 2], f64)> {
-    let least = (16 * options.registration.downsample.max(1)) as f64;
-    let enough = |side: usize| (side as f64 * options.min_overlap).max(least);
+    let (across, down) = overlap([a.width, a.height], guess, options)?;
     let [dx, dy] = guess;
-    let (across, down) = (a.width as f64 - dx.abs(), a.height as f64 - dy.abs());
-    if across < enough(a.width) || down < enough(a.height) {
-        return None;
-    }
     // Where the overlap starts in each tile.
     let start = |d: f64| (d.max(0.0) as usize, (-d).max(0.0) as usize);
     let ((xa, xb), (ya, yb)) = (start(dx), start(dy));
-    let (across, down) = (across as usize, down as usize);
     let shift = register(
         &a.crop(xa, ya, across, down),
         &b.crop(xb, yb, across, down),
@@ -160,6 +198,23 @@ fn offset(
     );
     // `b`'s part shows what `a`'s does `guess − offset` further on.
     Some(([dx - shift.dx, dy - shift.dy], shift.confidence))
+}
+
+/// The overlap of two tiles `size` pixels each, the second at `guess` from
+/// the first in whole pixels, across and down, if it's enough to register.
+fn overlap(
+    size: [usize; 2],
+    guess: [f64; 2],
+    options: &PlacementOptions,
+) -> Option<(usize, usize)> {
+    let least = (16 * options.registration.downsample.max(1)) as f64;
+    let enough = |side: usize| (side as f64 * options.min_overlap).max(least);
+    let (across, down) = (
+        size[0] as f64 - guess[0].abs(),
+        size[1] as f64 - guess[1].abs(),
+    );
+    let fits = across >= enough(size[0]) && down >= enough(size[1]);
+    fits.then_some((across as usize, down as usize))
 }
 
 /// Every tile's top-left corner: the least-squares solution of each pair
@@ -334,6 +389,28 @@ mod tests {
         let moved = placement.moves(&expected);
         assert!(moved[8] < 1e-3, "it keeps its stage placement: {moved:?}");
         assert!(residual(&placement.origins[..8], &truth[..8]) < 0.3);
+    }
+
+    #[test]
+    fn tiles_read_as_needed_are_each_read_once() {
+        let (tiles, expected, truth) = grid(|k| [(k % 2) as f64 * 6.0, 0.0]);
+        let mut reads = vec![0; 9];
+        let mut read = |index: usize| {
+            reads[index] += 1;
+            Ok::<_, String>(tiles[index].clone())
+        };
+        let options = PlacementOptions::default();
+        let placement = place_with(&expected, [512, 384], &mut read, &options).expect("placed");
+        assert_eq!(reads, [1; 9]);
+        assert_eq!(placement, place(&tiles, &expected, &options));
+        assert!(residual(&placement.origins, &truth) < 0.3);
+        // An error reading one is the placement's.
+        let mut broken = |index: usize| match index {
+            4 => Err("unreadable"),
+            _ => Ok(tiles[index].clone()),
+        };
+        let placed = place_with(&expected, [512, 384], &mut broken, &options);
+        assert_eq!(placed, Err("unreadable"));
     }
 
     #[test]
