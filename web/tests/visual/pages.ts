@@ -52,7 +52,7 @@ export async function fix(page: Page) {
   await answer('stage/axis_inverted', { x: false, y: false, z: false })
   await answer('stage_measure/calibrated_range', null)
   await answer('system/hostname', 'lab-pc')
-  await answer('system/version_data', { version: '0.1.0', version_source: 'v0.1.0' })
+  await answer('system/version_data', { version: '0.2.0', version_source: 'v0.2.0' })
   await answer('system/os_version', 'Windows 11')
   await answer('gallery/list_data', GALLERY)
   // As they start, whatever the scan and sequence tests leave.

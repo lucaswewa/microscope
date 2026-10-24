@@ -175,10 +175,10 @@ The zip a user downloads also needs the launcher's release build and [cargo-abou
 ```powershell
 cargo build --release -p microscope-server -p microscope-launcher --locked
 cargo install cargo-about --version 0.9.2 --features cli --locked
-./release/package.ps1 -Version 0.1.0
+./release/package.ps1 -Version 0.2.0
 ```
 
-It's written to `release-out\`. On Linux, `bash release/package.sh 0.1.0` builds the archive and the `.deb` there instead, with `jq` and `dpkg-deb`. Pushing a tag such as `v0.1.0` has the release workflow build them all, check that each launcher starts and that the `.deb`'s service serves and restarts, and publish them.
+It's written to `release-out\`. On Linux, `bash release/package.sh 0.2.0` builds the archive and the `.deb` there instead, with `jq` and `dpkg-deb`. Pushing a tag such as `v0.2.0` has the release workflow build them all, check that each launcher starts and that the `.deb`'s service serves and restarts, and publish them, with the tag's notes from `release/notes/` where there are some.
 
 ### Run the launcher
 

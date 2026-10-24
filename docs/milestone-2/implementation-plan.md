@@ -311,6 +311,7 @@ These are choices I made while writing the plan. Each is easy to change now and 
 
 | Date | Change |
 |---|---|
+| 2026-10-24 | Release v0.2.0, from `main` as it stands, before Checkpoint A: the owner's choice. Its notes say what's been tried on hardware and what hasn't |
 | 2026-10-24 | ADR-0047, outside a phase: accent colours a person can choose, in Settings, Display. The later planned ADRs' numbers move up by one |
 | 2026-10-16 | First draft for review |
 | 2026-10-24 | P13 comes after P12, without P10: built and tested on the simulator, with its scans on the Zaber stage and the Sangaboard left for Checkpoint B |

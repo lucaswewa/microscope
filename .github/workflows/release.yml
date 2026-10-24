@@ -4,8 +4,9 @@ name: Release
 # embedded, the default configurations, the README, the licence, NOTICE and
 # the third-party licences. The same in a Linux archive for x86_64 and ARM64,
 # and a .deb that runs the server as a systemd service (P02). A tag `v*`
-# publishes them as a GitHub release. A manual run, or a pull request that
-# changes the packaging, keeps them as artifacts.
+# publishes them as a GitHub release, with its notes from
+# release/notes/<tag>.md where there's one. A manual run, or a pull request
+# that changes the packaging, keeps them as artifacts.
 on:
   push:
     tags: ['v*']
@@ -150,12 +151,22 @@ jobs:
     needs: [windows, linux]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: release/notes
       - uses: actions/download-artifact@v4
         with:
           path: assets
           merge-multiple: true
       - name: Publish
-        run: gh release create "$TAG" assets/* --repo "$GITHUB_REPOSITORY" --title "Microscope $TAG" --notes "See README.md in the zip or the archive to get started. On Linux, the .deb runs the microscope as a service."
+        shell: bash
+        run: |
+          notes=release/notes/$TAG.md
+          if [ ! -f "$notes" ]; then
+            notes=$RUNNER_TEMP/notes.md
+            echo "See README.md in the zip or the archive to get started. On Linux, the .deb runs the microscope as a service." > "$notes"
+          fi
+          gh release create "$TAG" assets/* --repo "$GITHUB_REPOSITORY" --title "Microscope $TAG" --notes-file "$notes"
         env:
           TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
