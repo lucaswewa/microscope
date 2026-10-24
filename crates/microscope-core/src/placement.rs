@@ -14,10 +14,15 @@
 //!    ([`PlacementOptions::anchor`]) to its stage placement. A tile with no
 //!    pair used keeps its stage placement, and a group of tiles keeps
 //!    theirs on average.
+//! 4. **Pairs that disagree:** the used pair that disagrees most with where
+//!    the solve put its two tiles, by more than
+//!    [`PlacementOptions::max_residual`], is dropped, and the tiles are
+//!    solved again, until none does. A confident but wrong match is outvoted
+//!    by its tiles' other pairs.
 //!
-//! [`place`] does all three for tiles in memory, and [`place_with`] for
-//! tiles read as they're needed. [`pair`] and [`solve`] do them a step at a
-//! time.
+//! [`place`] does it all for tiles in memory, and [`place_with`] for tiles
+//! read as they're needed. [`pair`] and [`solve_consistent`] do it a step at
+//! a time, and [`solve`] is one solve.
 
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
@@ -39,6 +44,9 @@ pub struct PlacementOptions {
     /// How strongly each tile keeps to its stage placement, against a pair
     /// of confidence 1.
     pub anchor: f64,
+    /// The most, in pixels, a used pair may disagree with where the solve
+    /// puts its two tiles.
+    pub max_residual: f64,
     /// How pairs are registered.
     pub registration: Options,
 }
@@ -46,13 +54,15 @@ pub struct PlacementOptions {
 impl Default for PlacementOptions {
     /// Overlaps of 5% or more, used if at least 0.3 sure and within 50
     /// pixels, each tile anchored at 1/10,000 of a sure pair's weight, so a
-    /// slow drift across a large scan isn't held back.
+    /// slow drift across a large scan isn't held back, and pairs dropped
+    /// that disagree with the solve by more than 3 pixels.
     fn default() -> Self {
         Self {
             min_overlap: 0.05,
             min_confidence: 0.3,
             max_correction: 50.0,
             anchor: 1e-4,
+            max_residual: 3.0,
             registration: Options::default(),
         }
     }
@@ -136,7 +146,7 @@ pub fn place_with<E>(
         held.retain(|&index, _| last[index] > k);
     }
     Ok(Placement {
-        origins: solve(expected, &pairs, options.anchor),
+        origins: solve_consistent(expected, &mut pairs, options),
         pairs,
     })
 }
@@ -225,6 +235,35 @@ pub fn solve(expected: &[[f64; 2]], pairs: &[Pair], anchor: f64) -> Vec<[f64; 2]
     assert!(anchor > 0.0, "each tile is anchored");
     let [x, y] = [0, 1].map(|axis| solve_axis(expected, pairs, axis, anchor));
     x.into_iter().zip(y).map(|(x, y)| [x, y]).collect()
+}
+
+/// [`solve`], dropping the used pair that disagrees most with the solution,
+/// by more than [`PlacementOptions::max_residual`], and solving again, until
+/// none does. The pairs dropped are no longer `used`.
+pub fn solve_consistent(
+    expected: &[[f64; 2]],
+    pairs: &mut [Pair],
+    options: &PlacementOptions,
+) -> Vec<[f64; 2]> {
+    loop {
+        let origins = solve(expected, pairs, options.anchor);
+        let residual = |pair: &Pair| {
+            let [x, y] = [0, 1].map(|axis| {
+                let (a, b) = (pair.a, pair.b);
+                let said = expected[b][axis] - expected[a][axis] + pair.correction[axis];
+                origins[b][axis] - origins[a][axis] - said
+            });
+            x.hypot(y)
+        };
+        let worst = (pairs.iter_mut())
+            .filter(|pair| pair.used)
+            .map(|pair| (residual(pair), pair))
+            .max_by(|a, b| a.0.total_cmp(&b.0));
+        match worst {
+            Some((residual, pair)) if residual > options.max_residual => pair.used = false,
+            _ => return origins,
+        }
+    }
 }
 
 /// One axis of [`solve`], by its normal equations.
@@ -422,6 +461,53 @@ mod tests {
             &PlacementOptions::default(),
         );
         assert!(placement.pairs.is_empty(), "{:?}", placement.pairs);
+    }
+
+    #[test]
+    fn a_sure_pair_its_tiles_other_pairs_disagree_with_is_dropped() {
+        // A 3 × 3 grid, 100 pixels apart, whose pairs say the stage was right,
+        // but one, as sure, that says the middle is 30 pixels right of it.
+        let expected: Vec<[f64; 2]> = (0..9)
+            .map(|k| [(k % 3) as f64 * 100.0, (k / 3) as f64 * 100.0])
+            .collect();
+        let neighbours = (0..9).flat_map(|a| [(a, a + 1), (a, a + 3)]);
+        let mut pairs: Vec<Pair> = (neighbours
+            .filter(|&(a, b)| b < 9 && (b != a + 1 || a % 3 != 2)))
+        .map(|(a, b)| Pair {
+            a,
+            b,
+            correction: if (a, b) == (3, 4) {
+                [30.0, 0.0]
+            } else {
+                [0.0, 0.0]
+            },
+            confidence: 0.8,
+            used: true,
+        })
+        .collect();
+        assert_eq!(pairs.len(), 12);
+        let placed = solve_consistent(&expected, &mut pairs, &PlacementOptions::default());
+        let dropped: Vec<(usize, usize)> = (pairs.iter())
+            .filter(|pair| !pair.used)
+            .map(|pair| (pair.a, pair.b))
+            .collect();
+        assert_eq!(dropped, [(3, 4)]);
+        for (placed, stage) in placed.iter().zip(&expected) {
+            assert!(
+                (placed[0] - stage[0]).hypot(placed[1] - stage[1]) < 1e-6,
+                "{placed:?}"
+            );
+        }
+        // Solved once, it would have moved the middle.
+        let all: Vec<Pair> = pairs
+            .iter()
+            .map(|pair| Pair {
+                used: true,
+                ..*pair
+            })
+            .collect();
+        let once = solve(&expected, &all, 1e-4);
+        assert!(once[4][0] - expected[4][0] > 5.0, "{once:?}");
     }
 
     #[test]

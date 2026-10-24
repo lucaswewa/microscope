@@ -61,6 +61,7 @@ None yet. P13 has no driver, and was tried on the simulator, on Windows. Checkpo
   - Halved, as P12 registered by default, a full-resolution capture's JPEG blocks were a stronger match than the sparse default sample. A scan of mine put one image 10 pixels wrong from a pair 0.30 sure, and the test's scan came out 28.6 pixels wrong.
   - Shrunk by 4, the right pairs were 0.64 to 0.97 sure and the wrong ones 0.25 at most.
   - Shrunk by 8, some wrong pairs were 0.4 to 0.5 sure.
+- **Pairs that disagree are dropped,** a fix after P13 was merged. In a busy CI run, the drifting scan's test failed once: one wrong pair, 0.36 sure, put an image 14 px out. Now the used pair that disagrees most with where the solve put its two images, by more than 3 px, is dropped, and the images are solved again, until none does. An image's other pairs outvote a wrong one.
 - **The stitch tests of P39 and P53 turn refinement off.** Their picture is a smooth gradient and wave, cut exactly. Through JPEG, little but the JPEG's blocks is left for correlation to match, and it moved the images by up to 7 pixels. They test placement by the stage, and the drifting scan tests correlation.
 - **Each image is read once more,** for the pairs it's in, and dropped after its last, so a 20 × 20 scan holds a column or two of its images at a time.
 - **"Moved"** is by a pixel or more. Each image's move is measured against its own stage placement, before the mosaic's corner is moved to the leftmost and topmost image.
