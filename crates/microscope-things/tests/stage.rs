@@ -306,6 +306,37 @@ async fn backlash_compensation_ends_every_move_the_same_way() {
 }
 
 #[tokio::test]
+async fn a_drifting_stage_loses_steps_until_it_is_switched_off() {
+    let harness = start().await;
+    let client = harness.client();
+    let none = json!({"x": 0.0, "y": 0.0, "z": 0.0});
+    let size = json!({"lost_steps": {"x": 0.01, "y": 0.0, "z": 0.0}, "creep": none});
+    let speed = json!({"x": 1e6, "y": 1e6, "z": 1e6});
+    simulate(
+        client,
+        json!({"drift": true, "drift_size": size, "speed": speed}),
+    )
+    .await;
+    let stage = harness.thing();
+    let true_x = || ThingRef::thing(stage).true_position_um()[0];
+    run(client, "move_relative", json!({"x": 1000})).await;
+    // 10 of the 1,000 steps of 0.1 µm are lost.
+    assert!((true_x() - 99.0).abs() < 1e-9, "{}", true_x());
+
+    // A simulation saved before the stage could drift doesn't.
+    let mut simulation = client.get("/stage/simulation").await.json();
+    let fields = simulation.as_object_mut().expect("an object");
+    fields.remove("drift");
+    fields.remove("drift_size");
+    let response = client.put_json("/stage/simulation", &simulation).await;
+    assert!(response.status.is_success(), "{}", response.text());
+    run(client, "move_relative", json!({"x": 1000})).await;
+    assert!((true_x() - 199.0).abs() < 1e-9, "{}", true_x());
+
+    harness.stop().await;
+}
+
+#[tokio::test]
 async fn settings_survive_a_restart() {
     let nanos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

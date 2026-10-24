@@ -55,6 +55,16 @@ impl Gray {
         self.pixels[y * self.width + x]
     }
 
+    /// The `width` × `height` part of the image whose top-left corner is
+    /// `(x, y)`, which must be within it.
+    pub fn crop(&self, x: usize, y: usize, width: usize, height: usize) -> Gray {
+        assert!(
+            x + width <= self.width && y + height <= self.height,
+            "within the image"
+        );
+        Gray::from_fn(width, height, |i, j| self.at(x + i, y + j))
+    }
+
     /// Shrunk by a whole `factor`: each pixel is the mean of a block.
     /// Pixels left over at the right and bottom edges are dropped.
     pub fn downsample(&self, factor: usize) -> Gray {

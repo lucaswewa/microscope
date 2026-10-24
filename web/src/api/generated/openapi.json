@@ -12897,6 +12897,79 @@
               "y",
               "z"
             ]
+          },
+          "drift": {
+            "description": "Whether the axes drift: they lose steps, and the sample creeps.",
+            "default": false,
+            "type": "boolean"
+          },
+          "drift_size": {
+            "description": "How much, when they do.",
+            "default": {
+              "lost_steps": {
+                "x": 0.005,
+                "y": 0.005,
+                "z": 0.0
+              },
+              "creep": {
+                "x": 0.2,
+                "y": -0.1,
+                "z": 0.0
+              }
+            },
+            "type": "object",
+            "properties": {
+              "lost_steps": {
+                "description": "The share of each move's steps that each axis loses.",
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "description": "The x axis's.",
+                    "type": "number"
+                  },
+                  "y": {
+                    "description": "The y axis's.",
+                    "type": "number"
+                  },
+                  "z": {
+                    "description": "The z axis's.",
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              },
+              "creep": {
+                "description": "How fast the sample creeps along each axis, in steps per second.",
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "description": "The x axis's.",
+                    "type": "number"
+                  },
+                  "y": {
+                    "description": "The y axis's.",
+                    "type": "number"
+                  },
+                  "z": {
+                    "description": "The z axis's.",
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "z"
+                ]
+              }
+            },
+            "required": [
+              "lost_steps",
+              "creep"
+            ]
           }
         },
         "required": [
