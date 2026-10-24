@@ -1,7 +1,7 @@
 # P13: Correlation in stitching
 
 - Status: In review
-- Pull request: #NN
+- Pull request: [#82](https://github.com/lucaswewa/microscope/pull/82)
 - ADRs: none new; [ADR-0046](../../adr/0046-correlation-stitching.md) decided it
 - Spec: [phases.md#p13](../phases.md#p13)
 
