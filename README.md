@@ -235,7 +235,7 @@ Two pages exist only in development, each showing light and dark side by side:
 - <http://localhost:5173/#/dev/tokens> shows the design tokens ([ADR-0011](docs/adr/0011-design-tokens-and-theming.md));
 - <http://localhost:5173/#/dev/components> shows every UI component, with their states and overlays ([ADR-0013](docs/adr/0013-own-components-on-reka-ui-primitives.md)).
 
-Both have an **Accent** picker, to try another accent colour across the whole app: magenta, the app's, or one of ten blues and violets and ten greens. The choice is kept in this browser, in development builds only. The tokens page shows each pair's contrast in both themes, with those below WCAG AA's minimum in red.
+Both have an **Accent** picker, to try another accent colour across the whole app: magenta, the app's, or one of seven other magentas, ten blues and violets, and ten greens. The choice is kept in this browser, in development builds only. The tokens page shows each pair's contrast in both themes, with those below WCAG AA's minimum in red.
 
 The rules that keep the app ready for a Tauri desktop app are in [ADR-0010](docs/adr/0010-rules-for-a-tauri-ready-web-app.md).
 
