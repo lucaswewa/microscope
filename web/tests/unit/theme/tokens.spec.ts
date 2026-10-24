@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
+import { CONTRAST_PAIRS, contrast } from '@/theme/contrast'
 import { THEMED_GROUPS, TOKEN_GROUPS } from '@/theme/tokens'
 
 // Read from disk, by path: Vitest doesn't load stylesheets, even with ?raw,
@@ -55,56 +56,6 @@ function resolve(theme: keyof typeof themes, token: string): string {
   return reference ? resolve(theme, reference[1]!) : value
 }
 
-function luminance(hex: string): number {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255) as [
-    number,
-    number,
-    number,
-  ]
-  const linear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
-  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
-}
-
-/** WCAG 2 contrast ratio between two #rrggbb colours. */
-function contrast(a: string, b: string): number {
-  const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number]
-  return (high + 0.05) / (low + 0.05)
-}
-
-// [foreground, background, minimum ratio]: 4.5 for text, 3 for other things
-// people must see (WCAG 2.2 AA, 1.4.3 and 1.4.11).
-const PAIRS: [string, string, number][] = [
-  ['--color-text', '--color-bg', 4.5],
-  ['--color-text', '--color-surface-panel', 4.5],
-  ['--color-text', '--color-surface-raised', 4.5],
-  ['--color-text-muted', '--color-bg', 4.5],
-  ['--color-text-muted', '--color-surface-panel', 4.5],
-  ['--color-text-heading', '--color-bg', 4.5],
-  ['--color-text-heading', '--color-surface-panel', 4.5],
-  ['--color-accent-text', '--color-bg', 4.5],
-  ['--color-accent-text', '--color-surface-panel', 4.5],
-  ['--color-accent-text', '--color-surface-rail', 4.5],
-  ['--color-accent-text', '--color-surface-raised', 4.5],
-  ['--color-text', '--color-accent-subtle', 4.5],
-  ['--color-accent-text', '--color-accent-subtle', 4.5],
-  ['--color-on-accent', '--color-accent', 4.5],
-  ['--color-on-accent', '--color-accent-hover', 4.5],
-  ['--color-on-accent', '--color-accent-pressed', 4.5],
-  ['--color-control-text', '--color-control-bg', 4.5],
-  ['--color-control-border', '--color-control-bg', 3],
-  ['--color-control-border', '--color-bg', 3],
-  ['--color-control-border', '--color-surface-panel', 3],
-  ['--color-rail-text', '--color-surface-rail', 4.5],
-  ['--color-rail-text', '--color-rail-hover-bg', 4.5],
-  ['--color-rail-active-text', '--color-rail-active-bg', 4.5],
-  ['--color-focus', '--color-bg', 3],
-  ['--color-focus', '--color-surface-panel', 3],
-  ['--color-danger', '--color-bg', 4.5],
-  ['--color-warning', '--color-bg', 4.5],
-  ['--color-success', '--color-bg', 4.5],
-  ['--color-info', '--color-bg', 4.5],
-]
-
 describe('the design tokens', () => {
   it('lists exactly the tokens that tokens.css defines', () => {
     const defined = new Set([...root.keys(), ...themes.light.keys(), ...themes.dark.keys()])
@@ -128,7 +79,7 @@ describe('the design tokens', () => {
 
   for (const theme of ['light', 'dark'] as const) {
     describe(`in the ${theme} theme`, () => {
-      for (const [foreground, background, minimum] of PAIRS) {
+      for (const [foreground, background, minimum] of CONTRAST_PAIRS) {
         it(`${foreground} on ${background} has a contrast of at least ${minimum}:1`, () => {
           const ratio = contrast(resolve(theme, foreground), resolve(theme, background))
           expect(ratio).toBeGreaterThanOrEqual(minimum)

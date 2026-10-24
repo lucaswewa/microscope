@@ -40,6 +40,8 @@ import ProgressBar from '@/ui/ProgressBar.vue'
 import SectionHeading from '@/ui/SectionHeading.vue'
 import TextField from '@/ui/TextField.vue'
 
+import AccentPicker from './AccentPicker.vue'
+
 const themes = ['light', 'dark'] as const
 const variants = ['default', 'primary', 'danger', 'ghost'] as const
 const sizes = ['md', 'sm'] as const
@@ -148,6 +150,7 @@ const serverPanel = serverPanelFixture as UiElement[]
     <p class="gallery__note">
       For development only. Each panel forces its theme; both share their state.
     </p>
+    <AccentPicker />
 
     <div class="gallery__panels">
       <section v-for="theme in themes" :key="theme" :data-theme="theme" class="gallery__panel">
