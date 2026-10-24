@@ -4,7 +4,10 @@
 // is the colour; the lighter and darker steps keep the magenta's proportions
 // of lightness (tokens.css), so the colours stay as different as they are.
 
-/** The accents to try: the app's own, then the others. */
+/**
+ * The accents to try: the app's own, then blues, violets and greens. The
+ * greens are as Wikipedia's "Shades of green" gives them.
+ */
 export const ACCENTS = [
   { id: 'magenta', label: 'Magenta, the app’s', hex: '#ce2283' },
   { id: 'midnightblue', label: 'Midnight blue', hex: '#191970' },
@@ -14,6 +17,16 @@ export const ACCENTS = [
   { id: 'violet', label: 'Violet', hex: '#ee82ee' },
   { id: 'vividviolet', label: 'Vivid violet', hex: '#9f00ff' },
   { id: 'electricviolet', label: 'Electric violet', hex: '#8f00ff' },
+  { id: 'psychologicalgreen', label: 'Psychological primary green', hex: '#009f6b' },
+  { id: 'pantonegreen', label: 'Pantone green', hex: '#00ad43' },
+  { id: 'crayolagreen', label: 'Crayola green', hex: '#1cac78' },
+  { id: 'acidgreen', label: 'Acid green', hex: '#b0bf1a' },
+  { id: 'evergreen', label: 'Evergreen', hex: '#05472a' },
+  { id: 'ferngreen', label: 'Fern green', hex: '#4f7942' },
+  { id: 'junglegreen', label: 'Jungle green', hex: '#29ab87' },
+  { id: 'mantis', label: 'Mantis', hex: '#74c365' },
+  { id: 'malachite', label: 'Malachite', hex: '#0bda51' },
+  { id: 'huntergreen', label: 'Hunter green', hex: '#355e3b' },
 ] as const
 
 export type AccentId = (typeof ACCENTS)[number]['id']
