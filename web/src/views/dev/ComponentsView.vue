@@ -56,6 +56,14 @@ const resolutions = [
   { value: '3280x2464', label: '3280 × 2464 (full)' },
   { value: 'video', label: 'Video only', disabled: true },
 ]
+// A select in groups, each option with its colour.
+const filter = ref('green')
+const filters = [
+  { value: 'red', label: 'Red', group: 'Warm', swatch: '#c42b2b' },
+  { value: 'amber', label: 'Amber', group: 'Warm', swatch: '#8a5300' },
+  { value: 'green', label: 'Green', group: 'Cool', swatch: '#26732b' },
+  { value: 'blue', label: 'Blue', group: 'Cool', swatch: '#1f5fb8' },
+]
 const saveToGallery = ref(true)
 const autoExposure = ref(false)
 const brightness = ref(120)
@@ -198,6 +206,9 @@ const serverPanel = serverPanelFixture as UiElement[]
           </FormField>
           <FormField label="Resolution">
             <AppSelect v-model="resolution" :options="resolutions" placeholder="Choose…" />
+          </FormField>
+          <FormField label="Filter, in groups">
+            <AppSelect v-model="filter" :options="filters" />
           </FormField>
           <FormField label="Disabled">
             <TextField model-value="Read only" disabled />

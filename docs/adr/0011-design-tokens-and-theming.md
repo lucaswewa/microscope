@@ -1,6 +1,6 @@
 # ADR-0011: Design tokens and theming
 
-- Status: Accepted
+- Status: Accepted; superseded in part by [ADR-0047](0047-accent-colours-a-person-can-choose.md): accent colours a person can choose
 - Date: 2026-10-09
 - Phase: P06
 

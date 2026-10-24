@@ -4,6 +4,14 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
+import {
+  ACCENTS,
+  ON_ACCENT,
+  SETTINGS_ACCENTS,
+  SURFACES,
+  accentTokens,
+  type AccentTokens,
+} from '@/theme/accents'
 import { CONTRAST_PAIRS, contrast } from '@/theme/contrast'
 import { THEMED_GROUPS, TOKEN_GROUPS } from '@/theme/tokens'
 
@@ -48,13 +56,22 @@ const themes = {
   dark: parsed.get("[data-theme='dark']")!,
 }
 
-/** A token's value in a theme, following var() references to a colour. */
-function resolve(theme: keyof typeof themes, token: string): string {
-  const value = themes[theme].get(token) ?? root.get(token)
+/**
+ * A token's value in a theme, following var() references to a colour, with
+ * `accent`'s tokens over the stylesheet's if it's given (ADR-0047).
+ */
+function resolve(theme: keyof typeof themes, token: string, accent?: AccentTokens): string {
+  const value =
+    accent?.[theme][token] ?? themes[theme].get(token) ?? accent?.palette[token] ?? root.get(token)
   if (value === undefined) throw new Error(`${token} isn't defined`)
   const reference = /^var\((--[\w-]+)\)$/.exec(value)
-  return reference ? resolve(theme, reference[1]!) : value
+  return reference ? resolve(theme, reference[1]!, accent) : value
 }
+
+// The accents Settings offers, but magenta, which is the stylesheet's own.
+const accents = SETTINGS_ACCENTS.flatMap((group) => group.ids)
+  .filter((id) => id !== 'magenta')
+  .map((id) => ACCENTS.find((accent) => accent.id === id)!)
 
 describe('the design tokens', () => {
   it('lists exactly the tokens that tokens.css defines', () => {
@@ -84,6 +101,28 @@ describe('the design tokens', () => {
           const ratio = contrast(resolve(theme, foreground), resolve(theme, background))
           expect(ratio).toBeGreaterThanOrEqual(minimum)
         })
+      }
+    })
+  }
+
+  it('gives the accents the surfaces and text colours they’re measured against', () => {
+    for (const theme of ['light', 'dark'] as const) {
+      for (const [token, colour] of Object.entries(SURFACES[theme])) {
+        expect(resolve(theme, token), `${theme} ${token}`).toBe(colour)
+      }
+    }
+    for (const [token, colour] of Object.entries(ON_ACCENT)) expect(root.get(token)).toBe(colour)
+  })
+
+  for (const accent of accents) {
+    it(`keeps every contrast with ${accent.label} the accent, in both themes`, () => {
+      const tokens = accentTokens(accent.hex)
+      for (const theme of ['light', 'dark'] as const) {
+        for (const [foreground, background, minimum] of CONTRAST_PAIRS) {
+          const colours = [foreground, background].map((t) => resolve(theme, t, tokens))
+          const ratio = contrast(colours[0]!, colours[1]!)
+          expect(ratio, `${theme}: ${foreground} on ${background}`).toBeGreaterThanOrEqual(minimum)
+        }
       }
     })
   }

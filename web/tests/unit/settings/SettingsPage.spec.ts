@@ -7,6 +7,7 @@ import { useConnectionStore } from '@/connection/store'
 import { hostKey } from '@/host'
 import { createBrowserHost } from '@/host/browser'
 import { STREAM_DISABLED_KEY } from '@/live/preferences'
+import { ACCENT_STORAGE_KEY } from '@/theme/accents'
 import { THEME_STORAGE_KEY } from '@/theme/store'
 
 import { eventStream, fakeServer, json, type Received } from '../api/fakeServer'
@@ -164,14 +165,36 @@ describe('the Settings tab', () => {
     expect(heading()).toBe('Display')
   })
 
-  it('sets the theme, full screen and the live image in Display', async () => {
+  it('sets the theme, the accent, full screen and the live image in Display', async () => {
     await open('/settings/display')
-    await wrapper!.get('[role="combobox"]').trigger('keydown', { key: 'Enter' })
+    const [theme, accent] = wrapper!.findAll('[role="combobox"]')
+    const choose = async (label: string) => {
+      const options = [...document.querySelectorAll<HTMLElement>('[role="option"]')]
+      const option = options.find((option) => option.textContent?.trim() === label)!
+      option.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      await flushPromises()
+    }
+    await theme!.trigger('keydown', { key: 'Enter' })
     await flushPromises()
-    const dark = [...document.querySelectorAll<HTMLElement>('[role="option"]')].at(-1)!
-    dark.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
-    await flushPromises()
+    await choose('Dark')
     expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark')
+    // Nine accents in three groups, each with its colour (ADR-0047).
+    expect(accent!.text()).toBe('Magenta (default)')
+    await accent!.trigger('keydown', { key: 'Enter' })
+    await flushPromises()
+    const groups = [...document.querySelectorAll('[role="group"]')].map((group) => [
+      group.querySelector('.app-select__group')?.textContent?.trim(),
+      group.querySelectorAll('[role="option"]').length,
+    ])
+    expect(groups).toEqual([
+      ['Magentas', 3],
+      ['Greens', 3],
+      ['Blues', 3],
+    ])
+    expect(document.querySelectorAll('[role="option"] .app-select__swatch')).toHaveLength(9)
+    await choose('Mantis')
+    expect(window.localStorage.getItem(ACCENT_STORAGE_KEY)).toBe('mantis')
+    expect(document.getElementById('accent-tokens')?.textContent).toContain('#74c365')
     const [screen, stream] = wrapper!.findAll('input[role="switch"]')
     await screen!.setValue(true)
     expect(setFullscreen).toHaveBeenCalledWith(true)

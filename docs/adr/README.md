@@ -25,7 +25,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0008](0008-server-logging-and-log-endpoints.md) | Server logging and log endpoints | Accepted | P03 |
 | [0009](0009-frontend-toolchain.md) | Frontend toolchain | Accepted | P04 |
 | [0010](0010-rules-for-a-tauri-ready-web-app.md) | Rules for a Tauri-ready web app | Accepted | P04 |
-| [0011](0011-design-tokens-and-theming.md) | Design tokens and theming | Accepted | P06 |
+| [0011](0011-design-tokens-and-theming.md) | Design tokens and theming | Accepted; superseded in part by ADR-0047 | P06 |
 | [0012](0012-icon-set.md) | Icon set | Accepted | P07 |
 | [0013](0013-own-components-on-reka-ui-primitives.md) | Own components on Reka UI primitives | Accepted | P08 |
 | [0014](0014-client-transports-td-forms-fetch-streams-polled-invocations.md) | Client transports: TD forms, fetch streams, polled invocations | Accepted | P10 |
@@ -60,5 +60,6 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0043](0043-the-sdk-camera-frame-pipeline.md) | The SDK camera frame pipeline | Accepted | M2 P06 |
 | [0044](0044-one-camera-thing-for-every-sdk.md) | One camera Thing for every SDK, and Basler cameras through pylon | Accepted | M2 P07 |
 | [0046](0046-correlation-stitching.md) | Correlation stitching | Accepted | M2 P12 |
+| [0047](0047-accent-colours-a-person-can-choose.md) | Accent colours a person can choose | Accepted | M2, outside a phase |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

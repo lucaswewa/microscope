@@ -1,18 +1,13 @@
 <script setup lang="ts">
-// The dev pages' Accent picker: another accent colour for the whole app, to
-// try it (src/theme/accents.ts). It's kept in this browser, in development
-// builds only.
-import { ref } from 'vue'
-
-import { ACCENTS, applyAccent, readAccent, writeAccent, type AccentId } from '@/theme/accents'
+// The dev pages' Accent picker: every accent colour, to try it across the
+// app (ADR-0047). It's the choice Settings, Display makes from nine of them.
+import { ACCENTS, useAccentStore, type AccentId } from '@/theme/accents'
 
 const emit = defineEmits<{ change: [id: AccentId] }>()
-const chosen = ref(readAccent())
+const accent = useAccentStore()
 
 function choose(id: AccentId) {
-  chosen.value = id
-  writeAccent(id)
-  applyAccent(id)
+  accent.choose(id)
   emit('change', id)
 }
 </script>
@@ -20,16 +15,16 @@ function choose(id: AccentId) {
 <template>
   <fieldset class="accent-picker">
     <legend>Accent</legend>
-    <label v-for="accent in ACCENTS" :key="accent.id" class="accent-picker__choice">
+    <label v-for="choice in ACCENTS" :key="choice.id" class="accent-picker__choice">
       <input
         type="radio"
         name="accent"
-        :value="accent.id"
-        :checked="chosen === accent.id"
-        @change="choose(accent.id)"
+        :value="choice.id"
+        :checked="accent.accent === choice.id"
+        @change="choose(choice.id)"
       />
-      <span class="accent-picker__swatch" :style="{ background: accent.hex }" />
-      {{ accent.label }}
+      <span class="accent-picker__swatch" :style="{ background: choice.hex }" />
+      {{ choice.label }}
     </label>
   </fieldset>
 </template>

@@ -330,13 +330,13 @@ P03, the driver framework, was split in two: written whole, it came to about 1,2
 ### P14: Authentication on the server
 
 **Goal.** A microscope only answers those with its token.
-**Depends on** P02 · **Size** M · **ADRs** 0047
+**Depends on** P02 · **Size** M · **ADRs** 0048
 
 **Scope**
 - **A token** made at the first start, kept in the settings folder, shown in the launcher's or service's log, and changeable.
 - **`teta-wot`'s `security` configuration:** a bearer token from an environment variable, which the launcher and the service set.
 - **Every route asks for it,** including this app's own (logs, the data route, health's details), except the web app's files and a bare health check.
-- **ADR-0047:** tokens, where they're kept, and HTTPS (a trusted network in milestone 2, or TLS).
+- **ADR-0048:** tokens, where they're kept, and HTTPS (a trusted network in milestone 2, or TLS).
 
 **Tests**
 - Every route, with a token, without one, and with a wrong one.
@@ -369,7 +369,7 @@ P03, the driver framework, was split in two: written whole, it came to about 1,2
 ### P16: mDNS adverts
 
 **Goal.** Microscopes say they're there.
-**Depends on** P14 · **Size** S · **ADRs** 0048
+**Depends on** P14 · **Size** S · **ADRs** 0049
 
 **Scope**
 - The server advertises `_microscope._tcp` with a pure-Rust mDNS crate. Its TXT record holds:
@@ -388,7 +388,7 @@ P03, the driver framework, was split in two: written whole, it came to about 1,2
 ### P17: The Tauri desktop app
 
 **Goal.** The web app as a desktop app, with its own local microscope.
-**Depends on** P15 · **Size** L · **ADRs** 0049
+**Depends on** P15 · **Size** L · **ADRs** 0050
 
 **Scope**
 - **Tauri 2** around the web app's build, in a new `desktop/` folder.
@@ -424,7 +424,7 @@ P03, the driver framework, was split in two: written whole, it came to about 1,2
 ### P19: Desktop installers and signing
 
 **Goal.** The desktop app installs cleanly and runs without warnings.
-**Depends on** P17 · **Size** M · **ADRs** 0050
+**Depends on** P17 · **Size** M · **ADRs** 0051
 
 **Scope**
 - **Installers** in the release workflow:
