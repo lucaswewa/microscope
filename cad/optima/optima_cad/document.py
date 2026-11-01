@@ -7,6 +7,7 @@ import uuid
 import zipfile
 
 import FreeCAD as App
+import Part
 
 # Colour (RGB) and transparency (%) for each kind of object.
 STYLES = {
@@ -23,6 +24,8 @@ STYLES = {
     "transmitted": ((1.00, 0.85, 0.30), 75),
     "led": ((1.00, 1.00, 1.00), 0),
     "board": ((0.10, 0.10, 0.10), 0),
+    "metal": ((0.62, 0.64, 0.68), 0),
+    "drive": ((0.20, 0.20, 0.22), 0),
     "reserved": ((0.90, 0.30, 0.30), 85),
 }
 
@@ -37,7 +40,10 @@ def new(name):
 
 def add(doc, name, shape, style, group=None, label=None):
     obj = doc.addObject("Part::Feature", name)
-    obj.Shape = shape
+    # Stored without its element map, whose names change from run to run after a fillet.
+    plain = Part.Shape()
+    plain.importBrepFromString(shape.exportBrepToString())
+    obj.Shape = plain
     obj.Label = label or name
     colour, transparency = STYLES[style]
     obj.ViewObject.ShapeColor = colour

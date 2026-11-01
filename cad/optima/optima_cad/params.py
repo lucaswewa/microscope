@@ -4,15 +4,77 @@ The values come from docs/misc/optima_hardware_design.md and the vendor pages in
 "Assumed" marks a value no vendor publishes, to be measured in the design's build step 1.
 """
 
-# Mono camera: ToupTek CTR3CMOS45000KMA (ToupTek's product page).
+
+def _grid(xs, ys):
+    return tuple((x, y) for x in xs for y in ys)
+
+
+# Both cameras' sensor: the Sony IMX492 (ToupTek's product pages).
 SENSOR_PIXEL = 0.002315
 SENSOR_PIXELS = (8176, 5616)
 SENSOR_SIZE = (18.93, 13.00)
-CAMERA_BODY = (80.0, 80.0, 45.5)  # width, height, depth
-C_MOUNT_FLANGE = 17.526  # flange to sensor, the C-mount standard
+C_MOUNT_FLANGE = 17.526  # the lens's seat to the sensor, the C-mount standard
+C_MOUNT_BORE = 24.0  # assumed: a little inside the 1"-32 thread's 24.5 mm minor diameter
 
-# Colour camera: ToupTek colour IMX492. Assumed the mono camera's body until C02 models it.
-COLOUR_CAMERA_BODY = CAMERA_BODY
+# Mono camera: ToupTek CTR3CMOS45000KMA (ToupTek's drawing).
+MONO_BODY = (80.0, 80.0, 45.5)  # width, height, depth
+MONO_NOSE = (60.0, 7.9)  # the C-mount boss: diameter (assumed, from the picture), length
+MONO_FAN = (45.0, 45.0, 8.0)  # the depth is assumed: the drawing's label is blurred
+MONO_MOUNT = (24.0, 20.0)  # 2 x M4 and a 1/4-20 between them: their line from the front, M4 pitch
+MONO_MASS = 0.397  # kg
+
+# Colour camera: ToupTek E3ISPM45000KPB, a colour IMX492 (ToupTek's E3ISPM drawing).
+COLOUR_BODY = (68.0, 68.0, 40.5)
+COLOUR_NOSE = (40.0, 5.7)  # the C-mount ring: diameter (assumed), length (46.2 - 40.5)
+COLOUR_EDGE = 6.0  # assumed: the radius of the body's rounded edges
+
+# Overview camera, all assumed until one is bought: a 12 MP IMX577 UVC module on the common
+# 38 mm square board, with a wide M12 lens.
+OVERVIEW_SENSOR = (6.29, 4.71)
+OVERVIEW_BOARD = (38.0, 38.0, 1.6)
+OVERVIEW_HOLES = 34.0  # M2, on a square
+OVERVIEW_HOLDER = (16.0, 16.0, 12.0)
+OVERVIEW_LENS = (14.0, 18.0)  # barrel diameter, length
+OVERVIEW_LENS_F = 3.2
+OVERVIEW_IMAGE_CIRCLE = 7.9  # a 1/2.3-inch lens
+
+# XY stage: Standa 8MTF-102LS05 (Standa's drawing). Its frame: the origin at the centre of the
+# base's underside, +X and +Y as in the instrument. The Y drive is fixed to the base on the left;
+# the X drive rides on the middle plate, at the back.
+XY_PLATE = 175.0  # the base, middle and top plates are this square
+XY_HEIGHT = 45.0  # the plates are assumed equally thick
+XY_OPENING = (115.0, 10.0)  # through every plate: side, corner radius
+XY_POCKETS = (20.0, 5.0, 4.0)  # in the top plate's corners: length, width past the opening, depth
+XY_TRAVEL = 51.0  # each way from the centre, on both axes
+XY_MASS = 3.6  # kg
+# The drives at the centre of the travel, as boxes (x0, y0, z0, x1, y1, z1), with each knob's
+# start, direction, and its hub's and knob's diameter and length.
+XY_Y_DRIVE = ((-117.5, -86.0, 1.0, -88.5, 81.5, 29.0), (-126.4, -132.5, 1.0, -88.5, -86.0, 29.0))
+XY_X_DRIVE = ((-81.5, 88.5, 16.0, 86.0, 117.5, 44.0), (86.0, 88.5, 16.0, 132.5, 126.4, 44.0))
+XY_Y_KNOB = ((-102.5, -132.5, 15.0), (0, -1, 0))
+XY_X_KNOB = ((132.5, 102.5, 30.0), (1, 0, 0))
+XY_KNOB = ((16.6, 4.6), (27.5, 13.0))
+# The top plate's holes as (diameter, depth or None for through, centres). The base's underside
+# has the same pattern, turned 90 degrees.
+XY_HOLES = (
+    (3.0, 4.0, _grid((-62.5, 62.5), (-62.5, -37.5, -12.5, 12.5, 37.5, 62.5))),
+    (6.0, 9.0, _grid((-37.5, -12.5, 12.5, 37.5), (-62.5, 62.5)) + _grid((-12.5, 12.5), (-75, 75))),
+    (6.6, None, _grid((-37.5, 37.5), (-75, 75))),
+)
+
+# Z lift: Standa 8MVT100-25-1 (Standa's drawing). Its frame: the origin at the centre of the
+# base's underside, turned from the drawing so that its connector is at the back (+Y).
+LIFT_BASE = (100.0, 115.0, 8.0)
+LIFT_COLUMN = (90.0, 90.0)  # assumed: the drawing shows about 91 x 88
+LIFT_TOP = (100.0, 100.0, 40.0)  # the hood that carries the top plate
+LIFT_HEIGHT = 100.0  # the top plate, at the bottom of the travel
+LIFT_TRAVEL = 25.0
+LIFT_CONNECTOR = (-25.5, 45.0, 8.0, 5.5, 82.5, 21.0)  # a box, as for the XY stage's drives
+LIFT_BASE_HOLES = ((6.6, None, _grid((-37.5, 37.5), (-50, 50))),)
+LIFT_TOP_HOLES = ((6.0, 8.0, _grid((-37.5, 37.5), (-37.5, -12.5, 12.5, 37.5))
+                   + _grid((-12.5, 12.5), (-37.5, 37.5)) + _grid((-25, 25), (-25, 25)) + ((0, 0),)),)
+LIFT_LOAD = 8.0  # kg
+LIFT_MASS = 2.2  # kg
 
 # Objectives: Mitutoyo M Plan Apo (Edmund Optics' listings). DOF is the depth of field.
 OBJECTIVES = {

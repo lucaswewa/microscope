@@ -4,20 +4,38 @@ import os
 
 import FreeCAD as App
 
-from . import document, layout
+from . import cameras, document, layout, stages
 from . import params as P
 
-MODELS = [("optical-layout", layout.build)]
+# Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
+# the optics in front of them.
+OPTICS = ("SENSOR_", "C_MOUNT_", "OBJECTIVES", "TUBE_", "INFINITY_SPACE")
+MODELS = [
+    ("optical-layout", layout.build, None),
+    ("xy-stage", stages.build_xy, ("XY_",)),
+    ("z-lift", stages.build_lift, ("LIFT_",)),
+    ("mono-camera", cameras.build_mono, OPTICS + ("MONO_",)),
+    ("colour-camera", cameras.build_colour, OPTICS + ("COLOUR_",)),
+    ("overview-camera", cameras.build_overview, ("OVERVIEW_",)),
+]
+
+
+def uses(name, prefixes):
+    """Whether a model is built from a parameter. The layout uses all but the stages' and the
+    overview camera's."""
+    if prefixes is None:
+        return not name.startswith(("XY_", "LIFT_", "OVERVIEW_"))
+    return name.startswith(prefixes)
 
 
 def run(out_dir):
     App.ParamGet("User parameter:BaseApp/Preferences/Document").SetBool("SaveThumbnail", False)
     result = {"freecad": ".".join(App.Version()[:3]), "models": [], "error": None}
-    params = [("Name", "Value")] + [(k, repr(v)) for k, v in vars(P).items() if k.isupper()]
-    for name, build in MODELS:
+    for name, build, prefixes in MODELS:
         doc = document.new(name)
         checks, facts = build(doc)
-        document.sheet(doc, "Parameters", params)
+        params = [(k, repr(v)) for k, v in vars(P).items() if k.isupper() and uses(k, prefixes)]
+        document.sheet(doc, "Parameters", [("Name", "Value")] + params)
         document.sheet(doc, "Facts", [("Fact", "Value")] + facts)
         rows = [(c.name, "pass" if c.ok else "FAIL", c.detail) for c in checks]
         document.sheet(doc, "Checks", [("Check", "Result", "Detail")] + rows)

@@ -37,6 +37,21 @@ def corner_angle():
     return math.atan(sensor_diagonal() / 2 / P.TUBE_F)
 
 
+def exit_pupil():
+    """How far in front of the image the exit pupil is: the objective's pupil, as the tube lens
+    images it."""
+    f, gap = P.TUBE_F, P.INFINITY_SPACE
+    return f + gap * f / (f - gap)
+
+
+def corner_light(distance):
+    """How far from the axis the image corners' light reaches `distance` in front of the image,
+    with the objective whose light converges the most."""
+    r = sensor_diagonal() / 2
+    na = max(o["na"] * o["f"] / P.TUBE_F for o in P.OBJECTIVES.values())
+    return r * (1 - distance / exit_pupil()) + distance * math.tan(math.asin(na))
+
+
 def max_infinity_space(objective):
     """The longest pupil-to-tube-lens distance at which the image corners aren't vignetted."""
     return (P.TUBE_PUPIL - back_aperture(objective)) * P.TUBE_F / sensor_diagonal()

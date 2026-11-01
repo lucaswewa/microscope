@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -41,13 +42,23 @@ def build(freecad, out, result_path):
     env = dict(os.environ, QT_QPA_PLATFORM="offscreen", OPTIMA_SRC=str(HERE), OPTIMA_OUT=str(out),
                OPTIMA_RESULT=str(result_path))
     command = [freecad, "--safe-mode", str(HERE / "freecad_main.py")]
-    try:
-        run = subprocess.run(command, env=env, capture_output=True, text=True, errors="replace",
-                             timeout=900)
-    except subprocess.TimeoutExpired:
-        sys.exit("FreeCAD didn't finish within 15 minutes.")
+    log = out.parent / "freecad.log"
+    with open(log, "wb") as f:
+        run = subprocess.Popen(command, env=env, stdout=f, stderr=subprocess.STDOUT)
+        deadline = time.monotonic() + 900
+        while run.poll() is None and not result_path.exists():
+            if time.monotonic() > deadline:
+                run.kill()
+                sys.exit("FreeCAD didn't finish within 15 minutes.")
+            time.sleep(0.5)
+        # FreeCAD sometimes hangs on its way out, after it has written the result.
+        try:
+            run.wait(timeout=30)
+        except subprocess.TimeoutExpired:
+            run.kill()
+            run.wait()
     if not result_path.exists():
-        print(run.stdout[-4000:], run.stderr[-4000:], sep="\n")
+        print(log.read_text(encoding="utf-8", errors="replace")[-8000:])
         sys.exit("FreeCAD stopped without writing a result.")
     return json.loads(result_path.read_text(encoding="utf-8"))
 
