@@ -23,7 +23,7 @@ Don't edit the `.FCStd` files: the build replaces them.
    python cad/optima/make.py
    ```
 
-   It runs FreeCAD offscreen, in safe mode, so your own FreeCAD settings play no part. It takes a few seconds and prints every check. Set `FREECAD` to FreeCAD's program if `make.py` doesn't find it.
+   It runs FreeCAD offscreen, in safe mode, so your own FreeCAD settings play no part. It takes a few seconds and prints every check. If FreeCAD hangs on its way out, `make.py` stops it 30 seconds after the build has finished. Set `FREECAD` to FreeCAD's program if `make.py` doesn't find it.
 3. Commit the scripts with the rebuilt `models/`.
 
 `python cad/optima/make.py --check` builds into a temporary folder instead. It fails if any check fails or if `models/` isn't what the scripts build. Run it before every pull request.
@@ -39,4 +39,7 @@ Don't edit the `.FCStd` files: the build replaces them.
 | `optima_cad/geom.py` | Shape helpers |
 | `optima_cad/document.py` | Adding coloured shapes and sheets, and saving files reproducibly |
 | `optima_cad/layout.py` | The optical layout and its checks |
+| `optima_cad/stages.py` | The XY stage and the Z lift, with their moving parts, and their checks |
+| `optima_cad/cameras.py` | The mono, colour and overview cameras, and their checks |
+| `optima_cad/checks.py` | Checks, and the overlaps they look for |
 | `optima_cad/build.py` | The list of models, and how each is built and saved |

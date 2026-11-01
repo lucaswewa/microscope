@@ -1,6 +1,7 @@
 """What FreeCAD runs when make.py starts it: builds the models and writes the result as JSON.
 
-It always ends the process, so FreeCAD never waits for a person, even after an error.
+It always ends the process, so FreeCAD never waits for a person, even after an error. The result
+appears all at once, so make.py can stop FreeCAD if it hangs on its way out.
 """
 
 import json
@@ -18,7 +19,9 @@ except BaseException:
     result["error"] = traceback.format_exc()
 finally:
     try:
-        with open(os.environ["OPTIMA_RESULT"], "w", encoding="utf-8") as f:
+        path = os.environ["OPTIMA_RESULT"]
+        with open(path + ".part", "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2)
+        os.replace(path + ".part", path)
     finally:
         os._exit(0)

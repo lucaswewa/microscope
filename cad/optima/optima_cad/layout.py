@@ -8,18 +8,18 @@ the flip mirror, so the light, the sensors and the camera bodies stay where the 
 """
 
 import math
-from collections import namedtuple
 
 import FreeCAD as App
 import Part
 
+from . import cameras
 from . import geom as G
 from . import optics as O
 from . import params as P
+from .checks import Check, clashes
 from .document import add, group
 
 V = App.Vector
-Check = namedtuple("Check", "name ok detail")
 
 FOLD_POINT = V(0, 0, O.FOLD)
 FOLD_NORMAL = V(0, 1, -1)
@@ -55,10 +55,6 @@ def reach(shape, point, normal):
     """How far from `point` the shape crosses the plane through it."""
     plane = G.facing(Part.makePlane(1000, 1000, V(-500, -500, 0)), point, normal)
     return max((p - point).Length for e in shape.section(plane).Edges for p in e.discretize(48))
-
-
-def clashes(pairs):
-    return [name for name, a, b in pairs if a.common(b).Volume > 1e-6]
 
 
 def build(doc):
@@ -104,14 +100,19 @@ def build(doc):
     add(doc, "ToColour", colour, "colour", g, "To the colour camera (flip mirror in)")
 
     sensor = G.box((w, h, 0.5), V(0, 0, O.IMAGE))
-    depth = P.CAMERA_BODY[2]
-    body = G.box(P.CAMERA_BODY, V(0, 0, O.IMAGE - P.C_MOUNT_FLANGE + depth / 2))
-    mono_body, colour_body = route(body, False)[2], route(body, True)[2]
+    s, c = (route(sensor, flip_in)[2].BoundBox.Center for flip_in in (False, True))
+    # Each camera at its sensor, facing the light, its mounting face down.
+    mono_parts = {k: G.placed(v, s, Y, Z) for k, v in cameras.mono().items()}
+    colour_parts = {k: G.placed(v, c, -X, Z) for k, v in cameras.colour().items()}
     g = group(doc, "Cameras")
-    add(doc, "SensorMono", route(sensor, False)[2], "sensor", g, "Mono sensor")
-    add(doc, "SensorColour", route(sensor, True)[2], "sensor", g, "Colour sensor")
-    add(doc, "CameraMono", mono_body, "body", g, "Mono camera body")
-    add(doc, "CameraColour", colour_body, "body", g, "Colour camera body (assumed size)")
+    add(doc, "SensorMono", mono_parts["sensor"], "sensor", g, "Mono sensor")
+    add(doc, "SensorColour", colour_parts["sensor"], "sensor", g, "Colour sensor")
+    add(doc, "CameraMono", mono_parts["body"], "body", g, "Mono camera: ToupTek CTR3CMOS45000KMA")
+    add(doc, "CameraColour", colour_parts["body"], "body", g, "Colour camera: ToupTek E3ISPM45000KPB")
+    add(doc, "PlugsMono", mono_parts["plugs"], "reserved", g, "Room for the mono camera's plugs")
+    add(doc, "PlugsColour", colour_parts["plugs"], "reserved", g, "Room for the colour camera's plug")
+    mono_cam = Part.makeCompound([mono_parts["body"], mono_parts["plugs"]])
+    colour_cam = Part.makeCompound([colour_parts["body"], colour_parts["plugs"]])
 
     g = group(doc, "Epi", "Epi illumination")
     stop_d, image_d = O.field_stop(), O.led_image()
@@ -187,10 +188,12 @@ def build(doc):
                             "%.1f mm from the centre, of %.1f mm" % (r, P.MIRROR_CLEAR / 2)))
     shared = Part.makeCompound([parallel, head, mid])
     found = clashes([
-        ("the camera bodies", mono_body, colour_body),
-        ("the mono body and the colour light", mono_body, colour),
-        ("the colour body and the mono light", colour_body, mono),
-        ("a camera body and the shared light", Part.makeCompound([mono_body, colour_body]), shared),
+        ("the cameras", mono_cam, colour_cam),
+        ("the mono camera and its light", mono_cam, mono),
+        ("the colour camera and its light", colour_cam, colour),
+        ("the mono camera and the colour light", mono_cam, colour),
+        ("the colour camera and the mono light", colour_cam, mono),
+        ("a camera and the shared light", Part.makeCompound([mono_cam, colour_cam]), shared),
         ("the fold mirror and the tube lens", fold, tube),
         ("the two mirrors", fold, flip),
         ("the epi optics and the moving parts", Part.makeCompound([lens, stop]),
@@ -207,8 +210,6 @@ def build(doc):
     checks.append(Check("LED matrix: LEDs inside each NA match the design", groups == P.MATRIX_NA_GROUPS,
                         ", ".join("%s %d" % kv for kv in groups.items())))
 
-    s = route(sensor, False)[2].BoundBox.Center
-    c = route(sensor, True)[2].BoundBox.Center
     facts += [
         ("Objective shoulder, z", O.SHOULDER),
         ("Objective exit pupil, z (assumed)", O.PUPIL),

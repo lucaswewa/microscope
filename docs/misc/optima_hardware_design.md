@@ -318,7 +318,7 @@ Zaber stages were excluded at the owner's request.
 
 | Stage | Travel | Open frame | Drive | Price | Notes |
 |---|---|---|---|---|---|
-| **Standa 8MTF-102LS05** (recommended) | 102 × 102 mm | Yes: a 115 mm opening in the top plate, □64–115 mm through the stack | 0.5 mm lead screw, 2-phase stepper. 2.5 µm full step, 0.31 µm at 1/8 step. 10 mm/s. 50 kg horizontal load. | Quote needed, *est.* €3–4.5k | 214 mm square (276.5 mm with motors), 45 mm high, 3.6 kg. Limit switches. Accepts linear encoders. |
+| **Standa 8MTF-102LS05** (recommended) | 102 × 102 mm | Yes: a 115 mm opening in the top plate, □64–115 mm through the stack | 0.5 mm lead screw, 2-phase stepper. 2.5 µm full step, 0.31 µm at 1/8 step. 10 mm/s. 50 kg horizontal load. | Quote needed, *est.* €3–4.5k | 175 mm square plates, 276.5 mm square with its drives, 45 mm high, 3.6 kg. Limit switches. Accepts linear encoders. |
 | Standa 8MTF-200 | 200 × 200 mm | Yes: 205 × 205 mm | 2 mm ball screw, stepper or BLDC. ±0.5 µm unidirectional repeatability. 30–50 mm/s. | Quote needed | Too large for a desktop: 402 × 450 mm |
 | Prior ProScan H101 (upright) | 114 × 75 mm | Yes | Stepper, with the ProScan controller | $11,375 (H101P1F) | A premium option, over budget |
 | OptoSigma BIOS-105S (upright) | Not checked | Yes | Stage, controller and joystick | SGD 15,854 | Over budget |
@@ -329,7 +329,7 @@ The Standa 8MTF-102LS05 is the only mid-priced, microscope-ready open frame foun
 
 - **Travel.** Its 102 mm covers a 96-well plate's 99 mm span of well centres. A 384-well plate's centres span 103.5 mm, so the outermost columns are imaged near the edge of the field.
 - **Speed is the compromise.** At 10 mm/s, a crossing of the plate takes about 10 s and a 1.7 mm tile step about 0.3 s.
-- **Mounting.** The top plate has M3 and M6 holes on a 25 mm grid and a 4 mm-deep recess around the opening, which take the sample-insert adapter ([§9](#9-mechanical-layout)).
+- **Mounting.** The top plate has M3 and M6 holes on a 25 mm grid and 4 mm-deep pockets at the opening's corners, which take the sample-insert adapter ([§9](#9-mechanical-layout)).
 
 ### 6.2 Focus
 
@@ -445,7 +445,7 @@ The owner chose a colour IMX492, the same sensor as the mono camera.
 **The options:**
 
 - **ToupTek's colour twin** of the mono camera is the CTR3CMOS45000KPA, which is cooled; no price was found.
-- **The uncooled ToupCam E3ISPM 45000** (colour IMX492, 2.315 µm, 8.1 fps, USB 3.0) sells for about **$2,174** (€1,790 at one retailer).
+- **The uncooled ToupCam E3ISPM45000KPB** (colour IMX492, 2.315 µm, 8.1 fps, USB 3.0) sells for about **$2,174** (€1,790 at one retailer).
 - **Price correction.** That is more than the $700–1,200 estimated when the colour camera was chosen.
 
 **The cheaper alternative** is a ToupTek colour IMX294 camera, at about $800–1,100. The IMX294 has the same 4/3-inch format with 4.63 µm pixels, so its field is about the same; check its active area.
@@ -524,7 +524,7 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 **Envelope.** About 450 × 400 × 430 mm and 18 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg.
 
-- **Footprint.** The stage alone sweeps 316 mm.
+- **Footprint.** The stage and its drives sweep about 289 × 328 mm over the travel.
 - **Height.** The upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras above the sample.
 - **The way to 300 mm** is to fold the infinity space, which vignettes the 23 mm sensor ([§4.2](#42-tube-lens-and-infinity-space)).
 - **Weight.** A honeycomb or thinner base would save about 2 kg.
@@ -591,7 +591,7 @@ The objectives and the mono camera aren't included.
 
 | # | Item | Choice | Qty | Price (USD) | Basis |
 |---|---|---|---|---|---|
-| 1 | Colour camera | ToupTek colour IMX492 (E3ISPM 45000 colour) | 1 | 2,174 | Listed (retailer) |
+| 1 | Colour camera | ToupTek colour IMX492 (E3ISPM45000KPB) | 1 | 2,174 | Listed (retailer) |
 | 2 | Overview camera | 12 MP USB (UVC) module, M12 wide lens | 1 | 120 | *est.* |
 | 3 | Tube lens | Thorlabs TTL200-A | 1 | 573 | Listed |
 | 4 | Fold mirror | 2 in. protected-silver mirror, kinematic mount | 1 | 250 | *est.* |

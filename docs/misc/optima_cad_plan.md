@@ -22,6 +22,7 @@ Started 2026-10-31.
   - +X points right, seen from the front: the side the epi arm leaves on.
   - +Y points to the back, toward the column.
   - The optics stay fixed, so this origin holds in every phase. The stage's position is a parameter of the assemblies.
+  - Each bought part is built in its own frame, which its module describes, and the assemblies place it. A part with moving parts takes their positions, so the assemblies can check it anywhere in its travel.
 - **Parameters.** Every dimension lives in [`params.py`](../../cad/optima/optima_cad/params.py), with its source. "Assumed" marks a value no vendor publishes.
 - **What each document holds:**
   - its objects in named groups, coloured by kind;
@@ -68,8 +69,9 @@ The repository's rules for phases apply, with these differences:
 
 | Phase | Status |
 |---|---|
-| C01 | In review |
-| C02–C08 | Not started |
+| C01 | Done |
+| C02 | In review |
+| C03–C08 | Not started |
 
 ## 6. C01: the optical layout
 
@@ -100,5 +102,38 @@ Its checks:
 
 - The exit pupil sits 20 mm below each objective's shoulder. At that depth, the 5x and 10x corners have 6.6 mm of margin before the tube lens's pupil clips them.
 - The tube lens is a thin lens at its entrance pupil.
-- The colour camera's body is the mono camera's size, until C02.
+- The colour camera's body is the mono camera's size. C02 replaced it with the real one.
 - The mirrors' clear aperture is 90 % of their diameter.
+
+## 7. C02: stages and cameras
+
+Each bought part has its own document, built from its vendor's drawing:
+
+| Document | Part | From | Its checks |
+|---|---|---|---|
+| `xy-stage.FCStd` | Standa 8MTF-102LS05 | Standa's PDF drawing, whose vector outlines give exact positions | The footprint (□276.5 mm), the height (45 mm) and the clear aperture (□115 mm at the centre, □64 mm at a corner of the travel) match the drawing. The travel covers a 96-well plate's wells. The moving parts clear the fixed ones across the travel. |
+| `z-lift.FCStd` | Standa 8MVT100-25-1 | Standa's drawing, an image | The length with the connector (140 mm) and the height over the travel (100–125 mm) match the drawing. The top clears the column. |
+| `mono-camera.FCStd` | ToupTek CTR3CMOS45000KMA | ToupTek's dimensioned picture | The image corners' light clears the C-mount's bore, with every objective. |
+| `colour-camera.FCStd` | ToupTek E3ISPM45000KPB, the colour IMX492 | ToupTek's E3ISPM drawing | The same as the mono camera |
+| `overview-camera.FCStd` | A 12 MP UVC module, still to be chosen | Assumed | The lens's image circle covers the sensor. |
+
+**How the XY stage works.** Its three 175 mm plates share the 115 mm opening. The Y drive is fixed to the base on the left, with its knob at the front. The X drive rides on the middle plate at the back, with its knob on the right. The top plate has 4 mm-deep pockets at the opening's corners. The stage and its drives sweep 289 × 328 mm over the travel, which the document shows as reserved space.
+
+**The optical layout** now has the real camera bodies, with their mounting faces down and room for their plugs. Its collision check includes the plugs, and each camera against its own light.
+
+**What C02 changed in the design document.**
+
+- The stage's plates are 175 mm square, not 214 mm; 276.5 mm is its square with the drives.
+- It sweeps about 289 × 328 mm over its travel, not 316 mm.
+- Its top plate has pockets at the opening's corners, not a recess around it.
+- The colour camera's model is the E3ISPM45000KPB.
+
+**Still assumed,** until the parts are measured:
+
+- The XY stage's plates are 15 mm each, a third of its height.
+- The lift's column is 90 mm square; the drawing shows about 91 × 88 mm.
+- The mono camera's nose is 60 mm across and its fan housing 8 mm deep: the picture has no dimension for the first, and a blurred one for the second.
+- The colour camera's ring is 40 mm across, its edges have a 6 mm radius, and its 1/4-20 hole is centred.
+- The C-mount's bore is 24 mm, a little inside the thread's minor diameter.
+- The room each camera's plugs need.
+- The whole overview camera: an IMX577 on the common 38 mm board, with a 3.2 mm M12 lens.
