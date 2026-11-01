@@ -1,0 +1,42 @@
+# OPTIMA CAD
+
+FreeCAD models of the [OPTIMA hardware design](../../docs/misc/optima_hardware_design.md), built by Python scripts. The [CAD plan](../../docs/misc/optima_cad_plan.md) sets out the phases and conventions.
+
+## Looking at the models
+
+Open any file in [`models/`](models/) with FreeCAD 1.1. Each has its parts in groups, and three sheets:
+
+- **Parameters:** the values it was built from;
+- **Facts:** the positions and sizes derived from them;
+- **Checks:** what was checked, and the results.
+
+[`models/REPORT.md`](models/REPORT.md) has every model's checks and facts as text.
+
+## Changing them
+
+Don't edit the `.FCStd` files: the build replaces them.
+
+1. Change [`optima_cad/params.py`](optima_cad/params.py) or the scripts.
+2. Run the build, with FreeCAD 1.1 installed:
+
+   ```sh
+   python cad/optima/make.py
+   ```
+
+   It runs FreeCAD offscreen, in safe mode, so your own FreeCAD settings play no part. It takes a few seconds and prints every check. Set `FREECAD` to FreeCAD's program if `make.py` doesn't find it.
+3. Commit the scripts with the rebuilt `models/`.
+
+`python cad/optima/make.py --check` builds into a temporary folder instead. It fails if any check fails or if `models/` isn't what the scripts build. Run it before every pull request.
+
+## Files
+
+| File | What it does |
+|---|---|
+| `make.py` | Finds FreeCAD, runs the build, writes `models/` and `REPORT.md`, or checks them |
+| `freecad_main.py` | What FreeCAD runs: builds the models and reports back |
+| `optima_cad/params.py` | Every dimension, with its source |
+| `optima_cad/optics.py` | First-order optics: positions along the axis, apertures, the LED matrix's NAs |
+| `optima_cad/geom.py` | Shape helpers |
+| `optima_cad/document.py` | Adding coloured shapes and sheets, and saving files reproducibly |
+| `optima_cad/layout.py` | The optical layout and its checks |
+| `optima_cad/build.py` | The list of models, and how each is built and saved |

@@ -2,7 +2,7 @@
 
 A design for a desktop, upright, automated microscope with the features in [OPTIMA](optima.md), built from off-the-shelf parts where possible.
 
-Prepared 2026-10-31. Status: a proposal for the owner's review.
+Prepared 2026-10-31. Status: a proposal for the owner's review. Its FreeCAD models are planned in [optima_cad_plan.md](optima_cad_plan.md).
 
 The owner set these constraints:
 
@@ -281,8 +281,9 @@ The lime LED's light above 605 nm is lost at the first dichroic, and its exciter
 **Köhler epi-illuminator.**
 
 - **Collectors.** Each LED has an f = 20 mm aspheric collector, which sends its image to infinity.
-- **Field stop and epi lens.** After the combiner, an iris field stop sits at the front focal plane of an f = 125 mm achromat. That achromat sits about 125 mm from the objective's back aperture.
-- **Result.** The LED's image falls in the objective's back aperture, about 6 mm across for a 1 mm die, and the field stop images onto the sample. The field stop's image and the camera's field both scale with the objective's focal length, so one stop size fits all three objectives: 22.96 mm × 125 / 200 = **14.4 mm**.
+- **Field stop and epi lens.** After the combiner, an iris field stop sits at the front focal plane of an f = 100 mm achromat. That achromat sits 100 mm along the light from the objective's back aperture.
+- **Fold.** Between the combiner and the field stop, a 1 in. mirror turns the arm back toward the column, so the arm adds less to the instrument's width. The optical layout model places it ([optima_cad_plan.md](optima_cad_plan.md), C01).
+- **Result.** The LED's image falls in the objective's back aperture, about 5 mm across for a 1 mm die, and the field stop images onto the sample. The field stop's image and the camera's field both scale with the objective's focal length, so one stop size fits all three objectives: 22.96 mm × 100 / 200 = **11.5 mm**.
 
 **Exciter placement.** The exciter sits in the cube, at slider position (a), not after the combiner. The open and beamsplitter positions then get unfiltered LED light.
 
@@ -599,7 +600,7 @@ The objectives and the mono camera aren't included.
 | 7 | Reflected-light splitter | 50:50 plate beamsplitter, 25 × 36 mm | 1 | 150 | *est.* |
 | 8 | Filter slider | Rail, carriage, small stepper, home switch, machined holders | 1 | 350 | *est.* |
 | 9 | Epi LEDs | Thorlabs mounted LEDs, about 395, 470, 565 and 625 nm | 4 | 1,400 | *est.* |
-| 10 | Epi optics | Four f = 20 mm aspheric collectors; DMLP425, DMLP505 and DMLP605; an iris; an f = 125 mm achromat; 30 mm cage parts | 1 set | 1,350 | *est.* |
+| 10 | Epi optics | Four f = 20 mm aspheric collectors; DMLP425, DMLP505 and DMLP605; an iris; an f = 100 mm achromat; a 1 in. fold mirror; 30 mm cage parts | 1 set | 1,350 | *est.* |
 | 11 | LED drivers | Mean Well LDD-H | 4 | 60 | *est.* |
 | 12 | LED matrix | Adafruit 2734 | 1 | 35 | *est.* |
 | 13 | XY stage | Standa 8MTF-102LS05 | 1 | 4,100 | *est.* (€3–4.5k). Quote needed. |
@@ -635,8 +636,8 @@ Upgrades, when the budget allows:
 
 ## 14. Decisions for the owner
 
-1. **Colour camera.** Keep the colour IMX492 (about $2,174, matching sampling), or use a colour IMX294 (about $900, the same field, half the colour resolution).
-2. **Stage quotes.** Approve requests to Standa for the 8MTF-102LS05 and the 8MVT100-25-1, or look for a tested second-hand stage.
+1. **Colour camera.** Decided 2026-10-31: keep the colour IMX492. With the other two substitutions in [§13](#13-bill-of-materials-and-budget), the build comes to about $16.2k.
+2. **Stages.** Decided 2026-10-31: the Standa 8MTF-102LS05 and 8MVT100-25-1. Their quotes are still to come.
 3. **Epi LEDs.** Thorlabs mounted LEDs, or star-board LEDs.
 4. **Camera port.** The Thorlabs MFF102/M, or a servo-driven flip mirror.
 5. **Tube lens.** Start with the TTL200-A, and move to the MT-1 only if the bench test fails.

@@ -38,3 +38,6 @@ docs/reference/compare.html
 
 # The release zip and its staging folder (P49)
 release-out/
+
+# Python's bytecode caches (cad/optima)
+__pycache__/
