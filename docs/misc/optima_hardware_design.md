@@ -73,7 +73,7 @@ The sample sits on an open-frame XY stage, which rides on a Z lift. An 8 × 8 RG
 | Single or dual camera | Mono and colour cameras on a switched port. They can't record at the same time. | Partly. Simultaneous imaging needs a beamsplitter in place of the flip mirror. |
 | Overview camera, top | A USB camera at the front of the optical head, looking down at the stage at an angle | Met |
 | Data formats | Software in this repository. Data rates are in [§7](#7-cameras-and-data). | Not hardware |
-| 300 × 300 × 300 mm, under 16 kg | 465 × 425 × 598 mm, and about 30 kg before the enclosure and the electronics | Not met ([§9](#9-mechanical-layout)) |
+| 300 × 300 × 300 mm, under 16 kg | 548 × 513 × 640 mm in its enclosure, and about 42 kg | Not met ([§9](#9-mechanical-layout)) |
 | 110/230 V; 12 V 5 A; battery | Mains to one 24 V 150 W supply. The peak draw, about 90–100 W, is above 12 V 5 A. | Partly |
 
 ## 3. Architecture
@@ -123,7 +123,7 @@ flowchart LR
     OC -- trigger --> MONO
     MONO -- exposure signal --> OC
     OC -- trigger --> COL
-    LID[Lid interlock] --> EPI
+    LID[Door interlock] --> EPI
 ```
 
 ## 4. Optics
@@ -409,12 +409,12 @@ The alternative is Standa's own 8SMC5 controllers: €1,387 for two axes and €
 
 **Optics controller.** A Raspberry Pi Pico 2 (RP2350) on a small carrier board, running this project's firmware: Rust, MIT, kept in this repository. It owns the light path and its timing:
 
-- the four LED-driver enables, wired through the lid interlock;
+- the four LED-driver enables, wired through the door interlock;
 - the LED matrix, over SPI through a 5 V level shifter;
 - the filter slider's stepper (a TMC2209) and home switch;
 - the flip mirror, through its digital input (SMA);
 - a trigger output to each camera's opto-isolated input, and the cameras' exposure outputs;
-- the lid interlock and the LED heatsink thermistors.
+- the door interlock and the LED heatsink thermistors.
 
 It speaks a line-based protocol over USB serial and can run preloaded sequences ([§5.4](#54-timing-with-a-rolling-shutter)).
 
@@ -503,7 +503,7 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 - **Mains.** One 24 V, 150 W supply from the mains, plus the camera's 12 V adapter. A 24-to-12 V converter would give the instrument a single inlet.
 - **12 V input.** OPTIMA's 12 V 5 A (60 W) input would work only with the TEC limited. Battery power isn't part of this build.
-- **Eye safety.** The 395 nm and the visible epi LEDs, about 1 W each, are an eye hazard when viewed through the optics. The enclosure is light-tight. A lid interlock switches off the LED-driver enables in hardware, not only in firmware. Using LEDs avoids laser classification altogether.
+- **Eye safety.** The 395 nm and the visible epi LEDs, about 1 W each, are an eye hazard when viewed through the optics. The enclosure is light-tight. A door interlock switches off the LED-driver enables in hardware, not only in firmware. The interlock's wiring runs through a plug on the cover, so lifting the cover off switches them off too. Using LEDs avoids laser classification altogether.
 - **Cables.** Flexible, strain-relieved cables to the moving stage. One ground point for the frame, the supplies and the USB shields.
 
 ## 9. Mechanical layout
@@ -533,14 +533,21 @@ The epi arm's 30 mm cage sits on its own plate to the right, which passes the he
 
 The stage brings every well, every slide's cover glass and each dish's middle 20 mm into the 5x's field. A counting chamber needs its own insert unless it fits a slide's 25.4 × 75.4 mm pocket. Several stage makers use the 160 × 110 mm insert size; confirm it against any inserts you buy.
 
-**Enclosure.** Black-anodized panels on an extrusion frame, a front door with the interlock switch, cable glands, and vents by the camera's TEC fan.
+**Enclosure.** A cover that stands on the table over the instrument, apart from it, on a foam strip, and lifts off for service. It's a frame of 20 × 20 mm extrusions with 1.5 mm black-anodized aluminium panels. The instrument model shows it ([optima_cad_plan.md](optima_cad_plan.md#12-c07-the-enclosure-and-the-electronics), C07).
 
-**Envelope.** 465 × 425 × 598 mm, and about 30 kg before the enclosure and the electronics, which doesn't meet OPTIMA's 300 mm cube and 16 kg. The instrument model measures both ([optima_cad_plan.md](optima_cad_plan.md#11-c06-the-instrument), C06).
+- **Door.** The whole front is a door, hinged on the left. Its interlock switch, at the right, opens as soon as the door does.
+- **Air.** Air comes in through a vent low in the right panel and leaves through a 120 mm fan high in the back panel. The fan sits behind the mono camera, and an opening in the head plate lets the camera's own fan blow straight to it. Baffles inside both keep light out. With the fan moving about 40 m³/h, the air inside warms about 3 K at the typical 40 W, and 7.5 K at the 100 W peak. Being on the cover, the fan doesn't shake the instrument.
+- **Cables.** They run in a duct along the base plate from the electronics tray, and up a duct behind the head plate, between the column's extrusions. Slots in the head plate let them out by each deck. They leave through a notch at the foot of the back panel, so the cover lifts off without unplugging anything but the interlock.
+- **The cables' room.** The epi LEDs' cables need 40 mm behind them, so the cover reaches 35 mm past the base plate on the right and at the back.
+
+**Electronics.** The supply, the SKR Pico, the Pico 2 on its carrier and the four LED drivers on theirs sit on a tray on the base plate, right of the lift and under the stage. There they clear the stage at the bottom of the lift's travel.
+
+**Envelope.** 548 × 513 × 640 mm in the enclosure, and about 42 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg. Without the enclosure, 465 × 425 × 598 mm and about 30 kg. The instrument model measures them ([optima_cad_plan.md](optima_cad_plan.md#11-c06-the-instrument), C06 and C07).
 
 - **Footprint.** The stage and its drives sweep about 289 × 328 mm over the travel.
 - **Height.** Above the sample, the upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras: the optical head reaches 345 mm. Below it, the matrix's 80 mm, its mount and plate, the lift and the base take 253 mm to the table. The stand is 598 mm tall; C06 measures the whole instrument.
 - **The way to 300 mm** is to fold the infinity space, which vignettes the 23 mm sensor ([§4.2](#42-tube-lens-and-infinity-space)).
-- **Weight.** The custom aluminium parts weigh 17.2 kg, and the bought ones about 13.2 kg. The heaviest are the base plate (6.4 kg), the head plate (3.4 kg) and the upper and lower decks (1.8 and 1.5 kg). An 8 mm base would save 2.1 kg, and pocketing the head plate and the decks would save more ([§14](#14-decisions-for-the-owner)).
+- **Weight.** The custom aluminium parts weigh 17.1 kg, the bought ones about 13.2 kg, the cover 10 kg and the electronics 1.4 kg. The heaviest are the base plate (6.4 kg), the head plate (3.4 kg) and the upper and lower decks (1.8 and 1.5 kg). An 8 mm base would save 2.1 kg, and pocketing the head plate and the decks would save more ([§14](#14-decisions-for-the-owner)).
 
 ## 10. Software in this repository
 
@@ -580,7 +587,7 @@ The new hardware needs the pieces below, each one phase or more. Following the p
 | Camera | Photon transfer curve; dark frames at TEC set-points | Gain, read noise, full well and dark current recorded |
 | LED matrix | Brightfield-to-darkfield transitions per LED | LED positions and height recorded |
 | Throughput | A 96-well, 10x, four-channel test scan | Time and data compared with [§7](#7-cameras-and-data) |
-| Safety | Open the lid during a fluorescence exposure | The epi LEDs switch off in hardware |
+| Safety | Open the door during a fluorescence exposure | The epi LEDs switch off in hardware |
 
 ## 12. Risks
 
@@ -595,8 +602,8 @@ The new hardware needs the pieces below, each one phase or more. Following the p
 | The matrix's 5 mm pitch at 5x | Coarse DPC at 5x | A custom 2.5 mm board (+about $150) |
 | grblHAL's fit for a microscope | Status rate, backlash | Try it with the fake and on the bench. Standa's 8SMC5 is the fallback. |
 | LDD-H drivers discontinued | A redesign of the driver board | Check stock. Thorlabs LEDD1B or a linear driver instead. |
-| Thermal drift in Z from the TEC and LEDs | Focus drift in long scans | Refresh the focus map, vent the enclosure |
-| Size and weight above OPTIMA's | 598 mm tall and about 30 kg before the enclosure | Accepted for an upright with this sensor. The plates can be lightened ([§9](#9-mechanical-layout)). |
+| Thermal drift in Z from the TEC and LEDs | Focus drift in long scans | Refresh the focus map. The enclosure's fan takes the camera's heat straight out, and keeps the air inside within about 3 K of the room. |
+| Size and weight above OPTIMA's | 640 mm tall and about 42 kg in the enclosure | Accepted for an upright with this sensor. The plates and the panels can be lightened ([§9](#9-mechanical-layout)). |
 
 ## 13. Bill of materials and budget
 
@@ -659,7 +666,7 @@ Upgrades, when the budget allows:
    - **FLIM** with FLIM Labs' modules usually means a pulsed laser and a scanning system, which is a separate design.
    - **Simultaneous dual camera** needs a beamsplitter in place of the flip mirror.
 7. **Software.** Whether the drivers in [§10](#10-software-in-this-repository) become a milestone, with one pull request per phase.
-8. **Weight.** About 30 kg before the enclosure and the electronics, against the 18 kg first estimated ([§9](#9-mechanical-layout)). Lighten the base plate, the head plate and the decks before their drawings (CAD phase C08), or accept it.
+8. **Weight.** About 42 kg in the enclosure, 30 kg without it, against the 18 kg first estimated ([§9](#9-mechanical-layout)). Lighten the base plate, the head plate and the decks before their drawings (CAD phase C08), and the cover's panels, which weigh about 7 kg in 1.5 mm aluminium. Or accept it.
 
 ## 15. Build order
 

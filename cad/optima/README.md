@@ -45,6 +45,7 @@ Don't edit the `.FCStd` files: the build replaces them.
 | `optima_cad/head.py` | The optical head: its custom parts, with the bought parts in place, and its checks across every moving part's travel |
 | `optima_cad/stand.py` | The stand: the base, the column, the stage stack on the Z lift and the overview camera's bracket, and their checks across the lift's and the stage's travel |
 | `optima_cad/inserts.py` | The sample inserts: the adapter, the inserts and their labware, and their checks |
-| `optima_cad/assembly.py` | The whole instrument: the head on the stand, and its checks across every moving part's travel, its envelope and its mass |
+| `optima_cad/assembly.py` | The whole instrument: the head on the stand in its enclosure, and its checks across every moving part's travel, its envelope and its mass |
+| `optima_cad/enclosure.py` | The enclosure and the electronics: the cover, its door, interlock, intake and fan, the electronics tray and the cable ducts, and their checks |
 | `optima_cad/checks.py` | Checks, and the overlaps they look for |
 | `optima_cad/build.py` | The list of models, and how each is built and saved |

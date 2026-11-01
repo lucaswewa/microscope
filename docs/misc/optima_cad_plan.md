@@ -74,8 +74,9 @@ The repository's rules for phases apply, with these differences:
 | C03 | Done |
 | C04 | Done |
 | C05 | Done |
-| C06 | In review |
-| C07–C08 | Not started |
+| C06 | Done |
+| C07 | In review |
+| C08 | Not started |
 
 ## 6. C01: the optical layout
 
@@ -296,3 +297,46 @@ Its checks:
 - Lids aren't modelled. With only 1.5 mm between the 20x and a 60 mm dish at the top of the lift's travel, keep the lift lower for a lidded dish.
 
 **For C07.** The enclosure goes round 465 × 425 × 598 mm. The column's back is flush with the base's back edge, and the epi arm's LEDs reach x = 255 mm, 10 mm inside the base's right edge.
+
+## 12. C07: the enclosure and the electronics
+
+C07 adds the enclosure and the electronics to `instrument.FCStd`, under **Enclosure**. The cover's panels are see-through in the model.
+
+| Part | What it does |
+|---|---|
+| Cover | A frame of 20 × 20 mm extrusions, 548 × 513 × 640 mm outside, with 1.5 mm black-anodized aluminium panels. It stands on the table over the instrument, apart from it, on a 5 mm foam strip, and lifts off. Inside, it leaves 5 mm round the instrument at least. |
+| Door | The whole front, hinged on the left, with a handle by its right edge |
+| Interlock | A switch on a bracket from the right front upright, whose plunger the shut door presses |
+| Intake | 250 × 40 mm, low in the right panel, with a baffle inside |
+| Fan | 120 mm, high in the back panel behind the mono camera, blowing out, with a baffle inside. An opening in the head plate lets the camera's own fan blow straight to it. |
+| Electronics tray | On standoffs on the base plate, right of the lift and under the stage. It holds the supply, the SKR Pico, the Pico 2 on a carrier, and the four LDD-H drivers on another. |
+| Cable ducts | One along the base plate from the tray, and one up behind the head plate, between the column's extrusions. Two slots in the head plate, by the decks, open into it. |
+| The cables' room | 40 mm behind each epi LED for its cable |
+
+Its checks, in the instrument model:
+
+- **The cover clears the instrument,** its cables' room and its moving parts across their travel, and lifts straight off, with 5 mm round them at least.
+- **The door swings 120 degrees clear of the cover.** It presses the interlock only when shut: 0.34 degrees open releases it.
+- **The intake and the fan are baffled:** no straight line within 72 degrees of their axis gets past.
+- **The electronics tray and the cable ducts** clear the instrument and each other, with the stage stack across its travel.
+
+| Fact | Value |
+|---|---|
+| Cover, outside, the door shut | 548 × 513 × 640 mm |
+| Air's warming inside, with the fan | 3.0 K at the typical 40 W, 7.5 K at the 100 W peak |
+| Cover | 10.0 kg: about 3 kg of frame and 7 kg of panels |
+| Electronics and their tray | 1.4 kg |
+| The instrument in its enclosure | 41.6 kg |
+
+**What C07 changed in the design.**
+
+- **The enclosure is a cover,** standing on the table apart from the instrument, rather than panels on its frame. It lifts off for service, and its fan's vibration doesn't reach the instrument.
+- **A fan, not just vents.** Natural convection through vents small enough to baffle would let the air inside warm 10 K or more. So a fan blows out behind the mono camera, which dissipates the most heat, up to 36 W.
+- **The head plate gets three openings:** two slots for the cables and one behind the mono camera's fan.
+- **The design document's §2, §8, §9, §12 and §14** give the enclosure and the new mass. The lid interlock is now a door interlock.
+
+**Still assumed.**
+
+- The fan's flow through the baffles, 40 m³/h, and so the warming. The baffles' mounts aren't modelled.
+- The room each LED's cable needs, and the electronics' and the wiring's mass.
+- The cables to the moving stage, which need slack for its travel, aren't modelled. They run short from the tray, which sits under the stage.

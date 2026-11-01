@@ -57,8 +57,15 @@ def structure():
     top = O.FILTER - P.CAGE_30[2] / 2
     epi = G.span(V(x0, y0, top - pt), V(x1, y1, top))
     epi = epi.cut(G.span(V(x0 - 1, FRONT, top - pt - 1), V(P.HEAD_PLATE[3], y1 + 1, top + 1)))
-    return {"plate": G.corners(P.HEAD_PLATE), "lower": lower, "upper": upper, "bracket": bracket,
-            "epi": epi}
+    # The head plate's openings: slots for the cables from the duct behind it, and an opening behind
+    # the mono camera's fan, toward the enclosure's.
+    y0, y1 = FRONT - 1, P.HEAD_PLATE[4] + 1
+    holes = [G.span(V(x0, y0, z0), V(x1, y1, z1)) for x0, x1, z0, z1 in P.HEAD_SLOTS]
+    fan = layout.camera_frames()["mono"][0]
+    side = P.MONO_FAN[0] + 5
+    holes.append(G.box((side, y1 - y0, side), V(fan.x, (y0 + y1) / 2, fan.z)))
+    plate = G.corners(P.HEAD_PLATE).cut(Part.makeCompound(holes))
+    return {"plate": plate, "lower": lower, "upper": upper, "bracket": bracket, "epi": epi}
 
 
 def changer(offset=0.0):

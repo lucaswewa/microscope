@@ -252,6 +252,10 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Each insert and its labware clear the head across the stage's and the lift's travel, and the objectives as they change | pass | the objectives' fronts 1.5 mm above the dishes with the lift at the top of its travel |
 | The stage's openings pass the brightfield light of the 5x and the 10x at every target, and of the 20x at every target's centre | pass | 72 stage positions, to the field's centre |
 | Everything stays over the base plate, the moving parts across their travel | pass | x -150.0 to 255.0, y -156.1 to 265.0; the base -200 to 265, -160 to 265 |
+| The cover clears the instrument, its cables' room and its moving parts across their travel, and lifts straight off | pass | 5.0 mm round it at least, inside the frame |
+| The door swings open clear of the cover, and presses the interlock only when shut | pass | it swings 120 degrees; 0.34 degrees open releases the switch |
+| The intake and the fan are baffled against light | pass | no straight line within 72 degrees of their axis gets past the baffles |
+| The electronics tray and the cable ducts clear the instrument, the stage stack across its travel | pass | no overlaps |
 
 | Fact | Value |
 |---|---|
@@ -260,7 +264,13 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | The 20x's brightfield light is whole | within +-48.3 mm of the centre along X |
 | At the worst target, the 20x's brightfield LEDs blocked | 8 of 44 |
 | At the worst target, all LEDs blocked | 16 of 64, from NA 0.30 |
-| Mass without the enclosure and the electronics, kg | 30.4 |
-| Custom aluminium parts, kg | 17.2 |
-| Heaviest custom parts, kg | the base plate 6.4, the head plate 3.4, the upper deck 1.8, the lower deck 1.5 |
+| Mass without the enclosure and the electronics, kg | 30.3 |
+| Custom aluminium parts, kg | 17.1 |
+| Heaviest custom parts, kg | the base plate 6.4, the head plate 3.3, the upper deck 1.8, the lower deck 1.5 |
 | Bought parts, kg | 13.2, with 3.2 for the column's extrusions |
+| Mass with the enclosure and the electronics, kg | 41.6 |
+| Cover, outside, the door shut | 548 x 513 x 640 mm |
+| Intake; fan | 100 cm2; 120 mm, 40 m3/h through the baffles |
+| Air's warming inside, typical and peak draw | 3.0 K at 40 W, 7.5 K at 100 W |
+| Cover, kg | 10.0 |
+| Electronics and their tray, kg | 1.4 |

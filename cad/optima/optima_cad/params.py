@@ -252,3 +252,35 @@ MASSES = {
     "small parts": 0.5,  # the feet, the LED matrix, the filters, the screws
 }
 EXTRUSION_KG_PER_M = 2.8  # a 40 x 80 mm extrusion: Robotunits' PIL 4080; others list 2.1 to 2.8
+
+# The enclosure (this design): a cover of 20 x 20 mm extrusions and black-anodized aluminium panels.
+# It stands on the table over the instrument, apart from it, on a foam strip, and lifts off. The
+# front is a door, hinged on the left, whose interlock switch cuts the LED drivers. In the
+# instrument's frame:
+ENCLOSURE = (-205.0, -170.0, 300.0, 300.0, 365.0)  # the frame's inner faces: x0, y0, x1, y1, top
+ENCLOSURE_FRAME = (20.0, 0.49)  # the extrusions' side, and kg per metre (FramingTech's 20-05)
+ENCLOSURE_PANEL = 1.5  # the panels' and the door's thickness
+ENCLOSURE_SEAL = 5.0  # the foam strip under the frame
+ENCLOSURE_NOTCH = (160.0, 30.0)  # the cables' way out, in the back panel just above its bottom rail
+INTERLOCK = (20.0, 12.0, 6.0, 2.0)  # the door's switch: width, height, depth, its plunger's travel
+# The vents: an intake low in the right panel, its centre (y, z) and size, and a fan in the back
+# panel behind the mono camera, blowing out. A baffle inside each, `gap` from it, overlaps it by
+# `overlap` times the gap all round, so that no light gets in straight.
+INTAKE = ((0.0, -180.0), (250.0, 40.0))
+FAN = (120.0, 25.0, 40.0)  # side, depth, its flow through the baffles in cubic metres an hour (assumed)
+BAFFLE = (8.0, 3.0)  # gap, overlap
+TYPICAL_W = 40.0  # the design's typical draw (its §8)
+EPI_PLUG = 40.0  # the room behind each mounted LED for its cable (assumed)
+# The electronics tray on the base plate, right of the lift and under the stage: x0, y0, x1, y1,
+# its thickness and its standoffs. Its parts' centres, each turned with its long side along Y, and
+# the carrier boards under the optics controller and the LED drivers: length, width (assumed).
+TRAY = (90.0, -145.0, 255.0, 155.0, 3.0, 6.0)
+TRAY_PARTS = {"supply": (145.0, -60.0), "motion": (226.0, -95.0), "optics": (226.0, -10.0),
+              "drivers": (150.0, 75.0)}
+CARRIERS = {"optics": (60.0, 50.0), "drivers": (100.0, 50.0)}
+ELECTRONICS_KG = 1.0  # the supply's 0.42 kg (retailers' listings), the boards, the fan, the wiring
+# The cable ducts, from the base plate: x0, y0, x1, y1, top. One runs up behind the head plate
+# between the column's extrusions, one along the base from the tray to its foot.
+DUCTS = ((35.0, 185.0, 85.0, 215.0, 345.0), (35.0, 160.0, 120.0, 185.0, -196.0))
+# Slots through the head plate from the duct: x0, x1, z0, z1, by the lower and the upper deck.
+HEAD_SLOTS = ((45.0, 75.0, 85.0, 100.0), (45.0, 75.0, 180.0, 195.0))
