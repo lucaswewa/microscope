@@ -113,15 +113,14 @@ def guide(position=0.0):
     return {"rail": rail, "carriage": carriage}
 
 
-def stepper():
+def stepper(screw_length=P.LEAD_SCREW[1]):
     """A NEMA 11 lead-screw stepper: its face on the origin, its screw along +Z."""
     face, length, square, pilot = P.NEMA11
     s = square / 2
     motor = G.box((face, face, length), V(0, 0, -length / 2))
     motor = motor.fuse(Part.makeCylinder(pilot / 2, 2, V(0, 0, 0)))
     motor = G.drill(motor, [(2.5, 4.0, [(x, y) for x in (-s, s) for y in (-s, s)])], 0, -Z)
-    screw_d, screw_l = P.LEAD_SCREW
-    return {"motor": motor, "screw": Part.makeCylinder(screw_d / 2, screw_l, V(0, 0, 2))}
+    return {"motor": motor, "screw": Part.makeCylinder(P.LEAD_SCREW[0] / 2, screw_length, V(0, 0, 2))}
 
 
 def matrix_leds(positions):

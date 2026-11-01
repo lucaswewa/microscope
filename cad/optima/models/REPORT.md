@@ -11,9 +11,9 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Infinity space, 20x: corners clear the tube lens's pupil | pass | 70 mm of 101.0 mm allowed |
 | Sensor within the tube lens's rated field | pass | 0.41 % of the sensor is outside the 22 mm field |
 | Fold mirror: light within its clear aperture | pass | 12.3 mm from the centre, of 22.9 mm |
-| Flip mirror: light within its clear aperture | pass | 14.3 mm from the centre, of 22.9 mm |
+| Flip mirror: light within its clear aperture | pass | 14.2 mm from the centre, of 22.9 mm |
 | Nothing collides | pass | no overlaps |
-| Stack along the axis: changer, slider, tube lens | pass | 95.0 < 107.0 < 110.0 < 140.0 < 145.0 |
+| Stack along the axis: changer, slider, tube lens | pass | 95.0 < 107.0 < 115.0 < 145.0 < 145.0 |
 | LED image fits the smallest back aperture | pass | 5.0 mm in 8.4 mm |
 | LED matrix: LEDs inside each NA match the design | pass | 5x 4, 10x 16, 20x 44 |
 
@@ -22,13 +22,13 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Objective shoulder, z | 95.0 |
 | Objective exit pupil, z (assumed) | 75.0 |
 | Changer carriage top, z | 107.0 |
-| Filter cube centre, z | 125.0 |
+| Filter cube centre, z | 130.0 |
 | Tube lens entrance pupil, z | 145.0 |
 | Tube lens back, z | 193.2 |
 | Fold mirror centre, z | 228.2 |
 | Mono sensor centre, x y z | 0.0 116.8 228.2 |
-| Colour sensor centre, x y z | -66.8 50.0 228.2 |
-| Epi lens, field stop, epi fold: x | 50.0 150.0 175.0 |
+| Colour sensor centre, x y z | 74.8 42.0 228.2 |
+| Epi lens, field stop, epi fold: x | 45.0 145.0 175.0 |
 | Field stop diameter | 11.48 |
 | LED image diameter | 5.0 |
 | Corner angle in the infinity space, degrees | 3.29 |
@@ -126,8 +126,8 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 
 | Check | Result | Detail |
 |---|---|---|
-| Position 2 takes the ring clear of the light | pass | the ring 49.1 mm from the light's centre; the light reaches 15.4 mm |
-| The tube lens's housing clears the filter slider | pass | housing from z 165.2, slider up to 140.0 |
+| Position 2 takes the ring clear of the light | pass | the ring 49.1 mm from the light's centre; the light reaches 15.3 mm |
+| The tube lens's housing clears the filter slider | pass | housing from z 165.2, slider up to 145.0 |
 
 | Fact | Value |
 |---|---|
@@ -174,3 +174,28 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Fact | Value |
 |---|---|
 | Supply | 159 x 97 x 30 mm |
+
+## optical-head
+
+| Check | Result | Detail |
+|---|---|---|
+| The fixed parts don't overlap each other | pass | no overlaps |
+| The moving parts clear everything across their travel | pass | the changer and the slider every 10 mm, the port every 15 degrees, the cameras over +-3 mm of focus |
+| The light clears the head's parts | pass | with every objective and every slider cell on the axis |
+| The detent's ball seats in a groove at each objective, and rides on the edge between | pass | a 4 mm ball, 3 mm-deep 90-degree grooves |
+| The carriages stay on their rails, 5 mm from each end | pass | +-40 mm of +-52.3 mm |
+| The lead screws reach the nuts across the travel | pass | the changer's 110 mm screw, the slider's 160 mm |
+| The tube lens takes at least 5 mm of the deck's thread | pass | 12.8 mm |
+
+| Fact | Value |
+|---|---|
+| Head plate's back face, y: the column meets it | 185.0 |
+| Lower deck's top, z | 82.0 |
+| Upper deck, z | 163.0 to 178.0 |
+| Changer's offsets, 5x 10x 20x | +40 +0 -40 |
+| Slider's offsets, cells a b c | +40 +0 -40 |
+| Camera port's base, z (upside down) | 332.7 |
+| Focus travel, each camera | +-3 mm |
+| The head, x | -150.0 to 255.0 |
+| The head, y | -90.0 to 255.0 |
+| The head, z | 60.0 to 345.0 |

@@ -6,8 +6,10 @@ Check = namedtuple("Check", "name ok detail")
 
 
 def clashes(pairs):
-    """The names of the (name, shape, shape) pairs whose shapes overlap."""
-    return [name for name, a, b in pairs if a.common(b).Volume > 1e-6]
+    """The names of the (name, shape, shape) pairs whose shapes overlap. Pairs whose bounding
+    boxes don't meet are skipped."""
+    return [name for name, a, b in pairs
+            if a.BoundBox.intersect(b.BoundBox) and a.common(b).Volume > 1e-6]
 
 
 def matches(name, value, expected, unit="mm", tolerance=0.05):

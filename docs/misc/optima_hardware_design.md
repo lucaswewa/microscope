@@ -180,13 +180,13 @@ Adding anything to the infinity space later lengthens L. That includes a laser-a
 
 The 151.8 mm of converging light after the tube lens holds two mirrors:
 
-- **A fixed fold mirror,** about 35 mm after the lens, turns the path horizontal.
-- **A motorized flip mirror (Thorlabs MFF102/M),** about 50 mm further on, sends the light to the colour camera when it's in.
+- **A fixed fold mirror,** about 35 mm after the lens, turns the path horizontal, toward the back.
+- **A motorized flip mirror (Thorlabs MFF102/M),** 42 mm further on, sends the light right, to the colour camera, when it's in. It hangs upside down, so its body and its swing stay above the light. Standing on its base, its body would reach down into the filter slider's travel.
 
-Each camera's sensor sits about 65 mm past the flip mirror, which keeps the two 80 mm camera bodies clear of each other.
+Each camera's sensor sits about 75 mm past the flip mirror. That keeps the two camera bodies clear of each other, and leaves the flip mirror room to swing clear of the mono camera.
 
-- **Mirror size.** At both mirrors the beam is no more than about 21 mm across, about 30 mm long on a 45° mirror. 2 in. mirrors leave room for alignment.
-- **Parfocal adjustment.** Set each camera's distance with SM2 lens tubes and C-mount spacers so both cameras focus together.
+- **Mirror size.** At both mirrors the beam is no more than about 22 mm across, about 31 mm long on a 45° mirror. 2 in. mirrors leave room for alignment.
+- **Parfocal adjustment.** Each camera sits on a focus slide with ±3 mm of travel, so both cameras focus together.
 - **Repeatability.** The flip mirror's repeatability moves only the colour image, and a calibrated offset corrects it.
 - **Simultaneous dual camera, later.** Replace the flip mirror with a beamsplitter. In converging light, use a cube or a thin plate (1 mm or less), since a thick 45° plate adds astigmatism.
 
@@ -271,7 +271,7 @@ DPC and angle scans need each LED's position relative to the axis, which is cali
 
 For comparison, Semrock's DA/FI/TR/Cy5-4X-B quad set is listed at $3,287.59.
 
-**LED combiner.** Long-pass dichroics in 30 mm cage cubes join the four LEDs, working back from the far end:
+**LED combiner.** Long-pass dichroics in 30 mm cage cubes, 50 mm apart, join the four LEDs, working back from the far end:
 
 1. The 625 nm LED sits on the axis.
 2. A DMLP605 reflects the 565 nm LED in.
@@ -284,7 +284,7 @@ The lime LED's light above 605 nm is lost at the first dichroic, and its exciter
 
 - **Collectors.** Each LED has an f = 20 mm aspheric collector, which sends its image to infinity.
 - **Field stop and epi lens.** After the combiner, an iris field stop sits at the front focal plane of an f = 100 mm achromat. That achromat sits 100 mm along the light from the objective's back aperture.
-- **Fold.** Between the combiner and the field stop, a 1 in. mirror turns the arm back toward the column, so the arm adds less to the instrument's width. The optical layout model places it ([optima_cad_plan.md](optima_cad_plan.md), C01).
+- **Fold.** Between the combiner and the field stop, a 1 in. mirror, 30 mm past the stop, turns the arm back toward the column, so the arm adds less to the instrument's width. The optical layout model places it ([optima_cad_plan.md](optima_cad_plan.md), C01).
 - **Result.** The LED's image falls in the objective's back aperture, about 5 mm across for a 1 mm die, and the field stop images onto the sample. The field stop's image and the camera's field both scale with the objective's focal length, so one stop size fits all three objectives: 22.96 mm × 100 / 200 = **11.5 mm**.
 
 **Exciter placement.** The exciter sits in the cube, at slider position (a), not after the combiner. The open and beamsplitter positions then get unfiltered LED light.
@@ -373,7 +373,7 @@ No motorized three-position changer for M26 objectives fits the budget. OptoSigm
 
 - **Carriage.** The three objectives sit 40 mm apart on a machined aluminium carriage. Tap it M26 × 0.706, or use M26-to-SM1/SM2 adapters.
 - **Guide and drive.** The carriage runs on a miniature linear guide (an MGN12H carriage on a 150 mm rail; a 120 mm rail would leave it 74.6 mm of travel, short of the 80 mm it needs) and is driven by a NEMA 11 lead-screw stepper with a home switch.
-- **Detents.** A spring-loaded ball-and-V detent locates each position, so repeatability doesn't depend on the motor. Lower the stepper's holding current at a detent so the two don't fight.
+- **Detents.** A spring-loaded ball-and-V detent locates each position, so repeatability doesn't depend on the motor: a ball plunger behind the carriage drops into a V-groove in its back edge. Lower the stepper's holding current at a detent so the two don't fight.
 - **Expected offsets.** After a change, expect the image to move a few micrometres. Per-objective offsets and image registration correct it.
 
 **Collision.** The 20x's front lens sits 14 mm lower than the 5x's and the 10x's (WD 20 vs 34 mm), and every objective sweeps over the sample during a change. Before a change, the server must lower the stage until the lowest front lens clears the sample's top, which it knows from the labware definition.
@@ -386,7 +386,7 @@ The slider has three positions, moving front to back, perpendicular to the epi a
 - **(b)** open;
 - **(c)** a 50:50 plate.
 
-It uses the same guide-and-stepper construction as the objective changer.
+It uses the same guide-and-stepper construction as the objective changer, hung from the deck above it on an inverted rail.
 
 **Precision barely matters.** The filters are 25 mm across and the beam about 18 mm. A tilted parallel plate in the infinity space only shifts the beam sideways, and a sideways shift doesn't move the image. So the slider's repeatability hardly affects the image; only a wedge in a filter would, slightly.
 
@@ -512,13 +512,13 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 - the LED matrix, 80 mm below the sample, under the stage;
 - the XY stage, on four spacers.
 
-**Column and head.** A ribbed aluminium plate or a pair of 40 × 80 mm extrusions stands at the back. It carries the optical head, from the bottom up:
+**Column and head.** A ribbed aluminium plate or a pair of 40 × 80 mm extrusions stands at the back. It carries the optical head's 15 mm head plate, whose back face is 185 mm behind the optical axis, just behind the XY stage's sweep. The head plate carries, from the bottom up:
 
-1. the objective changer, at a fixed height;
-2. the filter slider, with the epi arm on a 30 mm cage to the right;
-3. the tube lens, in a 60 mm cage (SM2 threads);
-4. the fold mirror and the flip mirror;
-5. the cameras, horizontal at the top, facing back and left.
+1. a lower deck, with the objective changer on its rail;
+2. an upper deck, with the filter slider hanging under it, the tube lens in an SM2 thread through it, and on it the fold mirror's mount and both cameras on their focus slides;
+3. at the top, the bracket that the camera port hangs from.
+
+The epi arm's 30 mm cage sits on its own plate to the right, which passes the head plate's right edge. The cameras face back and right. The optical head model gives the details ([optima_cad_plan.md](optima_cad_plan.md), C04).
 
 **Sample inserts.** An aluminium adapter on the stage's top plate takes 160 × 110 mm inserts: a microplate holder, a four-slide holder, 35 and 60 mm dishes, and a counting chamber. Several stage makers use that insert size; confirm it against the inserts you buy.
 
@@ -527,7 +527,7 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 **Envelope.** About 450 × 400 × 430 mm and 18 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg.
 
 - **Footprint.** The stage and its drives sweep about 289 × 328 mm over the travel.
-- **Height.** The upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras above the sample.
+- **Height.** The upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras above the sample. The optical head reaches 345 mm above the sample, so the instrument will be taller than 430 mm; C06 measures it.
 - **The way to 300 mm** is to fold the infinity space, which vignettes the 23 mm sensor ([§4.2](#42-tube-lens-and-infinity-space)).
 - **Weight.** A honeycomb or thinner base would save about 2 kg.
 

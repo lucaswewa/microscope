@@ -105,11 +105,11 @@ TUBE_HOUSING = (51.7, 28.0)  # diameter (assumed: the SM2 thread's), length
 INFINITY_SPACE = 70.0  # objective exit pupil to the tube lens's entrance pupil
 CHANGER_PITCH = 40.0
 CHANGER_THICKNESS = 12.0
-FILTER_GAP = 3.0  # changer carriage to filter slider
+FILTER_GAP = 8.0  # changer carriage to filter slider: room for the changer under the epi arm
 FILTER_CUBE = 30.0
 FILTER_PITCH = 40.0
 FOLD_AFTER_LENS = 35.0  # the tube lens's back to the fold mirror
-FLIP_AFTER_FOLD = 50.0
+FLIP_AFTER_FOLD = 42.0  # leaves the camera port room to swing clear of the mono camera
 MIRROR_DIAMETER = 50.8
 MIRROR_THICKNESS = 12.0
 MIRROR_CLEAR = 45.7  # assumed: 90 % of the diameter
@@ -119,8 +119,8 @@ EPI_LENS_F = 100.0
 COLLECTOR_F = 20.0
 LED_DIE = 1.0  # assumed
 LEDS_NM = (395, 470, 565, 625)  # the last sits on the combiner's axis
-EPI_FOLD_AFTER_STOP = 25.0
-COMBINER_PITCH = 40.0
+EPI_FOLD_AFTER_STOP = 30.0  # room for the stop's cage plate before the fold's cube
+COMBINER_PITCH = 50.0  # the 30 mm cage cubes are 41.9 mm
 SMALL_OPTIC = 25.4
 DICHROIC = (35.6, 25.2, 1.0)  # Chroma 89402's beamsplitter
 
@@ -174,3 +174,32 @@ LDD_H = (31.8, 20.3, 12.2)  # Mean Well LDD-H, pin style
 SUPPLY = (159.0, 97.0, 30.0)  # Mean Well LRS-150-24
 SUPPLY_W = 156.0
 PEAK_W = 100.0  # the design's estimate of the peak draw (its §8)
+
+# The optical head (this design). Its parts hang from a vertical head plate, whose back face meets
+# the column (C05) behind the XY stage's sweep. Boxes are (x0, y0, z0, x1, y1, z1) in the
+# instrument's frame, and the decks reach back to the head plate.
+HEAD_PLATE = (-150.0, 170.0, 60.0, 145.0, 185.0, 345.0)
+DECK_THICKNESS = 15.0
+LOWER_DECK = (-150.0, 28.0, 110.0)  # x0, y0, x1: the changer, its rail on the deck's top
+UPPER_DECK = (-60.0, -90.0, 120.0)  # x0, y0, x1: the tube lens, the slider under it, the cameras
+# The changer: a plate (x0, y0, x1, y1, its 10x on the origin) on an MGN12H, on a rail along X behind
+# the objectives. A NEMA 11 on the left drives a nut block on the plate's back edge.
+CHANGER_PLATE = (-60.0, -22.0, 60.0, 58.0)
+CHANGER_RAIL = 42.0  # the rail's y
+CHANGER_NUT = (-60.0, -45.0, 90.0)  # x0, x1, y1
+CHANGER_SCREW = (-112.0, 76.0, 101.0, 110.0)  # the motor's face x, the screw's y and z, its length
+# A ball plunger behind the plate drops into a 90-degree V-groove in its back edge at each position.
+DETENT = (15.0, 4.0, 3.0)  # the plunger's x, the ball's diameter, the grooves' depth
+# The filter slider: a block with three 30 mm cells at FILTER_PITCH, (a) at the front, under a
+# flange that an MGN12H carries on an inverted rail under the upper deck. A NEMA 11 at the back
+# drives a nut under the flange.
+SLIDER_BLOCK = (40.0, 120.0)  # width, length
+SLIDER_FLANGE = (-48.0, 5.0)  # x0, thickness; it ends at the block's right side
+SLIDER_RAIL = -34.0  # the rail's x
+SLIDER_SCREW = (110.0, 135.0, 160.0)  # the motor's face y, the screw's z, its length
+FOLD_MOUNT = (64.0, -55.0, 272.0)  # width, front y, top z: a block behind the fold mirror
+PORT_BRACKET = (-45.0, 30.0, 20.0, 12.0)  # x0, y0, x1, thickness: the camera port hangs from it
+CAMERA_FOCUS = 3.0  # each camera's focus travel, each way
+EPI_PLATE = (105.0, -25.0, 240.0, 235.0, 12.0)  # x0, y0, x1, y1, thickness: under the epi cage
+EPI_TUBE = (30.5, 25.0, 112.0)  # the epi lens's SM1 lens tube: diameter, from x, its cage plate's x
+SWITCH = (20.0, 6.5, 10.0)  # a miniature home switch (assumed)
