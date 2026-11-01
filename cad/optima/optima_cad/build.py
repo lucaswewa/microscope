@@ -14,7 +14,8 @@ HEAD = ("HEAD_", "DECK_", "LOWER_DECK", "UPPER_DECK", "CHANGER_PLATE", "CHANGER_
         "CHANGER_SCREW", "DETENT", "SLIDER_", "FOLD_MOUNT", "PORT_BRACKET", "CAMERA_FOCUS", "EPI_PLATE",
         "EPI_TUBE", "SWITCH")
 STAND = ("STAND_", "ALUMINIUM", "INSERT", "MICROPLATE", "DISH")
-WHOLE = ("MASSES", "EXTRUSION_KG_PER_M")
+WHOLE = ("MASSES", "EXTRUSION_KG_PER_M", "ENCLOSURE", "INTERLOCK", "INTAKE", "FAN", "BAFFLE",
+         "TYPICAL_W", "EPI_PLUG", "TRAY", "CARRIERS", "ELECTRONICS_KG", "DUCTS")
 MODELS = [
     ("optical-layout", layout.build, None),
     ("xy-stage", stages.build_xy, ("XY_",)),

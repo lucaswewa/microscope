@@ -13,7 +13,7 @@ import FreeCAD as App
 import Part
 
 from . import geom as G
-from . import head, inserts, stand
+from . import enclosure, head, inserts, stand
 from . import optics as O
 from . import params as P
 from .checks import Check, clashes
@@ -61,6 +61,9 @@ def build_instrument(doc):
     hs, cd, sd, arm, ch, sl, pt, cams, tube, fold, mirror = head.place(doc, group(doc, "Head",
                                                                                  "Optical head"))
     b, cols, st, lift, camera, bracket, _, _ = stand.place(doc, group(doc, "Stand", "Stand"))
+    inside = [o.Shape for o in doc.Objects if o.TypeId == "Part::Feature"]
+    named = [o.Name for o in doc.Objects if o.TypeId == "Part::Feature"]
+    cover, tr, cables = enclosure.place(doc, arm["leds"], group(doc, "Enclosure", "Enclosure"))
     swept = head.sweeps()
     s = P.XY_TRAVEL
     corners = [(0, 0)] + [(sx * s, sy * s) for sx in (-1, 1) for sy in (-1, 1)]
@@ -122,9 +125,8 @@ def build_instrument(doc):
 
     # What stands on the base, with the moving parts across their travel; and the envelope.
     box, whole = App.BoundBox(), App.BoundBox()
-    for o in doc.Objects:
-        if o.TypeId == "Part::Feature":
-            (whole if o.Name in ("BasePlate", "Feet") else box).add(o.Shape.BoundBox)
+    for name, shape in zip(named, inside):
+        (whole if name in ("BasePlate", "Feet") else box).add(shape.BoundBox)
     for shape in list(swept.values()) + [p for m in travel for p in m.values()]:
         box.add(shape.BoundBox)
     whole.add(box)
@@ -176,4 +178,7 @@ def build_instrument(doc):
         ("Heaviest custom parts, kg", ", ".join("the %s %.1f" % (k, kg[k]) for k in heavy)),
         ("Bought parts, kg", "%.1f, with %.1f for the column's extrusions" % (bought, column)),
     ]
-    return checks, facts
+    stack = Part.makeCompound([p for m in travel for p in m.values()])
+    more, extra, kept = enclosure.checks(cover, tr, cables, inside, list(swept.values()) + [stack])
+    facts.append(("Mass with the enclosure and the electronics, kg", round(metal + bought + kept, 1)))
+    return checks + more, facts + extra
