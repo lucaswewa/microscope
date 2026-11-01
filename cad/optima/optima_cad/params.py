@@ -237,3 +237,18 @@ MICROPLATE_WELLS = (12, 8, 9.0, 6.4)  # columns, rows, pitch, diameter
 DISHES = ((60.0, 15.0, (-35.0, 0.0)), (35.0, 10.0, (40.0, -20.0)), (35.0, 10.0, (40.0, 20.0)))
 DISH_FLOOR = 1.5  # the floor's top above the dish's base: a 1 mm floor, its underside 0.5 mm up
 DISH_GLASS = 20.0  # the middle of a dish that's imaged, as big as a glass-bottom dish's glass
+
+# The bought parts' masses in kg, for the instrument's total, besides the stages' and the mono
+# camera's above: the makers' where found, else assumed. The enclosure and the electronics are C07's.
+MASSES = {
+    "objectives": 0.72,  # three Mitutoyo M Plan Apo; the 10x is 240 g (Mitutoyo's table)
+    "colour camera": 0.3,
+    "overview camera": 0.05,
+    "tube lens": 0.2,
+    "camera port": 0.4,  # the MFF102/M, its ring and its mirror
+    "fold mirror": 0.35,  # in its 60 mm cage cube
+    "epi arm": 0.8,  # four mounted LEDs, the 30 mm cage, its cubes and optics
+    "guides and steppers": 0.5,  # two MGN12 rails and carriages, two NEMA 11 steppers
+    "small parts": 0.5,  # the feet, the LED matrix, the filters, the screws
+}
+EXTRUSION_KG_PER_M = 2.8  # a 40 x 80 mm extrusion: Robotunits' PIL 4080; others list 2.1 to 2.8

@@ -255,28 +255,56 @@ def light():
             "excitation": layout.excitation()}
 
 
+def fold_mirror():
+    """The fold mirror, its face on the layout's fold point."""
+    return G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, layout.FOLD_POINT, Z, Y)
+
+
 def _states(make, positions, keys):
     """A compound of the parts `keys` of `make(p)` at each position."""
     return Part.makeCompound([make(p)[k] for p in positions for k in keys])
 
 
-def build(doc):
+def sweeps():
+    """The moving parts over their travel: the changer and the slider every 10 mm, the camera port
+    every 15 degrees of its swing, and each camera over its focus travel."""
+    steps = [10.0 * k for k in range(-4, 5)]
+    out = {
+        "the changer": _states(changer, steps, ("plate", "objectives", "carriage")),
+        "the slider": _states(slider, steps, ("carrier", "filters", "carriage")),
+        "the camera port's swing": _states(port, range(0, 91, 15), ("swing", "mirror")),
+    }
+    f = P.CAMERA_FOCUS
+    for n in ("mono", "colour"):
+        out["the %s camera" % n] = _states(lambda p, n=n: camera(n, p), (-f, 0, f),
+                                           ("body", "plugs", "plate"))
+    return out
+
+
+def place(doc, parent=None):
+    """Adds the head's parts to `doc`, in groups, under `parent` if it's given. Returns them: the
+    structure, the drives, the epi arm, the changer, the slider and the camera port at their stops,
+    the cameras, the tube lens, and the fold mirror's mount and mirror."""
     s, cd, sd, arm = structure(), changer_drive(), slider_drive(), epi_arm()
     ch, sl, pt = changer(), slider(), port()
     cams = {n: camera(n) for n in ("mono", "colour")}
     tube = parts.tube_lens()["housing"]
-    fold = fold_mount()
-    fold_mirror = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, layout.FOLD_POINT, Z, Y)
-    lit = light()
+    fold, mirror = fold_mount(), fold_mirror()
 
-    g = group(doc, "Structure", "Head plate, decks and brackets")
+    def new_group(name, label):
+        g = group(doc, name, label)
+        if parent is not None:
+            parent.addObject(g)
+        return g
+
+    g = new_group("Structure", "Head plate, decks and brackets")
     for name, k, label in (("HeadPlate", "plate", "Head plate"),
                            ("LowerDeck", "lower", "Lower deck: the changer"),
                            ("UpperDeck", "upper", "Upper deck: the tube lens, slider and cameras"),
                            ("PortBracket", "bracket", "Camera port's bracket"),
                            ("EpiPlate", "epi", "Epi plate")):
         add(doc, name, s[k], "metal", g, label)
-    g = group(doc, "Changer", "Objective changer, the 10x on the axis")
+    g = new_group("Changer", "Objective changer, the 10x on the axis")
     add(doc, "ChangerPlate", ch["plate"], "metal", g, "Changer plate, with its nut block and grooves")
     add(doc, "Objectives", ch["objectives"], "objective", g, "Objectives: 5x, 10x, 20x")
     add(doc, "ChangerCarriage", ch["carriage"], "metal", g, "Changer's MGN12H carriage")
@@ -284,7 +312,7 @@ def build(doc):
         style = "drive" if k in ("motor", "plunger", "switch") else "metal"
         add(doc, "Changer" + k.title(), cd[k], style, g,
             "Changer's %s" % {"block": "detent block", "plunger": "ball plunger"}.get(k, k))
-    g = group(doc, "Slider", "Filter slider, cell (b) on the axis")
+    g = new_group("Slider", "Filter slider, cell (b) on the axis")
     add(doc, "SliderCarrier", sl["carrier"], "metal", g,
         "Slider's carrier: (a) quad cube, (b) open, (c) 50:50")
     add(doc, "SliderFilters", sl["filters"], "optic", g, "Chroma 89402 in (a), a 50:50 plate in (c)")
@@ -292,14 +320,14 @@ def build(doc):
     for k in ("rail", "motor", "screw", "bracket", "switch"):
         add(doc, "Slider" + k.title(), sd[k], "drive" if k in ("motor", "switch") else "metal", g,
             "Slider's %s" % k)
-    g = group(doc, "TubeLensAndMirrors", "Tube lens, fold mirror and camera port")
+    g = new_group("TubeLensAndMirrors", "Tube lens, fold mirror and camera port")
     add(doc, "TubeLens", tube, "objective", g, "Tube lens: Thorlabs TTL200-A, in the deck's SM2 thread")
     add(doc, "FoldMount", fold, "metal", g, "Fold mirror's mount")
-    add(doc, "FoldMirror", fold_mirror, "mirror", g, "Fold mirror")
+    add(doc, "FoldMirror", mirror, "mirror", g, "Fold mirror")
     add(doc, "PortBody", pt["body"], "drive", g, "Camera port: Thorlabs MFF102/M, upside down")
     add(doc, "PortSwing", pt["swing"], "metal", g, "Camera port's arm and ring, position 1")
     add(doc, "PortMirror", pt["mirror"], "mirror", g, "Camera port's mirror: light to the colour camera")
-    g = group(doc, "Cameras", "Cameras on their focus mounts")
+    g = new_group("Cameras", "Cameras on their focus mounts")
     for n, c in cams.items():
         t = n.title()
         add(doc, t + "Camera", c["body"], "body", g, "%s camera" % t)
@@ -307,7 +335,7 @@ def build(doc):
         add(doc, t + "Plugs", c["plugs"], "reserved", g, "Room for the %s camera's plugs" % n)
         add(doc, t + "Focus", c["plate"], "metal", g, "%s camera's focus plate" % t)
         add(doc, t + "Mount", c["base"], "metal", g, "%s camera's mount" % t)
-    g = group(doc, "EpiArm", "Epi arm")
+    g = new_group("EpiArm", "Epi arm")
     for k, style in (("tube", "metal"), ("plates", "metal"), ("rods", "metal"), ("cubes", "metal"),
                      ("dichroics", "optic"), ("mirror", "mirror"), ("tubes", "metal"),
                      ("leds", "drive")):
@@ -316,6 +344,12 @@ def build(doc):
             "rods": "Cage rods", "cubes": "Cage cubes: the fold's and the combiners'",
             "dichroics": "Combiners' dichroics", "mirror": "Epi fold mirror",
             "tubes": "Collectors' SM1 tubes", "leds": "Mounted LEDs"}[k])
+    return s, cd, sd, arm, ch, sl, pt, cams, tube, fold, mirror
+
+
+def build(doc):
+    s, cd, sd, arm, ch, sl, pt, cams, tube, fold, fold_mirror = place(doc)
+    lit = light()
     # The imaging light is optical-layout.FCStd's; the checks below use it, and the file leaves it out.
     add(doc, "Excitation", lit["excitation"], "excitation", group(doc, "Light"),
         "Excitation light (schematic)")
@@ -328,17 +362,8 @@ def build(doc):
     add(doc, "PortPosition2", _states(port, (90,), ("swing", "mirror")), "reserved", g,
         "The camera port in position 2")
 
-    steps = [10.0 * k for k in range(-4, 5)]
-    sweeps = {
-        "the changer": _states(changer, steps, ("plate", "objectives", "carriage")),
-        "the slider": _states(slider, steps, ("carrier", "filters", "carriage")),
-        "the camera port's swing": _states(port, range(0, 91, 15), ("swing", "mirror")),
-    }
+    swept = sweeps()
     f = P.CAMERA_FOCUS
-    for n in cams:
-        sweeps["the %s camera" % n] = _states(lambda p, n=n: camera(n, p), (-f, 0, f),
-                                              ("body", "plugs", "plate"))
-
     fixed = {
         "the structure": list(s.values()),
         "the changer's drive": list(cd.values()),
@@ -351,11 +376,11 @@ def build(doc):
         "the epi arm": list(arm.values()),
     }
     fixed = {k: Part.makeCompound(v) for k, v in fixed.items()}
-    names, moving = list(fixed), list(sweeps)
+    names, moving = list(fixed), list(swept)
     found = clashes([("%s and %s" % (a, b), fixed[a], fixed[b])
                      for i, a in enumerate(names) for b in names[i + 1:]])
-    moved = clashes([("%s and %s" % (m, k), sweeps[m], fixed[k]) for m in moving for k in names]
-                    + [("%s and %s" % (a, b), sweeps[a], sweeps[b])
+    moved = clashes([("%s and %s" % (m, k), swept[m], fixed[k]) for m in moving for k in names]
+                    + [("%s and %s" % (a, b), swept[a], swept[b])
                        for i, a in enumerate(moving) for b in moving[i + 1:]])
 
     # The light against the mechanical parts: everything but the optics.

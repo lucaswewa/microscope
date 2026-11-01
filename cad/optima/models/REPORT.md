@@ -243,3 +243,24 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Four-slide insert: the sample plane above the insert's top, the labware's top above it | 0.00, 0.17 mm |
 | Microplate insert: the sample plane above the insert's top, the labware's top above it | 2.00, 10.85 mm |
 | Dish insert: a 60 mm and two 35 mm dishes: the sample plane above the insert's top, the labware's top above it | 0.00, 13.50 mm |
+
+## instrument
+
+| Check | Result | Detail |
+|---|---|---|
+| The head and the stand don't overlap, the head's moving parts across their travel | pass | no overlaps |
+| Each insert and its labware clear the head across the stage's and the lift's travel, and the objectives as they change | pass | the objectives' fronts 1.5 mm above the dishes with the lift at the top of its travel |
+| The stage's openings pass the brightfield light of the 5x and the 10x at every target, and of the 20x at every target's centre | pass | 72 stage positions, to the field's centre |
+| Everything stays over the base plate, the moving parts across their travel | pass | x -150.0 to 255.0, y -156.1 to 265.0; the base -200 to 265, -160 to 265 |
+
+| Fact | Value |
+|---|---|
+| Envelope, x y z | -200.0 to 265.0, -160.0 to 265.0, -253.1 to 345.0 |
+| Envelope, mm | 465 x 425 x 598 |
+| The 20x's brightfield light is whole | within +-48.3 mm of the centre along X |
+| At the worst target, the 20x's brightfield LEDs blocked | 8 of 44 |
+| At the worst target, all LEDs blocked | 16 of 64, from NA 0.30 |
+| Mass without the enclosure and the electronics, kg | 30.4 |
+| Custom aluminium parts, kg | 17.2 |
+| Heaviest custom parts, kg | the base plate 6.4, the head plate 3.4, the upper deck 1.8, the lower deck 1.5 |
+| Bought parts, kg | 13.2, with 3.2 for the column's extrusions |

@@ -145,31 +145,46 @@ def overview():
     return camera, bracket, at - back * P.OVERVIEW_LENS_F
 
 
-def build_stand(doc):
+def place(doc, parent=None):
+    """Adds the stand's parts to `doc`, in groups, under `parent` if it's given. Returns them: the
+    base, the column, the stack, the lift's base, the overview camera and its bracket, the point
+    the camera sees from, and its view of the insert."""
     b, cols, st = base(), column(), stack()
     lift = stages.lift()["fixed"].translated(V(0, 0, BASE_TOP))
     camera, bracket, eye = overview()
     w, d, _ = P.INSERT
     view = G.rect_loft((0.5, 0.5), eye, (w, d), AIM)
-    structure = head.structure()
 
-    g = group(doc, "Base", "Base plate and feet")
+    def new_group(name, label):
+        g = group(doc, name, label)
+        if parent is not None:
+            parent.addObject(g)
+        return g
+
+    g = new_group("Base", "Base plate and feet")
     add(doc, "BasePlate", b["plate"], "metal", g, "Base plate")
     add(doc, "Feet", b["feet"], "drive", g, "Rubber feet")
-    g = group(doc, "Column", "Column: two 40 x 80 mm extrusions")
+    g = new_group("Column", "Column: two 40 x 80 mm extrusions")
     for side, c in zip(("Left", "Right"), cols):
         add(doc, "Column" + side, c, "metal", g, "Column, %s" % side.lower())
-    g = group(doc, "Stack", "Z lift and stage stack, a slide in focus and the stage centred")
+    g = new_group("Stack", "Z lift and stage stack, a slide in focus and the stage centred")
     add(doc, "LiftBase", lift, "drive", g, "Z lift: Standa 8MVT100-25-1")
     for k, s in st.items():
         add(doc, "Stack" + k.title().replace("_", ""), s, STACK[k][0], g, STACK[k][1])
-    g = group(doc, "Overview", "Overview camera and its bracket")
+    g = new_group("Overview", "Overview camera and its bracket")
     for k, s in camera.items():
         add(doc, "Overview" + k.title(), s, cameras.STYLES[k], g,
             "Room for the overview camera's plug" if k == "plugs" else "Overview camera's " + k)
     add(doc, "OverviewBracket", bracket, "metal", g, "Overview camera's bracket")
     add(doc, "OverviewView", view, "imaging", g,
         "The overview camera's view of the insert, the stage at the front of its travel")
+    return b, cols, st, lift, camera, bracket, eye, view
+
+
+def build_stand(doc):
+    b, cols, st, lift, camera, bracket, eye, view = place(doc)
+    w, d, _ = P.INSERT
+    structure = head.structure()
     g = group(doc, "Head", "The optical head's plate, decks and brackets (optical-head.FCStd)")
     for k, s in structure.items():
         add(doc, "Head" + k.title(), s, "metal", g, {
