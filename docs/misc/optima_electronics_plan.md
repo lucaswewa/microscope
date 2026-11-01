@@ -24,7 +24,7 @@ These are proposals. The owner's decisions in [§7](#7-decisions-for-the-owner) 
 | Decision | Proposal |
 |---|---|
 | Source of truth | As in the CAD: scripts and text files in the repository build everything, and the built files are committed so they open without a build. The board's circuit is Python, and KiCad's command line checks it and makes its outputs. |
-| Board tools | KiCad 9 for the schematic and the layout, with `kicad-cli` for the electrical rules check (ERC), the design rules check (DRC), PDFs, Gerbers and the assembly files. KiCad is GPL, but it's only a tool here: the files this project makes stay MIT. KiCad's symbol and footprint libraries are CC-BY-SA 4.0 with an exception for designs that use them. |
+| Board tools | KiCad 10, which the owner has installed, for the schematic and the layout, with `kicad-cli` for the electrical rules check (ERC), the design rules check (DRC), PDFs, Gerbers and the assembly files. KiCad is GPL, but it's only a tool here: the files this project makes stay MIT. KiCad's symbol and footprint libraries are CC-BY-SA 4.0 with an exception for designs that use them. |
 | The carrier board | Modules on headers wherever one exists: the Pico 2, a TMC2209 StepStick for the filter slider, and a 24-to-5 V buck module. That leaves a 2-layer board of mostly through-hole parts, which anyone can solder, and which any PCB maker can make. |
 | Firmware | Rust with Embassy (MIT or Apache 2.0) on the RP2350, in its own Cargo workspace, `firmware/optics/`, with its own toolchain file. The server's workspace and its CI stay as they are, apart from one job that builds the firmware. |
 | Firmware tests | The protocol, the sequencer and the interlock's logic in a `no_std` library, tested on the PC. What needs the board runs only when an environment variable names it, as the repository's hardware tests do. |
@@ -72,7 +72,7 @@ All 64 of the matrix's LEDs at full white draw about 19 W, almost 4 A at 5 V, so
 
 | Phase | Title | Size | What it adds |
 |---|---|---|---|
-| E01 | The electrical design | Docs | The power tree, with its budget, fuses and wire gauges. The interlock circuit. The grounding. Each board's I/O list. A design document with diagrams. |
+| E01 | The electrical design | Docs | The power tree, with its budget, fuses and wire gauges. The interlock circuit. The grounding. Each board's I/O list. A design document with diagrams: [optima_electrical_design.md](optima_electrical_design.md). |
 | E02 | Cables | M | Every cable: its two ends, its conductors, connectors and length. The lengths come from the CAD model, by a script that follows the ducts. The Standa stages' HDB15 harnesses, from Standa's manuals. A cable list (CSV), and harness drawings as tables. |
 | E03 | The motion controller | S | The SKR Pico's pin map for X, Y, Z and the changer. Steps per mm, speeds and accelerations, the TMC2209s' currents, limits, homing and soft limits. A grblHAL settings file, how to build and flash grblHAL for the SKR Pico, and a bench test. |
 | E04 | The carrier board's schematic | M | The circuit in Python, its netlist and a KiCad schematic, with a clean ERC. The interlock, the LED drivers' enables, the slider's TMC2209, the matrix's level shifter, the camera triggers and exposure inputs, the camera port, the thermistors and the home switch. |
@@ -96,13 +96,14 @@ As the CAD plan's §3 says, with these differences:
 
 | Phase | Status |
 |---|---|
-| E01–E08 | Not started |
+| E01 | In review |
+| E02–E08 | Not started |
 
 ## 7. Decisions for the owner
 
-1. **Board tools.** Install KiCad 9 and FreeRouting, the open router that KiCad uses, with the Java runtime FreeRouting needs. Or prefer a tool of your own. Needed by E04.
-2. **Making the board.** Who makes it: JLCPCB, PCBWay or another maker. And whether you solder it yourself, or have the maker assemble the few surface-mount parts. Needed by E05.
-3. **12 V for the mono camera.** Its own adapter, as the design says, or a 24-to-12 V converter on the tray, for one mains inlet. Needed by E01.
-4. **USB.** A powered hub inside the cover, with one cable out, or five cables to the PC. Needed by E01.
+1. **Board tools.** Decided 2026-11-01: KiCad, which the owner installed (10.0.8). FreeRouting, the open router KiCad uses, and the Java runtime it needs are still to install, for E05.
+2. **Making the board.** Decided 2026-11-01: JLCPCB, which also assembles the few surface-mount parts.
+3. **12 V for the mono camera.** E01 takes the recommendation, a 24-to-12 V converter on the tray, for one mains inlet. The owner can still choose the camera's own adapter instead.
+4. **USB.** E01 takes the recommendation, a powered hub inside the cover with one cable out. The owner can still choose five cables to the PC.
 5. **`unsafe` in the firmware.** The repository allows `unsafe` only in `microscope-sdk` (ADR-0041). Embassy keeps it out of most firmware, but a few places, such as the startup code and RP2350 registers no driver covers, may need it. Allow it in `firmware/optics/`, with a `SAFETY:` comment on each block. Needed by E06.
 6. **The server's drivers.** The grblHAL, optics controller and ToupTek drivers from the design's §10 in a later milestone, once the boards work on the bench. Or in this track, after E08.
