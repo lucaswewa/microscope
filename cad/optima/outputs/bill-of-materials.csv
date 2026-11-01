@@ -1,66 +1,91 @@
 Item,Kind,Part,Quantity,Model or material,"Size, mm",Note,Drawing
-1,Made,Head plate,1,"6061-T6 aluminium, black anodized",295.0 x 285.0 x 15.0,"Slots for the cables, and an opening behind the mono camera's fan.",OPTIMA-H01-head-plate
-2,Made,Lower deck,1,"6061-T6 aluminium, black anodized",260.0 x 142.0 x 15.0,,OPTIMA-H02-lower-deck
-3,Made,Upper deck,1,"6061-T6 aluminium, black anodized",180.0 x 260.0 x 15.0,"SM2 thread (2.035-40 UNS) through it, for the TTL200-A.",OPTIMA-H03-upper-deck
-4,Made,Camera port's bracket,1,"6061-T6 aluminium, black anodized",65.0 x 140.0 x 12.0,,OPTIMA-H04-camera-ports-bracket
-5,Made,Epi plate,1,"6061-T6 aluminium, black anodized",135.0 x 260.0 x 12.0,,OPTIMA-H05-epi-plate
-6,Made,Changer plate,1,"6061-T6 aluminium, black anodized",120.0 x 112.0 x 12.0,"M26 x 0.706 threads for the objectives; V-grooves, 90 degrees and 3 mm deep, for the detent.",OPTIMA-H06-changer-plate
-7,Made,Changer's motor bracket,1,"6061-T6 aluminium, black anodized",32.0 x 35.0 x 6.0,,OPTIMA-H07-changers-motor-bracket
-8,Made,Detent block,1,"6061-T6 aluminium, black anodized",21.0 x 25.0 x 20.0,M8 x 1 thread for the ball plunger.,OPTIMA-H08-detent-block
+1,Made,Head plate,1,"6061-T6 aluminium, black anodized",295.0 x 285.0 x 15.0,"Slots for the cables, and an opening behind the mono camera's fan. Tapped: 2 x M5 x 10 deep.",OPTIMA-H01-head-plate
+2,Made,Lower deck,1,"6061-T6 aluminium, black anodized",260.0 x 142.0 x 15.0,"Tapped: 6 x M3 x 6 deep, 3 x M6 x 12 deep.",OPTIMA-H02-lower-deck
+3,Made,Upper deck,1,"6061-T6 aluminium, black anodized",180.0 x 260.0 x 15.0,"SM2 thread (2.035-40 UNS) through it, for the TTL200-A. Tapped: 6 x M3 x 6 deep, 2 x M4 x 8 deep, 2 x M6 x 12 deep. Counterbored for 2 x M3.",OPTIMA-H03-upper-deck
+4,Made,Camera port's bracket,1,"6061-T6 aluminium, black anodized",65.0 x 140.0 x 12.0,Tapped: 2 x M6 x 12 deep.,OPTIMA-H04-camera-ports-bracket
+5,Made,Epi plate,1,"6061-T6 aluminium, black anodized",135.0 x 260.0 x 12.0,Tapped: 2 x M4 x 8 deep.,OPTIMA-H05-epi-plate
+6,Made,Changer plate,1,"6061-T6 aluminium, black anodized",120.0 x 112.0 x 12.0,"M26 x 0.706 threads for the objectives; V-grooves, 90 degrees and 3 mm deep, for the detent. Counterbored for 4 x M3.",OPTIMA-H06-changer-plate
+7,Made,Changer's motor bracket,1,"6061-T6 aluminium, black anodized",32.0 x 35.0 x 6.0,Tapped: 2 x M3 x 8 deep.,OPTIMA-H07-changers-motor-bracket
+8,Made,Detent block,1,"6061-T6 aluminium, black anodized",21.0 x 25.0 x 20.0,M8 x 1 thread for the ball plunger. Tapped: 2 x M3 x 8 deep.,OPTIMA-H08-detent-block
 9,Made,Slider's carrier,1,"6061-T6 aluminium, black anodized",68.0 x 120.0 x 35.0,SM1 thread (1.035-40 UNS) in the flange's bores.,OPTIMA-H09-sliders-carrier
-10,Made,Slider's motor bracket,1,"6061-T6 aluminium, black anodized",32.0 x 44.0 x 6.0,,OPTIMA-H10-sliders-motor-bracket
-11,Made,Fold mirror's mount,1,"6061-T6 aluminium, black anodized",80.0 x 94.0 x 64.0,,OPTIMA-H11-fold-mirrors-mount
-12,Made,Mono camera's mount,1,"6061-T6 aluminium, black anodized",70.0 x 60.5 x 9.7,,OPTIMA-H12-mono-cameras-mount
+10,Made,Slider's motor bracket,1,"6061-T6 aluminium, black anodized",32.0 x 44.0 x 6.0,Tapped: 2 x M3 x 8 deep.,OPTIMA-H10-sliders-motor-bracket
+11,Made,Fold mirror's mount,1,"6061-T6 aluminium, black anodized",80.0 x 94.0 x 64.0,Tapped: 2 x M4 x 10 deep.,OPTIMA-H11-fold-mirrors-mount
+12,Made,Mono camera's mount,1,"6061-T6 aluminium, black anodized",70.0 x 60.5 x 9.7,Tapped: 2 x M3 x 4.5 deep.,OPTIMA-H12-mono-cameras-mount
 13,Made,Mono camera's focus plate,1,"6061-T6 aluminium, black anodized",70.0 x 40.5 x 5.0,,OPTIMA-H13-mono-cameras-focus-plate
-14,Made,Colour camera's mount,1,"6061-T6 aluminium, black anodized",55.5 x 58.0 x 15.7,,OPTIMA-H14-colour-cameras-mount
+14,Made,Colour camera's mount,1,"6061-T6 aluminium, black anodized",55.5 x 58.0 x 15.7,Tapped: 2 x M3 x 6 deep.,OPTIMA-H14-colour-cameras-mount
 15,Made,Colour camera's focus plate,1,"6061-T6 aluminium, black anodized",35.5 x 58.0 x 5.0,,OPTIMA-H15-colour-cameras-focus-plate
-16,Made,Base plate,1,"6061-T6 aluminium, black anodized",465.0 x 425.0 x 12.0,"Tap the 5 mm holes M6, for the lift, and the 6.8 mm holes M8, for the feet.",OPTIMA-S01-base-plate
-17,Made,Plate on the lift,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 15.0,Counterbored for four M6 screws into the lift.,OPTIMA-S02-plate-on-the-lift
-18,Made,Spacer,4,"6061-T6 aluminium, black anodized",20.0 x 35.1 x 20.0,,OPTIMA-S03-spacer
-19,Made,LED matrix's mount,1,"6061-T6 aluminium, black anodized",100.0 x 100.0 x 4.0,,OPTIMA-S04-led-matrixs-mount
-20,Made,Overview camera's bracket,1,"6061-T6 aluminium, black anodized",81.1 x 88.2 x 44.0,,OPTIMA-S05-overview-cameras-bracket
-21,Made,Insert adapter,1,"6061-T6 aluminium, black anodized",175.0 x 175.0 x 9.8,Counterbored for four M3 screws into the stage.,OPTIMA-I01-insert-adapter
-22,Made,Four-slide insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I02-four-slide-insert
-23,Made,Microplate insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I03-microplate-insert
-24,Made,Dish insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I04-dish-insert
-25,Made,Cover's left panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",511.5 x 633.1 x 1.5,,OPTIMA-E01-covers-left-panel
-26,Made,Cover's right panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",511.5 x 633.1 x 1.5,The intake's opening.,OPTIMA-E02-covers-right-panel
-27,Made,Cover's back panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",545.0 x 633.1 x 1.5,"The fan's opening, and the cables' notch.",OPTIMA-E03-covers-back-panel
-28,Made,Cover's top panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",548.0 x 511.5 x 1.5,,OPTIMA-E04-covers-top-panel
-29,Made,Door,1,"5052 aluminium sheet, 1.5 mm, black anodized",548.0 x 634.6 x 1.5,,OPTIMA-E05-door
-30,Made,Intake's baffle,1,"5052 aluminium sheet, 1.5 mm, black anodized",298.0 x 88.0 x 1.5,,OPTIMA-E06-intakes-baffle
-31,Made,Fan's baffle,1,"5052 aluminium sheet, 1.5 mm, black anodized",168.0 x 168.0 x 1.5,,OPTIMA-E07-fans-baffle
-32,Made,Electronics tray,1,"6061-T6 aluminium, black anodized",165.0 x 300.0 x 3.0,,OPTIMA-E08-electronics-tray
-33,Bought,XY stage,1,Standa 8MTF-102LS05,,,
-34,Bought,Z lift,1,Standa 8MVT100-25-1,,,
-35,Bought,Objectives,3,"Mitutoyo M Plan Apo 5x (378-802-6), 10x (378-803-3) and 20x (378-804-3)",,,
-36,Bought,Tube lens,1,Thorlabs TTL200-A,,,
-37,Bought,Fold mirror,1,2 in. protected-silver mirror in a 60 mm cage cube,,,
-38,Bought,Camera port,1,Thorlabs MFF102/M flip mount and a 2 in. mirror,,Hung upside down.,
-39,Bought,Mono camera,1,ToupTek CTR3CMOS45000KMA,,,
-40,Bought,Colour camera,1,ToupTek E3ISPM45000KPB,,,
-41,Bought,Overview camera,1,"12 MP USB (UVC) module, M12 wide lens",,To be chosen.,
-42,Bought,Filter set,1,Chroma 89402,,,
-43,Bought,Reflected-light splitter,1,"50:50 plate beamsplitter, 25 x 36 mm",,,
-44,Bought,Epi LEDs,4,"Thorlabs M395L5, M470L5, M565L3 and M625L4",,,
-45,Bought,Epi optics,1,"Four f = 20 mm aspheric collectors; DMLP425, DMLP505 and DMLP605; an iris; an f = 100 mm achromat; a 1 in. fold mirror; 30 mm cage cubes, plates, rods and SM1 tubes",,,
-46,Bought,LED drivers,4,Mean Well LDD-H,,,
-47,Bought,LED matrix,1,Adafruit 2734,,,
-48,Bought,Guides,2,"HIWIN MGN12 rail, 150 mm, with an MGN12H carriage",,,
-49,Bought,Lead-screw steppers,2,NEMA 11 with a Tr6 lead screw and nut,,Cut the screws to 110 and 160 mm.,
-50,Bought,Ball plunger,1,"M8, 4 mm ball",,,
-51,Bought,Home switches,2,"Miniature switch, 20 x 6.5 x 10 mm",,,
-52,Bought,Motion controller,1,BTT SKR Pico,,Runs grblHAL.,
-53,Bought,Optics controller,1,"Raspberry Pi Pico 2, on a carrier board",,,
-54,Bought,Supply,1,Mean Well LRS-150-24,,,
-55,Bought,Fan,1,"120 mm, 24 V",,,
-56,Bought,Interlock switch,1,"Safety switch, normally open",,In series with the LED drivers' enables.,
-57,Bought,Column,2,"40 x 80 mm extrusion, 8 mm slots",,Cut to 566.1 mm. Tap the bores at its foot M8.,
-58,Bought,Cover's uprights,4,20 x 20 mm extrusion,,Cut to 633.1 mm.,
-59,Bought,Cover's rails along X,4,20 x 20 mm extrusion,,Cut to 505 mm.,
-60,Bought,Cover's rails along Y,4,20 x 20 mm extrusion,,Cut to 470 mm.,
-61,Bought,Door's hinge and handle,1,Piano hinge and a handle,,Cut the hinge to 635 mm.,
-62,Bought,Foam strip,1,"Closed-cell foam, 5 mm high",,"2110 mm, round the cover's foot.",
-63,Bought,Feet,4,"Rubber, 40 mm across and 20 mm high",,,
-64,Bought,Cable ducts,2,Slotted cable duct,,Cut to 85 and 566 mm.,
-65,Bought,Tray's standoffs,4,"M3, 6 mm",,,
+16,Made,Epi plate's bracket,1,"6061-T6 aluminium, black anodized",33.0 x 40.0 x 21.1,,OPTIMA-H16-epi-plates-bracket
+17,Made,Base plate,1,"6061-T6 aluminium, black anodized",465.0 x 425.0 x 12.0,"Tap the 6.8 mm holes M8, for the feet. Tapped: 4 x M3 x 6 deep, 4 x M6 x 10 deep.",OPTIMA-S01-base-plate
+18,Made,Plate on the lift,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 15.0,Tapped: 4 x M3 x 6 deep. Counterbored for 4 x M6.,OPTIMA-S02-plate-on-the-lift
+19,Made,Spacer,4,"6061-T6 aluminium, black anodized",20.0 x 35.1 x 20.0,,OPTIMA-S03-spacer
+20,Made,LED matrix's mount,1,"6061-T6 aluminium, black anodized",100.0 x 100.0 x 4.0,,OPTIMA-S04-led-matrixs-mount
+21,Made,Overview camera's bracket,1,"6061-T6 aluminium, black anodized",81.1 x 88.2 x 44.0,,OPTIMA-S05-overview-cameras-bracket
+22,Made,Insert adapter,1,"6061-T6 aluminium, black anodized",175.0 x 175.0 x 9.8,Counterbored for four M3 screws into the stage.,OPTIMA-I01-insert-adapter
+23,Made,Four-slide insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I02-four-slide-insert
+24,Made,Microplate insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I03-microplate-insert
+25,Made,Dish insert,1,"6061-T6 aluminium, black anodized",160.0 x 110.0 x 3.0,,OPTIMA-I04-dish-insert
+26,Made,Cover's left panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",511.5 x 633.1 x 1.5,,OPTIMA-E01-covers-left-panel
+27,Made,Cover's right panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",511.5 x 633.1 x 1.5,The intake's opening.,OPTIMA-E02-covers-right-panel
+28,Made,Cover's back panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",545.0 x 633.1 x 1.5,"The fan's opening, and the cables' notch.",OPTIMA-E03-covers-back-panel
+29,Made,Cover's top panel,1,"5052 aluminium sheet, 1.5 mm, black anodized",548.0 x 511.5 x 1.5,,OPTIMA-E04-covers-top-panel
+30,Made,Door,1,"5052 aluminium sheet, 1.5 mm, black anodized",548.0 x 634.6 x 1.5,,OPTIMA-E05-door
+31,Made,Intake's baffle,1,"5052 aluminium sheet, 1.5 mm, black anodized",298.0 x 88.0 x 1.5,,OPTIMA-E06-intakes-baffle
+32,Made,Fan's baffle,1,"5052 aluminium sheet, 1.5 mm, black anodized",168.0 x 168.0 x 1.5,,OPTIMA-E07-fans-baffle
+33,Made,Electronics tray,1,"6061-T6 aluminium, black anodized",165.0 x 300.0 x 3.0,,OPTIMA-E08-electronics-tray
+34,Bought,XY stage,1,Standa 8MTF-102LS05,,,
+35,Bought,Z lift,1,Standa 8MVT100-25-1,,,
+36,Bought,Objectives,3,"Mitutoyo M Plan Apo 5x (378-802-6), 10x (378-803-3) and 20x (378-804-3)",,,
+37,Bought,Tube lens,1,Thorlabs TTL200-A,,,
+38,Bought,Fold mirror,1,2 in. protected-silver mirror in a 60 mm cage cube,,,
+39,Bought,Camera port,1,Thorlabs MFF102/M flip mount and a 2 in. mirror,,Hung upside down.,
+40,Bought,Mono camera,1,ToupTek CTR3CMOS45000KMA,,,
+41,Bought,Colour camera,1,ToupTek E3ISPM45000KPB,,,
+42,Bought,Overview camera,1,"12 MP USB (UVC) module, M12 wide lens",,To be chosen.,
+43,Bought,Filter set,1,Chroma 89402,,,
+44,Bought,Reflected-light splitter,1,"50:50 plate beamsplitter, 25 x 36 mm",,,
+45,Bought,Epi LEDs,4,"Thorlabs M395L5, M470L5, M565L3 and M625L4",,,
+46,Bought,Epi optics,1,"Four f = 20 mm aspheric collectors; DMLP425, DMLP505 and DMLP605; an iris; an f = 100 mm achromat; a 1 in. fold mirror; 30 mm cage cubes, plates, rods and SM1 tubes",,,
+47,Bought,LED drivers,4,Mean Well LDD-H,,,
+48,Bought,LED matrix,1,Adafruit 2734,,,
+49,Bought,Guides,2,"HIWIN MGN12 rail, 150 mm, with an MGN12H carriage",,,
+50,Bought,Lead-screw steppers,2,NEMA 11 with a Tr6 lead screw and nut,,Cut the screws to 110 and 160 mm.,
+51,Bought,Ball plunger,1,"M8, 4 mm ball",,,
+52,Bought,Home switches,2,"Miniature switch, 20 x 6.5 x 10 mm",,,
+53,Bought,Motion controller,1,BTT SKR Pico,,Runs grblHAL.,
+54,Bought,Optics controller,1,"Raspberry Pi Pico 2, on a carrier board",,,
+55,Bought,Supply,1,Mean Well LRS-150-24,,,
+56,Bought,Fan,1,"120 mm, 24 V",,,
+57,Bought,Interlock switch,1,"Safety switch, normally open",,In series with the LED drivers' enables.,
+58,Bought,Column,2,"40 x 80 mm extrusion, 8 mm slots",,Cut to 566.1 mm. Tap the bores at its foot M8.,
+59,Bought,Cover's uprights,4,20 x 20 mm extrusion,,Cut to 633.1 mm.,
+60,Bought,Cover's rails along X,4,20 x 20 mm extrusion,,Cut to 505 mm.,
+61,Bought,Cover's rails along Y,4,20 x 20 mm extrusion,,Cut to 470 mm.,
+62,Bought,Door's hinge and handle,1,Piano hinge and a handle,,Cut the hinge to 635 mm.,
+63,Bought,Foam strip,1,"Closed-cell foam, 5 mm high",,"2110 mm, round the cover's foot.",
+64,Bought,Feet,4,"Rubber, 40 mm across and 20 mm high",,,
+65,Bought,Cable ducts,2,Slotted cable duct,,Cut to 85 and 566 mm.,
+66,Bought,Tray's standoffs,4,"M3, 6 mm",,,
+67,Bought,Socket-head screws,8,"M2.5 x 10, ISO 4762",,,
+68,Bought,Socket-head screws,6,"M3 x 8, ISO 4762",,,
+69,Bought,Socket-head screws,20,"M3 x 10, ISO 4762",,,
+70,Bought,Socket-head screws,24,"M3 x 16, ISO 4762",,,
+71,Bought,Socket-head screws,4,"M3 x 20, ISO 4762",,,
+72,Bought,Socket-head screws,6,"M3 x 25, ISO 4762",,,
+73,Bought,Socket-head screws,4,"M3 x 40, ISO 4762",,,
+74,Bought,Socket-head screws,77,"M4 x 6, ISO 4762",,,
+75,Bought,Socket-head screws,4,"M4 x 16, ISO 4762",,,
+76,Bought,Socket-head screws,6,"M4 x 20, ISO 4762",,,
+77,Bought,Socket-head screws,2,"M4 x 25, ISO 4762",,,
+78,Bought,Socket-head screws,4,"M4 x 35, ISO 4762",,,
+79,Bought,Socket-head screws,2,"M5 x 16, ISO 4762",,,
+80,Bought,Socket-head screws,4,"M6 x 16, ISO 4762",,,
+81,Bought,Socket-head screws,5,"M6 x 20, ISO 4762",,,
+82,Bought,Socket-head screws,7,"M6 x 30, ISO 4762",,,
+83,Bought,Socket-head screws,4,"M6 x 60, ISO 4762",,,
+84,Bought,Socket-head screws,6,"M8 x 25, ISO 4762",,,
+85,Bought,Socket-head screws,4,"M8 x 30, ISO 4762",,,
+86,Bought,T-nuts,70,"M4, for the frame's 5 mm slots",,,
+87,Bought,T-nuts,6,"M8, for the column's 8 mm slots",,,
+88,Bought,Nuts,20,M3,,,
+89,Bought,Nuts,11,M4,,,
+90,Bought,Spacers,20,M3 clearance,,12 x 5 mm for the boards; 4 x 33 mm for the fan baffle; 4 x 8 mm for the intake baffle,

@@ -603,7 +603,7 @@ The new hardware needs the pieces below, each one phase or more. Following the p
 | grblHAL's fit for a microscope | Status rate, backlash | Try it with the fake and on the bench. Standa's 8SMC5 is the fallback. |
 | LDD-H drivers discontinued | A redesign of the driver board | Check stock. Thorlabs LEDD1B or a linear driver instead. |
 | Thermal drift in Z from the TEC and LEDs | Focus drift in long scans | Refresh the focus map. The enclosure's fan takes the camera's heat straight out, and keeps the air inside within about 3 K of the room. |
-| Size and weight above OPTIMA's | 640 mm tall and about 42 kg in the enclosure | Accepted for an upright with this sensor. The plates and the panels can be lightened ([§9](#9-mechanical-layout)). |
+| Size and weight above OPTIMA's | 640 mm tall and about 42 kg in the enclosure | Accepted by the owner on 2026-11-01 ([§14](#14-decisions-for-the-owner)) |
 
 ## 13. Bill of materials and budget
 
@@ -666,7 +666,7 @@ Upgrades, when the budget allows:
    - **FLIM** with FLIM Labs' modules usually means a pulsed laser and a scanning system, which is a separate design.
    - **Simultaneous dual camera** needs a beamsplitter in place of the flip mirror.
 7. **Software.** Whether the drivers in [§10](#10-software-in-this-repository) become a milestone, with one pull request per phase.
-8. **Weight.** About 42 kg in the enclosure, 30 kg without it, against the 18 kg first estimated ([§9](#9-mechanical-layout)). Lighten the base plate, the head plate and the decks before their drawings (CAD phase C08), and the cover's panels, which weigh about 7 kg in 1.5 mm aluminium. Or accept it.
+8. **Weight.** Decided 2026-11-01: accept it. The instrument weighs about 42 kg in the enclosure and 30 kg without it, against the 18 kg first estimated ([§9](#9-mechanical-layout)).
 
 ## 15. Build order
 

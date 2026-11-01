@@ -275,8 +275,8 @@ EPI_PLUG = 40.0  # the room behind each mounted LED for its cable (assumed)
 # its thickness and its standoffs. Its parts' centres, each turned with its long side along Y, and
 # the carrier boards under the optics controller and the LED drivers: length, width (assumed).
 TRAY = (90.0, -145.0, 255.0, 155.0, 3.0, 6.0)
-TRAY_PARTS = {"supply": (145.0, -60.0), "motion": (226.0, -95.0), "optics": (226.0, -10.0),
-              "drivers": (150.0, 75.0)}
+TRAY_PARTS = {"supply": (145.0, -52.0), "motion": (226.0, -95.0), "optics": (226.0, -10.0),
+              "drivers": (150.0, 82.0)}
 CARRIERS = {"optics": (60.0, 50.0), "drivers": (100.0, 50.0)}
 ELECTRONICS_KG = 1.0  # the supply's 0.42 kg (retailers' listings), the boards, the fan, the wiring
 # The cable ducts, from the base plate: x0, y0, x1, y1, top. One runs up behind the head plate
@@ -284,3 +284,18 @@ ELECTRONICS_KG = 1.0  # the supply's 0.42 kg (retailers' listings), the boards, 
 DUCTS = ((35.0, 185.0, 85.0, 215.0, 345.0), (35.0, 160.0, 120.0, 185.0, -196.0))
 # Slots through the head plate from the duct: x0, x1, z0, z1, by the lower and the upper deck.
 HEAD_SLOTS = ((45.0, 75.0, 85.0, 100.0), (45.0, 75.0, 180.0, 195.0))
+
+# Screws (this design): ISO metric socket-head screws. For each size: its clearance hole, its
+# tapping drill, its head's diameter and height.
+SCREWS = {2.5: (2.9, 2.05, 4.5, 2.5), 3: (3.4, 2.5, 5.5, 3.0), 4: (4.5, 3.3, 7.0, 4.0),
+          5: (5.5, 4.2, 8.5, 5.0), 6: (6.6, 5.0, 10.0, 6.0), 8: (9.0, 6.8, 13.0, 8.0)}
+SCREW_LENGTHS = (5, 6, 8, 10, 12, 16, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70)
+# Where the head's screws go: M8 into T-nuts in the column's front slots, at these z; M6 from the
+# head plate's back into each deck's and the port bracket's back edge, at these x.
+HEAD_SCREWS = {"column": (120.0, 230.0, 320.0), "lower deck": (-140.0, -60.0, 0.0),
+               "upper deck": (-40.0, 10.0), "port bracket": (-30.0, 5.0)}
+# An angle under the epi plate, screwed to the head plate's front: x0, x1, its horizontal leg's
+# front y, its vertical leg's foot z, its thickness.
+EPI_BRACKET = (112.0, 145.0, 130.0, 76.0, 6.0)
+ENCLOSURE_SCREWS = 150.0  # the panels' M4 screws into T-nuts in the frame: their largest spacing
+TRAY_SUPPLY = (110.0, 0.0)  # M3 in the supply's base: their spacing along it, and across (assumed)

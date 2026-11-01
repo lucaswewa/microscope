@@ -96,14 +96,16 @@ def cage_plate():
     return G.drill(G.box((side, side, t), V(0, 0, 0)), holes, t / 2, -Z)
 
 
+@G.kept
 def guide(position=0.0):
     """An MGN12 rail along X, the origin at the centre of its underside, with an MGN12H carriage
     `position` from the rail's centre."""
     rw, rh, pitch, length = P.MGN12_RAIL
     cw, cl, ch, clear, square = P.MGN12H
     n = int(length // pitch)
-    rail = G.drill(G.box((length, rw, rh), V(0, 0, rh / 2)),
-                   [(3.5, None, [((k - (n - 1) / 2) * pitch, 0) for k in range(n)])], rh, -Z)
+    holes = [((k - (n - 1) / 2) * pitch, 0) for k in range(n)]
+    rail = G.drill(G.box((length, rw, rh), V(0, 0, rh / 2)), [(3.5, None, holes), (6.5, 4.5, holes)],
+                   rh, -Z)  # counterbored for M3
     carriage = G.box((cl, cw, ch - clear), V(position, 0, (ch + clear) / 2))
     slot = G.span(V(position - cl, -rw / 2 - 0.5, 0), V(position + cl, rw / 2 + 0.5, rh + 0.5))
     carriage = carriage.cut(slot)

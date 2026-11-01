@@ -7,15 +7,17 @@ and the stage centred, a slide's sample is on the focal plane.
 """
 
 import math
+from functools import cache
 
 import FreeCAD as App
 import Part
 
-from . import cameras, head, inserts, parts, stages
+from . import cameras, fasteners, head, inserts, parts, stages
 from . import geom as G
 from . import params as P
 from .checks import Check, clashes
 from .document import add, group
+from .fasteners import Screw
 
 V = App.Vector
 X, Z = V(1, 0, 0), V(0, 0, 1)
@@ -52,14 +54,44 @@ def column_screws():
     return [(sx * x, COLUMN_Y + dy) for sx in (-1, 1) for dy in (-d / 4, d / 4)]
 
 
+@cache
+def screws():
+    """The stand's screws: each a fasteners.Screw."""
+    t, (pw, pd, pt), (side, mt) = P.STAND_BASE[4], P.STAND_PLATE, P.STAND_MATRIX
+    up, down = (0, 0, 1), (0, 0, -1)
+    out = [Screw(6, (x, y, BASE_TOP + P.LIFT_BASE[2]), down, P.LIFT_BASE[2], 10, "lift", "base plate")
+           for x, y in P.LIFT_BASE_HOLES[0][2]]
+    out += [Screw(8, (x, y, BASE_TOP - t), up, t, 16, "base plate", "column")
+            for x, y in column_screws()]
+    # The electronics tray, on spacers, screwed down into the base plate.
+    x0, y0, x1, y1, tt, ts = P.TRAY
+    out += [Screw(3, (x, y, BASE_TOP + ts + tt), down, ts + tt, 6, ("tray", "standoffs"), "base plate")
+            for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)]
+    # The plate on the lift: sunk into four of the lift top's M6 holes, at its corners, under the
+    # matrix's mount; and up through the spacers into the XY stage.
+    corner = max(x for x, _ in P.LIFT_TOP_HOLES[0][2])
+    out += [Screw(6, (x, y, PLATE_TOP - 6.5), down, pt - 6.5, 7, "lift plate", "lift top", sunk=True)
+            for x, y in P.LIFT_TOP_HOLES[0][2] if abs(x) == abs(y) == corner]
+    out += [Screw(6, (x, y, PLATE_TOP - pt), up, XY_Z - PLATE_TOP + pt, 8, ("lift plate", "spacers"),
+                  "xy base") for x, y in P.STAND_SPACERS[1]]
+    s = side / 2 - 5
+    out += [Screw(3, (x, y, PLATE_TOP + mt), down, mt, 6, "matrix mount", "lift plate")
+            for x in (-s, s) for y in (-s, s)]
+    # The insert adapter, its counterbores drilled with it.
+    out += [Screw(3, (x, y, -3.0), down, 3.0, 4, "adapter", "xy top", drilled=True)
+            for x, y in P.XY_HOLES[0][2] if abs(y) > P.INSERT[1] / 2 + P.INSERT_ADAPTER[1]]
+    return tuple(out)
+
+
+@G.kept
 def base():
-    """The base plate, with tapped holes for the lift and the feet and clearance holes for the
-    column's screws, and its feet."""
+    """The base plate, with tapped holes for the feet and the holes for its screws, and its feet."""
     x0, y0, x1, y1, t = P.STAND_BASE
     d, h, inset = P.STAND_FEET
     feet = [(x, y) for x in (x0 + inset, x1 - inset) for y in (y0 + inset, y1 - inset)]
-    holes = [(5.0, None, P.LIFT_BASE_HOLES[0][2]), (6.8, None, feet), (9.0, None, column_screws())]
-    plate = G.drill(G.span(V(x0, y0, BASE_TOP - t), V(x1, y1, BASE_TOP)), holes, BASE_TOP - t, Z)
+    plate = G.drill(G.span(V(x0, y0, BASE_TOP - t), V(x1, y1, BASE_TOP)), [(6.8, None, feet)],
+                    BASE_TOP - t, Z)
+    plate = fasteners.cut(plate, screws(), "base plate")
     under = BASE_TOP - t - h
     return {"plate": plate,
             "feet": Part.makeCompound([Part.makeCylinder(d / 2, h, V(x, y, under)) for x, y in feet])}
@@ -77,33 +109,30 @@ def extrusion(length, at):
     return G.box((w, d, length), mid).cut(Part.makeCompound(tools))
 
 
+@G.kept
 def column():
     """Two extrusions from the base plate to the head plate's top, bolted to its back face."""
     length = P.HEAD_PLATE[5] - BASE_TOP
     return [extrusion(length, V(sx * P.STAND_COLUMN[3], COLUMN_Y, BASE_TOP)) for sx in (-1, 1)]
 
 
+@G.kept
 def stack():
     """The parts the lift moves, with a slide in focus and the stage centred: the lift's top, the
     plate on it, the spacers, the matrix and its mount, the XY stage's parts, the adapter, and the
     four-slide insert and its slides."""
     pw, pd, pt = P.STAND_PLATE
     sd, spacers = P.STAND_SPACERS
-    # Four of the lift top's M6 holes, at its corners, take counterbored screws under the mount.
-    corner = max(x for x, _ in P.LIFT_TOP_HOLES[0][2])
-    hood = [(x, y) for x, y in P.LIFT_TOP_HOLES[0][2] if abs(x) == abs(y) == corner]
-    plate = G.drill(G.box((pw, pd, pt), V(0, 0, PLATE_TOP - pt / 2)),
-                    [(6.6, None, list(spacers) + hood), (11.0, 6.5, hood)], PLATE_TOP, -Z)
-    high = XY_Z - PLATE_TOP
-    tube = [Part.makeCylinder(sd / 2, high, V(x, y, PLATE_TOP))
-            .cut(Part.makeCylinder(3.3, high + 2, V(x, y, PLATE_TOP - 1))) for x, y in spacers]
+    s = screws()
+    plate = fasteners.cut(G.box((pw, pd, pt), V(0, 0, PLATE_TOP - pt / 2)), s, "lift plate")
+    tube = Part.makeCompound([Part.makeCylinder(sd / 2, XY_Z - PLATE_TOP, V(x, y, PLATE_TOP))
+                              for x, y in spacers])
+    tube = fasteners.cut(tube, s, "spacers")
     side, mt = P.STAND_MATRIX
-    s = side / 2 - 5
-    mount = G.drill(G.box((side, side, mt), V(0, 0, PLATE_TOP + mt / 2)),
-                    [(3.4, None, [(x, y) for x in (-s, s) for y in (-s, s)])], PLATE_TOP + mt, -Z)
+    mount = fasteners.cut(G.box((side, side, mt), V(0, 0, PLATE_TOP + mt / 2)), s, "matrix mount")
     matrix = parts.led_matrix()
     out = {"lift": stages.lift(P.STAND_FOCUS)["top"].translated(V(0, 0, BASE_TOP)), "plate": plate,
-           "spacers": Part.makeCompound(tube), "mount": mount,
+           "spacers": tube, "mount": mount,
            "board": matrix["board"].translated(V(0, 0, MATRIX_Z)),
            "leds": matrix["leds"].translated(V(0, 0, MATRIX_Z))}
     out.update({k: v.translated(V(0, 0, XY_Z)) for k, v in stages.xy_stage().items()})
@@ -119,6 +148,7 @@ def move(shapes, h, x=0.0, y=0.0):
             for k, s in shapes.items()}
 
 
+@G.kept
 def overview():
     """The overview camera, and its bracket: a flange on the upper deck's front, a leg down in front
     of the filter slider's travel, and a plate that holds the camera's board from behind on four
@@ -141,6 +171,7 @@ def overview():
     leg = G.split(leg, seat, back, seat + back)[0]
     bracket = leg.fuse([G.placed(plate, at, back, up),
                         G.span(V(-w / 2, front, top), V(w / 2, flange, top + t))]).removeSplitter()
+    bracket = fasteners.cut(bracket, head.screws(), "overview bracket")
     camera = {k: G.placed(v, at, back, up) for k, v in cameras.overview().items()}
     return camera, bracket, at - back * P.OVERVIEW_LENS_F
 
@@ -189,7 +220,8 @@ def build_stand(doc):
     for k, s in structure.items():
         add(doc, "Head" + k.title(), s, "metal", g, {
             "plate": "Head plate", "lower": "Lower deck", "upper": "Upper deck",
-            "bracket": "Camera port's bracket", "epi": "Epi plate"}[k])
+            "bracket": "Camera port's bracket", "epi": "Epi plate",
+            "epi_bracket": "Epi plate's bracket"}[k])
 
     s = P.XY_TRAVEL
     spots = [(0, 0)] + [(sx * s, sy * s) for sx in (-1, 1) for sy in (-1, 1)]

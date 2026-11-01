@@ -1,5 +1,7 @@
 """Shape helpers on top of FreeCAD's Part module."""
 
+import functools
+
 import FreeCAD as App
 import Part
 
@@ -117,3 +119,16 @@ def solids(*shapes):
     """A compound of the non-empty solids among `shapes`."""
     kept = [s for s in shapes if not s.isNull() and s.Volume > 1e-9]
     return Part.makeCompound(kept)
+
+
+def kept(build):
+    """`build`, its results kept for the rest of the run, since the parameters don't change. A dict
+    comes back as a copy, so a caller can change it without changing what's kept; shapes mustn't be
+    changed in place."""
+    keep = functools.cache(build)
+
+    @functools.wraps(build)
+    def wrapper(*args, **kwargs):
+        out = keep(*args, **kwargs)
+        return dict(out) if isinstance(out, dict) else out
+    return wrapper
