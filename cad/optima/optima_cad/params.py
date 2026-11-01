@@ -173,7 +173,7 @@ PICO2 = (51.0, 21.0, 4.0, (47.0, 11.4))
 LDD_H = (31.8, 20.3, 12.2)  # Mean Well LDD-H, pin style
 SUPPLY = (159.0, 97.0, 30.0)  # Mean Well LRS-150-24
 SUPPLY_W = 156.0
-PEAK_W = 100.0  # the design's estimate of the peak draw (its §8)
+PEAK_W = 130.0  # the electrical design's peak draw, with the camera port's 15 V
 
 # The optical head (this design). Its parts hang from a vertical head plate, whose back face meets
 # the column (C05) behind the XY stage's sweep. Boxes are (x0, y0, z0, x1, y1, z1) in the
@@ -261,7 +261,7 @@ ENCLOSURE = (-205.0, -170.0, 300.0, 300.0, 365.0)  # the frame's inner faces: x0
 ENCLOSURE_FRAME = (20.0, 0.49)  # the extrusions' side, and kg per metre (FramingTech's 20-05)
 ENCLOSURE_PANEL = 1.5  # the panels' and the door's thickness
 ENCLOSURE_SEAL = 5.0  # the foam strip under the frame
-ENCLOSURE_NOTCH = (160.0, 30.0)  # the cables' way out, in the back panel just above its bottom rail
+ENCLOSURE_NOTCH = (160.0, 40.0)  # the cables' way out, and the inlet's, just above the bottom rail
 INTERLOCK = (20.0, 12.0, 6.0, 2.0)  # the door's switch: width, height, depth, its plunger's travel
 # The vents: an intake low in the right panel, its centre (y, z) and size, and a fan in the back
 # panel behind the mono camera, blowing out. A baffle inside each, `gap` from it, overlaps it by
@@ -271,17 +271,52 @@ FAN = (120.0, 25.0, 40.0)  # side, depth, its flow through the baffles in cubic 
 BAFFLE = (8.0, 3.0)  # gap, overlap
 TYPICAL_W = 40.0  # the design's typical draw (its §8)
 EPI_PLUG = 40.0  # the room behind each mounted LED for its cable (assumed)
-# The electronics tray on the base plate, right of the lift and under the stage: x0, y0, x1, y1,
-# its thickness and its standoffs. Its parts' centres, each turned with its long side along Y, and
-# the carrier boards under the optics controller and the LED drivers: length, width (assumed).
-TRAY = (90.0, -145.0, 255.0, 155.0, 3.0, 6.0)
-TRAY_PARTS = {"supply": (145.0, -52.0), "motion": (226.0, -95.0), "optics": (226.0, -10.0),
-              "drivers": (150.0, 82.0)}
-CARRIERS = {"optics": (60.0, 50.0), "drivers": (100.0, 50.0)}
-ELECTRONICS_KG = 1.0  # the supply's 0.42 kg (retailers' listings), the boards, the fan, the wiring
+# The electronics trays on the base plate, under the stage: the power tray left of the lift, the
+# control tray right of it. Each: x0, y0, x1, y1, its thickness and its standoffs.
+TRAYS = {"power": (-195.0, -150.0, -65.0, 155.0, 3.0, 6.0),
+         "control": (90.0, -145.0, 255.0, 155.0, 3.0, 6.0)}
+# Their parts: each one's tray and centre, turned with its first size along Y.
+TRAY_PARTS = {"supply": ("power", -128.0, 70.0), "fuse block": ("power", -130.0, -35.0),
+              "DIN rail": ("power", -131.0, -105.0), "12 V converter": ("power", -156.0, -105.0),
+              "15 V converter": ("power", -109.0, -105.0), "SKR Pico": ("control", 150.0, -80.0),
+              "carrier board": ("control", 140.0, 75.0), "USB hub": ("control", 220.0, 75.0)}
+TRAY_FUSES = (45.0, 90.0, 30.0)  # a 6-way blade fuse block, on two M4s 80 mm apart (assumed)
+# Mean Well's DDR-60G-12 and DDR-30G-15 (distributors' listings), on a 35 mm DIN rail.
+TRAY_CONVERTERS = {"12 V converter": (90.0, 52.5, 54.6), "15 V converter": (90.0, 35.0, 54.6)}
+TRAY_RAIL = (35.0, 124.0, 7.5)
+TRAY_CARRIER = (130.0, 80.0)  # the carrier board under the Pico 2 and the LED drivers (assumed: E05)
+TRAY_HUB = (120.0, 45.0, 25.0)  # a 7-port USB 3 hub, 12 V in, on hook-and-loop (assumed)
+# The supply's 0.42 kg (retailers' listings), and the converters, the boards, the hub, the fan and
+# the cables (assumed).
+ELECTRONICS_KG = 1.8
+# The mains inlet, its face in the cover's notch, on a bracket from the base plate's back edge: its
+# centre's x, its face's y, its flange's width and height, and its depth behind the flange (assumed:
+# an IEC C14 inlet with a fuse and a switch, on two M3s 40 mm apart). The protective earth's stud,
+# an M6 up through the base plate: x, y.
+INLET = (-56.0, 295.0, 48.0, 30.0, 40.0)
+INLET_EARTH = (-70.0, 205.0)
 # The cable ducts, from the base plate: x0, y0, x1, y1, top. One runs up behind the head plate
-# between the column's extrusions, one along the base from the tray to its foot.
-DUCTS = ((35.0, 185.0, 85.0, 215.0, 345.0), (35.0, 160.0, 120.0, 185.0, -196.0))
+# between the column's extrusions, and two along the base behind the lift, from each tray to its foot.
+DUCTS = ((35.0, 185.0, 85.0, 215.0, 345.0), (35.0, 160.0, 120.0, 185.0, -196.0),
+         (-50.0, 160.0, 35.0, 185.0, -196.0))
+# The cables: the length each end takes to dress it to its connector; the loop a moving part's
+# cable gets beyond its reach across the travel; and the PC cable's run outside the cover (assumed).
+CABLE_END = 100.0
+CABLE_LOOP = 50.0
+CABLE_PC = 1500.0
+# The plug that joins the cover's harness, to the fan and the door's switch, to the instrument: x, y,
+# on the cover's back rail.
+CABLE_PLUG = (100.0, 290.0)
+# Copper's resistivity, ohm mm² per metre, and the largest voltage drop allowed on a power run.
+CABLE_COPPER = 0.0175
+CABLE_DROP = 0.03
+# The current a conductor carries in a cable, in amperes, by its size in mm²: IEC 60227's for flexible
+# cords from 0.5 mm², and this design's below.
+CABLE_RATINGS = {0.14: 1.0, 0.25: 1.5, 0.34: 2.0, 0.5: 3.0, 0.75: 6.0, 1.0: 10.0}
+# The lengths bought cables come in, in mm; the stages' own cables are 1.6 m (Standa's 8MTF table).
+CABLE_STOCK = {"USB": (300, 500, 1000, 1500, 2000, 3000), "USB 3": (300, 500, 1000, 1500, 2000, 3000),
+               "M8": (500, 1000, 2000, 5000), "SMA": (500, 1000, 2000), "stage": (1600,)}
+CABLE_USB = {"USB": 5000.0, "USB 3": 3000.0}  # their longest cables, by the specifications
 # Slots through the head plate from the duct: x0, x1, z0, z1, by the lower and the upper deck.
 HEAD_SLOTS = ((45.0, 75.0, 85.0, 100.0), (45.0, 75.0, 180.0, 195.0))
 

@@ -73,7 +73,7 @@ All 64 of the matrix's LEDs at full white draw about 19 W, almost 4 A at 5 V, so
 | Phase | Title | Size | What it adds |
 |---|---|---|---|
 | E01 | The electrical design | Docs | The power tree, with its budget, fuses and wire gauges. The interlock circuit. The grounding. Each board's I/O list. A design document with diagrams: [optima_electrical_design.md](optima_electrical_design.md). |
-| E02 | Cables | M | Every cable: its two ends, its conductors, connectors and length. The lengths come from the CAD model, by a script that follows the ducts. The Standa stages' HDB15 harnesses, from Standa's manuals. A cable list (CSV), and harness drawings as tables. |
+| E02 | Cables | M | Every cable: its two ends, its conductors, connectors and length. The lengths come from the CAD model, by a script that follows the ducts. The Standa stages' HDB15 harnesses, from Standa's manuals. A cable list (CSV), and harness drawings as tables: [optima_cables.md](optima_cables.md). |
 | E03 | The motion controller | S | The SKR Pico's pin map for X, Y, Z and the changer. Steps per mm, speeds and accelerations, the TMC2209s' currents, limits, homing and soft limits. A grblHAL settings file, how to build and flash grblHAL for the SKR Pico, and a bench test. |
 | E04 | The carrier board's schematic | M | The circuit in Python, its netlist and a KiCad schematic, with a clean ERC. The interlock, the LED drivers' enables, the slider's TMC2209, the matrix's level shifter, the camera triggers and exposure inputs, the camera port, the thermistors and the home switch. |
 | E05 | The carrier board's layout | L | Placing the parts by script, routing, a clean DRC. The fabrication files (Gerbers, drills, bill of materials, placement) and a PDF of the board. |
@@ -96,8 +96,9 @@ As the CAD plan's §3 says, with these differences:
 
 | Phase | Status |
 |---|---|
-| E01 | In review |
-| E02–E08 | Not started |
+| E01 | Done |
+| E02 | In review |
+| E03–E08 | Not started |
 
 ## 7. Decisions for the owner
 

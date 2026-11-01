@@ -63,10 +63,15 @@ def screws():
            for x, y in P.LIFT_BASE_HOLES[0][2]]
     out += [Screw(8, (x, y, BASE_TOP - t), up, t, 16, "base plate", "column")
             for x, y in column_screws()]
-    # The electronics tray, on spacers, screwed down into the base plate.
-    x0, y0, x1, y1, tt, ts = P.TRAY
-    out += [Screw(3, (x, y, BASE_TOP + ts + tt), down, ts + tt, 6, ("tray", "standoffs"), "base plate")
-            for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)]
+    # The electronics trays, on spacers, screwed down into the base plate; the inlet's bracket; and
+    # the protective earth's stud, up through the plate.
+    for name, (x0, y0, x1, y1, tt, ts) in P.TRAYS.items():
+        out += [Screw(3, (x, y, BASE_TOP + ts + tt), down, ts + tt, 6, (name + " tray", "standoffs"),
+                      "base plate") for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)]
+    x, _, w = P.INLET[:3]
+    out += [Screw(4, (x + dx, P.STAND_BASE[3] - 17.5, BASE_TOP + 3), down, 3, 8, "inlet bracket",
+                  "base plate") for dx in (-w / 2, w / 2)]
+    out.append(Screw(6, (*P.INLET_EARTH, BASE_TOP - t), up, t + 8, 0, "base plate", None))
     # The plate on the lift: sunk into four of the lift top's M6 holes, at its corners, under the
     # matrix's mount; and up through the spacers into the XY stage.
     corner = max(x for x, _ in P.LIFT_TOP_HOLES[0][2])

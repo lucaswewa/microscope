@@ -2,7 +2,7 @@
 
 The power, the interlock, the grounding and each board's inputs and outputs, for phase E01 of the [electronics plan](optima_electronics_plan.md). The later phases build on it:
 
-- E02 lists the cables;
+- E02 lists the cables, in [the cables](optima_cables.md);
 - E03 sets up the motion controller;
 - E04 and E05 design the carrier board;
 - E06 and E07 write the firmware.
@@ -14,6 +14,7 @@ Started 2026-11-01. "Assumed" marks what a datasheet or the part in hand still h
 | Decision | Choice | Why |
 |---|---|---|
 | 12 V for the mono camera | A 24-to-12 V converter on the tray, the Mean Well DDR-60G-12 (9–36 V in, 12 V at 5 A) | One mains inlet. It also feeds the USB hub. Plan decision 3, taken as recommended; the owner can still choose the camera's own adapter. |
+| 15 V for the camera port | A second converter, the Mean Well DDR-30G-15 (15 V at 2 A), behind its own fuse | The MFF102/M runs on 15 V only (Thorlabs' user guide). Added in E02, which found it. |
 | USB | A powered USB 3 hub on the tray, fed with 12 V, with one cable out to the PC | One cable through the cover's notch, which then lifts off without unplugging five. Plan decision 4, taken as recommended. |
 | One carrier board | The Pico 2, the four LED drivers, the slider's TMC2209 and the 5 V buck share one board, which replaces the two carriers in the CAD | The LED drivers' enables never leave the board, which the interlock relies on (§4). One board to make and wire. |
 | Fuses | One blade fuse per 24 V branch, in a fuse block on the tray | A fault in one branch can't take the others down, or set a thin wire alight |
@@ -29,6 +30,7 @@ flowchart LR
     FB -- F2, 2 A --> CB[Carrier board]
     FB -- F3, 4 A --> DC12[DDR-60G-12: 12 V, 5 A]
     FB -- F4, 0.5 A --> FAN[Fan, 24 V]
+    FB -- F5, 2 A --> DC15[DDR-30G-15: 15 V, 2 A]
     CB --> BUCK[5 V buck, 5 A]
     CB --> LDD[Four LDD-1000H]
     CB --> TMC[Slider's TMC2209]
@@ -36,6 +38,7 @@ flowchart LR
     BUCK --> PICO[Pico 2]
     DC12 --> TEC[Mono camera]
     DC12 --> HUB[USB 3 hub]
+    DC15 --> PORT[Camera port]
     HUB --> USB[Colour camera, overview camera, SKR Pico, Pico 2]
 ```
 
@@ -52,8 +55,9 @@ flowchart LR
 | The Pico 2 and the carrier's logic | 5 V | 1 | 0.5 | Assumed |
 | The mono camera, with its TEC | 12 V | 36 | 20 | The design's §8 |
 | The USB hub and the bus-powered devices | 12 V | 8 | 5 | The colour camera about 5 W, the overview camera about 1.5 W (assumed) |
+| The camera port, the MFF102/M | 15 V | 15 | 1 | Assumed: it draws most while it flips; Thorlabs' supply gives up to 2.4 A |
 
-The 5 V rail peaks at 20 W: 22 W from 24 V at 90 % efficiency. The 12 V rail peaks at 44 W: 48 W from 24 V at 91 %. With the 42 W on 24 V directly, the supply gives at most about 112 W of its 156 W, and about 45 W in use. At about 90 % efficiency it draws up to 125 W from the mains: 0.55 A at 230 V, or 1.1 A at 115 V.
+The 5 V rail peaks at 20 W: 22 W from 24 V at 90 % efficiency. The 12 V rail peaks at 44 W: 48 W from 24 V at 91 %. The 15 V rail peaks at 15 W: 17 W from 24 V at about 88 % (assumed). With the 42 W on 24 V directly, the supply gives at most about 129 W of its 156 W, and about 46 W in use. At about 90 % efficiency it draws up to 143 W from the mains: 0.62 A at 230 V, or 1.25 A at 115 V.
 
 **The fuses.** A blade fuse per branch, 32 V rated, in a fuse block on the tray.
 
@@ -63,7 +67,8 @@ The 5 V rail peaks at 20 W: 22 W from 24 V at 90 % efficiency. The 12 V rail pea
 | F2 | The carrier board: the LED drivers, the slider and the 5 V buck | 1.3 A | 2 A |
 | F3 | The 12 V converter | 2.0 A, more at switch-on | 4 A |
 | F4 | The fan | 0.15 A | 0.5 A |
-| The inlet | The supply, from the mains | 0.55 A at 230 V | T2A at 230 V, T4A at 115 V |
+| F5 | The 15 V converter | 0.7 A, more at switch-on | 2 A |
+| The inlet | The supply, from the mains | 0.62 A at 230 V | T2A at 230 V, T4A at 115 V |
 
 The SKR Pico has its own fuse on the board too. The LRS-150-24 is set for 115 or 230 V by a switch, which has to match the mains before it's first switched on.
 
@@ -74,12 +79,14 @@ The SKR Pico has its own fuse on the board too. The LRS-150-24 is set for 115 or
 | Mains, inlet to supply | Under 1.1 A | 0.75 mm², and 0.75 mm² green-and-yellow for the earth |
 | 24 V, supply to fuse block | Up to 5 A | 1.0 mm² (about 17 AWG) |
 | 24 V branches | Up to 4 A | 0.75 mm² (about 18 AWG) |
-| 5 V to the matrix, on the moving lift | Up to 4 A | 0.75 mm², highly flexible: about 0.2 V drop over a 1 m cable, out and back |
+| 5 V to the matrix, on the moving lift | Up to 4 A | 0.75 mm², highly flexible: a 2.0 % drop over its 0.55 m (E02) |
 | 12 V to the camera and the hub | Up to 4 A | 0.75 mm² |
-| LED drivers to the epi LEDs | 1 A | 0.5 mm² (20 AWG), twisted pairs |
-| Signals | Milliamps | 0.14 mm² (26 AWG): ribbon, or twisted pairs for the camera triggers |
+| 15 V to the camera port | Up to 2 A | 0.5 mm² |
+| LED drivers to the epi LEDs | 1 A | M8 cordsets, 0.25 mm² (E02) |
+| Motors | Up to 2 A, the drivers' most | 0.34 mm² (22 AWG), each coil a twisted pair |
+| Signals | Milliamps | 0.14 mm² (26 AWG), twisted pairs for the camera triggers |
 
-E02 gives each cable its connectors and length.
+[The cables](optima_cables.md) give each one its connectors, pins and length (E02).
 
 ## 3. Grounding
 
@@ -134,7 +141,7 @@ The SKR Pico has four TMC2209 drivers and four endstop inputs, one for each axis
 | LED matrix | 2 | Out | SPI clock and data, through a 5 V buffer, such as a 74AHCT125, to the APA102s |
 | Filter slider | 6 | Out, in | The TMC2209's step, direction, enable, its one-wire UART (two pins), and its diagnostic output |
 | The slider's home switch | 1 | In | |
-| Camera port | 2 | Out, in | The MFF102/M's two TTL lines: a pulse toggles it, and the other reports its position. The connector is to be confirmed from its manual. |
+| Camera port | 2 | Out, in | The MFF102/M's two SMA connectors, at TTL levels: one input's level sets its position, and the other reports it ([the cables](optima_cables.md#the-camera-port-w14-w33-and-w34)) |
 | Camera triggers | 2 | Out | One per camera, driving its trigger input (§6) |
 | Exposure signals | 2 | In | One per camera, from its output (§6) |
 | LED temperatures | 2 | I2C | Four thermistors on the LEDs' heatsinks, through an external ADC, since the Pico 2 has only three free ADC inputs |
@@ -159,6 +166,6 @@ The carrier board also holds:
 ## 6. What's still open
 
 - **The cameras' trigger connectors.** ToupTek doesn't publish the pinouts, so they wait for the cameras in hand or ToupTek's manual. Until then, the carrier gives each camera an open-collector trigger output that can drive 5–12 V at 10 mA, and an exposure input with a pull-up that takes an opto-isolated output. Both suit the usual opto-isolated interfaces.
-- **The Standa stages' connectors.** Their HDB15 pinouts, the motors' currents and the limit switches' kind come from Standa's manuals, in E02 and E03.
-- **The camera port's connector**, from the MFF102/M's manual.
-- **The tray.** It needs room for the fuse block, the 12 V converter and the hub, while the one carrier board replaces the two. E02 updates its layout in the CAD.
+- **The Standa stages' connectors.** E02 took the XY stage's HDB15 pinout from Standa's sheet. The lift has a DB9, whose pinout Standa doesn't publish ([the cables](optima_cables.md#the-z-lift-w17)). The motors' currents come in E03.
+- **The camera port's power plug.** E02 found its connectors, two SMAs, and its 15 V. The plug for its 15 V is to match Thorlabs' supply's.
+- **The tray.** Done in E02: a power tray left of the lift, and a control tray right of it ([the cables](optima_cables.md#1-where-they-run)).

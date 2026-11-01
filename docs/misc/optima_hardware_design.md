@@ -493,15 +493,16 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 | Load | Supply | Peak |
 |---|---|---|
-| Mono camera with TEC | 12 V, its own 3 A adapter | 36 W or less |
+| Mono camera with TEC | 12 V, from a converter | 36 W or less |
 | Colour camera, uncooled | USB | about 3–5 W (*est.*) |
 | Five steppers: XYZ, objective changer, filter slider | 24 V | about 30 W (*est.*) |
 | One epi LED at a time, 1 A or less at about 4 V | 24 V through an LDD-H | about 5 W |
 | LED matrix, all 64 white | 5 V from 24 V | about 19 W. Patterns use far less. |
 | Controllers, overview camera | USB, 5 V | about 3 W |
-| **Total** | | **about 90–100 W peak, about 40 W typical** |
+| Camera port, Thorlabs MFF102/M | 15 V, from a converter | about 15 W while it flips (*est.*) |
+| **Total** | | **about 130 W peak from the supply, about 45 W typical** ([electrical design §2](optima_electrical_design.md#2-the-power-tree)) |
 
-- **Mains.** One 24 V, 150 W supply from the mains, plus the camera's 12 V adapter. A 24-to-12 V converter would give the instrument a single inlet.
+- **Mains.** One 24 V, 150 W supply from a single inlet, with converters for the camera's 12 V and the camera port's 15 V.
 - **12 V input.** OPTIMA's 12 V 5 A (60 W) input would work only with the TEC limited. Battery power isn't part of this build.
 - **Eye safety.** The 395 nm and the visible epi LEDs, about 1 W each, are an eye hazard when viewed through the optics. The enclosure is light-tight. A door interlock switches off the LED-driver enables in hardware, not only in firmware. The interlock's wiring runs through a plug on the cover, so lifting the cover off switches them off too. Using LEDs avoids laser classification altogether.
 - **Cables.** Flexible, strain-relieved cables to the moving stage. One ground point for the frame, the supplies and the USB shields.

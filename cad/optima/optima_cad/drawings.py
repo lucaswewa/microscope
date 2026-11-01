@@ -20,7 +20,7 @@ import uuid
 import FreeCAD as App
 import Part
 
-from . import enclosure, fasteners, head, inserts, stand
+from . import cables, enclosure, fasteners, head, inserts, stand
 from . import params as P
 from .checks import Check
 
@@ -53,7 +53,7 @@ def made():
     cams = {n: head.camera(n) for n in ("mono", "colour")}
     st = stand.stack()
     ins = {name: make()["insert"] for name, _, make in inserts.INSERTS}
-    cover = enclosure.panels()
+    cover, tr = enclosure.panels(), enclosure.tray()
     a, m = ALUMINIUM, SHEET_METAL
     rows = [
         ("H01", "Head plate", s["plate"], 1, a, "head plate",
@@ -96,7 +96,10 @@ def made():
         ("E05", "Door", enclosure.door(handle=False), 1, m, "door", ""),
         ("E06", "Intake's baffle", cover["intake baffle"], 1, m, "intake baffle", ""),
         ("E07", "Fan's baffle", cover["fan baffle"], 1, m, "fan baffle", ""),
-        ("E08", "Electronics tray", enclosure.tray()["tray"], 1, a, "tray", ""),
+        ("E08", "Power tray", tr["power tray"], 1, a, "power tray", ""),
+        ("E09", "Control tray", tr["control tray"], 1, a, "control tray", ""),
+        ("E10", "Inlet's bracket", tr["inlet bracket"], 1, a, "inlet bracket",
+         "An angle: bent from 3 mm sheet, or cut from angle. The opening takes the inlet's body."),
     ]
     every = screws()
     return [(code, name, shape, n, material,
@@ -126,7 +129,7 @@ def bought():
         ("Epi optics", 1, "Four f = 20 mm aspheric collectors; DMLP425, DMLP505 and DMLP605; an "
          "iris; an f = 100 mm achromat; a 1 in. fold mirror; 30 mm cage cubes, plates, rods and SM1 "
          "tubes", ""),
-        ("LED drivers", 4, "Mean Well LDD-H", ""),
+        ("LED drivers", 4, "Mean Well LDD-1000H", "On the carrier board."),
         ("LED matrix", 1, "Adafruit 2734", ""),
         ("Guides", 2, "HIWIN MGN12 rail, %g mm, with an MGN12H carriage" % P.MGN12_RAIL[3], ""),
         ("Lead-screw steppers", 2, "NEMA 11 with a Tr6 lead screw and nut",
@@ -135,7 +138,15 @@ def bought():
         ("Home switches", 2, "Miniature switch, %g x %g x %g mm" % P.SWITCH, ""),
         ("Motion controller", 1, "BTT SKR Pico", "Runs grblHAL."),
         ("Optics controller", 1, "Raspberry Pi Pico 2, on a carrier board", ""),
+        ("Carrier board", 1, "This project's, %g x %g mm" % P.TRAY_CARRIER, "Phases E04 and E05."),
         ("Supply", 1, "Mean Well LRS-150-24", ""),
+        ("Converters", 2, "Mean Well DDR-60G-12 and DDR-30G-15",
+         "On a 35 mm DIN rail, cut to %g mm." % P.TRAY_RAIL[1]),
+        ("Fuse block", 1, "6-way, for blade fuses", "Fuses: 3, 2, 4, 0.5 and 2 A, 32 V."),
+        ("USB hub", 1, "7-port USB 3 hub, 12 V in", "Held down with hook-and-loop."),
+        ("Mains inlet", 1, "IEC C14 inlet with a fuse holder and a switch",
+         "Fuse T2A at 230 V, T4A at 115 V."),
+        ("Cables", len(cables.CABLES), "As cables.csv lists them", ""),
         ("Fan", 1, "%g mm, 24 V" % P.FAN[0], ""),
         ("Interlock switch", 1, "Safety switch, normally open",
          "In series with the LED drivers' enables."),
@@ -150,8 +161,8 @@ def bought():
          "%.0f mm, round the cover's foot." % seal),
         ("Feet", 4, "Rubber, %g mm across and %g mm high" % P.STAND_FEET[:2], ""),
         ("Cable ducts", len(ducts), "Slotted cable duct",
-         "Cut to %s mm." % " and ".join("%.0f" % d for d in ducts)),
-        ("Tray's standoffs", 4, "M3, %g mm" % P.TRAY[5], ""),
+         "Cut to %s and %.0f mm." % (", ".join("%.0f" % d for d in ducts[:-1]), ducts[-1])),
+        ("Trays' standoffs", 4 * len(P.TRAYS), "M3, %g mm" % P.TRAYS["power"][5], ""),
     ]
     # The screws, by size and length; the T-nuts and nuts they go into; the spacers they go through.
     every = screws()
@@ -162,9 +173,9 @@ def bought():
     slots = {8: "the column's 8 mm slots", 4: "the frame's 5 mm slots"}
     out += [("T-nuts", n, "M%g, for %s" % (k, slots[k]), "") for k, n in sorted(tnuts.items())]
     out += [("Nuts", n, "M%g" % k, "") for k, n in sorted(nuts.items())]
-    spaced = Counter(fasteners.clamped(s)[1] for s in every if s.into is None
-                     and fasteners.clamped(s)[1:] and fasteners.clamped(s)[1] != "fan")
     lengths = {"intake baffle": P.BAFFLE[0], "fan baffle": P.FAN[1] + P.BAFFLE[0], "boards": 5}
+    spaced = Counter(k for s in every if s.into is None for k in fasteners.clamped(s)[1:2]
+                     if k in lengths)
     out.append(("Spacers", sum(spaced.values()), "M3 clearance", "; ".join(
         "%d x %g mm for the %s" % (n, lengths[k], k) for k, n in sorted(spaced.items()))))
     return out
