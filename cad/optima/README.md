@@ -43,5 +43,7 @@ Don't edit the `.FCStd` files: the build replaces them.
 | `optima_cad/cameras.py` | The mono, colour and overview cameras, and their checks |
 | `optima_cad/parts.py` | The objectives, the tube lens, the mirrors and camera port, the epi parts, the guides and steppers, the LED matrix and the electronics, and their checks |
 | `optima_cad/head.py` | The optical head: its custom parts, with the bought parts in place, and its checks across every moving part's travel |
+| `optima_cad/stand.py` | The stand: the base, the column, the stage stack on the Z lift and the overview camera's bracket, and their checks across the lift's and the stage's travel |
+| `optima_cad/inserts.py` | The sample inserts: the adapter, the inserts and their labware, and their checks |
 | `optima_cad/checks.py` | Checks, and the overlaps they look for |
 | `optima_cad/build.py` | The list of models, and how each is built and saved |

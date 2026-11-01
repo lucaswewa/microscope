@@ -72,8 +72,9 @@ The repository's rules for phases apply, with these differences:
 | C01 | Done |
 | C02 | Done |
 | C03 | Done |
-| C04 | In review |
-| C05–C08 | Not started |
+| C04 | Done |
+| C05 | In review |
+| C06–C08 | Not started |
 
 ## 6. C01: the optical layout
 
@@ -212,3 +213,56 @@ Also, the models' dichroics and plates now lie with their length in the plane th
 - The lead screws, cut to 110 and 160 mm.
 
 **For C05.** The column meets the head plate's back face: y = 185 mm, x −150 to 145 mm, z 60 to 345 mm. It has to stay behind the XY stage's sweep, which reaches y = 177 mm at the stage's height. The epi arm passes the head plate's right edge and reaches y = 255 mm, so behind the head plate the column has to stay left of x = 145 mm.
+
+## 10. C05: the stand and the sample inserts
+
+`stand.FCStd` holds the stand in the instrument's frame, with a slide in focus and the stage centred, and the optical head's plate and decks for reference. `sample-inserts.FCStd` holds the adapter and the three inserts, side by side, with their labware.
+
+| Part | What it does |
+|---|---|
+| Base plate | 465 × 425 × 12 mm, on four rubber feet. Its top is 221 mm below the sample. The lift stands on it under the axis, and the column at the back. |
+| Column | Two 40 × 80 mm extrusions, 566 mm long and 220 mm apart, 80 mm deep. The head plate is bolted to their front faces, 185 mm behind the axis. |
+| Plate on the lift | 160 × 110 × 15 mm, held to the lift's top by four counterbored M6 screws under the matrix's mount |
+| Spacers | Four, 20 mm across and 35 mm tall. A screw from under the plate goes through each into one of the XY stage's M6 holes. |
+| The matrix's mount | A 100 mm square, 4 mm plate that the flexible matrix is stuck to. It puts the LEDs 80 mm below the sample. |
+| Insert adapter | A 6 mm plate as big as the top plate. Tabs under it sit in the top plate's pockets, and four M3 screws hold it. An insert sits flush in its recess, over a 140 × 100 mm opening. |
+| Inserts | 3 mm plates. Four slides lie along Y, 27.5 mm apart, on ledges under their ends over one window. A microplate's skirt sits in a pocket. A 60 mm and two 35 mm dishes each sit on a 4 mm ledge round a window. |
+| Overview camera's bracket | A flange on the upper deck's front, a leg down 12 mm in front of the filter slider's travel, and a plate that holds the camera's board on four standoffs. The camera sits 125 mm in front of the axis and 105 mm above the sample, tilted 35° from straight down. |
+
+The stand's checks:
+
+- The lift brings every sample to the focal plane: a slide with the lift 20 mm up its 25 mm travel, a microplate at 18 mm, the dishes at 20.
+- The fixed parts don't overlap each other, and nor do the stage stack's.
+- The stage stack clears the fixed parts with the lift at 0, 20 and 25 mm, and the stage at its centre and at each corner of its travel.
+- The column meets the head plate's back face, within its width. The stage's sweep reaches y = 177.4 mm, 7.6 mm in front of it.
+- The lift carries the stage stack: 5.1 kg with a 0.3 kg sample, of its 8 kg.
+- With the stage at the front of its travel, the overview camera sees the whole insert, its corners 87 % of the way to the field's edge. Its view passes under each objective.
+- The overview camera and its bracket clear the head's parts, with the changer and the slider every 10 mm of their travel.
+
+The inserts' checks:
+
+- The adapter sits in the top plate's pockets, each insert in the adapter, and the labware in its pockets.
+- The stage brings every well, every slide's cover glass and each dish's middle 20 mm into the 5x's field: within ±52.9 × ±52.3 mm of the centre.
+- The windows let the matrix's light reach every target. Light from the whole matrix to a point spreads 0.47 mm for every millimetre below it.
+
+**What C05 changed in the design.**
+
+- **The height.** The matrix's 80 mm below the sample, its mount and plate, the lift and the base take 253 mm below the sample. With the head's 345 mm above it, the stand is 598 mm tall, not about 430 mm.
+- **The column** is two 40 × 80 mm extrusions rather than a ribbed plate.
+- **The overview camera** hangs from the upper deck, in front of the filter slider. With the stage at the front of its travel, it looks at the insert from the front, under the objectives.
+- **The slides lie along Y,** 27.5 mm apart over one window. A wider pitch would put the outer cover glasses out of the stage's reach.
+- **A counting chamber** needs its own insert, unless it fits a slide's 25.4 × 75.4 mm pocket.
+
+**Still assumed.**
+
+- The feet: 40 mm across and 20 mm high.
+- The labware's heights: a microplate's wells' floor 3.5 mm above its base, and a dish's floor 1.5 mm above its base.
+- The sample's mass, 0.3 kg, and the 20 mm middle of a dish that's imaged.
+- That the column is stiff enough: it stands 566 mm tall, and the head hangs in front of it.
+- The overview camera itself, as in C02.
+
+**For C06.**
+
+- **The labware against the objectives.** Above the insert's top, the samples' planes are 0 mm for slides and dishes and 2 mm for a microplate. Above their planes, slides reach 0.17 mm, the 60 mm dish 13.5 mm and a microplate 10.85 mm. `sample-inserts.FCStd` gives these as facts.
+- **The matrix's light against the stage's openings,** as C03 noted.
+- **The envelope.** The epi arm reaches x = 255 mm, inside the base's 265 mm edge. The overview camera's plug reaches y = −156 mm, inside its −160 mm edge.

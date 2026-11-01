@@ -23,6 +23,18 @@ def opening(height):
     return G.rounded(G.box((side, side, height + 1), V(0, 0, (height - 1) / 2)), radius)
 
 
+def pocket_faces(z):
+    """The top plate's pockets' outlines at height `z`: squares at the opening's corners, reaching
+    `width` past it, their outer corners cut off."""
+    length, width, _ = P.XY_POCKETS
+    far = P.XY_OPENING[0] / 2 + width
+    near = far - length
+    outline = [(near, near), (far, near), (far, far - width), (far - width, far), (near, far),
+               (near, near)]
+    return [Part.Face(Part.makePolygon([V(sx * a, sy * b, z) for a, b in outline]))
+            for sx in (-1, 1) for sy in (-1, 1)]
+
+
 def _knob(start, direction):
     start, direction = V(*start), V(*direction)
     (hub_d, hub_l), (knob_d, knob_l) = P.XY_KNOB
@@ -39,16 +51,9 @@ def xy_stage(x=0.0, y=0.0):
 
     turned = [(d, depth, [(b, a) for a, b in centres]) for d, depth, centres in P.XY_HOLES]
     base = G.drill(plate(0), turned, 0, Z)
-    # The pockets: squares at the opening's corners, reaching `width` past it, their outer
-    # corners cut off.
-    length, width, depth = P.XY_POCKETS
-    far = P.XY_OPENING[0] / 2 + width
-    near = far - length
-    outline = [(near, near), (far, near), (far, far - width), (far - width, far), (near, far),
-               (near, near)]
-    pockets = [Part.Face(Part.makePolygon([V(sx * a, sy * b, P.XY_HEIGHT - depth) for a, b in outline]))
-               .extrude(V(0, 0, depth + 1)) for sx in (-1, 1) for sy in (-1, 1)]
-    top = G.drill(plate(2).cut(Part.makeCompound(pockets)), P.XY_HOLES, P.XY_HEIGHT, -Z)
+    depth = P.XY_POCKETS[2]
+    pockets = [f.extrude(V(0, 0, depth + 1)) for f in pocket_faces(P.XY_HEIGHT - depth)]
+    top =G.drill(plate(2).cut(Part.makeCompound(pockets)), P.XY_HOLES, P.XY_HEIGHT, -Z)
     y_drive = Part.makeCompound([G.corners(b) for b in P.XY_Y_DRIVE] + [_knob(*P.XY_Y_KNOB)])
     x_drive = Part.makeCompound([G.corners(b) for b in P.XY_X_DRIVE] + [_knob(*P.XY_X_KNOB)])
     return {

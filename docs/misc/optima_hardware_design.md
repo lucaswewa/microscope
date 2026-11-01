@@ -71,9 +71,9 @@ The sample sits on an open-frame XY stage, which rides on a Z lift. An 8 × 8 RG
 | LED array for phase contrast | Yes | Met |
 | Labware | Slides (four), counting chambers, dishes, plates and flasks, on 160 × 110 mm inserts. An upright limits liquid-filled vessels to low NA ([§4.5](#45-what-an-upright-can-image)). | Partly |
 | Single or dual camera | Mono and colour cameras on a switched port. They can't record at the same time. | Partly. Simultaneous imaging needs a beamsplitter in place of the flip mirror. |
-| Overview camera, top | A USB camera beside the objectives | Met |
+| Overview camera, top | A USB camera at the front of the optical head, looking down at the stage at an angle | Met |
 | Data formats | Software in this repository. Data rates are in [§7](#7-cameras-and-data). | Not hardware |
-| 300 × 300 × 300 mm, under 16 kg | About 450 × 400 × 430 mm and 18 kg | Not met ([§9](#9-mechanical-layout)) |
+| 300 × 300 × 300 mm, under 16 kg | About 465 × 425 × 600 mm and 18 kg | Not met ([§9](#9-mechanical-layout)) |
 | 110/230 V; 12 V 5 A; battery | Mains to one 24 V 150 W supply. The peak draw, about 90–100 W, is above 12 V 5 A. | Partly |
 
 ## 3. Architecture
@@ -461,7 +461,7 @@ This is decision 1 in [§14](#14-decisions-for-the-owner).
 
 A 12 MP USB (UVC) camera module with a wide M12 lens, *est.* $100–150.
 
-- **Mounting.** At the front of the head, tilted toward the centre of the stage.
+- **Mounting.** On a bracket from the upper deck's front, 125 mm in front of the axis and 105 mm above the sample, tilted 35° from straight down. With the stage at the front of its travel, it sees the whole 160 × 110 mm insert, looking under the objectives.
 - **Calibration.** A calibrated homography maps its pixels to stage coordinates.
 - **Lighting.** It uses the LED matrix, plus a small white LED ring for opaque samples.
 - **Uses.** Finding labware and samples, and a navigation map in the web app.
@@ -505,14 +505,16 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 ## 9. Mechanical layout
 
-**Base.** A 10–12 mm aluminium plate, about 450 × 400 mm, on vibration-damping feet.
+**Base.** A 12 mm aluminium plate, 465 × 425 mm, on four rubber feet. Its top is 221 mm below the sample.
 
-**Z assembly.** The Z lift sits at the centre-front of the base. It carries a 12–15 mm aluminium plate, which holds two things:
+**Z assembly.** The Z lift sits at the centre-front of the base, under the axis. It carries a 160 × 110 × 15 mm aluminium plate, which holds two things:
 
-- the LED matrix, 80 mm below the sample, under the stage;
-- the XY stage, on four spacers.
+- the LED matrix, stuck to a 4 mm plate, 80 mm below the sample, under the stage;
+- the XY stage, on four 35 mm spacers under its M6 holes.
 
-**Column and head.** A ribbed aluminium plate or a pair of 40 × 80 mm extrusions stands at the back. It carries the optical head's 15 mm head plate, whose back face is 185 mm behind the optical axis, just behind the XY stage's sweep. The head plate carries, from the bottom up:
+With a slide in focus, the lift is 20 mm up its 25 mm travel. That leaves 5 mm above for thinner samples and 20 mm below to lower the stage. A microplate's wells' floors sit 2 mm higher, so they're in focus with the lift at 18 mm. The lift moves about 5.1 kg, with a 0.3 kg sample, of its rated 8 kg.
+
+**Column and head.** Two 40 × 80 mm extrusions, 566 mm long and 220 mm apart, stand at the back on the base plate. They carry the optical head's 15 mm head plate, whose back face is 185 mm behind the optical axis, just behind the XY stage's sweep. The head plate carries, from the bottom up:
 
 1. a lower deck, with the objective changer on its rail;
 2. an upper deck, with the filter slider hanging under it, the tube lens in an SM2 thread through it, and on it the fold mirror's mount and both cameras on their focus slides;
@@ -520,14 +522,20 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 The epi arm's 30 mm cage sits on its own plate to the right, which passes the head plate's right edge. The cameras face back and right. The optical head model gives the details ([optima_cad_plan.md](optima_cad_plan.md), C04).
 
-**Sample inserts.** An aluminium adapter on the stage's top plate takes 160 × 110 mm inserts: a microplate holder, a four-slide holder, 35 and 60 mm dishes, and a counting chamber. Several stage makers use that insert size; confirm it against the inserts you buy.
+**Sample inserts.** A 6 mm aluminium adapter on the stage's top plate takes 160 × 110 × 3 mm inserts, flush with its top. Its tabs sit in the top plate's pockets. The [sample inserts model](optima_cad_plan.md#10-c05-the-stand-and-the-sample-inserts) has three:
+
+- **Four slides,** along Y, 27.5 mm apart, on ledges under their ends over one window. Their tops are flush with the insert's.
+- **A microplate,** its skirt in a pocket.
+- **Dishes:** a 60 mm and two 35 mm.
+
+The stage brings every well, every slide's cover glass and each dish's middle 20 mm into the 5x's field. A counting chamber needs its own insert unless it fits a slide's 25.4 × 75.4 mm pocket. Several stage makers use the 160 × 110 mm insert size; confirm it against any inserts you buy.
 
 **Enclosure.** Black-anodized panels on an extrusion frame, a front door with the interlock switch, cable glands, and vents by the camera's TEC fan.
 
-**Envelope.** About 450 × 400 × 430 mm and 18 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg.
+**Envelope.** About 465 × 425 × 600 mm and 18 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg.
 
 - **Footprint.** The stage and its drives sweep about 289 × 328 mm over the travel.
-- **Height.** The upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras above the sample. The optical head reaches 345 mm above the sample, so the instrument will be taller than 430 mm; C06 measures it.
+- **Height.** Above the sample, the upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras: the optical head reaches 345 mm. Below it, the matrix's 80 mm, its mount and plate, the lift and the base take 253 mm to the table. The stand is 598 mm tall; C06 measures the whole instrument.
 - **The way to 300 mm** is to fold the infinity space, which vignettes the 23 mm sensor ([§4.2](#42-tube-lens-and-infinity-space)).
 - **Weight.** A honeycomb or thinner base would save about 2 kg.
 

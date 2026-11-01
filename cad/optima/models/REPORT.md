@@ -199,3 +199,47 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | The head, x | -150.0 to 255.0 |
 | The head, y | -90.0 to 255.0 |
 | The head, z | 60.0 to 345.0 |
+
+## stand
+
+| Check | Result | Detail |
+|---|---|---|
+| The lift brings every sample to the focal plane | pass | slides at 20 mm, microplate at 18 mm, dishes at 20 mm of its 25 |
+| The fixed parts don't overlap each other | pass | no overlaps |
+| The stage stack's parts don't overlap each other | pass | no overlaps |
+| The stage stack clears the fixed parts across the lift's and the stage's travel | pass | the lift at 0, 20, 25 mm, the stage at its centre and corners |
+| The column meets the head plate's back face, behind the stage's sweep | pass | its front at y = 185, x -130 to 130; the stage reaches y = 177.4 |
+| The lift carries the stage stack | pass | 5.1 kg with a 0.3 kg sample, of 8 kg |
+| The overview camera sees the whole insert, the stage at the front of its travel | pass | its corners reach 87 % of the way to the field's edge |
+| Its view of the insert passes under the objectives | pass | with each objective on the axis |
+| The overview camera and its bracket clear the head's parts | pass | the changer and the slider every 10 mm; the bracket is one piece |
+
+| Fact | Value |
+|---|---|
+| Base plate | 465 x 425 x 12 mm, its top at z = -221.1 |
+| Plate on the lift, z | -101.1 to -86.1 |
+| Matrix's LEDs, z | -80.0 |
+| Spacers' height | 35.1 |
+| XY stage's underside, z | -51.0 |
+| Column | 2 x 40 x 80 mm extrusions, 566.1 mm long, at x = +-110, y 185 to 265 |
+| Table to the head plate's top | 598.1 |
+| Stage stack's mass, kg | 5.14 |
+| Overview camera's sensor | 0, -125, 105 |
+| Overview camera's view | 35.2 degrees from straight down, 125 mm to the insert's centre |
+
+## sample-inserts
+
+| Check | Result | Detail |
+|---|---|---|
+| The adapter sits in the top plate's pockets, each insert in the adapter, and the labware in its pockets | pass | no overlaps |
+| The travel brings every well, cover glass and dish's middle into the 5x's field | pass | all within +-52.9 x +-52.3 mm of the centre |
+| The windows let the matrix's light reach every target | pass | its light spreads 0.47 mm per mm below a target |
+
+| Fact | Value |
+|---|---|
+| Adapter | 175 x 175 x 6 mm, an insert's recess 3 mm deep, an opening 140 x 100 mm |
+| Inserts | 160 x 110 x 3 mm |
+| Reach into the 5x's field, from the centre | +-52.9 x +-52.3 mm |
+| Four-slide insert: the sample plane above the insert's top, the labware's top above it | 0.00, 0.17 mm |
+| Microplate insert: the sample plane above the insert's top, the labware's top above it | 2.00, 10.85 mm |
+| Dish insert: a 60 mm and two 35 mm dishes: the sample plane above the insert's top, the labware's top above it | 0.00, 13.50 mm |
