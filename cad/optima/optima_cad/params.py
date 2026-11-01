@@ -76,16 +76,22 @@ LIFT_TOP_HOLES = ((6.0, 8.0, _grid((-37.5, 37.5), (-37.5, -12.5, 12.5, 37.5))
 LIFT_LOAD = 8.0  # kg
 LIFT_MASS = 2.2  # kg
 
-# Objectives: Mitutoyo M Plan Apo (Edmund Optics' listings). DOF is the depth of field.
+# Objectives: Mitutoyo M Plan Apo (Edmund Optics' listings). DOF is the depth of field, and the
+# length runs from the shoulder to the front.
 OBJECTIVES = {
-    "5x": {"na": 0.14, "wd": 34.0, "f": 40.0, "dof": 0.014},
-    "10x": {"na": 0.28, "wd": 34.0, "f": 20.0, "dof": 0.0035},
-    "20x": {"na": 0.42, "wd": 20.0, "f": 10.0, "dof": 0.0016},
+    "5x": {"na": 0.14, "wd": 34.0, "f": 40.0, "dof": 0.014, "length": 61.0},
+    "10x": {"na": 0.28, "wd": 34.0, "f": 20.0, "dof": 0.0035, "length": 61.0},
+    "20x": {"na": 0.42, "wd": 20.0, "f": 10.0, "dof": 0.0016, "length": 75.0},
 }
 CHANGER_ORDER = ("5x", "10x", "20x")
 ACTIVE_OBJECTIVE = "10x"  # the one the layout shows on the axis
 PARFOCAL = 95.0  # focal plane to the objective's shoulder
-OBJECTIVE_DIAMETER = 34.0
+# Measured from Mitutoyo's catalog drawings against the 95 mm parfocal length. Edmund Optics
+# lists the 10x as 30 mm across at most; the drawings show a 34 mm knurled ring.
+OBJECTIVE_DIAMETER = 34.0  # the knurled ring
+OBJECTIVE_KNURL = (27.0, 42.0)  # the ring's ends, below the shoulder
+OBJECTIVE_BARREL = 31.5
+OBJECTIVE_THREAD = (26.0, 7.4)  # M26 x 0.706: diameter, length
 PUPIL_DEPTH = 20.0  # assumed: the exit pupil's depth below the shoulder
 
 # Tube lens: Thorlabs TTL200-A (Thorlabs' item page).
@@ -93,6 +99,7 @@ TUBE_F = 200.0
 TUBE_PUPIL = 20.0  # entrance pupil diameter
 TUBE_FIELD = 22.0  # rated field at the image
 TUBE_BACK = 151.8  # the lens's back to the image
+TUBE_HOUSING = (51.7, 28.0)  # diameter (assumed: the SM2 thread's), length
 
 # The head's stack along the axis, and the folds after the tube lens (this design).
 INFINITY_SPACE = 70.0  # objective exit pupil to the tube lens's entrance pupil
@@ -117,12 +124,53 @@ COMBINER_PITCH = 40.0
 SMALL_OPTIC = 25.4
 DICHROIC = (35.6, 25.2, 1.0)  # Chroma 89402's beamsplitter
 
-# Transmitted light: Adafruit 2734, an 8 × 8 APA102 matrix.
+# Transmitted light: Adafruit 2734, an 8 × 8 APA102 matrix (Adafruit's product page): 5 mm LEDs
+# 5 mm apart, 2.5 mm from the board's edge.
 MATRIX_COUNT = 8
-MATRIX_PITCH = 5.0
-MATRIX_BELOW_SAMPLE = 40.0
+MATRIX_PITCH = 10.0
+MATRIX_BOARD = (80.0, 80.0, 2.1)
+MATRIX_LED = 5.0
+MATRIX_BELOW_SAMPLE = 80.0  # twice the 5 mm pitch's 40 mm, for the same NAs
 MATRIX_NA_GROUPS = {"5x": 4, "10x": 16, "20x": 44}  # LEDs inside each NA, design §5.1
 
 # Sample: a slide with a #1.5 cover glass.
 SLIDE = (75.0, 25.0, 1.0)
 COVER_GLASS = (22.0, 22.0, 0.17)
+
+# The mirrors (this design): the fold mirror in a 60 mm cage cube (Thorlabs KCB2C/M), the epi fold
+# mirror in a 30 mm one (KCB1C/M), and the dichroics in 30 mm cage cubes (CM1-DCH/M). Thorlabs
+# publishes the cubes' sizes, but its pages couldn't be read here: they're assumed.
+CAGE_60 = (60.0, 6.0, 76.2)  # rod spacing, rod diameter, cube
+CAGE_30 = (30.0, 6.0, 41.9)
+CAGE_PLATE_30 = 8.9  # thickness, assumed
+DICHROIC_HOLDER = (36.0, 26.0, 3.0)  # the CM1-DCH/M's largest optic (Thorlabs)
+
+# The camera port: Thorlabs MFF102/M with its LMR2 ring (the MFF101/MFF102 manual's drawing).
+# Its frame: the origin at the optic's centre in position 1, the optic facing -Y, the base below.
+FLIP_BODY = (30.0, 70.0, 30.0)  # width, height, depth
+FLIP_PIVOT = 50.0  # above the base; position 2 swings the optic 90 degrees about it, to -X
+FLIP_OPTIC = 104.5  # the optic's centre in position 1, above the base
+FLIP_RING = (56.0, 10.0)  # outer diameter (the drawing's 132.5 mm height), thickness (assumed)
+
+# Epi parts. Thorlabs mounted LEDs (M395L5, M470L5, M565L3, M625L4) share one housing: a heatsink
+# 30.5 mm across with a 6 mm-deep SM1 thread in front of the LED (Thorlabs). Its length is assumed.
+LED_HOUSING = (30.5, 41.0)
+SM1 = 25.4  # the SM1 thread's bore, about 1 inch
+FILTER_ROUND = (25.0, 5.0)  # Chroma's exciter and emitter: diameter, thickness (assumed)
+
+# Motion: HIWIN MGN12 guides (HIWIN's catalogue, from its distributors) and NEMA 11 lead-screw
+# steppers. A 120 mm rail with an MGN12H gives only 74.6 mm of travel, short of the changer's 80.
+MGN12_RAIL = (12.0, 8.0, 25.0, 150.0)  # width, height, hole pitch, length (this design)
+MGN12H = (27.0, 45.4, 13.0, 3.0, 20.0)  # width, length, height, clearance under it, M3 holes' square
+TRAVEL_MARGIN = 5.0  # each end, for homing and overtravel (this design)
+NEMA11 = (28.2, 34.0, 23.0, 22.0)  # face, body length (assumed), M2.5 holes' square, pilot diameter
+LEAD_SCREW = (6.0, 150.0)  # assumed: Tr6, as these motors are sold
+
+# Electronics, each from its maker's or distributors' listings. The SKR Pico's holes follow the
+# Raspberry Pi's pattern, as a retailer says; the parts' heights over their boards are assumed.
+SKR_PICO = (85.0, 56.0, 15.0, (58.0, 49.0))  # width, depth, height, holes' rectangle
+PICO2 = (51.0, 21.0, 4.0, (47.0, 11.4))
+LDD_H = (31.8, 20.3, 12.2)  # Mean Well LDD-H, pin style
+SUPPLY = (159.0, 97.0, 30.0)  # Mean Well LRS-150-24
+SUPPLY_W = 156.0
+PEAK_W = 100.0  # the design's estimate of the peak draw (its §8)

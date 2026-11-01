@@ -70,8 +70,9 @@ The repository's rules for phases apply, with these differences:
 | Phase | Status |
 |---|---|
 | C01 | Done |
-| C02 | In review |
-| C03–C08 | Not started |
+| C02 | Done |
+| C03 | In review |
+| C04–C08 | Not started |
 
 ## 6. C01: the optical layout
 
@@ -137,3 +138,29 @@ Each bought part has its own document, built from its vendor's drawing:
 - The C-mount's bore is 24 mm, a little inside the thread's minor diameter.
 - The room each camera's plugs need.
 - The whole overview camera: an IMX577 on the common 38 mm board, with a 3.2 mm M12 lens.
+
+## 8. C03: optics, motion and electronics
+
+| Document | Parts | Its checks |
+|---|---|---|
+| `objectives.FCStd` | The three Mitutoyo objectives on the changer's 40 mm pitch | Each one's length and working distance make the 95 mm parfocal length. Neighbours don't touch: 6 mm between their knurled rings. |
+| `imaging-optics.FCStd` | The TTL200-A's housing, the fold mirror in a 60 mm cage cube, and the MFF102/M camera port in both positions | Position 2 takes the ring 49 mm from the light's centre, which the light reaches only 15 mm from. The tube lens's housing clears the filter slider. |
+| `epi-optics.FCStd` | A mounted LED, a dichroic cage cube, a cage plate, the epi fold mirror's cube, and the Chroma 89402 filters | The dichroic fits the cube's holder. A mounted LED fits between the 30 mm cage's rods. |
+| `motion-parts.FCStd` | An MGN12 rail and MGN12H carriage, with its travel, and a NEMA 11 lead-screw stepper | The rail gives the changer and the filter slider their 80 mm of travel, with 5 mm at each end. |
+| `led-matrix.FCStd` | The Adafruit 2734 | Some LEDs lie outside every objective's NA, for darkfield. |
+| `electronics.FCStd` | The SKR Pico, the Pico 2, four LDD-H drivers and the LRS-150-24 supply | The supply covers the peak draw. |
+
+The optical layout now uses the objectives, the tube lens's housing and the LED matrix from these models.
+
+**What C03 changed in the design.**
+
+- **The LED matrix.** Adafruit's page gives the 2734 as 80 mm square, with 5 mm LEDs 5 mm apart: a 10 mm pitch, not 5 mm. At 40 mm below the sample, no LED would fall inside the 5x's NA. At 80 mm, the LEDs fall into the same NAs the design chose, 4, 16 and 44 for the three objectives. The matrix now sits 80 mm below the sample, under the stage, instead of on a post in its opening.
+- **The stage's opening.** That post wouldn't have fitted anyway: the opening moves with the stage, and at a plate's outer columns its edge comes within 8 mm of the axis. The same edge can clip the outer LEDs' light, which C06 checks.
+- **The changer's rail.** A 120 mm rail with an MGN12H carriage gives only 74.6 mm of travel, short of the 80 mm the changer needs. The design now uses a 150 mm rail.
+- **The objectives.** Measured against the 95 mm parfocal length, Mitutoyo's catalog drawings show a 34 mm knurled ring on a 31.5 mm barrel. Edmund Optics lists 30 mm. The models keep 34 mm, the larger.
+
+**Sources and what's assumed.**
+
+- **Thorlabs.** Its product pages render in the browser, so the cage cubes' sizes, the mounted LEDs' length, the TTL200-A's diameter and the cage plate's thickness are assumed. Thorlabs publishes them all. The MFF102/M comes from the drawing in its manual. The TTL200-A's 28 mm length and the mounted LEDs' 30.5 mm diameter come from Thorlabs' tables.
+- **Chroma.** The filters' thickness.
+- **The boards.** The SKR Pico's holes follow the Raspberry Pi's pattern, as a retailer says. The parts' heights on each board are assumed.

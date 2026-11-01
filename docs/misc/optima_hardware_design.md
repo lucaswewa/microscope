@@ -46,7 +46,7 @@ The sample sits on an open-frame XY stage, which rides on a Z lift. An 8 × 8 RG
 | Objectives | Mitutoyo M Plan Apo 5x/0.14, 10x/0.28 and 20x/0.42 on a motorized three-position linear changer |
 | Tube lens | Thorlabs TTL200-A, f = 200 mm, $572.99 |
 | Cameras | ToupTek CTR3CMOS45000KMA, mono, for fluorescence and DPC. An IMX492 colour camera on a switched side port. A USB overview camera. |
-| Transmitted light | Adafruit DotStar 8 × 8 RGB matrix (APA102, 5 mm pitch), about 40 mm below the sample |
+| Transmitted light | Adafruit DotStar 8 × 8 RGB matrix (APA102, 10 mm pitch), about 80 mm below the sample |
 | Epi light | LEDs at about 395, 470, 565 and 625 nm, combined with dichroics. Chroma 89402 multi-LED quad filter set. |
 | XY stage | Standa 8MTF-102LS05: 102 × 102 mm travel, open frame |
 | Focus | Standa 8MVT100-25-1 lift under the XY stage: 25 mm travel |
@@ -97,7 +97,7 @@ The sample sits on an open-frame XY stage, which rides on a Z lift. An 8 × 8 RG
                                       ══════════ sample ══════════
                                       XY stage, 102 × 102 mm, open frame
                                                   ▲
-                                     8 × 8 LED matrix, about 40 mm below the sample
+                                     8 × 8 LED matrix, about 80 mm below the sample
                                      Z lift (25 mm) under the stage and the matrix
                                      ─────────────── base plate ───────────────
 ```
@@ -140,7 +140,7 @@ flowchart LR
 | Depth of field (Mitutoyo) | 14 µm | 3.5 µm | 1.6 µm |
 | Resolution, 0.61λ/NA at 520 nm | 2.27 µm | 1.13 µm | 0.76 µm |
 
-- **Mounting.** The thread is M26 × 0.706. The parfocal length is 95 mm, so all three focus at the same height, and the barrels are about 34 mm across. Check both against Mitutoyo's drawings before machining.
+- **Mounting.** The thread is M26 × 0.706. The parfocal length is 95 mm, so all three focus at the same height, and the knurled rings are 34 mm across in Mitutoyo's drawings (Edmund Optics lists 30 mm). Check both against the objectives before machining.
 - **No cover glass correction.** They're corrected for no cover glass (∞/0). [§4.5](#45-what-an-upright-can-image) gives what that costs.
 - **Visible light only.** Edmund lists 435–655 nm for the M Plan Apo HR series, and the standard series' transmission curve starts near 400 nm. Two consequences:
   - The DAPI excitation at about 395 nm goes through glass that wasn't designed for it, so expect a weaker DAPI channel and check the objectives' autofluorescence ([§11](#11-calibration-and-acceptance-tests)).
@@ -230,15 +230,17 @@ Upright microscopes usually image liquid samples with water-dipping objectives. 
 
 ### 5.1 Transmitted light: the LED matrix
 
-**The part.** An [Adafruit 2734](https://www.adafruit.com/product/2734) flexible DotStar matrix: 8 × 8 RGB LEDs with APA102 drivers at a 5 mm pitch, about 40 mm square. The optics controller drives it over SPI.
+**The part.** An [Adafruit 2734](https://www.adafruit.com/product/2734) flexible DotStar matrix: 8 × 8 RGB LEDs with APA102 drivers. The LEDs are 5 mm across and 5 mm apart, a 10 mm pitch, on an 80 mm square board. The optics controller drives it over SPI.
 
 **Why APA102.** The APA102 drives every LED continuously. Row-multiplexed panels (HUB75) flicker and put bands across a rolling-shutter image, so avoid them.
 
 **Driving rule.** Drive each LED fully on or fully off, and set the dose with exposure time. Never dim it with PWM during an exposure.
 
-**Position.** Centre the matrix on the optical axis, about 40 mm below the sample. It mounts on a post from the Z-lift plate up into the stage's opening. Standa's drawing gives the opening as □64–115 mm depending on the stage's position, so the 45 mm board fits throughout the travel. Every ray from the matrix to the field stays within 25 mm of the axis.
+**Position.** Centre the matrix on the optical axis, about 80 mm below the sample, on the Z-lift plate under the XY stage. Its 10 mm pitch at 80 mm gives the same illumination angles as a 5 mm pitch at 40 mm. The 80 mm board can't pass through the stage's opening, which moves with the stage, so it sits below the stage.
 
-At 40 mm, the LEDs fall into these illumination NAs (the grid has no LED on the axis):
+**The stage's opening.** The light reaches the sample through the stage's openings. At a plate's outer columns, the top plate's opening comes within 8 mm of the axis, which can clip the outer LEDs' light. The full assembly (CAD phase C06) checks how much.
+
+At 80 mm, the LEDs fall into these illumination NAs (the grid has no LED on the axis):
 
 | Objective | LEDs inside the objective's NA (brightfield, DPC) | LEDs outside it (darkfield) |
 |---|---|---|
@@ -254,7 +256,7 @@ The matrix supports these modes:
 - **Oblique illumination and darkfield,** including coloured darkfield (Rheinberg-style) on the colour camera.
 - **Single-LED angle scans,** for Fourier ptychography later.
 
-DPC and angle scans need each LED's position relative to the axis, which is calibrated from brightfield-to-darkfield transitions ([§11](#11-calibration-and-acceptance-tests)). At 5x the 5 mm pitch is coarse: brightfield and each DPC half use only two to four LEDs. A custom 32 × 32 board of APA102-2020 LEDs at 2.5 mm pitch is the upgrade if that proves limiting.
+DPC and angle scans need each LED's position relative to the axis, which is calibrated from brightfield-to-darkfield transitions ([§11](#11-calibration-and-acceptance-tests)). At 5x the 10 mm pitch is coarse: brightfield and each DPC half use only two to four LEDs. A custom 32 × 32 board of APA102-2020 LEDs at 2.5 mm pitch is the upgrade if that proves limiting.
 
 ### 5.2 Epi-fluorescence
 
@@ -370,7 +372,7 @@ No motorized three-position changer for M26 objectives fits the budget. OptoSigm
 **Build a linear slider instead:**
 
 - **Carriage.** The three objectives sit 40 mm apart on a machined aluminium carriage. Tap it M26 × 0.706, or use M26-to-SM1/SM2 adapters.
-- **Guide and drive.** The carriage runs on a miniature linear guide (MGN12, 120 mm rail) and is driven by a NEMA 11 lead-screw stepper with a home switch.
+- **Guide and drive.** The carriage runs on a miniature linear guide (an MGN12H carriage on a 150 mm rail; a 120 mm rail would leave it 74.6 mm of travel, short of the 80 mm it needs) and is driven by a NEMA 11 lead-screw stepper with a home switch.
 - **Detents.** A spring-loaded ball-and-V detent locates each position, so repeatability doesn't depend on the motor. Lower the stepper's holding current at a detent so the two don't fight.
 - **Expected offsets.** After a change, expect the image to move a few micrometres. Per-objective offsets and image registration correct it.
 
@@ -507,7 +509,7 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 
 **Z assembly.** The Z lift sits at the centre-front of the base. It carries a 12–15 mm aluminium plate, which holds two things:
 
-- the LED matrix, on a post that reaches into the stage's opening;
+- the LED matrix, 80 mm below the sample, under the stage;
 - the XY stage, on four spacers.
 
 **Column and head.** A ribbed aluminium plate or a pair of 40 × 80 mm extrusions stands at the back. It carries the optical head, from the bottom up:
