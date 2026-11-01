@@ -12,7 +12,7 @@ import math
 import FreeCAD as App
 import Part
 
-from . import cameras
+from . import cameras, parts
 from . import geom as G
 from . import optics as O
 from . import params as P
@@ -74,15 +74,14 @@ def build(doc):
     k_active = P.CHANGER_ORDER.index(active)
     for k, name in enumerate(P.CHANGER_ORDER):
         o, x = P.OBJECTIVES[name], (k - k_active) * P.CHANGER_PITCH
-        body = Part.makeCylinder(P.OBJECTIVE_DIAMETER / 2, P.PARFOCAL - o["wd"], V(x, 0, o["wd"]))
+        body = parts.objective(name).translated(V(x, 0, 0))
         add(doc, "Objective" + name, body, "objective", g, "Objective %s, NA %.2f" % (name, o["na"]))
         add(doc, "Pupil" + name, G.disc(O.back_aperture(name), 0.5, V(x, 0, O.PUPIL), Z), "optic", g,
             "Exit pupil %s (assumed depth)" % name)
 
     g = group(doc, "TubeLensAndMirrors", "Tube lens and mirrors")
-    tube = Part.makeCylinder(28, O.TUBE_BACK - O.TUBE, V(0, 0, O.TUBE))
-    add(doc, "TubeLens", tube, "optic", g, "Tube lens envelope (schematic)")
-    pupil = G.disc(P.TUBE_PUPIL, 1, V(0, 0, O.TUBE), Z)
+    tube, pupil = parts.tube_lens().values()
+    add(doc, "TubeLens", tube, "optic", g, "Tube lens: Thorlabs TTL200-A")
     add(doc, "TubePupil", pupil, "optic", g, "Tube lens entrance pupil")
     fold = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, FOLD_POINT, Z, Y)
     flip = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, FLIP_POINT, Y, -X)
@@ -150,12 +149,12 @@ def build(doc):
     top = -P.MATRIX_BELOW_SAMPLE
     inside = [(x, y) for x, y in O.matrix_leds() if O.led_na(x, y) <= na]
     outside = [(x, y) for x, y in O.matrix_leds() if O.led_na(x, y) > na]
-    side = P.MATRIX_COUNT * P.MATRIX_PITCH + 5
-    add(doc, "MatrixBoard", G.box((side, side, 1.6), V(0, 0, top - 1.8)), "board", g, "LED matrix board")
+    board = parts.led_matrix()["board"].translated(V(0, 0, top))
+    add(doc, "MatrixBoard", board, "board", g, "LED matrix: Adafruit 2734")
     for name, leds, style in (("LedsInside", inside, "transmitted"), ("LedsOutside", outside, "led")):
-        shape = Part.makeCompound([G.box((2, 2, 1), V(x, y, top - 0.5)) for x, y in leds])
+        shape = parts.matrix_leds(leds).translated(V(0, 0, top))
         add(doc, name, shape, style, g, "LEDs %s the %s's NA" % (name[4:].lower(), active))
-    spread = 2 * max(abs(c) for xy in inside for c in xy) + 2
+    spread = 2 * max(abs(c) for xy in inside for c in xy) + P.MATRIX_LED
     m = P.TUBE_F / P.OBJECTIVES[active]["f"]
     light = G.rect_loft((spread, spread), V(0, 0, top), (w / m, h / m), V(0, 0, 0))
     add(doc, "Brightfield", light, "transmitted", g, "Brightfield light, %s" % active)

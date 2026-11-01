@@ -107,3 +107,70 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 |---|---|
 | Field of view, degrees: horizontal, vertical, diagonal | 89.0 72.7 101.7 |
 | Lens front, z | -22.0 |
+
+## objectives
+
+| Check | Result | Detail |
+|---|---|---|
+| 5x: length and working distance make the parfocal length | pass | 95.00 mm, the drawing says 95 |
+| 10x: length and working distance make the parfocal length | pass | 95.00 mm, the drawing says 95 |
+| 20x: length and working distance make the parfocal length | pass | 95.00 mm, the drawing says 95 |
+| Neighbours on the changer's pitch don't touch | pass | 6 mm between their knurled rings |
+
+| Fact | Value |
+|---|---|
+| Barrel, knurled ring | 31.5 mm, 34 mm across |
+| Thread | M26 x 0.706, 7.4 mm long |
+
+## imaging-optics
+
+| Check | Result | Detail |
+|---|---|---|
+| Position 2 takes the ring clear of the light | pass | the ring 49.1 mm from the light's centre; the light reaches 15.4 mm |
+| The tube lens's housing clears the filter slider | pass | housing from z 165.2, slider up to 140.0 |
+
+| Fact | Value |
+|---|---|
+| Tube lens housing, z | 165.2 to 193.2 |
+| Camera port: the mirror's centre moves | 77.1 mm |
+
+## epi-optics
+
+| Check | Result | Detail |
+|---|---|---|
+| The dichroic fits the cage cube's holder | pass | 35.6 x 25.2 x 1 mm in 36 x 26 x 3 mm |
+| A mounted LED fits between the 30 mm cage's rods | pass | 30.5 mm across, 36.4 mm between the rods |
+
+| Fact | Value |
+|---|---|
+| LED housing | 30.5 mm across, 41 mm long |
+
+## motion-parts
+
+| Check | Result | Detail |
+|---|---|---|
+| The rail gives the changer and the slider their travel | pass | 104.6 mm on a 150 mm rail; they need 90 mm with margins |
+
+| Fact | Value |
+|---|---|
+| Carriage travel | 104.6 |
+
+## led-matrix
+
+| Check | Result | Detail |
+|---|---|---|
+| Some LEDs lie outside every objective's NA, for darkfield | pass | 20 LEDs between NA 0.42 and 0.53 |
+
+| Fact | Value |
+|---|---|
+| Pitch, height below the sample | 10 mm, 80 mm |
+
+## electronics
+
+| Check | Result | Detail |
+|---|---|---|
+| The supply covers the peak draw | pass | 156 W for about 100 W |
+
+| Fact | Value |
+|---|---|
+| Supply | 159 x 97 x 30 mm |

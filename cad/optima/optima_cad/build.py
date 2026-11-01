@@ -4,7 +4,7 @@ import os
 
 import FreeCAD as App
 
-from . import cameras, document, layout, stages
+from . import cameras, document, layout, parts, stages
 from . import params as P
 
 # Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
@@ -17,14 +17,27 @@ MODELS = [
     ("mono-camera", cameras.build_mono, OPTICS + ("MONO_",)),
     ("colour-camera", cameras.build_colour, OPTICS + ("COLOUR_",)),
     ("overview-camera", cameras.build_overview, ("OVERVIEW_",)),
+    ("objectives", parts.build_objectives, ("OBJECTIVE", "PARFOCAL", "CHANGER_PITCH")),
+    ("imaging-optics", parts.build_imaging,
+     OPTICS + ("PARFOCAL", "PUPIL_DEPTH", "CHANGER_THICKNESS", "FILTER_", "FOLD_AFTER_LENS", "FLIP_",
+              "CAGE_60", "MIRROR_")),
+    ("epi-optics", parts.build_epi,
+     ("LED_", "SM1", "CAGE_30", "CAGE_PLATE", "DICHROIC", "FILTER_ROUND", "SMALL_OPTIC")),
+    ("motion-parts", parts.build_motion,
+     ("MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "CHANGER_PITCH", "FILTER_PITCH")),
+    ("led-matrix", parts.build_matrix, ("MATRIX_", "OBJECTIVES")),
+    ("electronics", parts.build_electronics, ("SKR_PICO", "PICO2", "LDD_H", "SUPPLY", "PEAK_W")),
 ]
+# The parameters only the bought parts' own models use.
+PARTS = ("XY_", "LIFT_", "OVERVIEW_", "CAGE_", "DICHROIC_HOLDER", "FLIP_", "LED_HOUSING", "SM1",
+         "FILTER_ROUND", "MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "SKR_PICO", "PICO2",
+         "LDD_H", "SUPPLY", "PEAK_W")
 
 
 def uses(name, prefixes):
-    """Whether a model is built from a parameter. The layout uses all but the stages' and the
-    overview camera's."""
+    """Whether a model is built from a parameter. The layout uses all but the bought parts'."""
     if prefixes is None:
-        return not name.startswith(("XY_", "LIFT_", "OVERVIEW_"))
+        return not name.startswith(PARTS)
     return name.startswith(prefixes)
 
 
