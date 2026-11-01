@@ -203,3 +203,37 @@ CAMERA_FOCUS = 3.0  # each camera's focus travel, each way
 EPI_PLATE = (105.0, -25.0, 240.0, 235.0, 12.0)  # x0, y0, x1, y1, thickness: under the epi cage
 EPI_TUBE = (30.5, 25.0, 112.0)  # the epi lens's SM1 lens tube: diameter, from x, its cage plate's x
 SWITCH = (20.0, 6.5, 10.0)  # a miniature home switch (assumed)
+
+# The stand (this design), in the instrument's frame: the base plate on its feet, the lift on it
+# under the axis, and the column at the back that carries the head plate. The lift carries a plate,
+# the LED matrix on its mount, and the XY stage on spacers.
+STAND_BASE = (-200.0, -160.0, 265.0, 265.0, 12.0)  # x0, y0, x1, y1, thickness
+STAND_FEET = (40.0, 20.0, 25.0)  # diameter, height, inset from the corners (assumed: rubber feet)
+STAND_COLUMN = (40.0, 80.0, 8.0, 110.0)  # two 40 x 80 mm extrusions: width, depth, slot, x of each
+STAND_FOCUS = 20.0  # the lift's height above the bottom of its travel, with a slide in focus
+STAND_PLATE = (160.0, 110.0, 15.0)  # the plate on the lift
+# The spacers: diameter, and centres under four of the XY stage's M6 holes.
+STAND_SPACERS = (20.0, ((-62.5, -37.5), (-62.5, 37.5), (62.5, -37.5), (62.5, 37.5)))
+STAND_MATRIX = (100.0, 4.0)  # the LED matrix's mount, a plate the board is stuck to: side, thickness
+STAND_SAMPLE = 0.3  # kg, a filled microplate (assumed)
+ALUMINIUM = 2.70e-6  # kg per cubic millimetre
+# The overview camera hangs from the upper deck's front, in front of the filter slider's travel, and
+# looks at the insert's centre with the stage at the front of its travel.
+STAND_OVERVIEW = (0.0, -125.0, 105.0)  # its sensor's centre
+# Its bracket: width, the leg's front y and thickness, the flange's back y, the plates' thickness.
+STAND_OVERVIEW_ARM = (44.0, -120.0, 8.0, -70.0, 6.0)
+
+# The sample inserts (this design): 160 x 110 mm plates that sit flush in an adapter on the XY
+# stage's top plate. The adapter's tabs sit in the top plate's pockets.
+INSERT = (160.0, 110.0, 3.0)
+INSERT_ADAPTER = (6.0, 0.2, (140.0, 100.0))  # thickness, clearance round an insert, the opening under it
+INSERT_POCKET = (1.5, 4.0)  # the microplate's and dishes' pockets: depth, the ledge they sit on
+INSERT_SLIDES = (4, 27.5, 6.0)  # count, pitch, the ledges under the slides' ends; the slides lie along Y
+# Labware: a 96-well microplate (ANSI SLAS 1-2004's footprint and wells; its heights are a typical
+# plate's, assumed) and 60 and 35 mm dishes (assumed).
+MICROPLATE = (127.76, 85.48, 14.35, 3.5, 1.0)  # footprint, height, the wells' floor: its top, thickness
+MICROPLATE_WELLS = (12, 8, 9.0, 6.4)  # columns, rows, pitch, diameter
+# The dishes on their insert: diameter, height, centre.
+DISHES = ((60.0, 15.0, (-35.0, 0.0)), (35.0, 10.0, (40.0, -20.0)), (35.0, 10.0, (40.0, 20.0)))
+DISH_FLOOR = 1.5  # the floor's top above the dish's base: a 1 mm floor, its underside 0.5 mm up
+DISH_GLASS = 20.0  # the middle of a dish that's imaged, as big as a glass-bottom dish's glass
