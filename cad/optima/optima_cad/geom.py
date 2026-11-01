@@ -41,8 +41,10 @@ def mirror(diameter, thickness, center, light_in, light_out):
 
 
 def plate(size, center, light_in, light_out):
-    """A flat plate, such as a dichroic, centred on `center`, at the mirror's angle."""
-    return facing(box(size, V(0, 0, 0)), center, V(light_out) - V(light_in))
+    """A flat plate, such as a dichroic, centred on `center`, at the mirror's angle: its length
+    in the plane the light turns in, its width across it."""
+    a, b = V(light_in).normalize(), V(light_out).normalize()
+    return placed(box(size, V(0, 0, 0)), center, (b - a).normalize(), a.cross(b))
 
 
 def tilted_cylinder(diameter, base, offset):

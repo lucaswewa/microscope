@@ -4,12 +4,15 @@ import os
 
 import FreeCAD as App
 
-from . import cameras, document, layout, parts, stages
+from . import cameras, document, head, layout, parts, stages
 from . import params as P
 
 # Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
 # the optics in front of them.
 OPTICS = ("SENSOR_", "C_MOUNT_", "OBJECTIVES", "TUBE_", "INFINITY_SPACE")
+HEAD = ("HEAD_", "DECK_", "LOWER_DECK", "UPPER_DECK", "CHANGER_PLATE", "CHANGER_RAIL", "CHANGER_NUT",
+        "CHANGER_SCREW", "DETENT", "SLIDER_", "FOLD_MOUNT", "PORT_BRACKET", "CAMERA_FOCUS", "EPI_PLATE",
+        "EPI_TUBE", "SWITCH")
 MODELS = [
     ("optical-layout", layout.build, None),
     ("xy-stage", stages.build_xy, ("XY_",)),
@@ -27,11 +30,14 @@ MODELS = [
      ("MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "CHANGER_PITCH", "FILTER_PITCH")),
     ("led-matrix", parts.build_matrix, ("MATRIX_", "OBJECTIVES")),
     ("electronics", parts.build_electronics, ("SKR_PICO", "PICO2", "LDD_H", "SUPPLY", "PEAK_W")),
+    ("optical-head", head.build,
+     HEAD + ("FILTER_", "MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "CAGE_30", "CAGE_PLATE",
+             "FLIP_")),
 ]
-# The parameters only the bought parts' own models use.
+# The parameters only the bought parts' and the head's own models use.
 PARTS = ("XY_", "LIFT_", "OVERVIEW_", "CAGE_", "DICHROIC_HOLDER", "FLIP_", "LED_HOUSING", "SM1",
          "FILTER_ROUND", "MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "SKR_PICO", "PICO2",
-         "LDD_H", "SUPPLY", "PEAK_W")
+         "LDD_H", "SUPPLY", "PEAK_W") + HEAD
 
 
 def uses(name, prefixes):

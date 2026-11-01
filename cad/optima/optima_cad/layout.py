@@ -5,6 +5,8 @@ the objectives, +X to the right seen from the front (the epi arm's side), +Y to 
 
 Shapes on the imaging path are built on the unfolded axis, then folded by the fold mirror and
 the flip mirror, so the light, the sensors and the camera bodies stay where the optics put them.
+The fold mirror sends the light back, to the mono camera; the flip mirror, when it's in, sends it
+right, to the colour camera.
 """
 
 import math
@@ -24,8 +26,9 @@ V = App.Vector
 FOLD_POINT = V(0, 0, O.FOLD)
 FOLD_NORMAL = V(0, 1, -1)
 FLIP_POINT = V(0, P.FLIP_AFTER_FOLD, O.FOLD)
-FLIP_NORMAL = V(1, 1, 0)
+FLIP_NORMAL = V(1, -1, 0)
 DICHROIC = V(0, 0, O.FILTER)
+TURN = V(O.EPI_FOLD_X, 0, O.FILTER)  # the epi fold mirror
 X, Y, Z = V(1, 0, 0), V(0, 1, 0), V(0, 0, 1)
 LED_COLOURS = {395: (0.55, 0.0, 1.0), 470: (0.0, 0.45, 1.0), 565: (0.7, 1.0, 0.0), 625: (1.0, 0.2, 0.0)}
 
@@ -49,6 +52,39 @@ def bundles(objective):
     parallel = [G.tilted_cylinder(d, V(0, 0, O.PUPIL), V(u, v, P.TUBE_F) * k) for u, v in field_points()]
     converging = [G.taper(d, V(u * k, v * k, O.TUBE), 0.1, V(u, v, O.IMAGE)) for u, v in field_points()]
     return Part.makeCompound(parallel), Part.makeCompound(converging)
+
+
+def camera_frames():
+    """Each camera's sensor centre, and the direction its light arrives along."""
+    sensor = G.box((*P.SENSOR_SIZE, 0.5), V(0, 0, O.IMAGE))
+    s, c = (route(sensor, flip_in)[2].BoundBox.Center for flip_in in (False, True))
+    return {"mono": (s, Y), "colour": (c, X)}
+
+
+def epi_leds():
+    """Each LED's wavelength, its combiner's centre (None for the LED on the combiner's axis),
+    its collector's and its die's centres, and the axis it shines along."""
+    out = []
+    for k, nm in enumerate(P.LEDS_NM):
+        if k < len(P.LEDS_NM) - 1:
+            at = TURN + Y * (P.COMBINER_PITCH * (k + 1))
+            out.append((nm, at, at + X * 25, at + X * (25 + P.COLLECTOR_F), X))
+        else:
+            end = TURN + Y * (P.COMBINER_PITCH * len(P.LEDS_NM))
+            out.append((nm, None, end, end + Y * P.COLLECTOR_F, Y))
+    return out
+
+
+def excitation():
+    """The excitation light, schematic: from the collectors to the objective's back aperture."""
+    stop_d, lens_at = O.field_stop(), V(O.EPI_LENS_X, 0, O.FILTER)
+    cone = G.taper(stop_d, lens_at, O.led_image(), lens_at - X * P.EPI_LENS_F, X)
+    before, after = G.split(cone, DICHROIC, V(1, 0, -1), lens_at)
+    beam = [before, after.mirror(DICHROIC, V(1, 0, -1)),
+            Part.makeCylinder(stop_d / 2, O.EPI_FOLD_X - O.EPI_LENS_X, lens_at, X),
+            Part.makeCylinder(stop_d / 2, P.COMBINER_PITCH * len(P.LEDS_NM), TURN, Y)]
+    beam += [Part.makeCylinder(stop_d / 2, 25, at, X) for _, at, *_ in epi_leds() if at is not None]
+    return G.solids(*beam)
 
 
 def reach(shape, point, normal):
@@ -84,7 +120,7 @@ def build(doc):
     add(doc, "TubeLens", tube, "optic", g, "Tube lens: Thorlabs TTL200-A")
     add(doc, "TubePupil", pupil, "optic", g, "Tube lens entrance pupil")
     fold = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, FOLD_POINT, Z, Y)
-    flip = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, FLIP_POINT, Y, -X)
+    flip = G.mirror(P.MIRROR_DIAMETER, P.MIRROR_THICKNESS, FLIP_POINT, Y, X)
     add(doc, "FoldMirror", fold, "mirror", g, "Fold mirror")
     add(doc, "FlipMirror", flip, "mirror", g, "Flip mirror (in: light to the colour camera)")
 
@@ -98,11 +134,10 @@ def build(doc):
     add(doc, "ToMono", mono, "imaging", g, "To the mono camera (flip mirror out)")
     add(doc, "ToColour", colour, "colour", g, "To the colour camera (flip mirror in)")
 
-    sensor = G.box((w, h, 0.5), V(0, 0, O.IMAGE))
-    s, c = (route(sensor, flip_in)[2].BoundBox.Center for flip_in in (False, True))
+    (s, mono_axis), (c, colour_axis) = camera_frames().values()
     # Each camera at its sensor, facing the light, its mounting face down.
-    mono_parts = {k: G.placed(v, s, Y, Z) for k, v in cameras.mono().items()}
-    colour_parts = {k: G.placed(v, c, -X, Z) for k, v in cameras.colour().items()}
+    mono_parts = {k: G.placed(v, s, mono_axis, Z) for k, v in cameras.mono().items()}
+    colour_parts = {k: G.placed(v, c, colour_axis, Z) for k, v in cameras.colour().items()}
     g = group(doc, "Cameras")
     add(doc, "SensorMono", mono_parts["sensor"], "sensor", g, "Mono sensor")
     add(doc, "SensorColour", colour_parts["sensor"], "sensor", g, "Colour sensor")
@@ -115,34 +150,22 @@ def build(doc):
 
     g = group(doc, "Epi", "Epi illumination")
     stop_d, image_d = O.field_stop(), O.led_image()
-    lens_at, stop_at, turn = (V(x, 0, O.FILTER) for x in (O.EPI_LENS_X, O.STOP_X, O.EPI_FOLD_X))
+    lens_at, stop_at = (V(x, 0, O.FILTER) for x in (O.EPI_LENS_X, O.STOP_X))
     lens = G.disc(P.SMALL_OPTIC, 4, lens_at, X)
     stop = G.ring(P.SMALL_OPTIC, stop_d, 1, stop_at, X)
     add(doc, "Dichroic", G.plate(P.DICHROIC, DICHROIC, -X, -Z), "optic", g, "Quad dichroic")
     add(doc, "EpiLens", lens, "optic", g, "Epi lens, f = %g mm" % P.EPI_LENS_F)
     add(doc, "FieldStop", stop, "mirror", g, "Field stop, %.1f mm" % stop_d)
-    add(doc, "EpiFold", G.mirror(P.SMALL_OPTIC, 6, turn, -Y, -X), "mirror", g, "Epi fold mirror")
-    cone = G.taper(stop_d, lens_at, image_d, lens_at - X * P.EPI_LENS_F, X)
-    before, after = G.split(cone, DICHROIC, V(1, 0, -1), lens_at)
-    last = len(P.LEDS_NM) - 1
-    led_y = P.COMBINER_PITCH * len(P.LEDS_NM)
-    beam = [before, after.mirror(DICHROIC, V(1, 0, -1)),
-            Part.makeCylinder(stop_d / 2, O.EPI_FOLD_X - O.EPI_LENS_X, lens_at, X),
-            Part.makeCylinder(stop_d / 2, led_y, turn, Y)]
-    for k, nm in enumerate(P.LEDS_NM):
-        if k < last:
-            at = turn + Y * (P.COMBINER_PITCH * (k + 1))
+    add(doc, "EpiFold", G.mirror(P.SMALL_OPTIC, 6, TURN, -Y, -X), "mirror", g, "Epi fold mirror")
+    for nm, at, collector, die, axis in epi_leds():
+        if at is not None:
             add(doc, "Combiner%d" % nm, G.plate((25.4, 25.4, 1), at, -X, -Y), "optic", g,
                 "Combiner dichroic for %d nm" % nm)
-            collector, die, axis = at + X * 25, at + X * (25 + P.COLLECTOR_F), X
-            beam.append(Part.makeCylinder(stop_d / 2, 25, at, X))
-        else:
-            collector, die, axis = turn + Y * led_y, turn + Y * (led_y + P.COLLECTOR_F), Y
         add(doc, "Collector%d" % nm, G.disc(P.SMALL_OPTIC, 5, collector, axis), "optic", g,
             "Collector, %d nm LED" % nm)
         led = add(doc, "Led%d" % nm, G.disc(12, 8, die, axis), "led", g, "LED, %d nm" % nm)
         led.ViewObject.ShapeColor = LED_COLOURS[nm]
-    add(doc, "Excitation", G.solids(*beam), "excitation", g, "Excitation light (schematic)")
+    add(doc, "Excitation", excitation(), "excitation", g, "Excitation light (schematic)")
 
     g = group(doc, "Transmitted", "Transmitted light")
     na = P.OBJECTIVES[active]["na"]
