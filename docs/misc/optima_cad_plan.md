@@ -73,8 +73,9 @@ The repository's rules for phases apply, with these differences:
 | C02 | Done |
 | C03 | Done |
 | C04 | Done |
-| C05 | In review |
-| C06–C08 | Not started |
+| C05 | Done |
+| C06 | In review |
+| C07–C08 | Not started |
 
 ## 6. C01: the optical layout
 
@@ -266,3 +267,32 @@ The inserts' checks:
 - **The labware against the objectives.** Above the insert's top, the samples' planes are 0 mm for slides and dishes and 2 mm for a microplate. Above their planes, slides reach 0.17 mm, the 60 mm dish 13.5 mm and a microplate 10.85 mm. `sample-inserts.FCStd` gives these as facts.
 - **The matrix's light against the stage's openings,** as C03 noted.
 - **The envelope.** The epi arm reaches x = 255 mm, inside the base's 265 mm edge. The overview camera's plug reaches y = −156 mm, inside its −160 mm edge.
+
+## 11. C06: the instrument
+
+`instrument.FCStd` holds the whole instrument. The optical head's parts are under **Optical head** and the stand's under **Stand**, in the same groups as in their own documents, and boxes show the space that the stage stack, the changer and the slider sweep. The same scripts build all three documents, so they always agree.
+
+Its checks:
+
+- The head and the stand don't overlap, with the head's moving parts across their travel.
+- **Each insert and its labware clear the head and the overview camera.** The lift is at 0 mm, at its focus for that labware, and at the top of its travel; the stage is at its centre and at each corner; the changer and the slider are swept every 10 mm. The closest anything comes is the 60 mm dish's rim: with the lift at the top of its travel, it's 1.5 mm below the 20x's front.
+- **The stage's openings pass the brightfield light** of the 5x and the 10x at every target, and of the 20x at every target's centre. That's 72 stage positions, each with its insert in place, with the light traced from each LED to the field's centre.
+- **Everything stays over the base plate,** the moving parts across their travel. What stands on the base reaches x −150 to 255 mm and y −156 to 265 mm; the base spans −200 to 265 and −160 to 265.
+
+| Fact | Value |
+|---|---|
+| Envelope | 465 × 425 × 598 mm, from the table to the head's top |
+| Mass, without the enclosure and the electronics | 30.4 kg: 17.2 kg of custom aluminium parts and 13.2 kg of bought ones, with 3.2 kg of extrusions |
+
+**What C06 found.**
+
+- **The instrument weighs about 30 kg, not 18,** before the enclosure and the electronics. The heaviest custom parts are the base plate (6.4 kg), the head plate (3.4 kg), and the upper and lower decks (1.8 and 1.5 kg). The design document's §14 asks whether to lighten them before C08 draws them.
+- **The stage's opening blocks the matrix's steepest light near the ends of the X travel.** There the top plate's opening edge comes within 6.5 mm of the axis, 21 mm below the sample. So it blocks light steeper than NA 0.30 from the far side. The 20x's brightfield light is whole within ±48.3 mm of the centre along X. At the ends of the travel the 20x loses up to 8 of its 44 brightfield LEDs, and 16 of the 64 LEDs are blocked in all. That affects the outer 4 mm of the outer slides' cover glasses and a microplate's outer columns, where the 20x is only for dry samples anyway. The design document's §5.1 says so.
+
+**Still assumed.**
+
+- The bought parts' masses, except the stages', the mono camera's and the 10x's. `params.py` lists them.
+- The light is traced to the field's centre. The field's edges, up to 1.9 mm away with the 5x, see slightly different angles.
+- Lids aren't modelled. With only 1.5 mm between the 20x and a 60 mm dish at the top of the lift's travel, keep the lift lower for a lidded dish.
+
+**For C07.** The enclosure goes round 465 × 425 × 598 mm. The column's back is flush with the base's back edge, and the epi arm's LEDs reach x = 255 mm, 10 mm inside the base's right edge.

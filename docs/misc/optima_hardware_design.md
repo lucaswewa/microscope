@@ -73,7 +73,7 @@ The sample sits on an open-frame XY stage, which rides on a Z lift. An 8 × 8 RG
 | Single or dual camera | Mono and colour cameras on a switched port. They can't record at the same time. | Partly. Simultaneous imaging needs a beamsplitter in place of the flip mirror. |
 | Overview camera, top | A USB camera at the front of the optical head, looking down at the stage at an angle | Met |
 | Data formats | Software in this repository. Data rates are in [§7](#7-cameras-and-data). | Not hardware |
-| 300 × 300 × 300 mm, under 16 kg | About 465 × 425 × 600 mm and 18 kg | Not met ([§9](#9-mechanical-layout)) |
+| 300 × 300 × 300 mm, under 16 kg | 465 × 425 × 598 mm, and about 30 kg before the enclosure and the electronics | Not met ([§9](#9-mechanical-layout)) |
 | 110/230 V; 12 V 5 A; battery | Mains to one 24 V 150 W supply. The peak draw, about 90–100 W, is above 12 V 5 A. | Partly |
 
 ## 3. Architecture
@@ -238,7 +238,10 @@ Upright microscopes usually image liquid samples with water-dipping objectives. 
 
 **Position.** Centre the matrix on the optical axis, about 80 mm below the sample, on the Z-lift plate under the XY stage. Its 10 mm pitch at 80 mm gives the same illumination angles as a 5 mm pitch at 40 mm. The 80 mm board can't pass through the stage's opening, which moves with the stage, so it sits below the stage.
 
-**The stage's opening.** The light reaches the sample through the stage's openings. At a plate's outer columns, the top plate's opening comes within 8 mm of the axis, which can clip the outer LEDs' light. The full assembly (CAD phase C06) checks how much.
+**The stage's opening.** The light reaches the sample through the stage's openings. Near the ends of the X travel, the top plate's opening comes within 6.5 mm of the axis, 21 mm below the sample, and blocks the steepest light from the far side. The instrument model ([CAD phase C06](optima_cad_plan.md#11-c06-the-instrument)) traces each LED's light through the openings. It finds:
+
+- the 5x's and the 10x's brightfield light reaches every target whole;
+- the 20x's brightfield light is whole within ±48.3 mm of the centre along X. That covers the middle of every target, but not the outer 4 mm of the outer slides' cover glasses or a microplate's outer columns. There it loses up to 8 of its 44 LEDs, and darkfield up to 16 of the 64 LEDs, from NA 0.30.
 
 At 80 mm, the LEDs fall into these illumination NAs (the grid has no LED on the axis):
 
@@ -532,12 +535,12 @@ The stage brings every well, every slide's cover glass and each dish's middle 20
 
 **Enclosure.** Black-anodized panels on an extrusion frame, a front door with the interlock switch, cable glands, and vents by the camera's TEC fan.
 
-**Envelope.** About 465 × 425 × 600 mm and 18 kg, which doesn't meet OPTIMA's 300 mm cube and 16 kg.
+**Envelope.** 465 × 425 × 598 mm, and about 30 kg before the enclosure and the electronics, which doesn't meet OPTIMA's 300 mm cube and 16 kg. The instrument model measures both ([optima_cad_plan.md](optima_cad_plan.md#11-c06-the-instrument), C06).
 
 - **Footprint.** The stage and its drives sweep about 289 × 328 mm over the travel.
 - **Height.** Above the sample, the upright stack adds 34 mm of working distance, a 95 mm parfocal length, the filter slider, the tube lens and the cameras: the optical head reaches 345 mm. Below it, the matrix's 80 mm, its mount and plate, the lift and the base take 253 mm to the table. The stand is 598 mm tall; C06 measures the whole instrument.
 - **The way to 300 mm** is to fold the infinity space, which vignettes the 23 mm sensor ([§4.2](#42-tube-lens-and-infinity-space)).
-- **Weight.** A honeycomb or thinner base would save about 2 kg.
+- **Weight.** The custom aluminium parts weigh 17.2 kg, and the bought ones about 13.2 kg. The heaviest are the base plate (6.4 kg), the head plate (3.4 kg) and the upper and lower decks (1.8 and 1.5 kg). An 8 mm base would save 2.1 kg, and pocketing the head plate and the decks would save more ([§14](#14-decisions-for-the-owner)).
 
 ## 10. Software in this repository
 
@@ -593,7 +596,7 @@ The new hardware needs the pieces below, each one phase or more. Following the p
 | grblHAL's fit for a microscope | Status rate, backlash | Try it with the fake and on the bench. Standa's 8SMC5 is the fallback. |
 | LDD-H drivers discontinued | A redesign of the driver board | Check stock. Thorlabs LEDD1B or a linear driver instead. |
 | Thermal drift in Z from the TEC and LEDs | Focus drift in long scans | Refresh the focus map, vent the enclosure |
-| Size and weight above OPTIMA's | A larger instrument | Accepted for an upright with this sensor ([§9](#9-mechanical-layout)) |
+| Size and weight above OPTIMA's | 598 mm tall and about 30 kg before the enclosure | Accepted for an upright with this sensor. The plates can be lightened ([§9](#9-mechanical-layout)). |
 
 ## 13. Bill of materials and budget
 
@@ -656,6 +659,7 @@ Upgrades, when the budget allows:
    - **FLIM** with FLIM Labs' modules usually means a pulsed laser and a scanning system, which is a separate design.
    - **Simultaneous dual camera** needs a beamsplitter in place of the flip mirror.
 7. **Software.** Whether the drivers in [§10](#10-software-in-this-repository) become a milestone, with one pull request per phase.
+8. **Weight.** About 30 kg before the enclosure and the electronics, against the 18 kg first estimated ([§9](#9-mechanical-layout)). Lighten the base plate, the head plate and the decks before their drawings (CAD phase C08), or accept it.
 
 ## 15. Build order
 

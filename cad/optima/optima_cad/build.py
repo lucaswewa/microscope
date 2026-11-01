@@ -4,7 +4,7 @@ import os
 
 import FreeCAD as App
 
-from . import cameras, document, head, inserts, layout, parts, stages, stand
+from . import assembly, cameras, document, head, inserts, layout, parts, stages, stand
 from . import params as P
 
 # Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
@@ -14,6 +14,7 @@ HEAD = ("HEAD_", "DECK_", "LOWER_DECK", "UPPER_DECK", "CHANGER_PLATE", "CHANGER_
         "CHANGER_SCREW", "DETENT", "SLIDER_", "FOLD_MOUNT", "PORT_BRACKET", "CAMERA_FOCUS", "EPI_PLATE",
         "EPI_TUBE", "SWITCH")
 STAND = ("STAND_", "ALUMINIUM", "INSERT", "MICROPLATE", "DISH")
+WHOLE = ("MASSES", "EXTRUSION_KG_PER_M")
 MODELS = [
     ("optical-layout", layout.build, None),
     ("xy-stage", stages.build_xy, ("XY_",)),
@@ -36,11 +37,14 @@ MODELS = [
              "FLIP_")),
     ("stand", stand.build_stand, STAND + ("XY_", "LIFT_", "HEAD_PLATE")),
     ("sample-inserts", inserts.build_inserts, ("INSERT", "MICROPLATE", "DISH", "COVER_GLASS")),
+    ("instrument", assembly.build_instrument,
+     WHOLE + ("ALUMINIUM", "XY_MASS", "LIFT_MASS", "LIFT_TRAVEL", "MONO_MASS", "STAND_FOCUS",
+              "STAND_BASE")),
 ]
 # The parameters only the bought parts' and the head's own models use.
 PARTS = ("XY_", "LIFT_", "OVERVIEW_", "CAGE_", "DICHROIC_HOLDER", "FLIP_", "LED_HOUSING", "SM1",
          "FILTER_ROUND", "MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "SKR_PICO", "PICO2",
-         "LDD_H", "SUPPLY", "PEAK_W") + HEAD + STAND
+         "LDD_H", "SUPPLY", "PEAK_W") + HEAD + STAND + WHOLE
 
 
 def uses(name, prefixes):
