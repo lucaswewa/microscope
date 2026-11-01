@@ -506,6 +506,8 @@ Two illustrative 96-well scans, assuming 10 % tile overlap, wells 6.4 mm across,
 - **Eye safety.** The 395 nm and the visible epi LEDs, about 1 W each, are an eye hazard when viewed through the optics. The enclosure is light-tight. A door interlock switches off the LED-driver enables in hardware, not only in firmware. The interlock's wiring runs through a plug on the cover, so lifting the cover off switches them off too. Using LEDs avoids laser classification altogether.
 - **Cables.** Flexible, strain-relieved cables to the moving stage. One ground point for the frame, the supplies and the USB shields.
 
+The [electronics plan](optima_electronics_plan.md) turns this section, and the controllers in §6.5, into wiring, a carrier board for the Pico 2, and firmware, in phases.
+
 ## 9. Mechanical layout
 
 **Base.** A 12 mm aluminium plate, 465 × 425 mm, on four rubber feet. Its top is 221 mm below the sample.
