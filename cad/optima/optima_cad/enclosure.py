@@ -7,15 +7,17 @@ the whole front, hinged at its left. The door takes an angle in degrees, open.
 """
 
 import math
+from functools import cache
 
 import FreeCAD as App
 import Part
 
 from . import geom as G
-from . import layout, parts, stand
+from . import fasteners, layout, parts, stand
 from . import params as P
 from .checks import Check, clashes
 from .document import add, group
+from .fasteners import Screw
 
 V = App.Vector
 X, Y, Z = V(1, 0, 0), V(0, 1, 0), V(0, 0, 1)
@@ -25,6 +27,62 @@ TABLE = stand.BASE_TOP - P.STAND_BASE[4] - P.STAND_FEET[1]
 FOOT = TABLE + P.ENCLOSURE_SEAL  # the frame's foot, on the foam strip
 OUT = (X0 - F - T, Y0 - F - T, X1 + F + T, Y1 + F + T, TOP + F + T)  # outside, the door shut
 HINGE = V(OUT[0], OUT[1], 0)  # the door's hinge axis, upright at the front left corner
+
+
+def _ring(a0, b0, a1, b1):
+    """Points round a rectangle, its corners among them, at most ENCLOSURE_SCREWS apart."""
+    corners = [(a0, b0), (a1, b0), (a1, b1), (a0, b1)]
+    out = []
+    for (pa, pb), (qa, qb) in zip(corners, corners[1:] + corners[:1]):
+        n = math.ceil(max(abs(qa - pa), abs(qb - pb)) / P.ENCLOSURE_SCREWS)
+        out += [(pa + (qa - pa) * k / n, pb + (qb - pb) * k / n) for k in range(n)]
+    return out
+
+
+@cache
+def screws():
+    """The enclosure's screws: the panels' into T-nuts in the frame, the door's hinge and handle,
+    the baffles' on their spacers, the fan's, and the supply's and the boards' on the tray."""
+    m = F / 2
+    out = []
+    for y, z in _ring(Y0 - m, FOOT + m, Y1 + m, TOP + m):
+        out += [Screw(4, (OUT[0], y, z), (1, 0, 0), T, 0, "left panel", "frame"),
+                Screw(4, (OUT[2], y, z), (-1, 0, 0), T, 0, "right panel", "frame")]
+    out += [Screw(4, (x, OUT[3], z), (0, -1, 0), T, 0, "back panel", "frame")
+            for x, z in _ring(X0 - m, FOOT + m, X1 + m, TOP + m)]
+    out += [Screw(4, (x, y, OUT[4]), (0, 0, -1), T, 0, "top panel", "frame")
+            for x, y in _ring(X0 - m, Y0 - m, X1 + m, Y1 + m)]
+    span = OUT[4] - FOOT - 80
+    n = math.ceil(span / P.ENCLOSURE_SCREWS)
+    out += [Screw(4, (OUT[0] + 8, OUT[1], FOOT + 40 + k * span / n), (0, 1, 0), T, 0, "door", None)
+            for k in range(n + 1)]
+    out += [Screw(4, (OUT[2] - 50, Y0 - F, z), (0, -1, 0), T, 0, "door", None) for z in (10, 70)]
+    (iy, iz), (iw, ih) = P.INTAKE
+    side, depth, _ = P.FAN
+    gap, overlap = P.BAFFLE
+    e = overlap * gap - 6  # the spacers, 6 mm in from the baffles' corners
+    out += [Screw(3, (OUT[2], iy + dy, iz + dz), (-1, 0, 0), 2 * T + gap, 0,
+                  ("right panel", "intake baffle"), None)
+            for dy in (-iw / 2 - e, iw / 2 + e) for dz in (-ih / 2 - e, ih / 2 + e)]
+    f = fan_at()
+    out += [Screw(3, (f.x + dx, OUT[3], f.z + dz), (0, -1, 0), OUT[3] - f.y + depth / 2 + gap + T, 0,
+                  ("back panel", "fan baffle"), None)
+            for dx in (-side / 2 - e, side / 2 + e) for dz in (-side / 2 - e, side / 2 + e)]
+    k = side / 2 - 7.5  # a 120 mm fan's holes, 105 mm apart
+    out += [Screw(4, (f.x + dx, OUT[3], f.z + dz), (0, -1, 0), T + depth, 0, ("back panel", "fan"), None)
+            for dx in (-k, k) for dz in (-k, k)]
+    # The supply into its base's M3s, and the boards on 5 mm spacers, from under the tray.
+    _, _, _, _, tt, ts = P.TRAY
+    under = stand.BASE_TOP + ts
+    sx, sy = P.TRAY_PARTS["supply"]
+    out += [Screw(3, (sx, sy + dy, under), (0, 0, 1), tt, 4, "tray", "supply")
+            for dy in (-P.TRAY_SUPPLY[0] / 2, P.TRAY_SUPPLY[0] / 2)]
+    for name, across, along in [("motion", P.SKR_PICO[3][1] / 2, P.SKR_PICO[3][0] / 2)] + [
+            (k, b / 2 - 4, a / 2 - 4) for k, (a, b) in P.CARRIERS.items()]:
+        cx, cy = P.TRAY_PARTS[name]
+        out += [Screw(3, (cx + dx, cy + dy, under), (0, 0, 1), tt + 5 + 1.6, 0, ("tray", "boards"), None)
+                for dx in (-across, across) for dy in (-along, along)]
+    return tuple(out)
 
 
 def frame():
@@ -42,6 +100,7 @@ def fan_at():
     return V(c.x, Y1 + F - P.FAN[1] / 2, c.z)
 
 
+@G.kept
 def panels():
     """The left, right, back and top panels outside the frame: the right with the intake, the back
     with the fan's opening and, just above its bottom rail, the notch the cables leave by. And the
@@ -58,24 +117,27 @@ def panels():
         G.box((nw, 3 * T, nh), V(0, Y1 + F + T / 2, FOOT + F + nh / 2))]))
     bore = Part.makeCylinder(side / 2 - 2, depth + 2, f - Y * (depth / 2 + 1), Y)
     fan = G.box((side, depth, side), f).cut(bore)
-    return {
-        "left": G.span(V(x0, Y0 - F, FOOT), V(X0 - F, y1, TOP + F)),
-        "right": G.span(V(X1 + F, Y0 - F, FOOT), V(x1, y1, TOP + F))
-        .cut(G.box((3 * T, iw, ih), V(X1 + F + T / 2, iy, iz))),
-        "back": back,
-        "top": G.span(V(x0, Y0 - F, TOP + F), V(x1, y1, top)),
-        "intake baffle": G.box((T, iw + m, ih + m), V(X1 + F - gap - T / 2, iy, iz)),
-        "fan baffle": G.box((side + m, T, side + m), f - Y * (depth / 2 + gap + T / 2)),
-        "fan": fan,
-    }
+    s = screws()
+    return {k: fasteners.cut(v, s, k if k in ("intake baffle", "fan baffle", "fan") else k + " panel")
+            for k, v in (
+                ("left", G.span(V(x0, Y0 - F, FOOT), V(X0 - F, y1, TOP + F))),
+                ("right", G.span(V(X1 + F, Y0 - F, FOOT), V(x1, y1, TOP + F))
+                 .cut(G.box((3 * T, iw, ih), V(X1 + F + T / 2, iy, iz)))),
+                ("back", back),
+                ("top", G.span(V(x0, Y0 - F, TOP + F), V(x1, y1, top))),
+                ("intake baffle", G.box((T, iw + m, ih + m), V(X1 + F - gap - T / 2, iy, iz))),
+                ("fan baffle", G.box((side + m, T, side + m), f - Y * (depth / 2 + gap + T / 2))),
+                ("fan", fan))}
 
 
+@G.kept
 def door(angle=0.0, handle=True):
     """The door over the whole front, with a handle by its right edge, `angle` degrees open."""
     x0, y0, x1, _, top = OUT
     d = G.span(V(x0, y0, FOOT), V(x1, Y0 - F, top))
     if handle:
         d = d.fuse(G.span(V(x1 - 60, y0 - 25, -20), V(x1 - 40, y0, 80)))
+    d = fasteners.cut(d, screws(), "door")
     d.rotate(HINGE, Z, -angle)
     return d
 
@@ -91,17 +153,18 @@ def interlock():
     return {"switch": switch.fuse(bracket), "plunger": plunger}
 
 
+@G.kept
 def tray():
     """The electronics tray on its standoffs on the base plate, with the supply, the motion
     controller (the SKR Pico), the optics controller (the Pico 2) on its carrier, and the four LED
     drivers on theirs. Each is turned with its long side along Y."""
     x0, y0, x1, y1, t, s = P.TRAY
     floor = stand.BASE_TOP + s + t
-    feet = [Part.makeCylinder(4, s, V(x, y, stand.BASE_TOP)) for x in (x0 + 8, x1 - 8)
-            for y in (y0 + 8, y1 - 8)]
-    plate = G.drill(G.span(V(x0, y0, floor - t), V(x1, y1, floor)),
-                    [(3.4, None, [(x, y) for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)])],
-                    floor, -Z)
+    held = stand.screws() + screws()
+    feet = fasteners.cut(Part.makeCompound([Part.makeCylinder(4, s, V(x, y, stand.BASE_TOP))
+                                            for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)]),
+                         held, "standoffs")
+    plate = fasteners.cut(G.span(V(x0, y0, floor - t), V(x1, y1, floor)), held, "tray")
 
     def turned(shapes, name, lift=0.0):
         x, y = P.TRAY_PARTS[name]
@@ -111,15 +174,17 @@ def tray():
     lw, ld, lh = P.LDD_H
     drivers = [G.box(P.LDD_H, V(sx * (lw / 2 + 4), sy * (ld / 2 + 2), 1.6 + lh / 2))
                for sx in (-1, 1) for sy in (-1, 1)]
+    boards = Part.makeCompound([
+        turned(parts.circuit(P.SKR_PICO).values(), "motion", 5),
+        turned([carriers["optics"]], "optics", 5),
+        turned(parts.circuit(P.PICO2).values(), "optics", 6.6),
+        turned([carriers["drivers"]] + drivers, "drivers", 5)])
     return {
         "tray": plate,
-        "standoffs": Part.makeCompound(feet),
-        "supply": turned([G.box(P.SUPPLY, V(0, 0, P.SUPPLY[2] / 2))], "supply"),
-        "boards": Part.makeCompound([
-            turned(parts.circuit(P.SKR_PICO).values(), "motion", 5),
-            turned([carriers["optics"]], "optics", 5),
-            turned(parts.circuit(P.PICO2).values(), "optics", 6.6),
-            turned([carriers["drivers"]] + drivers, "drivers", 5)]),
+        "standoffs": feet,
+        "supply": fasteners.cut(turned([G.box(P.SUPPLY, V(0, 0, P.SUPPLY[2] / 2))], "supply"), held,
+                                "supply"),
+        "boards": fasteners.cut(boards, held, "boards"),
     }
 
 

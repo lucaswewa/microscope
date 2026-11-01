@@ -12,10 +12,10 @@ from . import params as P
 OPTICS = ("SENSOR_", "C_MOUNT_", "OBJECTIVES", "TUBE_", "INFINITY_SPACE")
 HEAD = ("HEAD_", "DECK_", "LOWER_DECK", "UPPER_DECK", "CHANGER_PLATE", "CHANGER_RAIL", "CHANGER_NUT",
         "CHANGER_SCREW", "DETENT", "SLIDER_", "FOLD_MOUNT", "PORT_BRACKET", "CAMERA_FOCUS", "EPI_PLATE",
-        "EPI_TUBE", "SWITCH")
+        "EPI_TUBE", "SWITCH", "EPI_BRACKET")
 STAND = ("STAND_", "ALUMINIUM", "INSERT", "MICROPLATE", "DISH")
 WHOLE = ("MASSES", "EXTRUSION_KG_PER_M", "ENCLOSURE", "INTERLOCK", "INTAKE", "FAN", "BAFFLE",
-         "TYPICAL_W", "EPI_PLUG", "TRAY", "CARRIERS", "ELECTRONICS_KG", "DUCTS")
+         "TYPICAL_W", "EPI_PLUG", "TRAY", "CARRIERS", "ELECTRONICS_KG", "DUCTS", "SCREW")
 MODELS = [
     ("optical-layout", layout.build, None),
     ("xy-stage", stages.build_xy, ("XY_",)),
@@ -35,8 +35,8 @@ MODELS = [
     ("electronics", parts.build_electronics, ("SKR_PICO", "PICO2", "LDD_H", "SUPPLY", "PEAK_W")),
     ("optical-head", head.build,
      HEAD + ("FILTER_", "MGN12", "TRAVEL_MARGIN", "NEMA11", "LEAD_SCREW", "CAGE_30", "CAGE_PLATE",
-             "FLIP_")),
-    ("stand", stand.build_stand, STAND + ("XY_", "LIFT_", "HEAD_PLATE")),
+             "FLIP_", "SCREW")),
+    ("stand", stand.build_stand, STAND + ("XY_", "LIFT_", "HEAD_PLATE", "SCREW")),
     ("sample-inserts", inserts.build_inserts, ("INSERT", "MICROPLATE", "DISH", "COVER_GLASS")),
     ("instrument", assembly.build_instrument,
      WHOLE + ("ALUMINIUM", "XY_MASS", "LIFT_MASS", "LIFT_TRAVEL", "MONO_MASS", "STAND_FOCUS",

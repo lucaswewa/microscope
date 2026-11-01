@@ -13,7 +13,7 @@ import FreeCAD as App
 import Part
 
 from . import geom as G
-from . import enclosure, head, inserts, stand
+from . import enclosure, fasteners, head, inserts, stand
 from . import optics as O
 from . import params as P
 from .checks import Check, clashes
@@ -64,6 +64,9 @@ def build_instrument(doc):
     inside = [o.Shape for o in doc.Objects if o.TypeId == "Part::Feature"]
     named = [o.Name for o in doc.Objects if o.TypeId == "Part::Feature"]
     cover, tr, cables = enclosure.place(doc, arm["leds"], group(doc, "Enclosure", "Enclosure"))
+    screws = head.screws() + stand.screws() + enclosure.screws()
+    add(doc, "Screws", Part.makeCompound([fasteners.solid(s) for s in screws]), "drive",
+        group(doc, "Fasteners", "Screws"), "Screws")
     swept = head.sweeps()
     s = P.XY_TRAVEL
     corners = [(0, 0)] + [(sx * s, sy * s) for sx in (-1, 1) for sy in (-1, 1)]
@@ -181,4 +184,31 @@ def build_instrument(doc):
     stack = Part.makeCompound([p for m in travel for p in m.values()])
     more, extra, kept = enclosure.checks(cover, tr, cables, inside, list(swept.values()) + [stack])
     facts.append(("Mass with the enclosure and the electronics, kg", round(metal + bought + kept, 1)))
+
+    # The screws: against every part, and those on fixed parts against the moving ones' sweeps.
+    by_name = {
+        "head plate": hs["plate"], "lower deck": hs["lower"], "upper deck": hs["upper"],
+        "port bracket": hs["bracket"], "epi plate": hs["epi"], "epi bracket": hs["epi_bracket"],
+        "changer plate": ch["plate"], "changer carriage": ch["carriage"], "changer rail": cd["rail"],
+        "changer bracket": cd["bracket"], "changer motor": cd["motor"], "detent block": cd["block"],
+        "slider carrier": sl["carrier"], "slider carriage": sl["carriage"], "slider rail": sd["rail"],
+        "slider bracket": sd["bracket"], "slider motor": sd["motor"], "fold mount": fold,
+        "mono mount": cams["mono"]["base"], "colour mount": cams["colour"]["base"],
+        "camera port": pt["body"], "epi cage": Part.makeCompound([arm["cubes"], arm["plates"]]),
+        "column": Part.makeCompound(cols), "overview bracket": bracket, "base plate": b["plate"],
+        "lift": lift, "lift plate": st["plate"], "lift top": st["lift"], "spacers": st["spacers"],
+        "xy base": st["base"], "xy top": st["top"], "matrix mount": st["mount"],
+        "adapter": st["adapter"], "frame": cover["frame"], "door": cover["door"], "fan": cover["fan"],
+        "intake baffle": cover["intake baffle"], "fan baffle": cover["fan baffle"],
+        "tray": tr["tray"], "standoffs": tr["standoffs"], "supply": tr["supply"], "boards": tr["boards"]}
+    by_name.update({k + " panel": cover[k] for k in ("left", "right", "back", "top")})
+    moving = {"changer plate", "changer carriage", "slider carrier", "slider carriage", "lift plate",
+              "lift top", "spacers", "matrix mount", "xy base", "xy top", "adapter"}
+    parts_ = [o.Shape for o in doc.Objects if o.TypeId == "Part::Feature"
+              and not o.Name.endswith("Travel") and o.Name not in ("Screws", "OverviewView")]
+    checks += fasteners.check(screws, by_name, parts_, list(swept.values()) + [stack], moving)
+    sizes = fasteners.counts(screws)
+    facts.append(("Screws", "%d: %s" % (len(screws), ", ".join(
+        "%d M%g" % (sum(n for (z, _), n in sizes.items() if z == size), size)
+        for size in sorted({z for z, _ in sizes})))))
     return checks + more, facts + extra

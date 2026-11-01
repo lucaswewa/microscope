@@ -108,7 +108,7 @@ def drawn(pdf):
                     blocks.append([])
                 depth += 1
             (blocks[-1] if depth else loose).append(token)
-            if token == b"Q":
+            if token == b"Q" and depth:  # a font's bytes can hold a stray Q
                 depth -= 1
         out.append(b" ".join(loose) + b"|" + b"|".join(sorted(b" ".join(b) for b in blocks)))
     return sorted(out)

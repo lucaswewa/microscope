@@ -11,6 +11,7 @@ run to run.
 
 import csv
 import io
+from collections import Counter
 import os
 import re
 import time
@@ -19,7 +20,7 @@ import uuid
 import FreeCAD as App
 import Part
 
-from . import enclosure, head, inserts, stand
+from . import enclosure, fasteners, head, inserts, stand
 from . import params as P
 from .checks import Check
 
@@ -37,59 +38,70 @@ FINISH = "Black anodized"
 NOTES = ["Sizes in mm. Tolerances to ISO 2768-mK unless stated.",
          "Take any size not shown from the STEP file of the same number.",
          "Break sharp edges 0.2 mm.",
-         "Not every screw hole that joins this part to its neighbours is modelled yet:",
-         "check them against the assembly before ordering."]
+         "Holes for screws are clearance holes, unless a note taps them."]
+
+
+def screws():
+    """Every screw in the instrument."""
+    return head.screws() + stand.screws() + enclosure.screws()
 
 
 def made():
-    """Every custom part: its number, name, shape, quantity, material and note."""
+    """Every custom part: its number, name, shape, quantity, material and notes, with its tapped and
+    counterbored holes from the screws."""
     s, cd, sd = head.structure(), head.changer_drive(), head.slider_drive()
     cams = {n: head.camera(n) for n in ("mono", "colour")}
     st = stand.stack()
     ins = {name: make()["insert"] for name, _, make in inserts.INSERTS}
     cover = enclosure.panels()
     a, m = ALUMINIUM, SHEET_METAL
-    return [
-        ("H01", "Head plate", s["plate"], 1, a,
+    rows = [
+        ("H01", "Head plate", s["plate"], 1, a, "head plate",
          "Slots for the cables, and an opening behind the mono camera's fan."),
-        ("H02", "Lower deck", s["lower"], 1, a, ""),
-        ("H03", "Upper deck", s["upper"], 1, a,
+        ("H02", "Lower deck", s["lower"], 1, a, "lower deck", ""),
+        ("H03", "Upper deck", s["upper"], 1, a, "upper deck",
          "SM2 thread (2.035-40 UNS) through it, for the TTL200-A."),
-        ("H04", "Camera port's bracket", s["bracket"], 1, a, ""),
-        ("H05", "Epi plate", s["epi"], 1, a, ""),
-        ("H06", "Changer plate", head.changer()["plate"], 1, a,
+        ("H04", "Camera port's bracket", s["bracket"], 1, a, "port bracket", ""),
+        ("H05", "Epi plate", s["epi"], 1, a, "epi plate", ""),
+        ("H06", "Changer plate", head.changer()["plate"], 1, a, "changer plate",
          "M26 x 0.706 threads for the objectives; V-grooves, 90 degrees and 3 mm deep, for the detent."),
-        ("H07", "Changer's motor bracket", cd["bracket"], 1, a, ""),
-        ("H08", "Detent block", cd["block"], 1, a, "M8 x 1 thread for the ball plunger."),
-        ("H09", "Slider's carrier", head.slider()["carrier"], 1, a,
+        ("H07", "Changer's motor bracket", cd["bracket"], 1, a, "changer bracket", ""),
+        ("H08", "Detent block", cd["block"], 1, a, "detent block",
+         "M8 x 1 thread for the ball plunger."),
+        ("H09", "Slider's carrier", head.slider()["carrier"], 1, a, "slider carrier",
          "SM1 thread (1.035-40 UNS) in the flange's bores."),
-        ("H10", "Slider's motor bracket", sd["bracket"], 1, a, ""),
-        ("H11", "Fold mirror's mount", head.fold_mount(), 1, a, ""),
-        ("H12", "Mono camera's mount", cams["mono"]["base"], 1, a, ""),
-        ("H13", "Mono camera's focus plate", cams["mono"]["plate"], 1, a, ""),
-        ("H14", "Colour camera's mount", cams["colour"]["base"], 1, a, ""),
-        ("H15", "Colour camera's focus plate", cams["colour"]["plate"], 1, a, ""),
-        ("S01", "Base plate", stand.base()["plate"], 1, a,
-         "Tap the 5 mm holes M6, for the lift, and the 6.8 mm holes M8, for the feet."),
-        ("S02", "Plate on the lift", st["plate"], 1, a,
-         "Counterbored for four M6 screws into the lift."),
-        ("S03", "Spacer", st["spacers"].Solids[0], 4, a, ""),
-        ("S04", "LED matrix's mount", st["mount"], 1, a, ""),
-        ("S05", "Overview camera's bracket", stand.overview()[1], 1, a, ""),
-        ("I01", "Insert adapter", st["adapter"], 1, a,
+        ("H10", "Slider's motor bracket", sd["bracket"], 1, a, "slider bracket", ""),
+        ("H11", "Fold mirror's mount", head.fold_mount(), 1, a, "fold mount", ""),
+        ("H12", "Mono camera's mount", cams["mono"]["base"], 1, a, "mono mount", ""),
+        ("H13", "Mono camera's focus plate", cams["mono"]["plate"], 1, a, "", ""),
+        ("H14", "Colour camera's mount", cams["colour"]["base"], 1, a, "colour mount", ""),
+        ("H15", "Colour camera's focus plate", cams["colour"]["plate"], 1, a, "", ""),
+        ("H16", "Epi plate's bracket", s["epi_bracket"], 1, a, "epi bracket", ""),
+        ("S01", "Base plate", stand.base()["plate"], 1, a, "base plate",
+         "Tap the 6.8 mm holes M8, for the feet."),
+        ("S02", "Plate on the lift", st["plate"], 1, a, "lift plate", ""),
+        ("S03", "Spacer", st["spacers"].Solids[0], 4, a, "", ""),
+        ("S04", "LED matrix's mount", st["mount"], 1, a, "matrix mount", ""),
+        ("S05", "Overview camera's bracket", stand.overview()[1], 1, a, "overview bracket", ""),
+        ("I01", "Insert adapter", st["adapter"], 1, a, "adapter",
          "Counterbored for four M3 screws into the stage."),
-        ("I02", "Four-slide insert", ins["Slides"], 1, a, ""),
-        ("I03", "Microplate insert", ins["Microplate"], 1, a, ""),
-        ("I04", "Dish insert", ins["Dishes"], 1, a, ""),
-        ("E01", "Cover's left panel", cover["left"], 1, m, ""),
-        ("E02", "Cover's right panel", cover["right"], 1, m, "The intake's opening."),
-        ("E03", "Cover's back panel", cover["back"], 1, m, "The fan's opening, and the cables' notch."),
-        ("E04", "Cover's top panel", cover["top"], 1, m, ""),
-        ("E05", "Door", enclosure.door(handle=False), 1, m, ""),
-        ("E06", "Intake's baffle", cover["intake baffle"], 1, m, ""),
-        ("E07", "Fan's baffle", cover["fan baffle"], 1, m, ""),
-        ("E08", "Electronics tray", enclosure.tray()["tray"], 1, a, ""),
+        ("I02", "Four-slide insert", ins["Slides"], 1, a, "", ""),
+        ("I03", "Microplate insert", ins["Microplate"], 1, a, "", ""),
+        ("I04", "Dish insert", ins["Dishes"], 1, a, "", ""),
+        ("E01", "Cover's left panel", cover["left"], 1, m, "left panel", ""),
+        ("E02", "Cover's right panel", cover["right"], 1, m, "right panel", "The intake's opening."),
+        ("E03", "Cover's back panel", cover["back"], 1, m, "back panel",
+         "The fan's opening, and the cables' notch."),
+        ("E04", "Cover's top panel", cover["top"], 1, m, "top panel", ""),
+        ("E05", "Door", enclosure.door(handle=False), 1, m, "door", ""),
+        ("E06", "Intake's baffle", cover["intake baffle"], 1, m, "intake baffle", ""),
+        ("E07", "Fan's baffle", cover["fan baffle"], 1, m, "fan baffle", ""),
+        ("E08", "Electronics tray", enclosure.tray()["tray"], 1, a, "tray", ""),
     ]
+    every = screws()
+    return [(code, name, shape, n, material,
+             " ".join(filter(None, (note, fasteners.holes(every, part)))))
+            for code, name, shape, n, material, part, note in rows]
 
 
 def bought():
@@ -98,7 +110,7 @@ def bought():
     f = P.ENCLOSURE_FRAME[0]
     ducts = sorted(max(b - a, d - c, t - stand.BASE_TOP) for a, c, b, d, t in P.DUCTS)
     seal = 2 * (x1 - x0 + 2 * f) + 2 * (y1 - y0 + 2 * f)
-    return [
+    out = [
         ("XY stage", 1, "Standa 8MTF-102LS05", ""),
         ("Z lift", 1, "Standa 8MVT100-25-1", ""),
         ("Objectives", 3, "Mitutoyo M Plan Apo 5x (378-802-6), 10x (378-803-3) and 20x (378-804-3)", ""),
@@ -141,6 +153,21 @@ def bought():
          "Cut to %s mm." % " and ".join("%.0f" % d for d in ducts)),
         ("Tray's standoffs", 4, "M3, %g mm" % P.TRAY[5], ""),
     ]
+    # The screws, by size and length; the T-nuts and nuts they go into; the spacers they go through.
+    every = screws()
+    for (size, length), n in sorted(fasteners.counts(every).items()):
+        out.append(("Socket-head screws", n, "M%g x %d, ISO 4762" % (size, length), ""))
+    tnuts = Counter(s.size for s in every if s.into in ("column", "frame") and not s.depth)
+    nuts = Counter(s.size for s in every if s.into is None and not s.depth)
+    slots = {8: "the column's 8 mm slots", 4: "the frame's 5 mm slots"}
+    out += [("T-nuts", n, "M%g, for %s" % (k, slots[k]), "") for k, n in sorted(tnuts.items())]
+    out += [("Nuts", n, "M%g" % k, "") for k, n in sorted(nuts.items())]
+    spaced = Counter(fasteners.clamped(s)[1] for s in every if s.into is None
+                     and fasteners.clamped(s)[1:] and fasteners.clamped(s)[1] != "fan")
+    lengths = {"intake baffle": P.BAFFLE[0], "fan baffle": P.FAN[1] + P.BAFFLE[0], "boards": 5}
+    out.append(("Spacers", sum(spaced.values()), "M3 clearance", "; ".join(
+        "%d x %g mm for the %s" % (n, lengths[k], k) for k, n in sorted(spaced.items()))))
+    return out
 
 
 def _name(code, name):
@@ -269,6 +296,8 @@ def _step(shape, path, code):
         text = f.read()
     text = re.sub(r"'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d'", "'2026-01-01T00:00:00'", text, count=1)
     text = re.sub(r"Open CASCADE STEP translator [\d.]+ \d+", "OPTIMA-" + code, text)
+    # Trailing spaces don't matter between tokens, only inside a string that runs on.
+    text = "\n".join(line if line.count("'") % 2 else line.rstrip(" ") for line in text.split("\n"))
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
 

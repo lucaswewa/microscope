@@ -7,16 +7,18 @@ the camera port's swing in degrees (90 is position 2), and each camera's focus a
 """
 
 import math
+from functools import cache
 
 import FreeCAD as App
 import Part
 
-from . import cameras, layout, parts
+from . import cameras, fasteners, layout, parts
 from . import geom as G
 from . import optics as O
 from . import params as P
 from .checks import Check, clashes
 from .document import add, group
+from .fasteners import Screw
 
 V = App.Vector
 X, Y, Z = V(1, 0, 0), V(0, 1, 0), V(0, 0, 1)
@@ -32,14 +34,84 @@ SLIDER_Z = (O.FILTER - P.FILTER_CUBE / 2, O.FILTER + P.FILTER_CUBE / 2)
 UPPER_Z = SLIDER_Z[1] + P.SLIDER_FLANGE[1] + RAIL_H  # the slider's rail hangs from the upper deck
 DECK_TOP = UPPER_Z + P.DECK_THICKNESS
 PORT_FACE = V(1, -1, 0).normalize()  # the way the camera port's mirror faces
-NUT = 8.0  # half the length of each nut block along its screw
+NUT = 6.0  # half the length of the slider's nut block along its screw
 MOUNT_HOLES = {  # each camera's holes into its mounting face: (diameter, x, from its front)
     "mono": [(4.5, x, P.MONO_MOUNT[0]) for x in (-P.MONO_MOUNT[1] / 2, P.MONO_MOUNT[1] / 2)]
     + [(6.6, 0, P.MONO_MOUNT[0])],
     "colour": [(6.6, 0, P.COLOUR_BODY[2] / 2)],
 }
+EPI_BOTTOM = O.FILTER - P.CAGE_30[2] / 2 - P.EPI_PLATE[4]  # the epi plate's underside
+PORT_BASE = layout.FLIP_POINT.z + P.FLIP_OPTIC  # the camera port's base, on its bracket's underside
 
 
+@cache
+def screws():
+    """The head's screws, from the head plate's to the bought parts': each a fasteners.Screw."""
+    back, t = P.HEAD_PLATE[4], P.DECK_THICKNESS
+    up, down, front, aft = (0, 0, 1), (0, 0, -1), (0, 1, 0), (0, -1, 0)
+    out = [Screw(8, (sx * P.STAND_COLUMN[3], FRONT, z), front, 15, 0, "head plate", "column")
+           for sx in (-1, 1) for z in P.HEAD_SCREWS["column"]]
+    for name, z in (("lower deck", LOWER_TOP - t / 2), ("upper deck", UPPER_Z + t / 2),
+                    ("port bracket", PORT_BASE + P.PORT_BRACKET[3] / 2)):
+        out += [Screw(6, (x, back, z), aft, 15, 12, "head plate", name) for x in P.HEAD_SCREWS[name]]
+    x0, x1, yf, z0, bt = P.EPI_BRACKET
+    for x in (x0 + 8, x1 - 8):
+        out += [Screw(5, (x, FRONT - bt, z0 + 6), front, bt, 10, "epi bracket", "head plate"),
+                Screw(4, (x, (yf + FRONT - bt) / 2, EPI_BOTTOM - bt), up, bt, 8, "epi bracket",
+                      "epi plate")]
+    cage = [layout.TURN] + [at for _, at, *_ in layout.epi_leds() if at is not None]
+    cage += [V(P.EPI_TUBE[2], 0, 0), V(O.STOP_X, 0, 0)]
+    out += [Screw(4, (c.x, c.y, EPI_BOTTOM), up, P.EPI_PLATE[4], 6, "epi plate", "epi cage")
+            for c in cage]
+    # The guides: their rails' counterbored M3s, and the carriages' four.
+    rh, pitch, n = P.MGN12_RAIL[1], P.MGN12_RAIL[2], int(P.MGN12_RAIL[3] // P.MGN12_RAIL[2])
+    along = [(k - (n - 1) / 2) * pitch for k in range(n)]
+    sx, s = P.SLIDER_RAIL, P.MGN12H[4] / 2
+    out += [Screw(3, (x, P.CHANGER_RAIL, LOWER_TOP + rh - 4.5), down, 3.5, 6, "changer rail",
+                  "lower deck") for x in along]
+    out += [Screw(3, (sx, y, UPPER_Z - rh + 4.5), up, 3.5, 6, "slider rail", "upper deck")
+            for y in along]
+    grip = O.CARRIAGE_TOP - 3.5 - O.SHOULDER
+    out += [Screw(3, (dx, P.CHANGER_RAIL + dy, O.CARRIAGE_TOP - 3.5), down, grip, 4, "changer plate",
+                  "changer carriage", sunk=True) for dx in (-s, s) for dy in (-s, s)]
+    out += [Screw(3, (sx + dx, dy, SLIDER_Z[1]), up, P.SLIDER_FLANGE[1], 4, "slider carrier",
+                  "slider carriage") for dx in (-s, s) for dy in (-s, s)]
+    # The motors' brackets, the motors, and the detent's block.
+    face, sy, sz, _ = P.CHANGER_SCREW
+    m = P.NEMA11[2] / 2
+    out += [Screw(3, (face + 3, sy + dy, LOWER_TOP - t), up, t, 8, "lower deck", "changer bracket")
+            for dy in (-10, 10)]
+    out += [Screw(2.5, (face + 6, sy + dy, sz + dz), (-1, 0, 0), 6, 3.5, "changer bracket",
+                  "changer motor") for dy in (-m, m) for dz in (-m, m)]
+    out += [Screw(3, (P.DETENT[0] + dx, P.CHANGER_PLATE[3] + 11.5, LOWER_TOP - t), up, t, 8,
+                  "lower deck", "detent block") for dx in (-5, 5)]
+    face, sz, _ = P.SLIDER_SCREW
+    out += [Screw(3, (sx + dx, face - 3, DECK_TOP - 3.5), down, t - 3.5, 8, "upper deck",
+                  "slider bracket", sunk=True) for dx in (-10, 10)]
+    out += [Screw(2.5, (sx + dx, face - 6, sz + dz), front, 6, 3.5, "slider bracket", "slider motor")
+            for dx in (-m, m) for dz in (-m, m)]
+    # What stands on the upper deck, screwed from below, or down into it.
+    out += [Screw(4, (dx, P.FOLD_MOUNT[1] + 6, UPPER_Z), up, t, 10, "upper deck", "fold mount")
+            for dx in (-12, 12)]
+    for name, body, nose, depth in (("mono", P.MONO_BODY, P.MONO_NOSE[1], 4.5),
+                                    ("colour", P.COLOUR_BODY, P.COLOUR_NOSE[1], 6)):
+        origin, axis = layout.camera_frames()[name]
+        mid = origin + axis * (nose - P.C_MOUNT_FLANGE + (body[2] + 9) / 2)  # the base's middle
+        across = Z.cross(axis) * (body[0] / 2 - 12)
+        out += [Screw(3, (c.x, c.y, UPPER_Z), up, t, depth, "upper deck", name + " mount")
+                for c in (mid - across, mid + across)]
+    # The camera port's base: an M6 hole at its middle (assumed).
+    c = layout.FLIP_POINT - PORT_FACE * (P.MIRROR_THICKNESS / 2 + P.FLIP_RING[1] / 2
+                                         + P.FLIP_BODY[2] / 2)
+    out.append(Screw(6, (c.x, c.y, PORT_BASE + P.PORT_BRACKET[3]), down, P.PORT_BRACKET[3], 8,
+                     "port bracket", "camera port"))
+    _, _, _, y1, ft = P.STAND_OVERVIEW_ARM
+    out += [Screw(4, (dx, (P.UPPER_DECK[1] + y1) / 2, DECK_TOP + ft), down, ft, 8, "overview bracket",
+                  "upper deck") for dx in (-12, 12)]
+    return tuple(out)
+
+
+@G.kept
 def structure():
     """The head plate, and the decks, the camera port's bracket and the epi plate it carries."""
     t = P.DECK_THICKNESS
@@ -57,6 +129,10 @@ def structure():
     top = O.FILTER - P.CAGE_30[2] / 2
     epi = G.span(V(x0, y0, top - pt), V(x1, y1, top))
     epi = epi.cut(G.span(V(x0 - 1, FRONT, top - pt - 1), V(P.HEAD_PLATE[3], y1 + 1, top + 1)))
+    # An angle under the epi plate, screwed to the head plate's front.
+    x0, x1, yf, z0, bt = P.EPI_BRACKET
+    angle = G.span(V(x0, FRONT - bt, z0), V(x1, FRONT, EPI_BOTTOM)).fuse(
+        G.span(V(x0, yf, EPI_BOTTOM - bt), V(x1, FRONT, EPI_BOTTOM))).removeSplitter()
     # The head plate's openings: slots for the cables from the duct behind it, and an opening behind
     # the mono camera's fan, toward the enclosure's.
     y0, y1 = FRONT - 1, P.HEAD_PLATE[4] + 1
@@ -65,9 +141,14 @@ def structure():
     side = P.MONO_FAN[0] + 5
     holes.append(G.box((side, y1 - y0, side), V(fan.x, (y0 + y1) / 2, fan.z)))
     plate = G.corners(P.HEAD_PLATE).cut(Part.makeCompound(holes))
-    return {"plate": plate, "lower": lower, "upper": upper, "bracket": bracket, "epi": epi}
+    s = screws()
+    return {k: fasteners.cut(v, s, name) for k, v, name in (
+        ("plate", plate, "head plate"), ("lower", lower, "lower deck"), ("upper", upper, "upper deck"),
+        ("bracket", bracket, "port bracket"), ("epi", epi, "epi plate"),
+        ("epi_bracket", angle, "epi bracket"))}
 
 
+@G.kept
 def changer(offset=0.0):
     """The changer's moving parts: its plate, with the nut block and the detent's grooves, the
     objectives, and the guide's carriage."""
@@ -83,7 +164,8 @@ def changer(offset=0.0):
         gx = P.DETENT[0] + x
         v = [V(gx - d - 1, y1 + 1, z0 - 1), V(gx + d + 1, y1 + 1, z0 - 1), V(gx, y1 - d, z0 - 1)]
         tools.append(Part.Face(Part.makePolygon(v + v[:1])).extrude(V(0, 0, z1 - z0 + 2)))
-    plate = plate.cut(Part.makeCompound(tools)).removeSplitter()
+    plate = fasteners.cut(plate.cut(Part.makeCompound(tools)).removeSplitter(), screws(),
+                          "changer plate")
     objectives = [parts.objective(n).translated(V(x, 0, 0)) for n, x in zip(P.CHANGER_ORDER, SPOTS)]
     carriage = parts.guide()["carriage"].translated(V(0, P.CHANGER_RAIL, LOWER_TOP))
     shapes = {"plate": plate, "objectives": Part.makeCompound(objectives), "carriage": carriage}
@@ -97,6 +179,7 @@ def detent_ball(shrink=0.0):
     return Part.makeSphere(ball / 2 - shrink, V(P.DETENT[0], y, (O.SHOULDER + O.CARRIAGE_TOP) / 2))
 
 
+@G.kept
 def changer_drive():
     """The changer's fixed parts: its rail, the motor and its bracket, the lead screw, the
     detent's block and plunger, and the home switch, which the guide's carriage trips."""
@@ -108,6 +191,9 @@ def changer_drive():
     mid = (O.SHOULDER + O.CARRIAGE_TOP) / 2
     plunger = Part.makeCylinder(4, 16, V(dx, y1 + 1, mid), Y)  # an M8 ball plunger
     block = G.span(V(dx - 10, y1 + 1, LOWER_TOP), V(dx + 10, y1 + 22, O.CARRIAGE_TOP)).cut(plunger)
+    s = screws()
+    bracket = fasteners.cut(bracket, s, "changer bracket")
+    block = fasteners.cut(block, s, "detent block")
     sw, st, sh = P.SWITCH
     end = min(CHANGES) - P.MGN12H[1] / 2 - 1
     side = P.CHANGER_RAIL + P.MGN12H[0] / 2 + 1
@@ -117,6 +203,7 @@ def changer_drive():
             "switch": G.span(V(end - sw, side, LOWER_TOP), V(end, side + st, LOWER_TOP + sh))}
 
 
+@G.kept
 def slider(offset=0.0):
     """The slider's moving parts: the carrier, its filters and the guide's carriage. Each cell is
     open below and to the right, where the excitation enters."""
@@ -135,7 +222,8 @@ def slider(offset=0.0):
         tools += [G.span(V(-c, y - c, z0 - 1), V(c, y + c, z1)),
                   Part.makeCylinder(d / 2, w, V(0, y, O.FILTER), X),
                   Part.makeCylinder(P.SM1 / 2, ft + 2, V(0, y, z1 - 1))]
-    carrier = block.cut(Part.makeCompound(tools)).removeSplitter()
+    carrier = fasteners.cut(block.cut(Part.makeCompound(tools)).removeSplitter(), screws(),
+                            "slider carrier")
     a, b = CELLS[0], CELLS[2]
     # (a): the exciter in the side bore, the dichroic, the emitter in the flange; (c): the 50:50.
     filters = [G.disc(d, t, V(c + t / 2, a, O.FILTER), X), G.disc(d, t, V(0, a, z1 + t / 2), Z),
@@ -146,6 +234,7 @@ def slider(offset=0.0):
     return {k: s.translated(V(0, offset, 0)) for k, s in shapes.items()}
 
 
+@G.kept
 def slider_drive():
     """The slider's fixed parts, under the upper deck: its inverted rail, the motor and its
     bracket, the lead screw, and the home switch."""
@@ -154,6 +243,7 @@ def slider_drive():
     motor = {k: G.placed(v, V(sx, face, sz), -Y, Z) for k, v in parts.stepper(length).items()}
     bracket = G.span(V(sx - 16, face - 6, sz - 16), V(sx + 16, face, UPPER_Z))
     bracket = bracket.cut(Part.makeCylinder(P.NEMA11[3] / 2 + 0.5, 8, V(sx, face + 1, sz), -Y))
+    bracket = fasteners.cut(bracket, screws(), "slider bracket")
     sw, st, sh = P.SWITCH
     end = min(SLIDES) - P.MGN12H[1] / 2 - 1
     side = sx + P.MGN12H[0] / 2 + 1
@@ -162,6 +252,7 @@ def slider_drive():
             "switch": G.span(V(side, end - sw, UPPER_Z - sh), V(side + st, end, UPPER_Z))}
 
 
+@G.kept
 def fold_mount():
     """A block on the upper deck, behind the fold mirror: its 45-degree face holds the mirror."""
     w, front, top = P.FOLD_MOUNT
@@ -170,9 +261,10 @@ def fold_mount():
     block = G.split(G.span(V(-w / 2, front, DECK_TOP), V(w / 2, 25, top)), back, n, back + n)[0]
     leg_y = front + 12
     leg = G.span(V(-w / 2, front, DECK_TOP), V(w / 2, leg_y, back.z + leg_y - back.y + 1))
-    return block.fuse(leg).removeSplitter()
+    return fasteners.cut(block.fuse(leg).removeSplitter(), screws(), "fold mount")
 
 
+@G.kept
 def port(angle=0.0):
     """The camera port, an MFF102/M, hung upside down from its bracket so that its body clears the
     slider, its mirror's face on the layout's flip point. `angle` swings it toward position 2."""
@@ -182,7 +274,9 @@ def port(angle=0.0):
         m[k] = m[k].copy()
         m[k].rotate(pivot, Y, -angle)
     origin = layout.FLIP_POINT - PORT_FACE * (P.MIRROR_THICKNESS / 2)
-    return {k: G.placed(v, origin, -Z, -PORT_FACE) for k, v in m.items()}
+    out = {k: G.placed(v, origin, -Z, -PORT_FACE) for k, v in m.items()}
+    out["body"] = fasteners.cut(out["body"], screws(), "camera port")
+    return out
 
 
 def camera_mount(body, front, holes, drop):
@@ -201,6 +295,7 @@ def camera_mount(body, front, holes, drop):
     return {"base": base.removeSplitter(), "plate": plate.cut(Part.makeCompound(tools))}
 
 
+@G.kept
 def camera(name, focus=0.0):
     """A camera on its mount at its sensor's place, the camera and its focus plate moved `focus`
     along its light: its sensor, body, plugs, plate and base."""
@@ -211,10 +306,11 @@ def camera(name, focus=0.0):
     mount = camera_mount(body, front, MOUNT_HOLES[name], origin.z - DECK_TOP)
     out = {k: G.placed(v, origin + axis * focus, axis, Z) for k, v in build().items()}
     out["plate"] = G.placed(mount["plate"], origin + axis * focus, axis, Z)
-    out["base"] = G.placed(mount["base"], origin, axis, Z)
+    out["base"] = fasteners.cut(G.placed(mount["base"], origin, axis, Z), screws(), name + " mount")
     return out
 
 
+@G.kept
 def epi_arm():
     """The epi arm's bought parts, on the epi plate: the epi lens's tube, the 30 mm cage with the
     field stop's plate, the fold's cube and the combiners' cubes, the collectors' tubes and the
@@ -240,11 +336,12 @@ def epi_arm():
         leds.append(G.placed(parts.mounted_led()["housing"], die, -axis, Z))
     return {
         "tube": G.ring(d, P.SM1, near - start, V((start + near) / 2, 0, z), X),
-        "plates": Part.makeCompound([G.placed(parts.cage_plate(), V(x, 0, z), X, Z)
-                                     for x in (held, O.STOP_X)]),
+        "plates": fasteners.cut(Part.makeCompound([G.placed(parts.cage_plate(), V(x, 0, z), X, Z)
+                                                   for x in (held, O.STOP_X)]), screws(), "epi cage"),
         "rods": Part.makeCompound(rods),
-        "cubes": Part.makeCompound([cube["cube"].translated(turn)]
-                                   + [G.placed(cube["cube"], at, Z, X) for at in centres[1:]]),
+        "cubes": fasteners.cut(Part.makeCompound(
+            [cube["cube"].translated(turn)] + [G.placed(cube["cube"], at, Z, X) for at in centres[1:]]),
+            screws(), "epi cage"),
         "dichroics": Part.makeCompound([G.placed(cube["dichroic"], at, Z, X) for at in centres[1:]]),
         "mirror": G.mirror(P.SMALL_OPTIC, parts.SMALL_MIRROR, turn, -Y, -X),
         "tubes": Part.makeCompound(tubes),
@@ -309,7 +406,8 @@ def place(doc, parent=None):
                            ("LowerDeck", "lower", "Lower deck: the changer"),
                            ("UpperDeck", "upper", "Upper deck: the tube lens, slider and cameras"),
                            ("PortBracket", "bracket", "Camera port's bracket"),
-                           ("EpiPlate", "epi", "Epi plate")):
+                           ("EpiPlate", "epi", "Epi plate"),
+                           ("EpiBracket", "epi_bracket", "Epi plate's bracket")):
         add(doc, name, s[k], "metal", g, label)
     g = new_group("Changer", "Objective changer, the 10x on the axis")
     add(doc, "ChangerPlate", ch["plate"], "metal", g, "Changer plate, with its nut block and grooves")

@@ -252,6 +252,8 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Each insert and its labware clear the head across the stage's and the lift's travel, and the objectives as they change | pass | the objectives' fronts 1.5 mm above the dishes with the lift at the top of its travel |
 | The stage's openings pass the brightfield light of the 5x and the 10x at every target, and of the 20x at every target's centre | pass | 72 stage positions, to the field's centre |
 | Everything stays over the base plate, the moving parts across their travel | pass | x -150.0 to 255.0, y -156.1 to 265.0; the base -200 to 265, -160 to 265 |
+| Every screw clears the parts, the moving ones across their travel | pass | 197 screws |
+| Every screw's head bears on its part, and its thread has material all round | pass | 1 mm round each tapping hole, at least |
 | The cover clears the instrument, its cables' room and its moving parts across their travel, and lifts straight off | pass | 5.0 mm round it at least, inside the frame |
 | The door swings open clear of the cover, and presses the interlock only when shut | pass | it swings 120 degrees; 0.34 degrees open releases the switch |
 | The intake and the fan are baffled against light | pass | no straight line within 72 degrees of their axis gets past the baffles |
@@ -264,11 +266,12 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | The 20x's brightfield light is whole | within +-48.3 mm of the centre along X |
 | At the worst target, the 20x's brightfield LEDs blocked | 8 of 44 |
 | At the worst target, all LEDs blocked | 16 of 64, from NA 0.30 |
-| Mass without the enclosure and the electronics, kg | 30.3 |
-| Custom aluminium parts, kg | 17.1 |
-| Heaviest custom parts, kg | the base plate 6.4, the head plate 3.3, the upper deck 1.8, the lower deck 1.5 |
+| Mass without the enclosure and the electronics, kg | 30.2 |
+| Custom aluminium parts, kg | 17.0 |
+| Heaviest custom parts, kg | the base plate 6.4, the head plate 3.2, the upper deck 1.8, the lower deck 1.5 |
 | Bought parts, kg | 13.2, with 3.2 for the column's extrusions |
 | Mass with the enclosure and the electronics, kg | 41.6 |
+| Screws | 197: 8 M2.5, 64 M3, 93 M4, 2 M5, 20 M6, 10 M8 |
 | Cover, outside, the door shut | 548 x 513 x 640 mm |
 | Intake; fan | 100 cm2; 120 mm, 40 m3/h through the baffles |
 | Air's warming inside, typical and peak draw | 3.0 K at 40 W, 7.5 K at 100 W |
@@ -279,7 +282,7 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 
 | Check | Result | Detail |
 |---|---|---|
-| Every custom part has a drawing, a STEP file and a row in the bill of materials | pass | 32 parts, 32 drawings, 32 STEP files |
+| Every custom part has a drawing, a STEP file and a row in the bill of materials | pass | 33 parts, 33 drawings, 33 STEP files |
 | Each drawing's overall sizes are its part's | pass | its width, height and thickness, from its views |
 | Each STEP file reads back as its part | pass | the same solids and volume |
 
@@ -300,6 +303,7 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | OPTIMA-H13 Mono camera's focus plate | 1, 6061-T6 aluminium, 70.0 x 40.5 x 5.0 mm |
 | OPTIMA-H14 Colour camera's mount | 1, 6061-T6 aluminium, 55.5 x 58.0 x 15.7 mm |
 | OPTIMA-H15 Colour camera's focus plate | 1, 6061-T6 aluminium, 35.5 x 58.0 x 5.0 mm |
+| OPTIMA-H16 Epi plate's bracket | 1, 6061-T6 aluminium, 33.0 x 40.0 x 21.1 mm |
 | OPTIMA-S01 Base plate | 1, 6061-T6 aluminium, 465.0 x 425.0 x 12.0 mm |
 | OPTIMA-S02 Plate on the lift | 1, 6061-T6 aluminium, 160.0 x 110.0 x 15.0 mm |
 | OPTIMA-S03 Spacer | 4, 6061-T6 aluminium, 20.0 x 35.1 x 20.0 mm |
@@ -317,4 +321,4 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | OPTIMA-E06 Intake's baffle | 1, 5052 aluminium sheet, 1.5 mm, 298.0 x 88.0 x 1.5 mm |
 | OPTIMA-E07 Fan's baffle | 1, 5052 aluminium sheet, 1.5 mm, 168.0 x 168.0 x 1.5 mm |
 | OPTIMA-E08 Electronics tray | 1, 6061-T6 aluminium, 165.0 x 300.0 x 3.0 mm |
-| Bought parts in the bill of materials | 33 |
+| Bought parts in the bill of materials | 57 |

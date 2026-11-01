@@ -54,6 +54,7 @@ def bundles(objective):
     return Part.makeCompound(parallel), Part.makeCompound(converging)
 
 
+@G.kept
 def camera_frames():
     """Each camera's sensor centre, and the direction its light arrives along."""
     sensor = G.box((*P.SENSOR_SIZE, 0.5), V(0, 0, O.IMAGE))

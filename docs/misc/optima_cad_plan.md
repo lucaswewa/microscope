@@ -64,6 +64,7 @@ The repository's rules for phases apply, with these differences:
 | C06 | The assembly and its motion | M | The whole instrument, and its checks across the XY travel, the Z range and the objective changes against labware heights. The envelope and the mass. |
 | C07 | Enclosure and electronics | M | The frame, panels, door and interlock; the electronics tray (supply, both controllers, LED drivers); cable routes and vents |
 | C08 | Manufacturing outputs | M | A TechDraw drawing (PDF) and a STEP file for every custom part, and a bill of materials (CSV) taken from the model |
+| C09 | Screw holes | M | The screws that join the parts, and the holes they need, so the drawings are ready to order from. Added after C08, at the owner's request (2026-11-01). |
 
 ## 5. Status
 
@@ -76,7 +77,8 @@ The repository's rules for phases apply, with these differences:
 | C05 | Done |
 | C06 | Done |
 | C07 | Done |
-| C08 | In review |
+| C08 | Done |
+| C09 | In review |
 
 ## 6. C01: the optical layout
 
@@ -379,3 +381,55 @@ Its checks:
 - **Screw holes.** The holes that join the parts aren't all modelled: between the decks, the brackets and the head plate, for the rails and carriages, and for the motors, among others. The stand's are mostly there. A phase that adds them would make the drawings ready to order from.
 - **Weight.** The design document's §14 decision 8, whether to lighten the plates and the panels, changes several of these parts.
 - **Materials and finishes.** 6061-T6 for machined parts and 5052 sheet for the panels, all black anodized. These are suggestions.
+
+## 14. C09: screw holes
+
+C08's drawings warned that the screws joining the parts weren't all modelled. C09 adds them, after the owner asked for it on 2026-11-01. The same day the owner accepted the instrument's weight, about 42 kg, so the parts keep their sizes.
+
+**Screws as data.** [`fasteners.py`](../../cad/optima/optima_cad/fasteners.py) describes a socket-head screw:
+
+- its size;
+- the point its head seats on;
+- the axis it goes in along;
+- how far it goes through the parts it clamps;
+- how deep it goes into the part it's screwed into, if any;
+- those parts' names.
+
+`head.py`, `stand.py` and `enclosure.py` each list their screws, 197 in all: 8 M2.5, 64 M3, 93 M4, 2 M5, 20 M6 and 10 M8. Each part's builder cuts the holes that name it: clearance holes where the part is clamped, counterbores for sunk heads, and tapping holes where a screw goes in. So the models, the drawings and the STEP files all have them.
+
+| Where | Screws |
+|---|---|
+| Head plate | Six M8 into T-nuts in the column's front slots. Seven M6 from its back into the decks' and the camera port's bracket's back edges, clear of the column and the cable duct. |
+| Epi plate | A new angle bracket, H16, screwed to the head plate's front with two M5s; the epi plate sits on it, on two M4s. Six M4s from below hold the cage's cubes and plates. |
+| Guides | The rails' M3s sunk in their counterbores, into the decks. The changer's carriage's four M3s are sunk in the changer plate, and the slider's come up through its flange. |
+| Motors and brackets | M2.5s through the brackets into the motors. M3s through the lower deck into the changer's bracket and the detent block. Sunk M3s down through the upper deck into the slider's bracket. |
+| On the upper deck | M4s from below into the fold mirror's mount, M3s into the camera mounts, and an M6 down into the camera port's base. The overview bracket's flange takes two M4s. |
+| Stand | The lift's M6s into the base plate, the column's M8s up into its bores, and the tray's M3s through its spacers. The plate on the lift: sunk M6s into the lift, and M6s up through the spacers into the XY stage. The matrix's mount on four M3s. |
+| Enclosure | The panels' M4s into T-nuts in the frame, at most 150 mm apart. The door's hinge and handle. The baffles on spacers, the fan, and the supply and the boards on the tray. |
+
+Its checks, in the instrument model:
+
+- **Every screw clears the parts.** The screws on fixed parts also clear the moving parts across their travel.
+- **Every screw's head bears on its part, and its thread has material all round.** At least 1 mm round each tapping hole.
+
+**What else C09 changed.**
+
+- **Drawings.** There are 33 now, with H16. Each one's thread and counterbore notes come from the screws, such as "Tapped: 3 x M6 x 12 deep". The general note now says the holes are clearance holes unless a note taps them.
+- **Bill of materials.** It counts the screws by size and length, and the T-nuts, nuts and spacers they need.
+- **Parts.**
+  - The guides' rails are counterbored, as MGN12 rails are.
+  - The slider's nut block is 12 mm long, not 16, so the carriage's screws clear it.
+  - The tray's spacers are plain spacers on screws into the base plate.
+- **Build time.** The builders now keep their results for the rest of a run, so the build still takes about a minute.
+
+**Still assumed.**
+
+- **Bought parts' holes.**
+  - An M6 at the middle of the camera port's base.
+  - Two M3s, 110 mm apart, in the supply's base.
+  - An M4 at the bottom of each cage cube and plate.
+  - Corner holes in the boards' carriers.
+
+  Check each against the part before ordering.
+- **Not modelled.** The home switches' and the interlock's screws, and the lead nuts' set screws.
+- **Strength.** The upper deck hangs 260 mm in front of the head plate on two M6s and its fit against the plate; that's a fit to check on the first build.

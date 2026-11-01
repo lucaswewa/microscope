@@ -20,7 +20,7 @@ Open any file in [`models/`](models/) with FreeCAD 1.1. Each has its parts in gr
 - **`step/`:** a STEP file of every custom part, as modelled, moved so that its box starts at the origin. Take any size a drawing doesn't show from it.
 - **`bill-of-materials.csv`:** the custom parts, with their sizes, and the bought parts, with the lengths to cut them to.
 
-Not every screw hole that joins a part to its neighbours is modelled yet; each drawing says so.
+Every screw that joins the parts is modelled, with the holes it needs; each drawing notes its part's tapped and counterbored holes.
 
 ## Changing them
 
@@ -59,6 +59,7 @@ Every file is compared byte for byte, except the drawings. TechDraw paints a pag
 | `optima_cad/inserts.py` | The sample inserts: the adapter, the inserts and their labware, and their checks |
 | `optima_cad/assembly.py` | The whole instrument: the head on the stand in its enclosure, and its checks across every moving part's travel, its envelope and its mass |
 | `optima_cad/enclosure.py` | The enclosure and the electronics: the cover, its door, interlock, intake and fan, the electronics tray and the cable ducts, and their checks |
+| `optima_cad/fasteners.py` | Screws: where each goes, the holes it needs, its shape, and the checks that it fits |
 | `optima_cad/drawings.py` | The outputs: the custom parts' list, their drawings and STEP files, and the bill of materials, with their checks |
 | `optima_cad/sheet.svg` | The drawings' A3 sheet: a border and a title block |
 | `optima_cad/checks.py` | Checks, and the overlaps they look for |
