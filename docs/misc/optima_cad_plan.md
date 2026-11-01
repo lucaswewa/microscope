@@ -78,7 +78,7 @@ The repository's rules for phases apply, with these differences:
 | C06 | Done |
 | C07 | Done |
 | C08 | Done |
-| C09 | In review |
+| C09 | Done |
 
 ## 6. C01: the optical layout
 
