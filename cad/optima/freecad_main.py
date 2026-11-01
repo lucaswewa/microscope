@@ -1,4 +1,5 @@
-"""What FreeCAD runs when make.py starts it: builds the models and writes the result as JSON.
+"""What FreeCAD runs when make.py starts it: builds the models and the manufacturing outputs, and
+writes the result as JSON.
 
 It always ends the process, so FreeCAD never waits for a person, even after an error. The result
 appears all at once, so make.py can stop FreeCAD if it hangs on its way out.
@@ -14,7 +15,7 @@ try:
     sys.path.insert(0, os.environ["OPTIMA_SRC"])
     from optima_cad import build
 
-    result = build.run(os.environ["OPTIMA_OUT"])
+    result = build.run(os.environ["OPTIMA_OUT"], os.environ["OPTIMA_OUTPUTS"])
 except BaseException:
     result["error"] = traceback.format_exc()
 finally:

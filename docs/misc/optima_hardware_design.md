@@ -607,7 +607,7 @@ The new hardware needs the pieces below, each one phase or more. Following the p
 
 ## 13. Bill of materials and budget
 
-The objectives and the mono camera aren't included.
+The objectives and the mono camera aren't included. For building, the CAD's bill of materials ([`cad/optima/outputs/bill-of-materials.csv`](../../cad/optima/outputs/bill-of-materials.csv)) lists every part: each custom part with its drawing, and the bought parts with their quantities and cut lengths ([optima_cad_plan.md](optima_cad_plan.md#13-c08-manufacturing-outputs), C08).
 
 | # | Item | Choice | Qty | Price (USD) | Basis |
 |---|---|---|---|---|---|

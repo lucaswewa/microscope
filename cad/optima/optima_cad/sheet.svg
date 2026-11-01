@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- OPTIMA's A3 drawing sheet for TechDraw: a border and a title block's lines. drawings.py writes
+     the title block's text as TechDraw annotations, which come out as text in a PDF. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">
+ <g fill="none" stroke="#000" stroke-width="0.35">
+  <rect x="10" y="10" width="400" height="277" stroke-width="0.7"/>
+  <rect x="230" y="247" width="180" height="40" stroke-width="0.7"/>
+  <path d="M230 257H410M230 267H410M230 277H410M320 257V277M365 257V267"/>
+ </g>
+</svg>

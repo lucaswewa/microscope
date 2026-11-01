@@ -70,11 +70,12 @@ def panels():
     }
 
 
-def door(angle=0.0):
+def door(angle=0.0, handle=True):
     """The door over the whole front, with a handle by its right edge, `angle` degrees open."""
     x0, y0, x1, _, top = OUT
-    handle = G.span(V(x1 - 60, y0 - 25, -20), V(x1 - 40, y0, 80))
-    d = G.span(V(x0, y0, FOOT), V(x1, Y0 - F, top)).fuse(handle)
+    d = G.span(V(x0, y0, FOOT), V(x1, Y0 - F, top))
+    if handle:
+        d = d.fuse(G.span(V(x1 - 60, y0 - 25, -20), V(x1 - 40, y0, 80)))
     d.rotate(HINGE, Z, -angle)
     return d
 
@@ -98,7 +99,9 @@ def tray():
     floor = stand.BASE_TOP + s + t
     feet = [Part.makeCylinder(4, s, V(x, y, stand.BASE_TOP)) for x in (x0 + 8, x1 - 8)
             for y in (y0 + 8, y1 - 8)]
-    plate = G.span(V(x0, y0, floor - t), V(x1, y1, floor)).fuse(feet)
+    plate = G.drill(G.span(V(x0, y0, floor - t), V(x1, y1, floor)),
+                    [(3.4, None, [(x, y) for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)])],
+                    floor, -Z)
 
     def turned(shapes, name, lift=0.0):
         x, y = P.TRAY_PARTS[name]
@@ -110,6 +113,7 @@ def tray():
                for sx in (-1, 1) for sy in (-1, 1)]
     return {
         "tray": plate,
+        "standoffs": Part.makeCompound(feet),
         "supply": turned([G.box(P.SUPPLY, V(0, 0, P.SUPPLY[2] / 2))], "supply"),
         "boards": Part.makeCompound([
             turned(parts.circuit(P.SKR_PICO).values(), "motion", 5),
@@ -160,6 +164,7 @@ def place(doc, leds, parent=None):
     tr = tray()
     g = new_group("Electronics", "Electronics tray: supply, controllers and LED drivers")
     add(doc, "Tray", tr["tray"], "metal", g, "Electronics tray")
+    add(doc, "Standoffs", tr["standoffs"], "metal", g, "Tray's standoffs")
     add(doc, "Supply", tr["supply"], "metal", g, "Supply: Mean Well LRS-150-24")
     add(doc, "Boards", tr["boards"], "board", g, "SKR Pico, Pico 2 and LDD-H drivers on carriers")
     cables = {"ducts": ducts(), "plugs": plugs(leds)}
@@ -177,7 +182,7 @@ def checks(cover, tr, cables, inside, swept):
     found = clashes([("the cover's %s and the instrument" % k, v, s)
                      for k, v in dict(walls, door=cover["door"]).items() for s in every])
     box = App.BoundBox()
-    for s in every + [tr["tray"], tr["supply"], tr["boards"], cables["ducts"]]:
+    for s in every + list(tr.values()) + [cables["ducts"]]:
         box.add(s.BoundBox)
     room = min(box.XMin - X0, X1 - box.XMax, box.YMin - Y0, Y1 - box.YMax, TOP - box.ZMax)
 
@@ -196,7 +201,7 @@ def checks(cover, tr, cables, inside, swept):
     margins = [(ib.YLength - iw) / 2, (ib.ZLength - ih) / 2, (fb.XLength - side) / 2]
     angle = math.degrees(math.atan(min(margins) / gap))
 
-    parts_ = {"tray": tr["tray"], "supply": tr["supply"], "boards": tr["boards"]}
+    parts_ = {k: tr[k] for k in ("tray", "standoffs", "supply", "boards")}
     stack = clashes([("the %s and the instrument" % k, v, s) for k, v in parts_.items() for s in every]
                     + [("the %s and the ducts" % k, v, cables["ducts"]) for k, v in parts_.items()]
                     + [("the ducts and the instrument", cables["ducts"], s) for s in every])

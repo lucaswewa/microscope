@@ -45,7 +45,7 @@ The repository's rules for phases apply, with these differences:
 - **Branches and pull requests.** One branch, `optima/cNN-short-name`, and one pull request, `CNN: <title>`, per phase. The owner approves each pull request before it's merged, and the next phase starts from an up-to-date `main`.
 - **Each pull request contains:**
   - the scripts;
-  - the rebuilt `models/` and `REPORT.md`;
+  - the rebuilt `models/`, `REPORT.md` and, since C08, `outputs/`;
   - the phase's status in §5;
   - any change to the design document that the modelling forced.
 - **Size budget.** The size budget counts the scripts; built files, the report and docs don't count.
@@ -75,8 +75,8 @@ The repository's rules for phases apply, with these differences:
 | C04 | Done |
 | C05 | Done |
 | C06 | Done |
-| C07 | In review |
-| C08 | Not started |
+| C07 | Done |
+| C08 | In review |
 
 ## 6. C01: the optical layout
 
@@ -340,3 +340,42 @@ Its checks, in the instrument model:
 - The fan's flow through the baffles, 40 m³/h, and so the warming. The baffles' mounts aren't modelled.
 - The room each LED's cable needs, and the electronics' and the wiring's mass.
 - The cables to the moving stage, which need slack for its travel, aren't modelled. They run short from the tray, which sits under the stage.
+
+## 13. C08: manufacturing outputs
+
+[`cad/optima/outputs/`](../../cad/optima/README.md#making-the-parts) holds what a workshop or a supplier needs. The same scripts as the models build it.
+
+| Output | What it holds |
+|---|---|
+| `drawings/` | A PDF drawing of each of the 32 custom parts: 15 for the head, 5 for the stand, 4 for the inserts and 8 for the enclosure |
+| `step/` | A STEP file of each, as modelled, moved so that its box starts at the origin |
+| `bill-of-materials.csv` | The 32 custom parts, with their quantities, materials and sizes, and 33 lines of bought parts, with their quantities and the lengths to cut them to |
+
+**The drawings.** Each is a TechDraw page on an A3 sheet of this project's own (`sheet.svg`).
+
+- **Views.** First-angle projection, with an isometric view. Each part is drawn as it sits in the instrument: from above if it's thinnest in Z, otherwise from the front or the right.
+- **Scale.** 2:1, 1:1, 1:2, 1:5 or 1:10, whichever fits.
+- **Sizes.** The overall sizes only. Take any other size from the STEP file of the same number.
+- **Notes.**
+  - The general notes: sizes in mm, tolerances to ISO 2768-mK, and sharp edges broken.
+  - The part's own, such as its threads.
+  - A warning that not every screw hole is modelled yet.
+- **Title block.** Number, name, quantity, scale, material and finish.
+
+Its checks:
+
+- Every custom part has a drawing, a STEP file and a row in the bill of materials.
+- Each drawing's overall sizes, measured from its views by TechDraw, are its part's.
+- Each STEP file reads back as its part: the same solids and volume.
+
+**Reproducible files.**
+
+- The STEP files and the bill of materials are byte for byte the same from build to build.
+- The drawings aren't, quite. TechDraw paints a page's items in an order that changes from run to run, and places some text a millimetre apart.
+- So `make.py` compares a drawing by what it draws and says, and treats it as changed whenever its part's STEP file changes. It writes only the files that changed.
+
+**Before ordering.**
+
+- **Screw holes.** The holes that join the parts aren't all modelled: between the decks, the brackets and the head plate, for the rails and carriages, and for the motors, among others. The stand's are mostly there. A phase that adds them would make the drawings ready to order from.
+- **Weight.** The design document's §14 decision 8, whether to lighten the plates and the panels, changes several of these parts.
+- **Materials and finishes.** 6061-T6 for machined parts and 5052 sheet for the panels, all black anodized. These are suggestions.
