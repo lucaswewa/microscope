@@ -274,3 +274,47 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Air's warming inside, typical and peak draw | 3.0 K at 40 W, 7.5 K at 100 W |
 | Cover, kg | 10.0 |
 | Electronics and their tray, kg | 1.4 |
+
+## manufacturing-outputs
+
+| Check | Result | Detail |
+|---|---|---|
+| Every custom part has a drawing, a STEP file and a row in the bill of materials | pass | 32 parts, 32 drawings, 32 STEP files |
+| Each drawing's overall sizes are its part's | pass | its width, height and thickness, from its views |
+| Each STEP file reads back as its part | pass | the same solids and volume |
+
+| Fact | Value |
+|---|---|
+| OPTIMA-H01 Head plate | 1, 6061-T6 aluminium, 295.0 x 285.0 x 15.0 mm |
+| OPTIMA-H02 Lower deck | 1, 6061-T6 aluminium, 260.0 x 142.0 x 15.0 mm |
+| OPTIMA-H03 Upper deck | 1, 6061-T6 aluminium, 180.0 x 260.0 x 15.0 mm |
+| OPTIMA-H04 Camera port's bracket | 1, 6061-T6 aluminium, 65.0 x 140.0 x 12.0 mm |
+| OPTIMA-H05 Epi plate | 1, 6061-T6 aluminium, 135.0 x 260.0 x 12.0 mm |
+| OPTIMA-H06 Changer plate | 1, 6061-T6 aluminium, 120.0 x 112.0 x 12.0 mm |
+| OPTIMA-H07 Changer's motor bracket | 1, 6061-T6 aluminium, 32.0 x 35.0 x 6.0 mm |
+| OPTIMA-H08 Detent block | 1, 6061-T6 aluminium, 21.0 x 25.0 x 20.0 mm |
+| OPTIMA-H09 Slider's carrier | 1, 6061-T6 aluminium, 68.0 x 120.0 x 35.0 mm |
+| OPTIMA-H10 Slider's motor bracket | 1, 6061-T6 aluminium, 32.0 x 44.0 x 6.0 mm |
+| OPTIMA-H11 Fold mirror's mount | 1, 6061-T6 aluminium, 80.0 x 94.0 x 64.0 mm |
+| OPTIMA-H12 Mono camera's mount | 1, 6061-T6 aluminium, 70.0 x 60.5 x 9.7 mm |
+| OPTIMA-H13 Mono camera's focus plate | 1, 6061-T6 aluminium, 70.0 x 40.5 x 5.0 mm |
+| OPTIMA-H14 Colour camera's mount | 1, 6061-T6 aluminium, 55.5 x 58.0 x 15.7 mm |
+| OPTIMA-H15 Colour camera's focus plate | 1, 6061-T6 aluminium, 35.5 x 58.0 x 5.0 mm |
+| OPTIMA-S01 Base plate | 1, 6061-T6 aluminium, 465.0 x 425.0 x 12.0 mm |
+| OPTIMA-S02 Plate on the lift | 1, 6061-T6 aluminium, 160.0 x 110.0 x 15.0 mm |
+| OPTIMA-S03 Spacer | 4, 6061-T6 aluminium, 20.0 x 35.1 x 20.0 mm |
+| OPTIMA-S04 LED matrix's mount | 1, 6061-T6 aluminium, 100.0 x 100.0 x 4.0 mm |
+| OPTIMA-S05 Overview camera's bracket | 1, 6061-T6 aluminium, 81.1 x 88.2 x 44.0 mm |
+| OPTIMA-I01 Insert adapter | 1, 6061-T6 aluminium, 175.0 x 175.0 x 9.8 mm |
+| OPTIMA-I02 Four-slide insert | 1, 6061-T6 aluminium, 160.0 x 110.0 x 3.0 mm |
+| OPTIMA-I03 Microplate insert | 1, 6061-T6 aluminium, 160.0 x 110.0 x 3.0 mm |
+| OPTIMA-I04 Dish insert | 1, 6061-T6 aluminium, 160.0 x 110.0 x 3.0 mm |
+| OPTIMA-E01 Cover's left panel | 1, 5052 aluminium sheet, 1.5 mm, 511.5 x 633.1 x 1.5 mm |
+| OPTIMA-E02 Cover's right panel | 1, 5052 aluminium sheet, 1.5 mm, 511.5 x 633.1 x 1.5 mm |
+| OPTIMA-E03 Cover's back panel | 1, 5052 aluminium sheet, 1.5 mm, 545.0 x 633.1 x 1.5 mm |
+| OPTIMA-E04 Cover's top panel | 1, 5052 aluminium sheet, 1.5 mm, 548.0 x 511.5 x 1.5 mm |
+| OPTIMA-E05 Door | 1, 5052 aluminium sheet, 1.5 mm, 548.0 x 634.6 x 1.5 mm |
+| OPTIMA-E06 Intake's baffle | 1, 5052 aluminium sheet, 1.5 mm, 298.0 x 88.0 x 1.5 mm |
+| OPTIMA-E07 Fan's baffle | 1, 5052 aluminium sheet, 1.5 mm, 168.0 x 168.0 x 1.5 mm |
+| OPTIMA-E08 Electronics tray | 1, 6061-T6 aluminium, 165.0 x 300.0 x 3.0 mm |
+| Bought parts in the bill of materials | 33 |

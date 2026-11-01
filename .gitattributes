@@ -2,5 +2,6 @@
 # whatever core.autocrlf says. Git detects binary files itself.
 * text=auto eol=lf
 
-# FreeCAD documents are zip files (cad/optima builds them).
+# Binary files that cad/optima builds: FreeCAD documents, which are zip files, and drawings.
 *.FCStd binary
+*.pdf binary

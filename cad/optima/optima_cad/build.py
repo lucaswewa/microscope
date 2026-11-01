@@ -4,7 +4,7 @@ import os
 
 import FreeCAD as App
 
-from . import assembly, cameras, document, head, inserts, layout, parts, stages, stand
+from . import assembly, cameras, document, drawings, head, inserts, layout, parts, stages, stand
 from . import params as P
 
 # Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
@@ -55,7 +55,8 @@ def uses(name, prefixes):
     return name.startswith(prefixes)
 
 
-def run(out_dir):
+def run(out_dir, outputs_dir):
+    """Builds every model into `out_dir`, and the manufacturing outputs into `outputs_dir`."""
     App.ParamGet("User parameter:BaseApp/Preferences/Document").SetBool("SaveThumbnail", False)
     result = {"freecad": ".".join(App.Version()[:3]), "models": [], "error": None}
     for name, build, prefixes in MODELS:
@@ -73,4 +74,7 @@ def run(out_dir):
             "facts": [[k, v] for k, v in facts],
             "checks": [c._asdict() for c in checks],
         })
+    checks, facts = drawings.write(outputs_dir)
+    result["models"].append({"name": "manufacturing-outputs", "facts": [[k, v] for k, v in facts],
+                             "checks": [c._asdict() for c in checks]})
     return result
