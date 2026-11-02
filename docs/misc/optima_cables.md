@@ -98,7 +98,7 @@ Each of the stage's motors has its own 1.6 m cable, ending in an HDB15 (M). It p
 | 6 | The stage's EEPROM | Not connected |
 | 5, 10–15 | Not used by this stage | Not connected |
 
-The motor header's labels, 1A, 1B, 2A and 2B, are as BTT's pin diagram names them; check them on the board. Swapping a coil's two wires only reverses the motor, which E03's settings can undo. The stage's limit switches are mechanical, and close when pushed. So joining both ends on one input works: either one pulls it low.
+The motor header's labels, 1A, 1B, 2A and 2B, are as BTT's pin diagram names them. Swapping a coil's two wires only reverses the motor, which E03's settings can undo. The stage's limit switches are mechanical, and close when pushed. So joining both ends on one input works: either one pulls it low.
 
 ### The Z lift: W17
 
@@ -106,8 +106,8 @@ The lift has a DB9 (M) on its body, not an HDB15, and Standa publishes no pinout
 
 - the motor's four phases, to the Z motor header;
 - limit switch 1 to Z-STOP;
-- limit switch 2 to a spare input, which E03 picks;
-- the switches' supply and ground, if they need one.
+- limit switch 2 to the PROBE header, which E03 picked ([the motion controller](optima_motion_controller.md#1-the-pin-map));
+- the switches' supply and ground, if they need one, from the Z-STOP header's 5 V and ground.
 
 That's 8 conductors of 0.34 mm².
 
@@ -194,5 +194,4 @@ The cameras' sockets, and the hub's upstream one, set each cable's far connector
 - **The cameras' trigger connectors**, from ToupTek (E01 §6).
 - **The plugs on the DC leads:** the mono camera's, the hub's and the camera port's. Each matches the part's own adapter.
 - **The epi LEDs' M8 pins**, from Thorlabs' sheet.
-- **The SKR Pico's header labels**, and the spare input for the lift's second limit, in E03.
 - **The carrier board's connectors.** E04 picks them, and names its headers, against this document's pins.

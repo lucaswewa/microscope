@@ -46,7 +46,7 @@ flowchart LR
 
 | Load | Rail | Peak, W | In use, W | Source |
 |---|---|---|---|---|
-| X, Y and Z steppers, and the changer's | 24 V | 30 | 5 | The design's estimate; E03 sets the currents |
+| X, Y and Z steppers, and the changer's | 24 V | 30 | 5 | The design's estimate. E03's currents give about 12 W in the motors, with all four running. |
 | The slider's stepper | 24 V | 3 | 0.5 | A NEMA 11 at about 0.5 A (assumed) |
 | One epi LED, through its LDD-1000H | 24 V | 5 | 4 | 1 A at about 4 V, one LED at a time |
 | The fan | 24 V | 3 | 3 | A 120 mm, 24 V fan (assumed) |
@@ -127,10 +127,10 @@ The switch is the safety switch on the cover's front-right upright, which the sh
 |---|---|---|---|
 | X | The 8MTF-102LS05's X stepper | Both ends, wired to one input | Through its HDB15 connector (E02) |
 | Y | Its Y stepper | Both ends, one input | The same |
-| Z | The 8MVT100-25-1's stepper | Both ends, one input | The same |
+| Z | The 8MVT100-25-1's stepper | The lower end on Z-STOP, the upper on PROBE, which grblHAL only reports | Through its DB9 connector (E02, E03) |
 | A | The changer's NEMA 11 | The home switch | Its carriage trips the switch (CAD C04) |
 
-The SKR Pico has four TMC2209 drivers and four endstop inputs, one for each axis, which grblHAL can share between an axis's two ends. Above 0.8 A, its maker advises a fan on the drivers. E03 sets the currents from Standa's data, and adds a fan if they need one. The SKR Pico connects to the PC through the hub.
+The SKR Pico has four TMC2209 drivers and four endstop inputs, one for each axis, which grblHAL can share between an axis's two ends. Above 0.8 A, its maker advises a fan on the drivers. E03 sets them to 470 mA, so they need none ([the motion controller](optima_motion_controller.md#3-currents)). The SKR Pico connects to the PC through the hub.
 
 ### The carrier board: the Pico 2
 
@@ -166,6 +166,6 @@ The carrier board also holds:
 ## 6. What's still open
 
 - **The cameras' trigger connectors.** ToupTek doesn't publish the pinouts, so they wait for the cameras in hand or ToupTek's manual. Until then, the carrier gives each camera an open-collector trigger output that can drive 5–12 V at 10 mA, and an exposure input with a pull-up that takes an opto-isolated output. Both suit the usual opto-isolated interfaces.
-- **The Standa stages' connectors.** E02 took the XY stage's HDB15 pinout from Standa's sheet. The lift has a DB9, whose pinout Standa doesn't publish ([the cables](optima_cables.md#the-z-lift-w17)). The motors' currents come in E03.
+- **The Standa stages' connectors.** E02 took the XY stage's HDB15 pinout from Standa's sheet. The lift has a DB9, whose pinout Standa doesn't publish ([the cables](optima_cables.md#the-z-lift-w17)). E03 set the motors' currents, from Standa's table for the XY stage; the lift's motor isn't published.
 - **The camera port's power plug.** E02 found its connectors, two SMAs, and its 15 V. The plug for its 15 V is to match Thorlabs' supply's.
 - **The tray.** Done in E02: a power tray left of the lift, and a control tray right of it ([the cables](optima_cables.md#1-where-they-run)).
