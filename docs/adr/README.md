@@ -64,5 +64,7 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0048](0048-the-optics-firmware-workspace.md) | The optics firmware's workspace | Accepted | OPTIMA E06 |
 | [0049](0049-unsafe-code-in-the-firmware.md) | Unsafe code in the firmware | Accepted | OPTIMA E06 |
 | [0050](0050-the-optics-serial-protocol.md) | The optics controller's serial protocol | Accepted | OPTIMA E06 |
+| [0051](0051-the-optics-sequences.md) | The optics controller's sequences | Accepted | OPTIMA E07 |
+| [0052](0052-the-filter-sliders-drive.md) | The filter slider's drive | Accepted | OPTIMA E07 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.
