@@ -78,7 +78,7 @@ All 64 of the matrix's LEDs at full white draw about 19 W, almost 4 A at 5 V, so
 | E04 | The carrier board's schematic | M | The circuit in Python, its netlist and a KiCad schematic, with a clean ERC. The interlock, the LED drivers' enables, the slider's TMC2209, the matrix's level shifter, the camera triggers and exposure inputs, the camera port, the thermistors and the home switch: [optima_carrier_board.md](optima_carrier_board.md). |
 | E05 | The carrier board's layout | L | Placing the parts by script, routing, a clean DRC. The fabrication files (Gerbers, drills, bill of materials, placement) and a PDF of the board. |
 | E06 | The optics firmware, part 1 | L | The firmware workspace and the CI job that builds it. The serial protocol and its document. The LED channels with the interlock, the camera triggers and exposure inputs, and their PC-side tests: [`firmware/optics/`](../../firmware/optics/README.md) and [the protocol](optima_optics_protocol.md). |
-| E07 | The optics firmware, part 2 | L | The LED matrix over SPI, the filter slider with homing, the camera port, and preloaded sequences stepped by the exposure signal. |
+| E07 | The optics firmware, part 2 | L | The LED matrix over SPI, the filter slider with homing, the camera port, and preloaded sequences stepped by the exposure signal: [the protocol](optima_optics_protocol.md). |
 | E08 | Bench bring-up | M | Step-by-step tests for each board on the bench, and a small PC-side tool that speaks the protocol. The hardware tests, which run only when an environment variable names the board. |
 
 E01 comes first, because every other phase builds on it. E02 and E03 can follow in either order. E04 and E05 come before E07, whose parts need the board to try on.
@@ -101,8 +101,9 @@ As the CAD plan's §3 says, with these differences:
 | E03 | Approved; its bench test waits for the parts |
 | E04 | Done |
 | E05 | Done |
-| E06 | In review. Its bench test waits for a Pico 2. |
-| E07, E08 | Not started |
+| E06 | Approved; its bench test waits for a Pico 2 |
+| E07 | In review. Its bench test starts on a Pico 2, and finishes on the carrier board. |
+| E08 | Not started |
 
 ## 7. Decisions for the owner
 

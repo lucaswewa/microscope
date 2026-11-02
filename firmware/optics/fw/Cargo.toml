@@ -19,3 +19,4 @@ embassy-rp = { version = "0.10", features = ["rp235xa", "time-driver", "critical
 embassy-sync = "0.8"
 embassy-time = "0.5"
 embassy-usb = "0.6"
+embedded-hal-nb = "1.0.0"

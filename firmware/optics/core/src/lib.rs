@@ -6,9 +6,20 @@
 
 mod controller;
 mod line;
+mod matrix;
+mod port;
+mod sequence;
+mod slider;
+pub mod tmc2209;
 
-pub use controller::{Controller, DOOR_SETTLE_US, Event, Inputs, MAX_TRIGGER_US, Outputs};
+pub use controller::{
+    Controller, DOOR_SETTLE_US, Event, Inputs, MAX_STEP_DELAY_US, MAX_TRIGGER_US, Outputs,
+};
 pub use line::{Line, LineBuffer, MAX_LINE, Request};
+pub use matrix::{FRAME_BYTES, LEDS, Pattern};
+pub use port::PORT_TIMEOUT_US;
+pub use sequence::{LIGHT_SETTLE_US, Light, MAX_STEPS};
+pub use slider::{AWAY_IS_HIGH, CELLS, STEPS_PER_MM};
 
 /// The protocol's version, which changes when a change could break a client.
 pub const PROTOCOL_VERSION: u32 = 1;

@@ -11,7 +11,9 @@ use embassy_executor::Spawner;
 use embassy_futures::join::join3;
 use embassy_futures::select::{Either4, select, select4};
 use embassy_rp::gpio::{Input, Level, Output, Pull};
-use embassy_rp::peripherals::USB;
+use embassy_rp::peripherals::{SPI1, USB};
+use embassy_rp::spi::{self, Spi};
+use embassy_rp::uart::{self, Blocking, Uart, UartRx, UartTx};
 use embassy_rp::usb::{Driver, InterruptHandler};
 use embassy_rp::watchdog::Watchdog;
 use embassy_rp::{Peri, binary_info, bind_interrupts};
@@ -21,13 +23,25 @@ use embassy_time::{Duration, Instant, Timer};
 use embassy_usb::class::cdc_acm::{CdcAcmClass, Receiver, Sender, State};
 use embassy_usb::driver::EndpointError;
 use embassy_usb::{Builder, Config};
-use optics_core::{Controller, Event, Inputs, Line, LineBuffer, Request};
+use embedded_hal_nb::nb;
+use embedded_hal_nb::serial::Read as _;
+use optics_core::tmc2209::{self, DriverWire};
+use optics_core::{
+    CAMERAS, CHANNELS, Controller, Event, Inputs, Line, LineBuffer, Pattern, Request,
+};
 
 /// The most the control loop sleeps, so the door is read this often even if no edge wakes it.
 const TICK: Duration = Duration::from_millis(10);
 /// A control loop that stalls for this long resets the chip, which puts out the LEDs.
 const WATCHDOG: Duration = Duration::from_millis(500);
 const USB_PACKET: u16 = 64;
+/// The matrix's cable is unshielded, and its run to the moving lift long, so the clock stays low.
+const MATRIX_CLOCK_HZ: u32 = 4_000_000;
+/// How long a step pulse stays high, and then low: 1 µs at the chip's 150 MHz.
+const STEP_PULSE_CYCLES: u32 = 150;
+/// The longest a whole exchange with the slider's driver should take: 12 bytes at 115,200 baud is
+/// about 1 ms.
+const DRIVER_TIMEOUT: Duration = Duration::from_millis(3);
 
 /// pid.codes' VID, and its PID for testing (ADR-0050).
 const USB_IDS: (u16, u16) = (0x1209, 0x0001);
@@ -63,19 +77,38 @@ async fn main(spawner: Spawner) {
 
     // The pins are in docs/misc/optima_carrier_board.md, section 2. Each input has its own pull
     // resistor on the board, and the RP2350's erratum E9 is a reason not to use the internal ones.
-    let mut leds = [
-        Output::new(p.PIN_12, Level::Low),
-        Output::new(p.PIN_13, Level::Low),
-        Output::new(p.PIN_14, Level::Low),
-        Output::new(p.PIN_15, Level::Low),
-    ];
-    let mut triggers = [
-        Output::new(p.PIN_16, Level::Low),
-        Output::new(p.PIN_18, Level::Low),
-    ];
+    let mut matrix_config = spi::Config::default();
+    matrix_config.frequency = MATRIX_CLOCK_HZ;
+    let mut pins = Pins {
+        leds: [
+            Output::new(p.PIN_12, Level::Low),
+            Output::new(p.PIN_13, Level::Low),
+            Output::new(p.PIN_14, Level::Low),
+            Output::new(p.PIN_15, Level::Low),
+        ],
+        triggers: [
+            Output::new(p.PIN_16, Level::Low),
+            Output::new(p.PIN_18, Level::Low),
+        ],
+        port_set: Output::new(p.PIN_20, Level::Low),
+        slider_step: Output::new(p.PIN_2, Level::Low),
+        slider_dir: Output::new(p.PIN_3, Level::Low),
+        slider_enable: Output::new(p.PIN_4, Level::High),
+        matrix: Spi::new_blocking_txonly(p.SPI1, p.PIN_10, p.PIN_11, matrix_config),
+        matrix_shown: Pattern::OFF,
+    };
+    // The panel keeps its last pattern through a reset of this chip.
+    let _ = pins.matrix.blocking_write(&Pattern::OFF.frame());
+
     let mut door = Input::new(p.PIN_6, Pull::None);
     let mut exposure_1 = Input::new(p.PIN_17, Pull::None);
     let mut exposure_2 = Input::new(p.PIN_19, Pull::None);
+    let port_at = Input::new(p.PIN_21, Pull::None);
+    let slider_home = Input::new(p.PIN_5, Pull::None);
+
+    // 115,200 baud, 8N1, which the driver detects by itself.
+    let (tx, rx) = Uart::new_blocking(p.UART0, p.PIN_0, p.PIN_1, uart::Config::default()).split();
+    let mut driver = DriverUart { tx, rx };
 
     let mut watchdog = Watchdog::new(p.WATCHDOG);
     watchdog.start(WATCHDOG);
@@ -87,11 +120,18 @@ async fn main(spawner: Spawner) {
         let inputs = Inputs {
             door_shut: door.is_high(),
             exposure_low: [exposure_1.is_low(), exposure_2.is_low()],
+            port_at: port_at.is_high(),
+            slider_home: slider_home.is_high(),
         };
         controller.poll(now, inputs, |event: Event| {
             LINES_OUT.try_send(event.to_line()).is_ok()
         });
-        set_pins(&controller, &mut leds, &mut triggers);
+        if controller.slider_wants_driver() {
+            // A few milliseconds, once per homing, and the door's hardware doesn't depend on it.
+            let ok = tmc2209::configure(&mut driver);
+            controller.driver_configured(ok, Instant::now().as_micros());
+        }
+        pins.set(&mut controller);
         watchdog.feed(WATCHDOG);
 
         let tick = now + TICK.as_micros();
@@ -124,18 +164,78 @@ async fn main(spawner: Spawner) {
             {
                 controller.count_dropped();
             }
-            set_pins(&controller, &mut leds, &mut triggers);
+            pins.set(&mut controller);
         }
     }
 }
 
-fn set_pins(controller: &Controller, leds: &mut [Output<'_>], triggers: &mut [Output<'_>]) {
-    let outputs = controller.outputs();
-    for (pin, on) in leds.iter_mut().zip(outputs.leds) {
-        pin.set_level(Level::from(on));
+/// Everything the control loop drives.
+struct Pins<'d> {
+    leds: [Output<'d>; CHANNELS],
+    triggers: [Output<'d>; CAMERAS],
+    port_set: Output<'d>,
+    slider_step: Output<'d>,
+    slider_dir: Output<'d>,
+    slider_enable: Output<'d>,
+    matrix: Spi<'d, SPI1, spi::Blocking>,
+    matrix_shown: Pattern,
+}
+
+impl Pins<'_> {
+    /// The matrix goes last, because its frame holds up the loop for about half a millisecond.
+    fn set(&mut self, controller: &mut Controller) {
+        let outputs = controller.outputs();
+        for (pin, on) in self.leds.iter_mut().zip(outputs.leds) {
+            pin.set_level(Level::from(on));
+        }
+        for (pin, on) in self.triggers.iter_mut().zip(outputs.triggers) {
+            pin.set_level(Level::from(on));
+        }
+        self.port_set.set_level(Level::from(outputs.port_set));
+        self.slider_enable
+            .set_level(Level::from(!outputs.slider_on));
+        self.slider_dir.set_level(Level::from(outputs.slider_dir));
+        for _ in 0..controller.take_steps() {
+            self.slider_step.set_high();
+            cortex_m::asm::delay(STEP_PULSE_CYCLES);
+            self.slider_step.set_low();
+            cortex_m::asm::delay(STEP_PULSE_CYCLES);
+        }
+        if outputs.matrix != self.matrix_shown {
+            let _ = self.matrix.blocking_write(&outputs.matrix.frame());
+            self.matrix_shown = outputs.matrix;
+        }
     }
-    for (pin, on) in triggers.iter_mut().zip(outputs.triggers) {
-        pin.set_level(Level::from(on));
+}
+
+/// The slider's driver, on one wire: this chip hears its own bytes before any reply.
+struct DriverUart<'d> {
+    tx: UartTx<'d, Blocking>,
+    rx: UartRx<'d, Blocking>,
+}
+
+impl DriverWire for DriverUart<'_> {
+    fn exchange(&mut self, send: &[u8], reply: &mut [u8]) -> bool {
+        while !matches!(self.rx.read(), Err(nb::Error::WouldBlock)) {}
+        if self.tx.blocking_write(send).is_err() {
+            return false;
+        }
+        let deadline = Instant::now() + DRIVER_TIMEOUT;
+        for index in 0..send.len() + reply.len() {
+            let byte = loop {
+                match self.rx.read() {
+                    Ok(byte) => break byte,
+                    Err(nb::Error::WouldBlock) if Instant::now() < deadline => {}
+                    Err(_) => return false,
+                }
+            };
+            match send.get(index) {
+                Some(sent) if *sent != byte => return false,
+                Some(_) => {}
+                None => reply[index - send.len()] = byte,
+            }
+        }
+        true
     }
 }
 

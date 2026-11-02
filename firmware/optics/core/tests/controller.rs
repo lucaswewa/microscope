@@ -7,10 +7,14 @@ use optics_core::{
 const SHUT: Inputs = Inputs {
     door_shut: true,
     exposure_low: [false; CAMERAS],
+    port_at: false,
+    slider_home: false,
 };
 const OPEN: Inputs = Inputs {
     door_shut: false,
     exposure_low: [false; CAMERAS],
+    port_at: false,
+    slider_home: false,
 };
 
 fn poll(controller: &mut Controller, now: u64, inputs: Inputs) -> Vec<Event> {
@@ -121,6 +125,12 @@ fn no_sequence_lights_an_led_without_a_settled_door() {
         "led 2 off",
         "led all off",
         "status",
+        "seq add 1100 0 0 0",
+        "seq add 0011 ff 0 0",
+        "seq start 1 0 0 0",
+        "seq start 2 2 100 0",
+        "seq stop",
+        "seq clear",
     ];
     let (mut state, mut now) = (0x2545_F491_u32, 0_u64);
     let (mut controller, mut high_since) = (Controller::new(), None);
@@ -141,6 +151,7 @@ fn no_sequence_lights_an_led_without_a_settled_door() {
             now,
             Inputs {
                 door_shut,
+                exposure_low: [state & 0x10_0000 != 0, state & 0x20_0000 != 0],
                 ..Default::default()
             },
         );
