@@ -340,3 +340,25 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Cable for the made ones, by its conductors | 1 x 0.75 mm²: 1.55 m; 2 x 0.14 mm²: 2.35 m; 2 x 0.25 mm²: 3.20 m; 2 x 0.5 mm²: 1.45 m; 2 x 0.75 mm²: 4.40 m; 2 x 1 mm²: 0.35 m; 4 x 0.14 mm²: 2.15 m; 4 x 0.34 mm²: 2.20 m; 4 x 0.75 mm²: 0.55 m; 6 x 0.34 mm²: 0.40 m; 8 x 0.14 mm²: 1.15 m; 8 x 0.34 mm²: 0.55 m |
 | The longest route | W14, 1210 mm |
 | The PC's USB cable | 3.0 m |
+
+## motion-controller
+
+| Check | Result | Detail |
+|---|---|---|
+| Each axis's speed is within what its maker gives and what the supply can drive | pass | mm/s: X 8 of 8.6 on 24 V and its maker's 10, Y 8 of 8.6 on 24 V and its maker's 10, Z 5 of 17.1 on 24 V and its maker's 20, A 10 of 34.3 on 24 V |
+| Each motor's peak current is within its rating, and the drivers need no fan | pass | 470 mA RMS is 0.66 A peak, of 0.67 A; the board's maker advises a fan above 0.8 A |
+| The steps are as fine as the design's | pass | X 0.156 um, of 0.31, Y 0.156 um, of 0.31, Z 0.156 um, of 0.16 |
+| The step pulses fit the fastest steps | pass | 51 kHz at most, of 100 |
+| The motors stay within the electrical design's budget | pass | 12 W with all four running, of 30 W |
+| The soft limits stop short of the far switches, and reach what the instrument needs | pass | X and Y 100 mm, for a plate's 99; Z 23.5, for a slide's focus at 19; A 85, for the objectives at 1, 41, 81 |
+| Homing lowers the lift first, then moves the changer, and homes every axis once | pass | Z, then A, then XY |
+| A tile step takes no longer than the design's | pass | 0.29 s for 1.7 mm, of 0.3 s |
+
+| Fact | Value |
+|---|---|
+| Steps per mm, X Y Z A | 6400 6400 6400 1600 |
+| Soft limits, mm, X Y Z A | 100 100 23.5 85 |
+| Across the plate's wells at full speed, s | 12.5 |
+| One objective change, s | 4.2 |
+| Longest homing seek, s | 20 |
+| The objectives on the A axis, mm | 20x 1, 10x 41, 5x 81 |

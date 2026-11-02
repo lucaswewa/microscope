@@ -50,7 +50,7 @@ Item,Kind,Part,Quantity,Model or material,"Size, mm",Note,Drawing
 49,Bought,LED drivers,4,Mean Well LDD-1000H,,On the carrier board.,
 50,Bought,LED matrix,1,Adafruit 2734,,,
 51,Bought,Guides,2,"HIWIN MGN12 rail, 150 mm, with an MGN12H carriage",,,
-52,Bought,Lead-screw steppers,2,NEMA 11 with a Tr6 lead screw and nut,,Cut the screws to 110 and 160 mm.,
+52,Bought,Lead-screw steppers,2,"NEMA 11 with a Tr6 x 2 lead screw and nut, at least 0.67 A a phase",,Cut the screws to 110 and 160 mm.,
 53,Bought,Ball plunger,1,"M8, 4 mm ball",,,
 54,Bought,Home switches,2,"Miniature switch, 20 x 6.5 x 10 mm",,,
 55,Bought,Motion controller,1,BTT SKR Pico,,Runs grblHAL.,

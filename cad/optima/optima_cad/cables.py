@@ -66,7 +66,7 @@ CABLES = [
     Cable("W16", "Y motor and limits: the stage's own cable", "Y motor", "the stage's", "SKR Pico",
           "HDB15 (M), into W19", kind="stage"),
     Cable("W17", "Z lift: motor and limits", "Z lift", "DB9 (F), onto the lift's", "SKR Pico",
-          "Z motor and Z-STOP headers, and a spare input", (8, 0.34), limit=2.0),
+          "Z1 motor, Z-STOP and PROBE headers", (8, 0.34), limit=2.0),
     Cable("W18", "X adapter", "SKR Pico", "HDB15 (F)", "SKR Pico", "X motor and X-STOP headers",
           (6, 0.34), limit=2.0),
     Cable("W19", "Y adapter", "SKR Pico", "HDB15 (F)", "SKR Pico", "Y motor and Y-STOP headers",

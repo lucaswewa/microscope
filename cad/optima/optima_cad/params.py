@@ -317,6 +317,28 @@ CABLE_RATINGS = {0.14: 1.0, 0.25: 1.5, 0.34: 2.0, 0.5: 3.0, 0.75: 6.0, 1.0: 10.0
 CABLE_STOCK = {"USB": (300, 500, 1000, 1500, 2000, 3000), "USB 3": (300, 500, 1000, 1500, 2000, 3000),
                "M8": (500, 1000, 2000, 5000), "SMA": (500, 1000, 2000), "stage": (1600,)}
 CABLE_USB = {"USB": 5000.0, "USB 3": 3000.0}  # their longest cables, by the specifications
+
+# The motion controller: grblHAL on the SKR Pico. Standa's motor 28 drives the XY stage (its table):
+# phase current in A, phase resistance in ohms, inductance in mH, holding torque in N m, steps a
+# turn. The lift's motor isn't published and the changer's isn't chosen: both assumed to match it.
+MOTION_MOTOR = (0.67, 6.8, 4.8, 0.106, 200)
+MOTION_SUPPLY = 24.0
+MOTION_RUN_MA = 470  # RMS: a coil's peak then meets the rated current, which keeps the stages cool
+# Each axis: lead, microsteps, the distance between its switches, how far short of the far one its
+# soft limit stops, its maker's top speed, this design's speed in mm/s, its acceleration in mm/s2,
+# and its hold current in %. The lead of the changer's Tr6 screw is assumed; motion.py works out
+# its span. The lift's 25 mm is Standa's travel, of its "25 + 1".
+MOTION_AXES = {"X": (0.5, 16, 102.0, 1.0, 10.0, 8.0, 100.0, 50),
+               "Y": (0.5, 16, 102.0, 1.0, 10.0, 8.0, 100.0, 50),
+               "Z": (1.0, 32, 25.0, 0.5, 20.0, 5.0, 50.0, 50),
+               "A": (2.0, 16, None, 1.0, None, 10.0, 50.0, 20)}
+MOTION_TRIP = 2.0  # the changer's switch trips this far past its first position (set on the bench)
+MOTION_HOMING = ("Z", "A", "XY")  # the lift goes down first, so that the changer clears the sample
+MOTION_DIR_INVERT = ""  # the axes whose direction the bench test finds reversed
+MOTION_STEP = {"X": 0.31, "Y": 0.31, "Z": 0.16}  # the design's §6: its finest steps, um
+MOTION_TILE = (1.7, 0.3)  # the design's §6.1: a tile step, mm, and its time, s
+MOTION_BUDGET_W = 30.0  # the electrical design's peak for these four motors
+MOTION_NO_FAN = 0.8  # A RMS: above this, the board's maker advises a fan on the drivers
 # Slots through the head plate from the duct: x0, x1, z0, z1, by the lower and the upper deck.
 HEAD_SLOTS = ((45.0, 75.0, 85.0, 100.0), (45.0, 75.0, 180.0, 195.0))
 

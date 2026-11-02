@@ -132,7 +132,8 @@ def bought():
         ("LED drivers", 4, "Mean Well LDD-1000H", "On the carrier board."),
         ("LED matrix", 1, "Adafruit 2734", ""),
         ("Guides", 2, "HIWIN MGN12 rail, %g mm, with an MGN12H carriage" % P.MGN12_RAIL[3], ""),
-        ("Lead-screw steppers", 2, "NEMA 11 with a Tr6 lead screw and nut",
+        ("Lead-screw steppers", 2, "NEMA 11 with a Tr6 x 2 lead screw and nut, at least %g A a phase"
+         % P.MOTION_MOTOR[0],
          "Cut the screws to %g and %g mm." % (P.CHANGER_SCREW[3], P.SLIDER_SCREW[2])),
         ("Ball plunger", 1, "M8, 4 mm ball", ""),
         ("Home switches", 2, "Miniature switch, %g x %g x %g mm" % P.SWITCH, ""),

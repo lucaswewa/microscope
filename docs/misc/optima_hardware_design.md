@@ -333,7 +333,7 @@ Zaber stages were excluded at the owner's request.
 The Standa 8MTF-102LS05 is the only mid-priced, microscope-ready open frame found.
 
 - **Travel.** Its 102 mm covers a 96-well plate's 99 mm span of well centres. A 384-well plate's centres span 103.5 mm, so the outermost columns are imaged near the edge of the field.
-- **Speed is the compromise.** At 10 mm/s, a crossing of the plate takes about 10 s and a 1.7 mm tile step about 0.3 s.
+- **Speed is the compromise.** At 10 mm/s, a crossing of the plate takes about 10 s and a 1.7 mm tile step about 0.3 s. On this design's 24 V, the [motion controller](optima_motion_controller.md#2-the-axes) starts at 8 mm/s: about 12.5 s and 0.29 s.
 - **Mounting.** The top plate has M3 and M6 holes on a 25 mm grid and 4 mm-deep pockets at the opening's corners, which take the sample-insert adapter ([§9](#9-mechanical-layout)).
 
 ### 6.2 Focus
@@ -376,7 +376,7 @@ No motorized three-position changer for M26 objectives fits the budget. OptoSigm
 
 - **Carriage.** The three objectives sit 40 mm apart on a machined aluminium carriage. Tap it M26 × 0.706, or use M26-to-SM1/SM2 adapters.
 - **Guide and drive.** The carriage runs on a miniature linear guide (an MGN12H carriage on a 150 mm rail; a 120 mm rail would leave it 74.6 mm of travel, short of the 80 mm it needs) and is driven by a NEMA 11 lead-screw stepper with a home switch.
-- **Detents.** A spring-loaded ball-and-V detent locates each position, so repeatability doesn't depend on the motor: a ball plunger behind the carriage drops into a V-groove in its back edge. Lower the stepper's holding current at a detent so the two don't fight.
+- **Detents.** A spring-loaded ball-and-V detent locates each position, so repeatability doesn't depend on the motor: a ball plunger behind the carriage drops into a V-groove in its back edge. The stepper switches off when idle, so the two don't fight ([the motion controller](optima_motion_controller.md#3-currents)).
 - **Expected offsets.** After a change, expect the image to move a few micrometres. Per-objective offsets and image registration correct it.
 
 **Collision.** The 20x's front lens sits 14 mm lower than the 5x's and the 10x's (WD 20 vs 34 mm), and every objective sweeps over the sample during a change. Before a change, the server must lower the stage until the lowest front lens clears the sample's top, which it knows from the labware definition.
@@ -400,7 +400,7 @@ It uses the same guide-and-stepper construction as the objective changer, hung f
 | Topic | Detail |
 |---|---|
 | Axes | X, Y, Z and A, the objective changer |
-| Wiring | The Standa stages connect through their HDB15 connectors (motor and limit switches) via adapter harnesses |
+| Wiring | The XY stage connects through its HDB15 connectors (motor and limit switches) via adapter harnesses, and the lift through its DB9 ([the cables](optima_cables.md)) |
 | Firmware features | Acceleration, homing, limits and backlash compensation, all built in |
 | Protocol | G-code plus documented real-time status commands, over USB serial |
 | Licence | grblHAL is GPL-licensed. It runs on its own board, and this project's MIT software only talks to it over serial; nothing is linked or redistributed. |

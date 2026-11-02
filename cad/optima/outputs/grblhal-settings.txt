@@ -1,0 +1,64 @@
+; OPTIMA's motion controller: grblHAL settings for the SKR Pico, axes in the order X Y Z A.
+; Built by cad/optima/make.py from optima_cad/params.py. Change them there.
+; Send them with cad/optima/load_settings.py.
+; The A axis is the changer's slide, not a rotary axis
+$376=0
+; Step pulse, us; idle delay, ms; which motors stay on when idle: not the changer's
+$0=5
+$1=250
+$37=7
+; Direction invert: set on the bench
+$3=0
+; Steps per mm
+$100=6400
+$101=6400
+$102=6400
+$103=1600
+; Top speed, mm/min
+$110=480
+$111=480
+$112=300
+$113=600
+; Acceleration, mm/s2
+$120=100
+$121=100
+$122=50
+$123=50
+; Max travel, mm
+$130=101
+$131=101
+$132=24.5
+$133=86
+; Motor current, mA RMS
+$140=470
+$141=470
+$142=470
+$143=470
+; Microsteps
+$150=16
+$151=16
+$152=32
+$153=16
+; Hold current, % of run
+$210=50
+$211=50
+$212=50
+$213=20
+; Homing: options, all axes towards negative, locate and seek rates, debounce, pull-off, passes
+$22=95
+$23=15
+$24=30
+$25=300
+$26=250
+$27=1
+$43=1
+; Homing's phases: the lift, then the changer, then the stage
+$44=4
+$45=8
+$46=3
+; Limits: X and Y's switches close when pushed; soft limits, hard limits, jogs kept inside
+$5=3
+$6=0
+$20=1
+$21=1
+$40=1
