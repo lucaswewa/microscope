@@ -99,12 +99,13 @@ As the CAD plan's §3 says, with these differences:
 | E01 | Done |
 | E02 | Done |
 | E03 | Approved; its bench test waits for the parts |
-| E04 | In review |
-| E05–E08 | Not started |
+| E04 | Done |
+| E05 | In review |
+| E06–E08 | Not started |
 
 ## 7. Decisions for the owner
 
-1. **Board tools.** Decided 2026-11-01: KiCad, which the owner installed (10.0.8). FreeRouting, the open router KiCad uses, and the Java runtime it needs are still to install, for E05.
+1. **Board tools.** Decided 2026-11-01: KiCad, which the owner installed (10.0.8). FreeRouting, the open router KiCad uses, routed the board in E05, from its 2.5.0 jar on a portable Java 25. Neither is installed or part of this project: the routes are committed, so only a new route needs them, as [the board's README](../../electronics/carrier/README.md) says.
 2. **Making the board.** Decided 2026-11-01: JLCPCB, which also assembles the few surface-mount parts.
 3. **12 V for the mono camera.** E01 takes the recommendation, a 24-to-12 V converter on the tray, for one mains inlet. The owner can still choose the camera's own adapter instead.
 4. **USB.** E01 takes the recommendation, a powered hub inside the cover with one cable out. The owner can still choose five cables to the PC.

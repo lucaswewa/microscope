@@ -12,3 +12,9 @@ Written by `make.py`. Don't edit.
 | Pull-downs on the Pico's pins hold them low despite the RP2350's erratum E9 | pass | all at most 8.2 kohm |
 | The door's PTC carries the DIM lines' current | pass | 20 mA with all four on, of its 100 mA |
 | Each connector matches its cable in the cable list | pass | 14 connectors matched |
+| KiCad's design rules check is clean | pass | no violations, and thin thermals only on pads that carry no power |
+| Every net is routed | pass | 0 connections unrouted |
+| The board matches its schematic | pass | no differences |
+| Each power net's tracks are as wide as its current needs, with no via on a supply | pass | 617 tracks |
+| The parts are where placement.py says | pass | 81 parts |
+| The board is the size the CAD gives it | pass | 140 x 100 mm, the CAD's 140 x 100 |

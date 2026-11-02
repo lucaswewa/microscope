@@ -284,7 +284,16 @@ TRAY_FUSES = (45.0, 90.0, 30.0)  # a 6-way blade fuse block, on two M4s 80 mm ap
 # Mean Well's DDR-60G-12 and DDR-30G-15 (distributors' listings), on a 35 mm DIN rail.
 TRAY_CONVERTERS = {"12 V converter": (90.0, 52.5, 54.6), "15 V converter": (90.0, 35.0, 54.6)}
 TRAY_RAIL = (35.0, 124.0, 7.5)
-TRAY_CARRIER = (130.0, 80.0)  # the carrier board under the Pico 2 and the LED drivers (assumed: E05)
+TRAY_CARRIER = (140.0, 100.0)  # the carrier board, from its layout: electronics/carrier/placement.py
+# Its tall parts, from that layout: length, width and height above the board, then the centre from the
+# board's centre, x along its long side. The LDD-Hs' height is Mean Well's; the others are assumed.
+CARRIER_PARTS = [(20.3, 31.8, 12.2, x, 22.0) for x in (-33.85, -10.85, 12.15, 35.15)]  # the LED drivers
+CARRIER_PARTS += [(10.2, 10.0, 15.0, x, 44.0) for x in (-53.04, -33.84, -10.84, 12.16, 35.16)]  # their terminals
+CARRIER_PARTS += [(10.0, 20.3, 15.0, -65.0, -31.8),  # the matrix's terminal
+                  (25.4, 25.4, 15.0, -54.3, -8.2),  # the 5 V buck, on a header
+                  (15.3, 20.3, 20.0, 29.65, -33.1),  # the slider's StepStick, in a socket, with its heatsink
+                  (10.0, 10.0, 21.0, -54.5, 23.5), (10.0, 10.0, 21.0, -35.5, -7.0), (10.0, 10.0, 21.0, 43.5, -22.0)]  # C1, C2, C5
+CARRIER_PICO = (5.0, -23.57, 8.5)  # the Pico 2's centre on the board, x and y, and the height of its socket
 TRAY_HUB = (120.0, 45.0, 25.0)  # a 7-port USB 3 hub, 12 V in, on hook-and-loop (assumed)
 # The supply's 0.42 kg (retailers' listings), and the converters, the boards, the hub, the fan and
 # the cables (assumed).

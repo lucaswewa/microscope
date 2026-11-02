@@ -55,7 +55,7 @@ Item,Kind,Part,Quantity,Model or material,"Size, mm",Note,Drawing
 54,Bought,Home switches,2,"Miniature switch, 20 x 6.5 x 10 mm",,,
 55,Bought,Motion controller,1,BTT SKR Pico,,Runs grblHAL.,
 56,Bought,Optics controller,1,"Raspberry Pi Pico 2, on a carrier board",,,
-57,Bought,Carrier board,1,"This project's, 130 x 80 mm",,Phases E04 and E05.,
+57,Bought,Carrier board,1,"This project's, 140 x 100 mm",,Phases E04 and E05.,
 58,Bought,Supply,1,Mean Well LRS-150-24,,,
 59,Bought,Converters,2,Mean Well DDR-60G-12 and DDR-30G-15,,"On a 35 mm DIN rail, cut to 124 mm.",
 60,Bought,Fuse block,1,"6-way, for blade fuses",,"Fuses: 3, 2, 4, 0.5 and 2 A, 32 V.",
