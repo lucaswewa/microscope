@@ -1,5 +1,5 @@
 """The enclosure and the electronics: the cover over the instrument, with its door, interlock, intake
-and fan; the electronics tray under the stage; and the cable ducts.
+and fan; the electronics trays under the stage, and the mains inlet; and the cable ducts.
 
 Everything is in the instrument's frame. The cover stands on the table over the instrument, apart
 from it, on a foam strip, and lifts off: a frame of extrusions, panels outside it, and a door over
@@ -27,6 +27,8 @@ TABLE = stand.BASE_TOP - P.STAND_BASE[4] - P.STAND_FEET[1]
 FOOT = TABLE + P.ENCLOSURE_SEAL  # the frame's foot, on the foam strip
 OUT = (X0 - F - T, Y0 - F - T, X1 + F + T, Y1 + F + T, TOP + F + T)  # outside, the door shut
 HINGE = V(OUT[0], OUT[1], 0)  # the door's hinge axis, upright at the front left corner
+INLET_LEG = 3.0  # the inlet's bracket's thickness
+INLET_Z = stand.BASE_TOP + INLET_LEG + 1 + (P.INLET[3] - 6) / 2  # its body just over the bracket
 
 
 def _ring(a0, b0, a1, b1):
@@ -71,17 +73,33 @@ def screws():
     k = side / 2 - 7.5  # a 120 mm fan's holes, 105 mm apart
     out += [Screw(4, (f.x + dx, OUT[3], f.z + dz), (0, -1, 0), T + depth, 0, ("back panel", "fan"), None)
             for dx in (-k, k) for dz in (-k, k)]
-    # The supply into its base's M3s, and the boards on 5 mm spacers, from under the tray.
-    _, _, _, _, tt, ts = P.TRAY
-    under = stand.BASE_TOP + ts
-    sx, sy = P.TRAY_PARTS["supply"]
-    out += [Screw(3, (sx, sy + dy, under), (0, 0, 1), tt, 4, "tray", "supply")
+    # The supply into its base's M3s, and the boards on 5 mm spacers, from under their trays. The
+    # DIN rail and the fuse block on M3s and M4s through them, with nuts under the tray.
+    def at(name):
+        tray, x, y = P.TRAY_PARTS[name]
+        return tray + " tray", x, y, stand.BASE_TOP + P.TRAYS[tray][5], P.TRAYS[tray][4]
+
+    tray, sx, sy, under, tt = at("supply")
+    out += [Screw(3, (sx, sy + dy, under), (0, 0, 1), tt, 4, tray, "supply")
             for dy in (-P.TRAY_SUPPLY[0] / 2, P.TRAY_SUPPLY[0] / 2)]
-    for name, across, along in [("motion", P.SKR_PICO[3][1] / 2, P.SKR_PICO[3][0] / 2)] + [
-            (k, b / 2 - 4, a / 2 - 4) for k, (a, b) in P.CARRIERS.items()]:
-        cx, cy = P.TRAY_PARTS[name]
-        out += [Screw(3, (cx + dx, cy + dy, under), (0, 0, 1), tt + 5 + 1.6, 0, ("tray", "boards"), None)
+    a, b = P.TRAY_CARRIER
+    for name, across, along in [("SKR Pico", P.SKR_PICO[3][1] / 2, P.SKR_PICO[3][0] / 2),
+                                ("carrier board", b / 2 - 4, a / 2 - 4)]:
+        tray, cx, cy, under, tt = at(name)
+        out += [Screw(3, (cx + dx, cy + dy, under), (0, 0, 1), tt + 5 + 1.6, 0, (tray, "boards"), None)
                 for dx in (-across, across) for dy in (-along, along)]
+    tray, rx, ry, under, tt = at("DIN rail")
+    end, h = P.TRAY_RAIL[1] / 2 - 6, P.TRAY_RAIL[2]
+    out += [Screw(3, (rx + dx, ry, under + tt + h), (0, 0, -1), h + tt, 0, ("rail", tray), None)
+            for dx in (-end, end)]
+    tray, fx, fy, under, tt = at("fuse block")
+    h = P.TRAY_FUSES[2]
+    out += [Screw(4, (fx + dx, fy, under + tt + h), (0, 0, -1), h + tt, 0, ("fuses", tray), None)
+            for dx in (-40, 40)]
+    # The inlet through its bracket's upright leg, with nuts behind it.
+    x, face = P.INLET[:2]
+    out += [Screw(3, (x + dx, face, INLET_Z), (0, -1, 0), 2 * INLET_LEG, 0, ("inlet", "inlet bracket"),
+                  None) for dx in (-20, 20)]
     return tuple(out)
 
 
@@ -153,39 +171,61 @@ def interlock():
     return {"switch": switch.fuse(bracket), "plunger": plunger}
 
 
+def inlet():
+    """The mains inlet, its face in the cover's notch, and its bracket: an angle screwed to the base
+    plate, its upright leg past the plate's back edge."""
+    x, face, w, h, depth = P.INLET
+    t, z, base = INLET_LEG, INLET_Z, stand.BASE_TOP
+    body = G.span(V(x - w / 2, face - t, z - h / 2), V(x + w / 2, face, z + h / 2)).fuse(
+        G.box((w - 18, depth, h - 6), V(x, face - t - depth / 2, z)))
+    leg = face - 2 * t
+    bracket = G.span(V(x - w / 2 - 6, P.STAND_BASE[3] - 35, base), V(x + w / 2 + 6, leg + t, base + t))
+    bracket = bracket.fuse(G.span(V(x - w / 2 - 6, leg, base), V(x + w / 2 + 6, leg + t, z + h / 2 + 5)))
+    bracket = bracket.cut(G.box((w - 17, 3 * t, h - 5), V(x, leg + t / 2, z))).removeSplitter()
+    return {"inlet": body, "inlet bracket": bracket}
+
+
 @G.kept
 def tray():
-    """The electronics tray on its standoffs on the base plate, with the supply, the motion
-    controller (the SKR Pico), the optics controller (the Pico 2) on its carrier, and the four LED
-    drivers on theirs. Each is turned with its long side along Y."""
-    x0, y0, x1, y1, t, s = P.TRAY
-    floor = stand.BASE_TOP + s + t
-    held = stand.screws() + screws()
-    feet = fasteners.cut(Part.makeCompound([Part.makeCylinder(4, s, V(x, y, stand.BASE_TOP))
-                                            for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)]),
-                         held, "standoffs")
-    plate = fasteners.cut(G.span(V(x0, y0, floor - t), V(x1, y1, floor)), held, "tray")
+    """The electronics trays on their standoffs on the base plate. On the power tray: the supply,
+    the fuse block, and the 12 V and 15 V converters on their DIN rail. On the control tray: the
+    motion controller (the SKR Pico); the carrier board with the optics controller (the Pico 2) and
+    the four LED drivers; and the USB hub. Each part is turned with its first size along Y. And the
+    mains inlet on its bracket."""
+    def floor(tray):
+        return stand.BASE_TOP + P.TRAYS[tray][5] + P.TRAYS[tray][4]
 
     def turned(shapes, name, lift=0.0):
-        x, y = P.TRAY_PARTS[name]
-        return Part.makeCompound([G.placed(v, V(x, y, floor + lift), Z, -X) for v in shapes])
+        tray, x, y = P.TRAY_PARTS[name]
+        return Part.makeCompound([G.placed(v, V(x, y, floor(tray) + lift), Z, -X) for v in shapes])
 
-    carriers = {k: G.box((a, b, 1.6), V(0, 0, 0.8)) for k, (a, b) in P.CARRIERS.items()}
+    def block(size, lift=0.0):
+        return G.box(size, V(0, 0, lift + size[2] / 2))
+
+    out = {k + " tray": G.span(V(x0, y0, floor(k) - t), V(x1, y1, floor(k)))
+           for k, (x0, y0, x1, y1, t, _) in P.TRAYS.items()}
+    out["standoffs"] = Part.makeCompound([Part.makeCylinder(4, s, V(x, y, stand.BASE_TOP))
+                                          for x0, y0, x1, y1, _, s in P.TRAYS.values()
+                                          for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)])
+    a, b = P.TRAY_CARRIER
     lw, ld, lh = P.LDD_H
-    drivers = [G.box(P.LDD_H, V(sx * (lw / 2 + 4), sy * (ld / 2 + 2), 1.6 + lh / 2))
-               for sx in (-1, 1) for sy in (-1, 1)]
-    boards = Part.makeCompound([
-        turned(parts.circuit(P.SKR_PICO).values(), "motion", 5),
-        turned([carriers["optics"]], "optics", 5),
-        turned(parts.circuit(P.PICO2).values(), "optics", 6.6),
-        turned([carriers["drivers"]] + drivers, "drivers", 5)])
-    return {
-        "tray": plate,
-        "standoffs": feet,
-        "supply": fasteners.cut(turned([G.box(P.SUPPLY, V(0, 0, P.SUPPLY[2] / 2))], "supply"), held,
-                                "supply"),
-        "boards": fasteners.cut(boards, held, "boards"),
-    }
+    carrier = [G.box((a, b, 1.6), V(0, 0, 0.8))]
+    carrier += [G.box(P.LDD_H, V(sx * (lw / 2 + 4) - 28, sy * (ld / 2 + 2), 1.6 + lh / 2))
+                for sx in (-1, 1) for sy in (-1, 1)]
+    carrier += [v.translated(V(36, 0, 1.6)) for v in parts.circuit(P.PICO2).values()]
+    out.update({
+        "supply": turned([block(P.SUPPLY)], "supply"),
+        "fuses": turned([block(P.TRAY_FUSES)], "fuse block"),
+        "rail": turned([block(P.TRAY_RAIL)], "DIN rail"),
+        "converters": Part.makeCompound([turned([block(v, P.TRAY_RAIL[2])], k)
+                                         for k, v in P.TRAY_CONVERTERS.items()]),
+        "boards": Part.makeCompound([turned(parts.circuit(P.SKR_PICO).values(), "SKR Pico", 5),
+                                     turned(carrier, "carrier board", 5)]),
+        "hub": turned([block(P.TRAY_HUB)], "USB hub"),
+    })
+    out.update(inlet())
+    held = stand.screws() + screws()
+    return {k: fasteners.cut(v, held, k) for k, v in out.items()}
 
 
 def ducts():
@@ -227,11 +267,16 @@ def place(doc, leds, parent=None):
                  "plunger": "drive"}.get(k, "panel")
         add(doc, "Cover" + k.title().replace(" ", ""), s, style, g, "Cover's " + k)
     tr = tray()
-    g = new_group("Electronics", "Electronics tray: supply, controllers and LED drivers")
-    add(doc, "Tray", tr["tray"], "metal", g, "Electronics tray")
-    add(doc, "Standoffs", tr["standoffs"], "metal", g, "Tray's standoffs")
-    add(doc, "Supply", tr["supply"], "metal", g, "Supply: Mean Well LRS-150-24")
-    add(doc, "Boards", tr["boards"], "board", g, "SKR Pico, Pico 2 and LDD-H drivers on carriers")
+    g = new_group("Electronics", "Electronics trays, their parts, and the mains inlet")
+    for k, label in (("power tray", "Power tray"), ("control tray", "Control tray"),
+                     ("standoffs", "Trays' standoffs"), ("supply", "Supply: Mean Well LRS-150-24"),
+                     ("fuses", "Fuse block"), ("rail", "DIN rail"),
+                     ("converters", "12 V and 15 V converters: Mean Well DDR-60G-12 and DDR-30G-15"),
+                     ("boards", "SKR Pico; carrier board with the Pico 2 and four LDD-1000H"),
+                     ("hub", "USB 3 hub"), ("inlet", "Mains inlet"), ("inlet bracket", "Inlet's bracket")):
+        style = {"boards": "board", "converters": "body", "fuses": "body", "hub": "body",
+                 "inlet": "body"}.get(k, "metal")
+        add(doc, k.title().replace(" ", ""), tr[k], style, g, label)
     cables = {"ducts": ducts(), "plugs": plugs(leds)}
     g = new_group("Cables", "Cable ducts, and the epi LEDs' cables' room")
     add(doc, "Ducts", cables["ducts"], "drive", g, "Cable ducts")
@@ -245,7 +290,8 @@ def checks(cover, tr, cables, inside, swept):
     walls = {k: v for k, v in cover.items() if k not in ("door", "plunger")}
     every = inside + swept + [cables["plugs"]]
     found = clashes([("the cover's %s and the instrument" % k, v, s)
-                     for k, v in dict(walls, door=cover["door"]).items() for s in every])
+                     for k, v in dict(walls, door=cover["door"]).items()
+                     for s in every + list(tr.values())])
     box = App.BoundBox()
     for s in every + list(tr.values()) + [cables["ducts"]]:
         box.add(s.BoundBox)
@@ -266,16 +312,19 @@ def checks(cover, tr, cables, inside, swept):
     margins = [(ib.YLength - iw) / 2, (ib.ZLength - ih) / 2, (fb.XLength - side) / 2]
     angle = math.degrees(math.atan(min(margins) / gap))
 
-    parts_ = {k: tr[k] for k in ("tray", "standoffs", "supply", "boards")}
-    stack = clashes([("the %s and the instrument" % k, v, s) for k, v in parts_.items() for s in every]
-                    + [("the %s and the ducts" % k, v, cables["ducts"]) for k, v in parts_.items()]
-                    + [("the ducts and the instrument", cables["ducts"], s) for s in every])
+    names = list(tr)
+    stack = clashes([("the %s and the instrument" % k, v, s) for k, v in tr.items() for s in every]
+                    + [("the %s and the ducts" % k, v, cables["ducts"]) for k, v in tr.items()]
+                    + [("the ducts and the instrument", cables["ducts"], s) for s in every]
+                    + [("the %s and the %s" % (a, b), tr[a], tr[b])
+                       for i, a in enumerate(names) for b in names[i + 1:]])
 
     length = 4 * (TOP + F - FOOT) + 4 * (X1 - X0) + 4 * (Y1 - Y0)  # the frame's extrusions
     frame_m = length / 1000 * P.ENCLOSURE_FRAME[1]
     sheet = P.ALUMINIUM * sum(cover[k].Volume for k in ("left", "right", "back", "top", "door",
                                                           "intake baffle", "fan baffle"))
-    electronics = P.ELECTRONICS_KG + P.ALUMINIUM * tr["tray"].Volume
+    electronics = P.ELECTRONICS_KG + P.ALUMINIUM * sum(tr[k].Volume for k in (
+        "power tray", "control tray", "inlet bracket"))
     flow = P.FAN[2] / 3600 * 1.2 * 1005  # watts per kelvin of air the fan moves
     checks_ = [
         Check("The cover clears the instrument, its cables' room and its moving parts across their "
@@ -286,8 +335,8 @@ def checks(cover, tr, cables, inside, swept):
               ", ".join(swing) or "it swings 120 degrees; %.2f degrees open releases the switch" % ajar),
         Check("The intake and the fan are baffled against light", angle >= 70,
               "no straight line within %.0f degrees of their axis gets past the baffles" % angle),
-        Check("The electronics tray and the cable ducts clear the instrument, the stage stack across "
-              "its travel", not stack, ", ".join(stack[:4]) or "no overlaps"),
+        Check("The electronics, the inlet and the cable ducts clear each other and the instrument, "
+              "the stage stack across its travel", not stack, ", ".join(stack[:4]) or "no overlaps"),
     ]
     facts = [
         ("Cover, outside, the door shut", "%.0f x %.0f x %.0f mm"
@@ -297,6 +346,6 @@ def checks(cover, tr, cables, inside, swept):
         ("Air's warming inside, typical and peak draw", "%.1f K at %g W, %.1f K at %g W"
          % (P.TYPICAL_W / flow, P.TYPICAL_W, P.PEAK_W / flow, P.PEAK_W)),
         ("Cover, kg", round(frame_m + sheet, 1)),
-        ("Electronics and their tray, kg", round(electronics, 1)),
+        ("Electronics and their trays, kg", round(electronics, 1)),
     ]
     return checks_, facts, frame_m + sheet + electronics

@@ -199,8 +199,7 @@ def build_instrument(doc):
         "lift": lift, "lift plate": st["plate"], "lift top": st["lift"], "spacers": st["spacers"],
         "xy base": st["base"], "xy top": st["top"], "matrix mount": st["mount"],
         "adapter": st["adapter"], "frame": cover["frame"], "door": cover["door"], "fan": cover["fan"],
-        "intake baffle": cover["intake baffle"], "fan baffle": cover["fan baffle"],
-        "tray": tr["tray"], "standoffs": tr["standoffs"], "supply": tr["supply"], "boards": tr["boards"]}
+        "intake baffle": cover["intake baffle"], "fan baffle": cover["fan baffle"], **tr}
     by_name.update({k + " panel": cover[k] for k in ("left", "right", "back", "top")})
     moving = {"changer plate", "changer carriage", "slider carrier", "slider carriage", "lift plate",
               "lift top", "spacers", "matrix mount", "xy base", "xy top", "adapter"}

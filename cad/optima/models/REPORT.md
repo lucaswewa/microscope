@@ -169,7 +169,7 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 
 | Check | Result | Detail |
 |---|---|---|
-| The supply covers the peak draw | pass | 156 W for about 100 W |
+| The supply covers the peak draw | pass | 156 W for about 130 W |
 
 | Fact | Value |
 |---|---|
@@ -252,12 +252,12 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Each insert and its labware clear the head across the stage's and the lift's travel, and the objectives as they change | pass | the objectives' fronts 1.5 mm above the dishes with the lift at the top of its travel |
 | The stage's openings pass the brightfield light of the 5x and the 10x at every target, and of the 20x at every target's centre | pass | 72 stage positions, to the field's centre |
 | Everything stays over the base plate, the moving parts across their travel | pass | x -150.0 to 255.0, y -156.1 to 265.0; the base -200 to 265, -160 to 265 |
-| Every screw clears the parts, the moving ones across their travel | pass | 197 screws |
+| Every screw clears the parts, the moving ones across their travel | pass | 206 screws |
 | Every screw's head bears on its part, and its thread has material all round | pass | 1 mm round each tapping hole, at least |
 | The cover clears the instrument, its cables' room and its moving parts across their travel, and lifts straight off | pass | 5.0 mm round it at least, inside the frame |
 | The door swings open clear of the cover, and presses the interlock only when shut | pass | it swings 120 degrees; 0.34 degrees open releases the switch |
 | The intake and the fan are baffled against light | pass | no straight line within 72 degrees of their axis gets past the baffles |
-| The electronics tray and the cable ducts clear the instrument, the stage stack across its travel | pass | no overlaps |
+| The electronics, the inlet and the cable ducts clear each other and the instrument, the stage stack across its travel | pass | no overlaps |
 
 | Fact | Value |
 |---|---|
@@ -270,19 +270,19 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | Custom aluminium parts, kg | 17.0 |
 | Heaviest custom parts, kg | the base plate 6.4, the head plate 3.2, the upper deck 1.8, the lower deck 1.5 |
 | Bought parts, kg | 13.2, with 3.2 for the column's extrusions |
-| Mass with the enclosure and the electronics, kg | 41.6 |
-| Screws | 197: 8 M2.5, 64 M3, 93 M4, 2 M5, 20 M6, 10 M8 |
+| Mass with the enclosure and the electronics, kg | 42.7 |
+| Screws | 206: 8 M2.5, 68 M3, 97 M4, 2 M5, 21 M6, 10 M8 |
 | Cover, outside, the door shut | 548 x 513 x 640 mm |
 | Intake; fan | 100 cm2; 120 mm, 40 m3/h through the baffles |
-| Air's warming inside, typical and peak draw | 3.0 K at 40 W, 7.5 K at 100 W |
+| Air's warming inside, typical and peak draw | 3.0 K at 40 W, 9.7 K at 130 W |
 | Cover, kg | 10.0 |
-| Electronics and their tray, kg | 1.4 |
+| Electronics and their trays, kg | 2.6 |
 
 ## manufacturing-outputs
 
 | Check | Result | Detail |
 |---|---|---|
-| Every custom part has a drawing, a STEP file and a row in the bill of materials | pass | 33 parts, 33 drawings, 33 STEP files |
+| Every custom part has a drawing, a STEP file and a row in the bill of materials | pass | 35 parts, 35 drawings, 35 STEP files |
 | Each drawing's overall sizes are its part's | pass | its width, height and thickness, from its views |
 | Each STEP file reads back as its part | pass | the same solids and volume |
 
@@ -320,5 +320,23 @@ Written by `make.py` with FreeCAD 1.1. Don't edit it: the build replaces it.
 | OPTIMA-E05 Door | 1, 5052 aluminium sheet, 1.5 mm, 548.0 x 634.6 x 1.5 mm |
 | OPTIMA-E06 Intake's baffle | 1, 5052 aluminium sheet, 1.5 mm, 298.0 x 88.0 x 1.5 mm |
 | OPTIMA-E07 Fan's baffle | 1, 5052 aluminium sheet, 1.5 mm, 168.0 x 168.0 x 1.5 mm |
-| OPTIMA-E08 Electronics tray | 1, 6061-T6 aluminium, 165.0 x 300.0 x 3.0 mm |
-| Bought parts in the bill of materials | 57 |
+| OPTIMA-E08 Power tray | 1, 6061-T6 aluminium, 130.0 x 305.0 x 3.0 mm |
+| OPTIMA-E09 Control tray | 1, 6061-T6 aluminium, 165.0 x 300.0 x 3.0 mm |
+| OPTIMA-E10 Inlet's bracket | 1, 6061-T6 aluminium, 60.0 x 62.0 x 36.0 mm |
+| Bought parts in the bill of materials | 66 |
+
+## cables
+
+| Check | Result | Detail |
+|---|---|---|
+| Each conductor's rating covers the current its fuse or source allows | pass | at most 100 % of its rating, W28 |
+| The power runs' voltage drops stay within 3 % at their peak currents | pass | at most 2.0 %, W30 |
+| Every bought cable comes in a length that reaches, the stages' own across their travel | pass | the stages' own need W15 0.69 m and W16 0.73 m, of 1.6 m |
+| The USB cables stay within USB's lengths: 3 m for USB 3, 5 m for USB 2 | pass | the PC's needs 2.2 m, 1.5 m of it outside the cover (assumed) |
+
+| Fact | Value |
+|---|---|
+| Cables | 42: 28 made, 12 bought, 2 the stages' own |
+| Cable for the made ones, by its conductors | 1 x 0.75 mm²: 1.55 m; 2 x 0.14 mm²: 2.35 m; 2 x 0.25 mm²: 3.20 m; 2 x 0.5 mm²: 1.45 m; 2 x 0.75 mm²: 4.40 m; 2 x 1 mm²: 0.35 m; 4 x 0.14 mm²: 2.15 m; 4 x 0.34 mm²: 2.20 m; 4 x 0.75 mm²: 0.55 m; 6 x 0.34 mm²: 0.40 m; 8 x 0.14 mm²: 1.15 m; 8 x 0.34 mm²: 0.55 m |
+| The longest route | W14, 1210 mm |
+| The PC's USB cable | 3.0 m |

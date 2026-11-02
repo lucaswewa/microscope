@@ -1,0 +1,43 @@
+Cable,Carries,From,Its end,To,Its end,Conductors,Kind,"Route, mm","Length, mm","Peak, A","Fuse or limit, A","Drop, %"
+W01,Mains: live and neutral,mains inlet,6.3 mm push-on terminals,supply,L and N terminals,2 x 0.75 mm²,Made,262,500,1.3,4,0.0
+W02,Earth: the inlet's,mains inlet,6.3 mm push-on terminal,earth stud,M6 ring terminal,1 x 0.75 mm²,Made,77,300,,4,
+W03,Earth: the supply's,earth stud,M6 ring terminal,supply,earth terminal,1 x 0.75 mm²,Made,217,450,,4,
+W04,Earth: the column's,earth stud,M6 ring terminal,column,"M8 ring terminal, under a column screw's head",1 x 0.75 mm²,Made,52,300,,4,
+W05,Earth: the cover's,earth stud,M6 ring terminal,cover's plug,"6.3 mm push-on terminal, onto the cover frame's tab",1 x 0.75 mm²,Made,260,500,,4,
+W06,24 V: the supply to the fuse block,supply,+V and -V terminals,fuse block,its input and 0 V terminals,2 x 1 mm²,Made,107,350,5.4,8.8,0.3
+W07,"24 V: the SKR Pico, F1",fuse block,F1 and 0 V,SKR Pico,its power terminal,2 x 0.75 mm²,Made,325,550,1.3,3,0.1
+W08,"24 V: the carrier board, F2",fuse block,F2 and 0 V,carrier board,its 24 V terminal,2 x 0.75 mm²,Made,380,600,1.3,2,0.2
+W09,"24 V: the 12 V converter, F3",fuse block,F3 and 0 V,12 V converter,+Vin and -Vin,2 x 0.75 mm²,Made,96,300,2.2,4,0.1
+W10,"24 V: the 15 V converter, F5",fuse block,F5 and 0 V,15 V converter,+Vin and -Vin,2 x 0.75 mm²,Made,91,300,0.8,2,0.0
+W11,"24 V: the fan, F4",fuse block,F4 and 0 V,cover's plug,pins 1 and 2,2 x 0.25 mm²,Made,574,800,0.15,0.5,0.1
+W12,12 V: the mono camera,12 V converter,+Vo and -Vo,mono camera,"DC plug, as its adapter's",2 x 0.75 mm²,Made,1142,1350,3,5,1.6
+W13,12 V: the USB hub,12 V converter,+Vo and -Vo,USB hub,"DC plug, as its adapter's",2 x 0.75 mm²,Made,556,800,0.7,5,0.2
+W14,15 V: the camera port,15 V converter,+Vo and -Vo,camera port,"DC plug, as Thorlabs' supply's",2 x 0.5 mm²,Made,1210,1450,1,2,0.7
+W15,X motor and limits: the stage's own cable,X motor,the stage's,SKR Pico,"HDB15 (M), into W18",,The stage's own,437,1600,,,
+W16,Y motor and limits: the stage's own cable,Y motor,the stage's,SKR Pico,"HDB15 (M), into W19",,The stage's own,476,1600,,,
+W17,Z lift: motor and limits,Z lift,"DB9 (F), onto the lift's",SKR Pico,"Z motor and Z-STOP headers, and a spare input",8 x 0.34 mm²,Made,332,550,,2,
+W18,X adapter,SKR Pico,HDB15 (F),SKR Pico,X motor and X-STOP headers,6 x 0.34 mm²,Made,0,200,,2,
+W19,Y adapter,SKR Pico,HDB15 (F),SKR Pico,Y motor and Y-STOP headers,6 x 0.34 mm²,Made,0,200,,2,
+W20,Changer's motor,SKR Pico,E0 motor header,changer's motor,the motor's plug,4 x 0.34 mm²,Made,1021,1250,,2,
+W21,Changer's home switch,SKR Pico,E0-STOP header,changer's switch,soldered to its tabs,2 x 0.14 mm²,Made,962,1200,,,
+W22,SKR Pico: USB,SKR Pico,USB-C,USB hub,USB-A,,Bought: USB,225,500,,,
+W23,"Epi LED, 395 nm",carrier board,LED driver 1's output,"epi LED, 395 nm","M8 4-pin (F), onto the LED's",4 x 0.25 mm²,Bought: M8,920,2000,1,1,
+W24,"Epi LED, 470 nm",carrier board,LED driver 2's output,"epi LED, 470 nm","M8 4-pin (F), onto the LED's",4 x 0.25 mm²,Bought: M8,870,2000,1,1,
+W25,"Epi LED, 565 nm",carrier board,LED driver 3's output,"epi LED, 565 nm","M8 4-pin (F), onto the LED's",4 x 0.25 mm²,Bought: M8,820,2000,1,1,
+W26,"Epi LED, 625 nm",carrier board,LED driver 4's output,"epi LED, 625 nm","M8 4-pin (F), onto the LED's",4 x 0.25 mm²,Bought: M8,805,2000,1,1,
+W27,Epi LEDs' thermistors,carrier board,8-way header,epi LEDs' heatsinks,a pair to each LED's heatsink,8 x 0.14 mm²,Made,920,1150,,,
+W28,Slider's motor,carrier board,the TMC2209's motor header,slider's motor,the motor's plug,4 x 0.34 mm²,Made,710,950,,2,
+W29,Slider's home switch,carrier board,2-way header,slider's switch,soldered to its tabs,2 x 0.14 mm²,Made,933,1150,,,
+W30,"LED matrix: 5 V, clock and data",carrier board,4-way terminal,LED matrix,the matrix's input plug,4 x 0.75 mm²,Made,295,550,3.8,5,2.0
+W31,Mono camera: trigger and exposure,carrier board,4-way header,mono camera,its trigger connector,4 x 0.14 mm²,Made,826,1050,,,
+W32,Colour camera: trigger and exposure,carrier board,4-way header,colour camera,its trigger connector,4 x 0.14 mm²,Made,875,1100,,,
+W33,Camera port: DIG I/O 1,carrier board,2-way header,camera port,SMA (M),,Bought: SMA,941,2000,,,
+W34,Camera port: DIG I/O 2,carrier board,2-way header,camera port,SMA (M),,Bought: SMA,941,2000,,,
+W35,Door interlock,carrier board,2-way header,cover's plug,pins 3 and 4,2 x 0.25 mm²,Made,274,500,,,
+W36,Pico 2: USB,carrier board,micro-USB,USB hub,USB-A,,Bought: USB,80,300,,,
+W37,USB to the PC,USB hub,its upstream port,cover's notch,"USB-A, at the PC",,Bought: USB 3,478,3000,,,
+W38,Mono camera: USB 3,USB hub,USB-A,mono camera,its USB 3 port,,Bought: USB 3,906,1500,,,
+W39,Colour camera: USB 3,USB hub,USB-A,colour camera,its USB 3 port,,Bought: USB 3,955,1500,,,
+W40,Overview camera: USB,USB hub,USB-A,overview camera,its USB port,,Bought: USB,1160,1500,,,
+W41,"Fan, on the cover",cover's plug,pins 1 and 2,fan,"the fan's leads, spliced",2 x 0.25 mm²,Made,562,800,0.15,0.5,0.1
+W42,"Door switch, on the cover",cover's plug,pins 3 and 4,door's switch,its terminals,2 x 0.25 mm²,Made,881,1100,,,

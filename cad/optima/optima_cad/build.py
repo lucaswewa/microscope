@@ -4,7 +4,7 @@ import os
 
 import FreeCAD as App
 
-from . import assembly, cameras, document, drawings, head, inserts, layout, parts, stages, stand
+from . import assembly, cables, cameras, document, drawings, head, inserts, layout, parts, stages, stand
 from . import params as P
 
 # Each model, and the prefixes of the parameters it's built from. The cameras' checks also use
@@ -15,7 +15,7 @@ HEAD = ("HEAD_", "DECK_", "LOWER_DECK", "UPPER_DECK", "CHANGER_PLATE", "CHANGER_
         "EPI_TUBE", "SWITCH", "EPI_BRACKET")
 STAND = ("STAND_", "ALUMINIUM", "INSERT", "MICROPLATE", "DISH")
 WHOLE = ("MASSES", "EXTRUSION_KG_PER_M", "ENCLOSURE", "INTERLOCK", "INTAKE", "FAN", "BAFFLE",
-         "TYPICAL_W", "EPI_PLUG", "TRAY", "CARRIERS", "ELECTRONICS_KG", "DUCTS", "SCREW")
+         "TYPICAL_W", "EPI_PLUG", "TRAY", "ELECTRONICS_KG", "INLET", "DUCTS", "CABLE", "SCREW")
 MODELS = [
     ("optical-layout", layout.build, None),
     ("xy-stage", stages.build_xy, ("XY_",)),
@@ -74,7 +74,8 @@ def run(out_dir, outputs_dir):
             "facts": [[k, v] for k, v in facts],
             "checks": [c._asdict() for c in checks],
         })
-    checks, facts = drawings.write(outputs_dir)
-    result["models"].append({"name": "manufacturing-outputs", "facts": [[k, v] for k, v in facts],
-                             "checks": [c._asdict() for c in checks]})
+    for name, write in (("manufacturing-outputs", drawings.write), ("cables", cables.write)):
+        checks, facts = write(outputs_dir)
+        result["models"].append({"name": name, "facts": [[k, v] for k, v in facts],
+                                 "checks": [c._asdict() for c in checks]})
     return result
