@@ -1,6 +1,6 @@
 # ADR-0041: Hardware drivers: SDKs, device actors and hardware tests
 
-- Status: Accepted
+- Status: Accepted; amended by [ADR-0049](0049-unsafe-code-in-the-firmware.md), for the optics firmware
 - Date: 2026-10-20
 - Phase: M2 P03a, and P03b for the SDKs
 - Amends: [ADR-0005](0005-repository-layout-and-crate-boundaries.md), with a crate allowed unsafe code

@@ -16,6 +16,39 @@ jobs:
       os: windows-latest
       exe: .exe
 
+  # The optics controller's firmware has its own workspace and toolchain (ADR-0048).
+  firmware:
+    name: Firmware (RP2350)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware/optics
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the pinned toolchain
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: firmware/optics
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: |
+          cargo clippy --all-targets --locked -- -D warnings
+          cargo fw-clippy
+      - name: Tests
+        run: |
+          cargo test --locked
+          python3 test_make_uf2.py
+      - name: Build
+        run: |
+          cargo fw
+          python3 make_uf2.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: optics-firmware
+          path: firmware/optics/target/thumbv8m.main-none-eabihf/release/optics-fw.uf2
+
   contract:
     name: Contract (Windows x86_64)
     runs-on: windows-latest

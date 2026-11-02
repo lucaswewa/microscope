@@ -28,7 +28,7 @@ A microscope service: a Rust backend on [`teta-wot`](https://github.com/lucaswew
   - Their licences must allow MIT distribution.
   - Install only versions at least two weeks old: `npm install --before=<date two weeks ago>`.
   - Check new packages' licences, and `npm audit` against `main`.
-- **Unsafe code** only in `microscope-sdk`, which calls the camera SDKs' C APIs (ADR-0041). Each unsafe block has a `SAFETY:` comment.
+- **Unsafe code** only in `microscope-sdk`, which calls the camera SDKs' C APIs (ADR-0041), and in `firmware/optics/`'s `optics-fw` (ADR-0049). Each use has a `SAFETY:` comment.
 - **The web app** keeps the rules in ADR-0010, ADR-0011 and ADR-0013, which ESLint partly enforces:
   - hash routing, and no direct platform APIs outside `src/host/`;
   - only design tokens for styles;
@@ -63,6 +63,11 @@ npm run api:openapi && npm run api:types
 npm run test:e2e    # end-to-end and visual tests, against the app as a server built from the checkout serves it
 # with a server running (see README):
 MICROSCOPE_API_URL=http://127.0.0.1:5090/api/v1/ npm run test:contract
+
+# When the optics firmware changes, in its own workspace (ADR-0048):
+cd firmware/optics
+cargo fmt --all --check && cargo clippy --all-targets --locked -- -D warnings && cargo fw-clippy
+cargo test --locked && python test_make_uf2.py && cargo fw && python make_uf2.py
 ```
 
 For a UI change, also look at it in a browser in both themes. The development-only galleries are at `/#/dev/components` and `/#/dev/tokens`.

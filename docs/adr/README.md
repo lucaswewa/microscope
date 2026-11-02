@@ -55,11 +55,14 @@ ADRs say *why*. What was built, and how, goes in the phase's [implementation not
 | [0038](0038-milestone-2-platforms.md) | Milestone-2 platforms: Windows, Linux and the Raspberry Pi 5 | Accepted; superseded in part by ADR-0040 | M2 P00 |
 | [0039](0039-teta-wot-on-linux.md) | `teta-wot` on Linux | Accepted | M2 P01 |
 | [0040](0040-linux-ci-on-request-and-parallel-tests.md) | Linux CI on request, and the Rust tests in parallel | Accepted | M2, after P01 |
-| [0041](0041-hardware-drivers.md) | Hardware drivers: SDKs, device actors and hardware tests | Accepted | M2 P03a |
+| [0041](0041-hardware-drivers.md) | Hardware drivers: SDKs, device actors and hardware tests | Accepted; amended by ADR-0049 | M2 P03a |
 | [0042](0042-zaber-stages-through-the-ascii-protocol.md) | Zaber stages through the ASCII protocol | Accepted | M2 P04 |
 | [0043](0043-the-sdk-camera-frame-pipeline.md) | The SDK camera frame pipeline | Accepted | M2 P06 |
 | [0044](0044-one-camera-thing-for-every-sdk.md) | One camera Thing for every SDK, and Basler cameras through pylon | Accepted | M2 P07 |
 | [0046](0046-correlation-stitching.md) | Correlation stitching | Accepted | M2 P12 |
 | [0047](0047-accent-colours-a-person-can-choose.md) | Accent colours a person can choose | Accepted | M2, outside a phase |
+| [0048](0048-the-optics-firmware-workspace.md) | The optics firmware's workspace | Accepted | OPTIMA E06 |
+| [0049](0049-unsafe-code-in-the-firmware.md) | Unsafe code in the firmware | Accepted | OPTIMA E06 |
+| [0050](0050-the-optics-serial-protocol.md) | The optics controller's serial protocol | Accepted | OPTIMA E06 |
 
 The [implementation plan](../milestone-1/implementation-plan.md#adr-plan) lists the ADRs planned for later phases.

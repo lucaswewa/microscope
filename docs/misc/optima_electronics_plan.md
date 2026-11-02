@@ -77,7 +77,7 @@ All 64 of the matrix's LEDs at full white draw about 19 W, almost 4 A at 5 V, so
 | E03 | The motion controller | S | The SKR Pico's pin map for X, Y, Z and the changer. Steps per mm, speeds and accelerations, the TMC2209s' currents, limits, homing and soft limits. A grblHAL settings file, how to build and flash grblHAL for the SKR Pico, and a bench test: [optima_motion_controller.md](optima_motion_controller.md). |
 | E04 | The carrier board's schematic | M | The circuit in Python, its netlist and a KiCad schematic, with a clean ERC. The interlock, the LED drivers' enables, the slider's TMC2209, the matrix's level shifter, the camera triggers and exposure inputs, the camera port, the thermistors and the home switch: [optima_carrier_board.md](optima_carrier_board.md). |
 | E05 | The carrier board's layout | L | Placing the parts by script, routing, a clean DRC. The fabrication files (Gerbers, drills, bill of materials, placement) and a PDF of the board. |
-| E06 | The optics firmware, part 1 | L | The firmware workspace and the CI job that builds it. The serial protocol and its document. The LED channels with the interlock, the camera triggers and exposure inputs, and their PC-side tests. |
+| E06 | The optics firmware, part 1 | L | The firmware workspace and the CI job that builds it. The serial protocol and its document. The LED channels with the interlock, the camera triggers and exposure inputs, and their PC-side tests: [`firmware/optics/`](../../firmware/optics/README.md) and [the protocol](optima_optics_protocol.md). |
 | E07 | The optics firmware, part 2 | L | The LED matrix over SPI, the filter slider with homing, the camera port, and preloaded sequences stepped by the exposure signal. |
 | E08 | Bench bring-up | M | Step-by-step tests for each board on the bench, and a small PC-side tool that speaks the protocol. The hardware tests, which run only when an environment variable names the board. |
 
@@ -90,7 +90,7 @@ As the CAD plan's §3 says, with these differences:
 - **Branches and pull requests.** One branch, `optima/eNN-short-name`, and one pull request, `ENN: <title>`, per phase. The owner approves each before it's merged.
 - **Size budget.** The size budget counts scripts and firmware, as the repository's rules say. Generated files and documents don't count.
 - **Firmware.** Its phases follow the repository's code rules: formatting, Clippy and tests. Each new decision gets an ADR, such as the firmware's workspace, its use of `unsafe` (decision 5) and the protocol.
-- **Done.** A phase is Done once the owner approves it. A phase whose parts need hardware, such as E03, E07 and E08, is Done only once the owner has run its bench test, as the repository's rule for drivers says.
+- **Done.** A phase is Done once the owner approves it. A phase whose parts need hardware, such as E03, E06, E07 and E08, is Done only once the owner has run its bench test, as the repository's rule for drivers says.
 
 ## 6. Status
 
@@ -100,8 +100,9 @@ As the CAD plan's §3 says, with these differences:
 | E02 | Done |
 | E03 | Approved; its bench test waits for the parts |
 | E04 | Done |
-| E05 | In review |
-| E06–E08 | Not started |
+| E05 | Done |
+| E06 | In review. Its bench test waits for a Pico 2. |
+| E07, E08 | Not started |
 
 ## 7. Decisions for the owner
 
@@ -109,5 +110,5 @@ As the CAD plan's §3 says, with these differences:
 2. **Making the board.** Decided 2026-11-01: JLCPCB, which also assembles the few surface-mount parts.
 3. **12 V for the mono camera.** E01 takes the recommendation, a 24-to-12 V converter on the tray, for one mains inlet. The owner can still choose the camera's own adapter instead.
 4. **USB.** E01 takes the recommendation, a powered hub inside the cover with one cable out. The owner can still choose five cables to the PC.
-5. **`unsafe` in the firmware.** The repository allows `unsafe` only in `microscope-sdk` (ADR-0041). Embassy keeps it out of most firmware, but a few places, such as the startup code and RP2350 registers no driver covers, may need it. Allow it in `firmware/optics/`, with a `SAFETY:` comment on each block. Needed by E06.
+5. **`unsafe` in the firmware.** Decided 2026-11-02: allowed in `firmware/optics/`, with a `SAFETY:` comment on each use ([ADR-0049](../adr/0049-unsafe-code-in-the-firmware.md)). The repository had allowed it only in `microscope-sdk` (ADR-0041). Embassy keeps it out of most firmware, but a few places, such as the startup code and RP2350 registers no driver covers, may need it.
 6. **The server's drivers.** The grblHAL, optics controller and ToupTek drivers from the design's §10 in a later milestone, once the boards work on the bench. Or in this track, after E08.
