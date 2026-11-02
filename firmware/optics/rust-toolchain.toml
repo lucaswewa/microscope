@@ -1,0 +1,6 @@
+[toolchain]
+# The server's toolchain (ADR-0048), with the RP2350's Arm target.
+channel = "1.98.1"
+components = ["rustfmt", "clippy"]
+targets = ["thumbv8m.main-none-eabihf"]
+profile = "minimal"

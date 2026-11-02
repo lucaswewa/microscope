@@ -37,7 +37,7 @@ The rest are through-hole resistors, capacitors and connectors. The modules sit 
 | 8, 9 | 11, 12 | I2C_SDA, I2C_SCL | I2C0, to the ADC at address 0x48 |
 | 10, 11 | 14, 15 | MATRIX_SCK, MATRIX_TX | SPI1, to the matrix through U8 |
 | 12–15 | 16, 17, 19, 20 | LED1_EN–LED4_EN | The LEDs' enables, through U3 |
-| 16, 18 | 21, 24 | TRIG1, TRIG2 | The triggers: 1 mono, 2 colour |
+| 16, 18 | 21, 24 | TRIG1, TRIG2 | The triggers: 1 mono, 2 colour ([the protocol](optima_optics_protocol.md)) |
 | 17, 19 | 22, 25 | EXPO1, EXPO2 | The exposure signals |
 | 20 | 26 | PORT_SET_3V3 | The camera port's position, through U8 |
 | 21 | 27 | PORT_AT | The camera port's position report |

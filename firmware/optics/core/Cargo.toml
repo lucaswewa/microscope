@@ -1,0 +1,9 @@
+[package]
+name = "optics-core"
+description = "The optics controller's logic: the protocol and the interlock, with no hardware in it"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true

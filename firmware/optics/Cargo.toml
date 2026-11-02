@@ -1,0 +1,21 @@
+# The optics controller's firmware: its own workspace, apart from the server's (ADR-0048).
+[workspace]
+resolver = "3"
+members = ["core", "fw"]
+# The firmware builds only for the RP2350, so plain `cargo test` takes the library alone.
+default-members = ["core"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MIT"
+repository = "https://github.com/lucaswewa/microscope"
+publish = false
+
+# Small and fast. Debug information stays in the ELF file, not on the chip.
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+debug = 2

@@ -1,0 +1,3 @@
+[alias]
+fw = "build -p optics-fw --release --target thumbv8m.main-none-eabihf --locked"
+fw-clippy = "clippy -p optics-fw --target thumbv8m.main-none-eabihf --locked -- -D warnings"

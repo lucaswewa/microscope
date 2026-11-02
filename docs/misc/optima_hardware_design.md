@@ -416,7 +416,7 @@ The alternative is Standa's own 8SMC5 controllers: €1,387 for two axes and €
 - a trigger output to each camera's opto-isolated input, and the cameras' exposure outputs;
 - the door interlock and the LED heatsink thermistors.
 
-It speaks a line-based protocol over USB serial and can run preloaded sequences ([§5.4](#54-timing-with-a-rolling-shutter)).
+It speaks a [line-based protocol](optima_optics_protocol.md) over USB serial and can run preloaded sequences ([§5.4](#54-timing-with-a-rolling-shutter)).
 
 It's custom because no off-the-shelf box does matrix patterns, LED channels and camera triggers at this price. Owning the firmware also keeps the timing deterministic.
 
