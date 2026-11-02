@@ -165,7 +165,7 @@ L ≤ (D_tube − D_objective) × f_tube / sensor diagonal
 |---|---|---|---|---|
 | Thorlabs TTL200-A (recommended) | Ø20 mm | 77 mm | 101 mm | $572.99 |
 | Mitutoyo MT-1 | Ø24 mm (Edmund's example), Ø30 mm field | 111 mm | 136 mm | $950 |
-| Ø2 in. achromat, Thorlabs AC508-200-A | about Ø45 mm clear (*est.*) | about 290 mm | about 320 mm | about $150 (*est.*) |
+| Ø2 in. achromat, Thorlabs [AC508-200-A](https://www.thorlabs.com/thorproduct.cfm?partnumber=AC508-200-A), since replaced by ACT508-200-A | about Ø45 mm clear (*est.*) | about 290 mm | about 320 mm | about $150 (*est.*) |
 
 The design rule follows: **keep the infinity space short.** The objective changer, the filter slider and then the tube lens come directly one after another, with nothing else in between. All folding happens after the tube lens. The target is L ≈ 70 mm.
 
@@ -263,23 +263,23 @@ DPC and angle scans need each LED's position relative to the axis, which is cali
 
 ### 5.2 Epi-fluorescence
 
-**Filter set.** Chroma **89402** (ET multi-LED quad set) costs $1,550: exciter $575, dichroic $500, emitter $600. It's designed for multi-LED light engines.
+**Filter set.** Chroma [**89402**](https://www.chroma.com/products/sets/89402-et-391-32-479-33-554-24-638-31-multi-led-set/) (ET multi-LED quad set) costs $1,550: exciter $575, dichroic $500, emitter $600. It's designed for multi-LED light engines.
 
 | Channel | Excitation band | LED | Typical dyes |
 |---|---|---|---|
 | 1 | 391/32 nm | About 395 nm | DAPI, Hoechst, Alexa Fluor 405 |
-| 2 | 479/33 nm | 470 nm (Thorlabs M470L5) | GFP, FITC, Alexa Fluor 488 |
-| 3 | 554/24 nm | 565 nm lime, broadband phosphor (Thorlabs M565L3) | TRITC, Alexa Fluor 555/568. It excites mCherry at about half its peak. |
-| 4 | 638/31 nm | 625 nm (Thorlabs M625L4). It fills the upper half of the band; a 635–640 nm LED would fill more. | Cy5, Alexa Fluor 647 |
+| 2 | 479/33 nm | 470 nm (Thorlabs [M470L5](https://www.thorlabs.com/thorproduct.cfm?partnumber=M470L5)) | GFP, FITC, Alexa Fluor 488 |
+| 3 | 554/24 nm | 565 nm lime, broadband phosphor (Thorlabs [M565L3](https://www.thorlabs.com/thorproduct.cfm?partnumber=M565L3)) | TRITC, Alexa Fluor 555/568. It excites mCherry at about half its peak. |
+| 4 | 638/31 nm | 625 nm (Thorlabs [M625L4](https://www.thorlabs.com/thorproduct.cfm?partnumber=M625L4)). It fills the upper half of the band; a 635–640 nm LED would fill more. | Cy5, Alexa Fluor 647 |
 
 For comparison, Semrock's DA/FI/TR/Cy5-4X-B quad set is listed at $3,287.59.
 
 **LED combiner.** Long-pass dichroics in 30 mm cage cubes, 50 mm apart, join the four LEDs, working back from the far end:
 
 1. The 625 nm LED sits on the axis.
-2. A DMLP605 reflects the 565 nm LED in.
-3. A DMLP505 reflects the 470 nm LED in.
-4. A DMLP425 reflects the 395 nm LED in.
+2. A [DMLP605](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP605) reflects the 565 nm LED in.
+3. A [DMLP505](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP505) reflects the 470 nm LED in.
+4. A [DMLP425](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP425) reflects the 395 nm LED in.
 
 The lime LED's light above 605 nm is lost at the first dichroic, and its exciter band discards it anyway.
 
@@ -657,6 +657,66 @@ Upgrades, when the budget allows:
 | Standa 8SMC5 three-axis controller for XYZ (the objective changer moves to the optics controller) | about $2,370 |
 | A custom 32 × 32 APA102-2020 matrix, 2.5 mm pitch | about $150 (*est.*) |
 
+### Where to find the parts
+
+Found on 2026-11-02. Prices and stock change, so check them when ordering. † marks a page that couldn't be opened automatically, because the site blocks it or draws it with JavaScript. Those rest on a search listing, so open them before relying on them.
+
+**The parts this design names:**
+
+| Part | Links | Note |
+|---|---|---|
+| Objectives, Mitutoyo M Plan Apo | Edmund Optics: [5x](https://www.edmundoptics.com/p/5x-mitutoyo-plan-apo-infinity-corrected-long-wd-objective/6621/)†, [10x](https://www.edmundoptics.com/p/10x-mitutoyo-plan-apo-infinity-corrected-long-wd-objective/6623/)†, [20x](https://edmundoptics.com.tw/p/20x-mitutoyo-plan-apo-infinity-corrected-long-wd-objective/6625) | |
+| Tube lens, Thorlabs TTL200-A | [TTL200-A](https://www.thorlabs.com/item/TTL200-A)† | |
+| Mono camera, ToupTek CTR3CMOS45000KMA | [ToupTek](https://www.touptekphotonics.com/Low-Light/CTR3CMOS/CTR3CMOS45000KMA) | |
+| Colour camera, ToupTek E3ISPM45000KPB | [ToupTek](https://www.touptekphotonics.com/Microscopy/E3ISPM/E3ISPM45000KPB), [micro-pro.com](https://micro-pro.com/en/cameras/touptek-camera-toupcam-e3ispm-45000b-colour-cmos-1-4-2-315-mm-8-1-fps-45-mp-usb-3-0/p,78342)† | ToupTek lists the IMX492, with 2.315 µm pixels. |
+| Filter set, Chroma 89402 | [The set](https://www.chroma.com/products/sets/89402-et-391-32-479-33-554-24-638-31-multi-led-set/), or its [exciter 89402x](https://www.chroma.com/products/parts/89402x/), [dichroic 89402bs](https://www.chroma.com/products/parts/89402bs/) and [emitter 89402m](https://www.chroma.com/products/parts/89402m/) | Bought separately, the dichroic comes in several sizes. The nearest to the CAD's is 25.5 × 36 mm. |
+| Epi LEDs, Thorlabs | [M395L5](https://www.thorlabs.com/thorproduct.cfm?partnumber=M395L5)†, [M470L5](https://www.thorlabs.com/thorproduct.cfm?partnumber=M470L5)†, [M565L3](https://www.thorlabs.com/thorproduct.cfm?partnumber=M565L3)†, [M625L4](https://www.thorlabs.com/thorproduct.cfm?partnumber=M625L4)†, [all mounted LEDs](https://www.thorlabs.com/mounted-leds)† | |
+| Combiner dichroics, Thorlabs | Ø1 in.: [DMLP425](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP425)†, [DMLP505](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP505)†, [DMLP605](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP605)†. 25 × 36 mm: [DMLP425R](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP425R)†, [DMLP505R](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP505R)†, [DMLP605R](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP605R)†. [The family](https://thorlabs.com/newgrouppage9.cfm?objectgroup_id=3313&pn=DMLP605)† | The CM1-DCH/M holds a rectangular optic up to 36 × 26 × 3 mm, which suits the 25 × 36 mm versions. A third-party listing gives the Ø1 in. version as 3.2 mm thick, so check before choosing it. |
+| Camera port, Thorlabs MFF102/M | [MFF102/M](https://www.thorlabs.com/thorproduct.cfm?partnumber=MFF102/M)†, [flip mounts](https://www.thorlabs.com/motorized-filter-flip-mounts)† | It comes with its LMR2/M ring. |
+| Mirror mounts and cage cubes, Thorlabs | [KCB2C/M](https://www.thorlabs.com/thorproduct.cfm?partnumber=KCB2C/M)†, [KCB1C/M](https://www.thorlabs.com/thorproduct.cfm?partnumber=KCB1C/M)†, [CM1-DCH/M](https://www.thorlabs.com/item/CM1-DCH_M)† | |
+| LED drivers, Mean Well LDD-1000H | [Datasheet](https://www.meanwell.com/Upload/PDF/LDD-H/LDD-H-SPEC.PDF), [LEDSupply](https://www.ledsupply.com/led-drivers/mean-well-ldd-h-series-cc-step-down-mode) | |
+| LED matrix, Adafruit 2734 | [Adafruit](https://www.adafruit.com/product/2734). Closest alternative: [Pololu 2532](https://www.pololu.com/product/2532)† | **Adafruit lists it as no longer stocked.** A few resellers may still have it. Pololu's is also 8 × 8, APA102 and on a 10 mm grid, at about $84. |
+| XY stage, Standa 8MTF-102LS05 | [Product page](https://www.standa.lt/products/catalog/motorised_positioners?item=311), [drawing](https://www.standa.lt/files/motorized-translation-stages/8MTF-102LS05-scanning-XY-stage.pdf) | Quote needed. |
+| Z lift, Standa 8MVT100-25-1 | [Product page](https://standa.lt/products/catalog/motorised_positioners?item=407&prod=motorized-vertical-stages) | Quote needed. |
+| Guides, HIWIN MGN12 | [An MGN12H block](https://www.hiwin.de/en/Products/Linear-guideways/Blocks/Miniature-guides/MGN-HIRES-series/MGN12HZ0CM/p/MGN12HZ0CM), [the series](https://www.hiwin.de/en/Products/Linear-guideways/Blocks/Miniature-guides/MGN-HIRES-series/c/4500) | The block's preload and accuracy codes are for you to choose. |
+| Motion controller, BTT SKR Pico | [BIQU](https://biqu.equipment/products/btt-skr-pico-v1-0)†, [schematics](https://github.com/bigtreetech/SKR-Pico), [grblHAL's list](https://grblhal.org/docs/getting-started/controllers/) | |
+| Optics controller, Raspberry Pi Pico 2 | [Raspberry Pi](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) | |
+| 5 V buck, Pololu D36V50F5 | [Pololu](https://www.pololu.com/product/4091) | On the carrier board. |
+| Slider's driver, BTT TMC2209 V1.3 | [BTT](https://neo.bttwiki.com/en/docs/accessories-docs/tmc-driver/tmc-2209/) | On the carrier board. |
+| Carrier board's chips, TI | [SN74AHCT125](https://www.ti.com/product/SN74AHCT125), [ADS1115](https://www.ti.com/product/ADS1115) | |
+| Supply, Mean Well LRS-150-24 | [Datasheet](https://www.meanwell.com/Upload/PDF/LRS-150/LRS-150-SPEC.PDF) | |
+| Converters, Mean Well DDR-60G-12 and DDR-30G-15 | [DDR-60](https://www.meanwell.com/Upload/PDF/DDR-60/DDR-60-SPEC.PDF), [DDR-30](https://www.meanwell.com/Upload/PDF/DDR-30/DDR-30-spec.pdf) datasheets | |
+
+**Examples, where this design only describes the part.** These fit its description, but none is a decision, so check each against the CAD:
+
+| Part | Example | Check |
+|---|---|---|
+| Fold and camera-port mirrors, 2 in. protected silver | [Thorlabs PF20-03-P01](https://www.thorlabs.com/item/PF20-03-P01)† | |
+| Epi fold mirror, 1 in. | [Thorlabs PF10-03-P01](https://www.thorlabs.com/thorproduct.cfm?partnumber=PF10-03-P01)† | |
+| Reflected-light splitter, 50:50, 25 × 36 mm | [Chroma 21014](https://www.chroma.com/products/parts/21014-silver-sputtered-non-polarizing-50-50-vis-beamsplitter/) | 25.5 × 36 × 1 mm at $250, against the $150 estimated above. |
+| Collectors, f = 20 mm aspheric | ACL2520U, among [Thorlabs' aspheric condensers](https://www.thorlabs.com/aspheric-condenser-lenses)† | Its focal length is 20.1 mm. |
+| Field stop's iris | [Thorlabs SM1D12D](https://www.thorlabs.com/item/SM1D12D)† | It opens to 12 mm, and the stop needs 11.5 mm. |
+| Epi lens, f = 100 mm achromat | [Thorlabs AC254-100-A](https://www.thorlabs.com/thorproduct.cfm?partnumber=AC254-100-A)† | |
+| 30 mm cage parts | Thorlabs' [rods](https://www.thorlabs.com/30-and-60-mm-cage-system-construction-rods)† and [plates](https://www.thorlabs.com/standard-30-mm-cage-plates)† | |
+| Overview camera, 12 MP USB (UVC), M12 lens | [Arducam](https://www.arducam.com/blog/product/12mp-usb-camera-module-with-m12-lens-1-2-3-3840hx3032v-4k15fps-for-windows-linux-macos-and-android/)† | Confirm it's UVC, and the lens's field. |
+| Lead-screw steppers, NEMA 11, Tr6 × 2, at least 0.67 A | [StepperOnline's linear steppers](https://www.omc-stepperonline.com/linear-motor)† | **No exact match found.** The nearest is 0.67 A with a Tr5 × 2 screw 100 mm long, and this design cuts its screws to 110 and 160 mm. |
+| Ball plunger, M8, 4 mm ball | [Ganter GN 615-M8](https://uk.rs-online.com/web/p/spring-plungers-indexing-plungers/0100158)† | **M8 plungers found have a 4.5 mm ball,** not the 4 mm the detent assumes. |
+| Home switches, 20 × 6.5 × 10 mm | [Omron SS series](https://omronfs.omron.com/en_US/ecb/products/pdf/en-ss.pdf)† | Its body size and mounting holes. |
+| Fuse block, 6-way, blade fuses | [Blue Sea 5025](https://www.bluesea.com/products/category/ST%20Blade)† | It's rated 32 V DC. The CAD assumes 45 × 90 × 30 mm, so check its size. |
+| Mains inlet, C14, fuse holder and switch | [Schurter KM](https://catalogue.schurter.com/en/datasheet/KM) | Take a C14 version. It uses 5 × 20 mm fuses. |
+| Fan, 120 mm, 24 V | [Noctua NF-F12 industrialPPC-24V-2000 SP](https://noctua.at/pub/media/blfa_files/infosheet/noctua_nf_F12_industrialPCC_24V-2000_SP_ip67_datasheet_de_web_1.pdf)† (in German) | 120 × 120 × 25 mm. |
+| Column, 40 × 80 mm, 8 mm slots | [Motedis 40x80L](https://www.motedis.com/en/Profile-40x80L-I-type-slot-8) | Its mass, which the page doesn't give. The CAD assumes 2.8 kg/m. |
+| Cover's frame, 20 × 20 mm, 5 mm slots | [Motedis 20x20](https://www.motedis.com/en/Aluminium-Profile-20x20-I-Typ-slot-5?products_id=1076) | Its mass. The CAD assumes 0.49 kg/m. |
+| USAF target, to group 9 | [Edmund Optics, 2 × 2 in. positive](https://www.edmundoptics.com/p/2-x-2-positive-1951-usaf-hi-resolution-target/15108/)† | The series reaches group 9, element 3. |
+| Stage micrometer | [SPI 02265-AB](https://www.2spi.com/item/02265-ab/)† | 100 divisions of 10 µm. |
+| Fluorescent reference slides | [Chroma 92001](https://www.chroma.com/products/accessories/92001-autofluorescent-plastic-slides/) | $20 for the set. They bleach under continuous exposure. |
+
+**Not linked:**
+
+- **USB hub.** The 7-port hub found, TP-Link's UH700, is end of life, and at 165 × 65.5 × 17.5 mm it's longer than the CAD's 120 × 45 × 25 mm.
+- **Interlock switch.** The CAD allows 20 × 12 × 6 mm. This is a safety part, so it's left for the owner to choose.
+- **Screws, nuts, T-nuts, spacers, standoffs, feet, foam, cable duct, the hinge and handle, and the M26 adapters.** These are ordinary parts, from any supplier. The sizes are in the [bill of materials](../../cad/optima/outputs/bill-of-materials.csv).
+
 ## 14. Decisions for the owner
 
 1. **Colour camera.** Decided 2026-10-31: keep the colour IMX492. With the other two substitutions in [§13](#13-bill-of-materials-and-budget), the build comes to about $16.2k.
@@ -710,16 +770,17 @@ Stages and controllers:
 - Standa 8MTF: [product page](https://www.standa.lt/products/catalog/motorised_positioners?item=311), [8MTF-102LS05 drawing](https://www.standa.lt/files/motorized-translation-stages/8MTF-102LS05-scanning-XY-stage.pdf), [8MTF-200](https://www.standa.lt/products/catalog/motorised_positioners?item=609)
 - Standa 8MVT100-25-1: [product page](https://standa.lt/products/catalog/motorised_positioners?item=407&prod=motorized-vertical-stages)
 - Standa 8SMC5 controllers: [product page](https://standa.lt/products/catalog/motorised_positioners?item=525)
-- Prior ProScan upright stage, price: [Microscope World](https://www.microscopeworld.com/p-5609-proscan-motorized-stage-upright-microscope.aspx)
-- OptoSigma BIOS-105S: [OptoSigma](https://optosigma.com/sg_en/motorized-xy-stage-system-for-upright-microscope-BIOS-105S.html)
+- Prior ProScan upright stage, price: [Microscope World](https://www.microscopeworld.com/proscan-motorized-stage-upright-microscope/), [Prior](https://www.prior.com/product/h101a)
+- OptoSigma BIOS-105S: [OptoSigma](https://jp.optosigma.com/en_jp/bios-105s.html), which by 2026-11-02 marked it discontinued. The [BIOS-S series](https://www.optosigma.com/us_en/microscopy-systems/microscope-sample-stages/motorized-xy-stage-system-for-upright-microscope-BIOS-S.html) is still listed.
 - HIWIN KK linear modules: [Prema catalogue](https://prema.com.pl/wp-content/uploads/2022/06/Moduy_Liniowe_KK_PL.pdf)
-- grblHAL supported controllers: [grblHAL/Controllers](https://github.com/grblHAL/Controllers), [grblHAL/RP2040](https://github.com/grblHAL/RP2040)
+- grblHAL supported controllers: [grblHAL's list](https://grblhal.org/docs/getting-started/controllers/), [grblHAL/RP2040](https://github.com/grblHAL/RP2040)
 
 Illumination:
 
-- Chroma quad-band sets, including 89402: [Chroma](https://www.chroma.com/products/complete-filter-sets/widefield-microscopy/quad-band-sets)
-- Semrock DA/FI/TR/Cy5-4X-B, price: [IDEX Health & Science](https://www.idex-hs.com/store/product-detail/da_fi_tr_cy5_4x_b_omf)
-- Adafruit 2734 flexible DotStar 8 × 8 matrix: [Adafruit](https://www.adafruit.com/product/2734)
+- Chroma 89402: [the set](https://www.chroma.com/products/sets/89402-et-391-32-479-33-554-24-638-31-multi-led-set/), with its [exciter](https://www.chroma.com/products/parts/89402x/), [dichroic](https://www.chroma.com/products/parts/89402bs/) and [emitter](https://www.chroma.com/products/parts/89402m/)
+- Semrock DA/FI/TR/Cy5-4X-B, price: [IDEX Health & Science](https://www.idex-hs.com/store/product-detail/da_fi_tr_cy5_4x_b_omf). By 2026-11-02 the page called it obsolete, with no direct substitute.
+- Adafruit 2734 flexible DotStar 8 × 8 matrix: [Adafruit](https://www.adafruit.com/product/2734). By 2026-11-02 it was no longer stocked.
+- Thorlabs LEDD1B: [item page](https://www.thorlabs.com/item/ledd1b)
 - Mean Well LDD-H drivers: [LEDSupply](https://www.ledsupply.com/led-drivers/mean-well-ldd-h-series-cc-step-down-mode)
 - Thorlabs MFF101/MFF102 flip mounts, legacy guide: [Thorlabs](https://punchout.thorlabs.com/images/TabImages/ETN012604-D02.pdf)
 
