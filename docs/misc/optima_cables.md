@@ -117,8 +117,8 @@ That's 8 conductors of 0.34 mm².
 |---|---|---|
 | W20 | SKR Pico: E0 motor header | The changer's NEMA 11: its own plug or leads (assumed: a 4-wire bipolar motor) |
 | W21 | SKR Pico: E0-STOP | The changer's home switch: common and normally closed |
-| W28 | Carrier board: the TMC2209's motor header | The slider's NEMA 11 |
-| W29 | Carrier board: the slider's home-switch header | The slider's home switch: common and normally closed |
+| W28 | Carrier board: J10 | The slider's NEMA 11 |
+| W29 | Carrier board: J11 | The slider's home switch: common and normally closed |
 
 The home switches are wired normally closed, so a broken wire reads as pressed and stops the axis. E03 and E07 set the inputs' sense.
 
@@ -132,7 +132,7 @@ W23–W26 are bought M8 cordsets, a 4-pin female M8 on a 2 m cable with open end
 | 2 | LED cathode | The LED driver's output − |
 | 3, 4 | The LED's EEPROM | Not connected: cut back and insulated |
 
-Check the pins against Thorlabs' sheet before the first LED is lit. W27 is an 8-core cable of four twisted pairs, one to the thermistor on each LED's heatsink. It starts at the carrier board's 8-way header, and fans out at the epi arm.
+Check the pins against Thorlabs' sheet before the first LED is lit. W27 is an 8-core cable of four twisted pairs, one to the thermistor on each LED's heatsink. It starts at the carrier board's J14, and fans out at the epi arm.
 
 ### The LED matrix: W30
 
@@ -154,7 +154,7 @@ The MFF102/M has two SMA connectors, DIG I/O 1 and DIG I/O 2, at TTL levels (Tho
 | Lead | The port's connector | Its mode | The carrier board |
 |---|---|---|---|
 | W33 | DIG I/O 1 | Input, *Goto Position*, *Logic Edge Input*: a rising edge moves to position 2, a falling edge to position 1 | An output: its level sets the port |
-| W34 | DIG I/O 2 | Output, *At Position*, *Logic Level Output*: high at position 2, low at position 1 | An input. E04 shifts its 5 V to the Pico 2's 3.3 V. |
+| W34 | DIG I/O 2 | Output, *At Position*, *Logic Level Output*: high at position 2, low at position 1 | An input. The carrier board's divider brings its 5 V to the Pico 2's 3.3 V. |
 
 Set these modes once, with Thorlabs' software over USB, and save them in the unit with *Persist Settings to Hardware*. The port then needs no USB cable in use. This makes the port follow a level rather than toggle on each pulse, as E01 §5 had it, so the firmware always knows where it is.
 
@@ -168,8 +168,8 @@ The cover's fan and door switch join the instrument through one 4-way connector 
 |---|---|---|---|
 | 1 | W11, from F4 | W41, to the fan's red lead | +24 V |
 | 2 | W11, 0 V | W41, to the fan's black lead | 0 V |
-| 3 | W35, from the carrier board's 5 V | W42, to the door switch | 5 V, to the switch |
-| 4 | W35, to the interlock's buffer | W42, from the door switch | 5 V when the door is shut |
+| 3 | W35, from the carrier board's J2, 5 V | W42, to the door switch | 5 V, to the switch |
+| 4 | W35, to J2 and the interlock's buffer | W42, from the door switch | 5 V when the door is shut |
 
 The door switch is normally open, and closed when the shut door presses it (E01 §4). With the cover off, pin 4 has no supply, so every epi LED is off.
 
@@ -194,4 +194,3 @@ The cameras' sockets, and the hub's upstream one, set each cable's far connector
 - **The cameras' trigger connectors**, from ToupTek (E01 §6).
 - **The plugs on the DC leads:** the mono camera's, the hub's and the camera port's. Each matches the part's own adapter.
 - **The epi LEDs' M8 pins**, from Thorlabs' sheet.
-- **The carrier board's connectors.** E04 picks them, and names its headers, against this document's pins.

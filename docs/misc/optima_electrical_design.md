@@ -117,7 +117,7 @@ The LDD-H drivers turn off when DIM is below 0.8 V, measured from their negative
    - Its inputs are pulled down too, so the LEDs stay off while the Pico 2 starts up or resets.
 3. **Door sense.** The firmware reads the switched supply, through a divider, so it knows the door is open. It refuses epi LED commands then, and says why.
 
-The switch is the safety switch on the cover's front-right upright, which the shut door presses (CAD C07). E04 picks the buffer and its parts. The LED matrix isn't interlocked: its light is weak and white, and it shines up through the sample, not out of the instrument.
+The switch is the safety switch on the cover's front-right upright, which the shut door presses (CAD C07). [The carrier board](optima_carrier_board.md#4-how-the-circuits-work) picks the buffer, a 74AHCT125, and its parts. The LED matrix isn't interlocked: its light is weak and white, and it shines up through the sample, not out of the instrument.
 
 ## 5. Inputs and outputs
 
@@ -139,7 +139,7 @@ The SKR Pico has four TMC2209 drivers and four endstop inputs, one for each axis
 | The epi LEDs' enables | 4 | Out | Through the interlock's buffer to each LDD-1000H's DIM (§4) |
 | Door sense | 1 | In | The switched supply, through a divider |
 | LED matrix | 2 | Out | SPI clock and data, through a 5 V buffer, such as a 74AHCT125, to the APA102s |
-| Filter slider | 6 | Out, in | The TMC2209's step, direction, enable, its one-wire UART (two pins), and its diagnostic output |
+| Filter slider | 5 | Out, in | The TMC2209's step, direction, enable and its one-wire UART (two pins). E04 left out its diagnostic output, which is outside the module's socket. |
 | The slider's home switch | 1 | In | |
 | Camera port | 2 | Out, in | The MFF102/M's two SMA connectors, at TTL levels: one input's level sets its position, and the other reports it ([the cables](optima_cables.md#the-camera-port-w14-w33-and-w34)) |
 | Camera triggers | 2 | Out | One per camera, driving its trigger input (§6) |
@@ -147,11 +147,11 @@ The SKR Pico has four TMC2209 drivers and four endstop inputs, one for each axis
 | LED temperatures | 2 | I2C | Four thermistors on the LEDs' heatsinks, through an external ADC, since the Pico 2 has only three free ADC inputs |
 | USB | | | To the PC, through the hub |
 
-That's 22 of the Pico 2's 26 free GPIOs, with 4 to spare. E04 assigns the pins.
+That's 21 of the Pico 2's 26 free GPIOs, with 5 to spare. [The carrier board](optima_carrier_board.md#2-the-picos-pins) assigns the pins.
 
 The carrier board also holds:
 - the four LDD-1000H drivers, with an output to each epi LED;
-- the 5 V buck, a module rated 5 A, for the matrix and the Pico 2;
+- the 5 V buck, a Pololu D36V50F5, for the matrix and the Pico 2;
 - the TMC2209 StepStick for the slider;
 - the connectors E02 lists.
 

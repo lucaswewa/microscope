@@ -104,6 +104,8 @@ def normalize(src, dst, name):
         start, end = t.index(blocks[0]), t.index(blocks[-1]) + len(blocks[-1])
         blocks.sort(key=lambda b: re.search(r'name="([^"]*)"', b).group(1))
         t = t[:start] + "".join(blocks) + t[end:]
+    # Now and then FreeCAD saves the tree's top items with ranks; usually it leaves them all unranked.
+    t = re.sub(r'treeRank="-?\d+"', 'treeRank="-1"', t)
     renames, counts = {}, {}
 
     def rename(m):
