@@ -188,11 +188,41 @@ def library():
             % (LIB_VERSION, "\n".join(symbol(k) for k in kinds())))
 
 
+# Track widths for each class's current, in 1 oz copper, from IPC-2221 with a 20 C rise. GND's tracks
+# only make sure every pad is joined: the pour on the bottom layer carries its current.
+NET_CLASSES = (("Power5", 2.0), ("Power24", 1.0), ("Output", 0.8), ("Ground", 0.5), ("Door", 0.4))
+# The door's rail keeps its distance from 5 V, so that a short is less likely to bypass the interlock.
+RULES = """(version 1)
+(rule door_from_5v
+  (constraint clearance (min 1mm))
+  (condition "A.NetClass == 'Door' && B.NetName == '/+5V'"))
+"""
+CLASS_NETS = {"Power5": ["+5V"], "Power24": ["+24V", "IN_24V"], "Ground": ["GND"],
+              "Door": ["DOOR_5V", "DOOR_FEED"], "Output": ["LED?+", "LED?-", "MOTOR_*"]}
+
+
+def net_class(name, width, clearance=0.2):
+    return {"name": name, "track_width": width, "clearance": clearance, "via_diameter": 0.8, "via_drill": 0.4,
+            "microvia_diameter": 0.3, "microvia_drill": 0.1, "diff_pair_width": 0.2, "diff_pair_gap": 0.25,
+            "wire_width": 6, "bus_width": 12, "line_style": 0, "pcb_color": "rgba(0, 0, 0, 0.000)",
+            "schematic_color": "rgba(0, 0, 0, 0.000)", "priority": 2147483647 if name == "Default" else 0}
+
+
 def project():
-    # E05 adds this board's own footprints, and then their links can be checked too.
-    return json.dumps({"meta": {"filename": "carrier.kicad_pro", "version": 3},
-                       "erc": {"rule_severities": {"footprint_link_issues": "ignore"}}}, indent=2) + "\n"
+    """The project's file: the design rules, and each net class's track width and clearance."""
+    classes = [net_class("Default", 0.25)] + [net_class(*c) for c in NET_CLASSES]
+    patterns = [{"netclass": name, "pattern": "/" + net} for name, nets in CLASS_NETS.items() for net in nets]
+    return json.dumps({
+        "meta": {"filename": "carrier.kicad_pro", "version": 3},
+        # The terminals and the Pico's USB reach the board's edge on purpose.
+        "board": {"design_settings": {"rule_severities": {"silk_edge_clearance": "ignore", "starved_thermal": "warning"},
+                                      "rules": {"min_clearance": 0.2, "min_track_width": 0.2,
+                                                "min_via_diameter": 0.6, "min_through_hole_diameter": 0.3}}},
+        "net_settings": {"classes": classes, "meta": {"version": 4}, "netclass_patterns": patterns},
+    }, indent=2) + "\n"
 
 
+FP_TABLE = ('(fp_lib_table\n  (version 7)\n  (lib (name "carrier")(type "KiCad")'
+            '(uri "${KIPRJMOD}/carrier.pretty")(options "")(descr "This board\'s footprints"))\n)\n')
 SYM_TABLE = ('(sym_lib_table\n  (version 7)\n  (lib (name "carrier")(type "KiCad")'
              '(uri "${KIPRJMOD}/carrier.kicad_sym")(options "")(descr "This board\'s symbols"))\n)\n')

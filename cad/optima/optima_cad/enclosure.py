@@ -208,11 +208,10 @@ def tray():
                                           for x0, y0, x1, y1, _, s in P.TRAYS.values()
                                           for x in (x0 + 8, x1 - 8) for y in (y0 + 8, y1 - 8)])
     a, b = P.TRAY_CARRIER
-    lw, ld, lh = P.LDD_H
     carrier = [G.box((a, b, 1.6), V(0, 0, 0.8))]
-    carrier += [G.box(P.LDD_H, V(sx * (lw / 2 + 4) - 28, sy * (ld / 2 + 2), 1.6 + lh / 2))
-                for sx in (-1, 1) for sy in (-1, 1)]
-    carrier += [v.translated(V(36, 0, 1.6)) for v in parts.circuit(P.PICO2).values()]
+    carrier += [G.box((w, d, h), V(x, y, 1.6 + h / 2)) for w, d, h, x, y in P.CARRIER_PARTS]
+    px, py, socket = P.CARRIER_PICO
+    carrier += [G.placed(v, V(px, py, 1.6 + socket), Z, -X) for v in parts.circuit(P.PICO2).values()]
     out.update({
         "supply": turned([block(P.SUPPLY)], "supply"),
         "fuses": turned([block(P.TRAY_FUSES)], "fuse block"),

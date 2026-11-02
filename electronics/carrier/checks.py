@@ -2,10 +2,13 @@
 board, and that the pins, levels, currents and connectors are what the design asks for."""
 
 import csv
+import fnmatch
 import re
 from collections import namedtuple
 
 from circuit import BOXES, PARTS, nets
+from placement import PLACES, SIZE
+from schematic import CLASS_NETS, NET_CLASSES
 
 Check = namedtuple("Check", "name ok detail")
 
@@ -15,6 +18,8 @@ E9_PULLDOWN = 8200  # ohms: the most that holds an RP2350 input low, by its erra
 LDD_OFF = 0.8  # V at DIM: below this, Mean Well's driver is off
 DIM_SOURCE = 0.0005  # A: assumed; Mean Well says only that an open DIM reads as on
 PTC_HOLD = 0.1  # A
+SUPPLIES = {"/+5V", "/+24V", "/IN_24V"}
+POWER_PADS = {"J1", "J7", "U1", "U4", "U5", "U6", "U7", "C1", "C2"}  # the parts that take power from the GND pour
 # The pins that have each function on an RP2350 (its function table).
 FUNCTIONS = {"UART_TX": (0, 12, 16, 28), "SLIDE_UART": (1, 13, 17), "I2C_SDA": (0, 4, 8, 12, 16, 20, 28),
              "I2C_SCL": (1, 5, 9, 13, 17, 21), "MATRIX_SCK": (10, 14, 26), "MATRIX_TX": (11, 15, 27)}
@@ -103,7 +108,48 @@ def connectors(cables_path):
     return wrong, len(seen)
 
 
-def run(netlist, erc, cables_path):
+def counted_violations(violations):
+    """The DRC's violations that count. A track joins every pad, so a thin thermal to the pour matters
+    only on a pad that carries power."""
+    return [v for v in violations if v["type"] != "starved_thermal"
+            or v["items"][1]["description"].split()[-1] in POWER_PADS]
+
+
+def narrow_tracks(board):
+    """The power nets' tracks narrower than their class asks, and the vias on the supplies, whose barrels
+    are thinner than their tracks, as a list, and how many tracks there are. GND isn't among them: the
+    pour and the fixed return carry its current, not its tracks."""
+    names = dict(re.findall(r'\(net (\d+) "([^"]*)"\)', board))
+    tracks = re.findall(r'\(segment.*?\(width ([\d.]+)\).*?\(net (?:"([^"]*)"|(\d+))\)', board, re.S)
+    widths = {c[0]: c[1] for c in NET_CLASSES}
+    wrong = {}
+    for width, name, code in tracks:
+        name = name or names.get(code, code)
+        for group, patterns in CLASS_NETS.items():
+            if group != "Ground" and any(fnmatch.fnmatchcase(name, "/" + p) for p in patterns) and float(width) < widths[group]:
+                wrong[name] = min(float(width), wrong.get(name, 99))
+    vias = [re.search(r'\(net "([^"]*)"', v)[1] for v in re.findall(r"^\t\(via\b.*?^\t\)\n", board, re.S | re.M)]
+    return (["%s %g mm" % i for i in sorted(wrong.items())] + ["via on %s" % n for n in vias if n in SUPPLIES],
+            len(tracks))
+
+
+def moved_parts(board):
+    """The parts that aren't where placement.py says, as a list. routes.ses holds where they were when
+    it was routed, and KiCad's import of it puts them back there: moving a part needs a new route."""
+    number = r"(-?[\d.]+)"
+    placed = {ref: (round(float(x), 3), round(float(y), 3), float(angle or 0) % 360) for x, y, angle, ref in re.findall(
+        r'^\t\(footprint .*?^\t\t\(at %s %s(?: %s)?\).*?\(property "Reference" "([^"]*)"' % (number, number, number),
+        board, re.S | re.M)}
+    return ["%s at %g, %g" % (ref, *placed[ref][:2]) for ref, want in sorted(PLACES.items())
+            if placed.get(ref) != (round(want[0], 3), round(want[1], 3), want[2] % 360)]
+
+
+def cad_size(params_path):
+    """The carrier board's size in the CAD, its long side first."""
+    return tuple(float(v) for v in re.search(r"^TRAY_CARRIER = \(([\d.]+), ([\d.]+)\)", params_path.read_text(encoding="utf-8"), re.M).groups())
+
+
+def run(netlist, erc, cables_path, drc, board):
     drawn, wanted = read_netlist(netlist), nets()
     differ = sorted(n for n in set(drawn) | set(wanted) if drawn.get(n) != wanted.get(n))
     gpio = pico_gpio()
@@ -122,6 +168,14 @@ def run(netlist, erc, cables_path):
     jacks_wrong, matched = connectors(cables_path)
     found = [v["description"] for sheet in erc["sheets"] for v in sheet["violations"]]
     lock_wrong = interlock()
+    rules = [v["type"] + ": " + v["items"][1 if v["type"] == "starved_thermal" else 0]["description"][:40]
+             for v in counted_violations(drc["violations"])]
+    parity = [v["type"] + ": " + v["items"][0]["description"][:40] for v in drc.get("schematic_parity", [])]
+    open_nets = len(drc["unconnected_items"])
+    narrow, track_count = narrow_tracks(board)
+    moved = moved_parts(board)
+    params = cables_path.parents[1] / "optima_cad" / "params.py"
+    cad = cad_size(params)
     return [
         Check("KiCad's electrical rules check is clean", not found, "; ".join(found[:6]) or "no violations"),
         Check("KiCad reads back the circuit in circuit.py, net for net", not differ,
@@ -140,4 +194,12 @@ def run(netlist, erc, cables_path):
               "%.0f mA with all four on, of its %.0f mA" % (door * 1000, PTC_HOLD * 1000)),
         Check("Each connector matches its cable in the cable list", not jacks_wrong,
               "; ".join(jacks_wrong) or "%d connectors matched" % matched),
+        Check("KiCad's design rules check is clean", not rules,
+              "; ".join(rules[:6]) or "no violations, and thin thermals only on pads that carry no power"),
+        Check("Every net is routed", not open_nets, "%d connections unrouted" % open_nets),
+        Check("The board matches its schematic", not parity, "; ".join(parity[:6]) or "no differences"),
+        Check("Each power net's tracks are as wide as its current needs, with no via on a supply", not narrow,
+              ", ".join(narrow) or "%d tracks" % track_count),
+        Check("The parts are where placement.py says", not moved, "; ".join(moved[:4]) or "%d parts" % len(PLACES)),
+        Check("The board is the size the CAD gives it", cad == SIZE, "%g x %g mm, the CAD's %g x %g" % (SIZE + cad)),
     ]

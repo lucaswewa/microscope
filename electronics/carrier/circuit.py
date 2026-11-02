@@ -11,8 +11,8 @@ Pin = namedtuple("Pin", "number name type")
 
 IN, OUT, BI, POWER, SUPPLY, PASSIVE = "input", "output", "bidirectional", "power_in", "power_out", "passive"
 
-R_FP = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
-C_FP = "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+R_FP = "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"
+C_FP = "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm"
 CP_FP = "Capacitor_THT:CP_Radial_D10.0mm_P5.00mm"
 
 
@@ -122,7 +122,7 @@ SIGNALS = {"GP0": "UART_TX", "GP1": "SLIDE_UART", "GP2": "SLIDE_STEP", "GP3": "S
            "GP4": "SLIDE_EN", "GP5": "SLIDE_HOME", "GP6": "DOOR_SENSE", "GP7": "SPARE_GP7",
            "GP8": "I2C_SDA", "GP9": "I2C_SCL", "GP10": "MATRIX_SCK", "GP11": "MATRIX_TX",
            "GP12": "LED1_EN", "GP13": "LED2_EN", "GP14": "LED3_EN", "GP15": "LED4_EN",
-           "GP16": "TRIG1", "GP17": "TRIG2", "GP18": "EXPO1", "GP19": "EXPO2",
+           "GP16": "TRIG1", "GP17": "EXPO1", "GP18": "TRIG2", "GP19": "EXPO2",
            "GP20": "PORT_SET_3V3", "GP21": "PORT_AT", "GP22": "SPARE_GP22", "GP26": "SPARE_GP26",
            "GP27": "SPARE_GP27", "GP28": "SPARE_GP28", "GND": "GND", "AGND": "GND", "VSYS": "VSYS",
            "3V3": "+3V3", "RUN": "RUN", "VBUS": None, "3V3_EN": None, "ADC_VREF": None}
@@ -130,7 +130,7 @@ add("U", "Pico 2", "Raspberry Pi Pico 2", "Module:RaspberryPi_Pico_Common_THT", 
     {p.number: SIGNALS[p.name] for s in BOXES["Pico 2"] for p in s})
 add("D", "D", "1N5817", "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal", BLOCK, {2: "+5V", 1: "VSYS"})
 connector(15, "Spare pins", "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical", BLOCK,
-          ["+3V3", "GND", "SPARE_GP7", "SPARE_GP22", "SPARE_GP26", "SPARE_GP27", "SPARE_GP28", "RUN"])
+          ["+3V3", "GND", "SPARE_GP28", "SPARE_GP7", "SPARE_GP27", "SPARE_GP26", "RUN", "SPARE_GP22"])
 
 # The interlock (the electrical design's §4). The door's switch alone powers the DIM buffer, so with
 # the door open or the cover off, every DIM line falls to its pull-down and every LED is off.
@@ -141,7 +141,8 @@ add("F", "R", "PTC, 0.1 A hold", "Capacitor_THT:C_Disc_D7.5mm_W2.5mm_P5.00mm", B
 c("100nF", "DOOR_5V", BLOCK)
 r("3.9k", "DOOR_5V", "DOOR_SENSE", BLOCK)
 r("6.8k", "DOOR_SENSE", "GND", BLOCK)
-buffer(BLOCK, "DOOR_5V", [("LED%d_EN" % n, "DIM%d" % n) for n in range(1, 5)])
+# The third and fourth gates in this order, so that the tracks to them don't cross on the board.
+buffer(BLOCK, "DOOR_5V", [("LED%d_EN" % n, "DIM%d" % n) for n in (1, 2, 4, 3)])
 for n, wire in zip(range(1, 5), ("W23: 395 nm", "W24: 470 nm", "W25: 565 nm", "W26: 625 nm")):
     r("4.7k", "LED%d_EN" % n, "GND", BLOCK)
     r("1k", "DIM%d" % n, "GND", BLOCK)
@@ -187,7 +188,7 @@ BLOCK = "Cameras"
 for n, wire in ((1, "W31: mono camera"), (2, "W32: colour camera")):
     r("4.7k", "TRIG%d" % n, "GND", BLOCK)
     r("2.2k", "TRIG%d" % n, "TRIG%d_BASE" % n, BLOCK)
-    add("Q", "Q", "2N3904", "Package_TO_SOT_THT:TO-92_Inline", BLOCK,
+    add("Q", "Q", "2N3904", "Package_TO_SOT_THT:TO-92_Inline_Wide", BLOCK,
         {1: "GND", 2: "TRIG%d_BASE" % n, 3: "TRIG%d_OUT" % n})
     connector(n + 11, wire, xh(4), BLOCK, ["TRIG%d_OUT" % n, "GND", "EXPO%d_IN" % n, "GND"])
     r("4.7k", "EXPO%d_IN" % n, "+3V3", BLOCK)

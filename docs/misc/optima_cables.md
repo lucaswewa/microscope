@@ -18,7 +18,7 @@ Started 2026-11-01. "Assumed" marks what a datasheet or the part in hand still h
 | Tray | Where | Its parts |
 |---|---|---|
 | Power tray, OPTIMA-E08 | Left of the lift | The supply, its terminals toward the back. The fuse block. The 12 V and 15 V converters on a DIN rail. |
-| Control tray, OPTIMA-E09 | Right of the lift | The SKR Pico, the carrier board (130 × 80 mm, assumed until E05), the USB hub |
+| Control tray, OPTIMA-E09 | Right of the lift | The SKR Pico, the carrier board (140 × 100 mm), the USB hub |
 
 **The mains inlet** sits on a bracket, OPTIMA-E10, from the base plate's back edge. Its face is in the cover's notch, which is now 40 mm high. So the mains cord plugs in through the notch, and the inlet's switch is reached through it. The earth stud is an M6 up through the base plate, beside the inlet.
 

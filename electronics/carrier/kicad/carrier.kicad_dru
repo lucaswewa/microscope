@@ -1,0 +1,4 @@
+(version 1)
+(rule door_from_5v
+  (constraint clearance (min 1mm))
+  (condition "A.NetClass == 'Door' && B.NetName == '/+5V'"))

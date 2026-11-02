@@ -149,10 +149,10 @@
 		(comp
 			(ref "C3")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -195,10 +195,10 @@
 		(comp
 			(ref "C4")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -287,10 +287,10 @@
 		(comp
 			(ref "C6")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -333,10 +333,10 @@
 		(comp
 			(ref "C7")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -379,10 +379,10 @@
 		(comp
 			(ref "C8")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -425,10 +425,10 @@
 		(comp
 			(ref "C9")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -471,10 +471,10 @@
 		(comp
 			(ref "C10")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -517,10 +517,10 @@
 		(comp
 			(ref "C11")
 			(value "100nF")
-			(footprint "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+			(footprint "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 			(fields
 				(field
-					(name "Footprint") "Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm")
+					(name "Footprint") "Capacitor_THT:C_Disc_D4.7mm_W2.5mm_P5.00mm")
 				(field
 					(name "Datasheet")
 				)
@@ -1451,10 +1451,10 @@
 		(comp
 			(ref "Q1")
 			(value "2N3904")
-			(footprint "Package_TO_SOT_THT:TO-92_Inline")
+			(footprint "Package_TO_SOT_THT:TO-92_Inline_Wide")
 			(fields
 				(field
-					(name "Footprint") "Package_TO_SOT_THT:TO-92_Inline")
+					(name "Footprint") "Package_TO_SOT_THT:TO-92_Inline_Wide")
 				(field
 					(name "Datasheet")
 				)
@@ -1500,10 +1500,10 @@
 		(comp
 			(ref "Q2")
 			(value "2N3904")
-			(footprint "Package_TO_SOT_THT:TO-92_Inline")
+			(footprint "Package_TO_SOT_THT:TO-92_Inline_Wide")
 			(fields
 				(field
-					(name "Footprint") "Package_TO_SOT_THT:TO-92_Inline")
+					(name "Footprint") "Package_TO_SOT_THT:TO-92_Inline_Wide")
 				(field
 					(name "Datasheet")
 				)
@@ -1549,10 +1549,10 @@
 		(comp
 			(ref "R1")
 			(value "3.9k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1595,10 +1595,10 @@
 		(comp
 			(ref "R2")
 			(value "6.8k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1641,10 +1641,10 @@
 		(comp
 			(ref "R3")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1687,10 +1687,10 @@
 		(comp
 			(ref "R4")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1733,10 +1733,10 @@
 		(comp
 			(ref "R5")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1779,10 +1779,10 @@
 		(comp
 			(ref "R6")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1825,10 +1825,10 @@
 		(comp
 			(ref "R7")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1871,10 +1871,10 @@
 		(comp
 			(ref "R8")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1917,10 +1917,10 @@
 		(comp
 			(ref "R9")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -1963,10 +1963,10 @@
 		(comp
 			(ref "R10")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2009,10 +2009,10 @@
 		(comp
 			(ref "R11")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2055,10 +2055,10 @@
 		(comp
 			(ref "R12")
 			(value "47")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2101,10 +2101,10 @@
 		(comp
 			(ref "R13")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2147,10 +2147,10 @@
 		(comp
 			(ref "R14")
 			(value "47")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2193,10 +2193,10 @@
 		(comp
 			(ref "R15")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2239,10 +2239,10 @@
 		(comp
 			(ref "R16")
 			(value "47")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2285,10 +2285,10 @@
 		(comp
 			(ref "R17")
 			(value "3.9k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2331,10 +2331,10 @@
 		(comp
 			(ref "R18")
 			(value "6.8k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2377,10 +2377,10 @@
 		(comp
 			(ref "R19")
 			(value "10k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2423,10 +2423,10 @@
 		(comp
 			(ref "R20")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2469,10 +2469,10 @@
 		(comp
 			(ref "R21")
 			(value "10k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2515,10 +2515,10 @@
 		(comp
 			(ref "R22")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2561,10 +2561,10 @@
 		(comp
 			(ref "R23")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2607,10 +2607,10 @@
 		(comp
 			(ref "R24")
 			(value "2.2k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2653,10 +2653,10 @@
 		(comp
 			(ref "R25")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2699,10 +2699,10 @@
 		(comp
 			(ref "R26")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2745,10 +2745,10 @@
 		(comp
 			(ref "R27")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2791,10 +2791,10 @@
 		(comp
 			(ref "R28")
 			(value "2.2k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2837,10 +2837,10 @@
 		(comp
 			(ref "R29")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2883,10 +2883,10 @@
 		(comp
 			(ref "R30")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2929,10 +2929,10 @@
 		(comp
 			(ref "R31")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -2975,10 +2975,10 @@
 		(comp
 			(ref "R32")
 			(value "4.7k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3021,10 +3021,10 @@
 		(comp
 			(ref "R33")
 			(value "10k 1%")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3067,10 +3067,10 @@
 		(comp
 			(ref "R34")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3113,10 +3113,10 @@
 		(comp
 			(ref "R35")
 			(value "10k 1%")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3159,10 +3159,10 @@
 		(comp
 			(ref "R36")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3205,10 +3205,10 @@
 		(comp
 			(ref "R37")
 			(value "10k 1%")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3251,10 +3251,10 @@
 		(comp
 			(ref "R38")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3297,10 +3297,10 @@
 		(comp
 			(ref "R39")
 			(value "10k 1%")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -3343,10 +3343,10 @@
 		(comp
 			(ref "R40")
 			(value "1k")
-			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+			(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 			(fields
 				(field
-					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+					(name "Footprint") "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical")
 				(field
 					(name "Datasheet")
 				)
@@ -5214,7 +5214,7 @@
 		(net
 			(code "2")
 			(name "/+5V")
-			(class "Default")
+			(class "Power5")
 			(node
 				(ref "C2")
 				(pin "1")
@@ -5273,7 +5273,7 @@
 		(net
 			(code "3")
 			(name "/+24V")
-			(class "Default")
+			(class "Power24")
 			(node
 				(ref "C1")
 				(pin "1")
@@ -5509,8 +5509,8 @@
 			)
 			(node
 				(ref "U3")
-				(pin "8")
-				(pinfunction "3Y_8")
+				(pin "11")
+				(pinfunction "4Y_11")
 				(pintype "tri_state")
 			)
 			(node
@@ -5532,8 +5532,8 @@
 			)
 			(node
 				(ref "U3")
-				(pin "11")
-				(pinfunction "4Y_11")
+				(pin "8")
+				(pinfunction "3Y_8")
 				(pintype "tri_state")
 			)
 			(node
@@ -5546,7 +5546,7 @@
 		(net
 			(code "12")
 			(name "/DOOR_5V")
-			(class "Default")
+			(class "Door")
 			(node
 				(ref "C3")
 				(pin "1")
@@ -5575,7 +5575,7 @@
 		(net
 			(code "13")
 			(name "/DOOR_FEED")
-			(class "Default")
+			(class "Door")
 			(node
 				(ref "F1")
 				(pin "2")
@@ -5624,8 +5624,8 @@
 			)
 			(node
 				(ref "U2")
-				(pin "24")
-				(pinfunction "GP18_24")
+				(pin "22")
+				(pinfunction "GP17_22")
 				(pintype "bidirectional")
 			)
 		)
@@ -5695,7 +5695,7 @@
 		(net
 			(code "19")
 			(name "/GND")
-			(class "Default")
+			(class "Ground")
 			(node
 				(ref "C1")
 				(pin "2")
@@ -6225,7 +6225,7 @@
 		(net
 			(code "23")
 			(name "/IN_24V")
-			(class "Default")
+			(class "Power24")
 			(node
 				(ref "D1")
 				(pin "2")
@@ -6242,7 +6242,7 @@
 		(net
 			(code "24")
 			(name "/LED1+")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J3")
 				(pin "1")
@@ -6265,7 +6265,7 @@
 		(net
 			(code "25")
 			(name "/LED1-")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J3")
 				(pin "2")
@@ -6311,7 +6311,7 @@
 		(net
 			(code "27")
 			(name "/LED2+")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J4")
 				(pin "1")
@@ -6334,7 +6334,7 @@
 		(net
 			(code "28")
 			(name "/LED2-")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J4")
 				(pin "2")
@@ -6380,7 +6380,7 @@
 		(net
 			(code "30")
 			(name "/LED3+")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J5")
 				(pin "1")
@@ -6403,7 +6403,7 @@
 		(net
 			(code "31")
 			(name "/LED3-")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J5")
 				(pin "2")
@@ -6441,15 +6441,15 @@
 			)
 			(node
 				(ref "U3")
-				(pin "9")
-				(pinfunction "3A_9")
+				(pin "12")
+				(pinfunction "4A_12")
 				(pintype "input")
 			)
 		)
 		(net
 			(code "33")
 			(name "/LED4+")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J6")
 				(pin "1")
@@ -6472,7 +6472,7 @@
 		(net
 			(code "34")
 			(name "/LED4-")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J6")
 				(pin "2")
@@ -6510,8 +6510,8 @@
 			)
 			(node
 				(ref "U3")
-				(pin "12")
-				(pinfunction "4A_12")
+				(pin "9")
+				(pinfunction "3A_9")
 				(pintype "input")
 			)
 		)
@@ -6632,7 +6632,7 @@
 		(net
 			(code "42")
 			(name "/MOTOR_A1")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J10")
 				(pin "1")
@@ -6649,7 +6649,7 @@
 		(net
 			(code "43")
 			(name "/MOTOR_A2")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J10")
 				(pin "2")
@@ -6666,7 +6666,7 @@
 		(net
 			(code "44")
 			(name "/MOTOR_B1")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J10")
 				(pin "3")
@@ -6683,7 +6683,7 @@
 		(net
 			(code "45")
 			(name "/MOTOR_B2")
-			(class "Default")
+			(class "Output")
 			(node
 				(ref "J10")
 				(pin "4")
@@ -6800,8 +6800,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "8")
-				(pinfunction "~_8")
+				(pin "7")
+				(pinfunction "~_7")
 				(pintype "passive")
 			)
 			(node
@@ -6920,8 +6920,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "3")
-				(pinfunction "~_3")
+				(pin "4")
+				(pinfunction "~_4")
 				(pintype "passive")
 			)
 			(node
@@ -6937,8 +6937,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "4")
-				(pinfunction "~_4")
+				(pin "8")
+				(pinfunction "~_8")
 				(pintype "passive")
 			)
 			(node
@@ -6954,8 +6954,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "5")
-				(pinfunction "~_5")
+				(pin "6")
+				(pinfunction "~_6")
 				(pintype "passive")
 			)
 			(node
@@ -6971,8 +6971,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "6")
-				(pinfunction "~_6")
+				(pin "5")
+				(pinfunction "~_5")
 				(pintype "passive")
 			)
 			(node
@@ -6988,8 +6988,8 @@
 			(class "Default")
 			(node
 				(ref "J15")
-				(pin "7")
-				(pinfunction "~_7")
+				(pin "3")
+				(pinfunction "~_3")
 				(pintype "passive")
 			)
 			(node
@@ -7166,8 +7166,8 @@
 			)
 			(node
 				(ref "U2")
-				(pin "22")
-				(pinfunction "GP17_22")
+				(pin "24")
+				(pinfunction "GP18_24")
 				(pintype "bidirectional")
 			)
 		)

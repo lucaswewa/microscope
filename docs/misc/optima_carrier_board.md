@@ -1,12 +1,13 @@
 # OPTIMA carrier board
 
-The board under the Pico 2, for phase E04 of the [electronics plan](optima_electronics_plan.md). It holds the four LED drivers, the door's interlock, the filter slider's driver, the 5 V supply and the connectors for its cables. The [electrical design](optima_electrical_design.md) sets what it has to do. This is its schematic; E05 lays it out.
+The board under the Pico 2, for phases E04 and E05 of the [electronics plan](optima_electronics_plan.md). It holds the four LED drivers, the door's interlock, the filter slider's driver, the 5 V supply and the connectors for its cables. The [electrical design](optima_electrical_design.md) sets what it has to do. E04 drew its schematic, and E05 laid it out.
 
-- The circuit is Python: [`electronics/carrier/circuit.py`](../../electronics/carrier/circuit.py).
+- The circuit is Python: [`electronics/carrier/circuit.py`](../../electronics/carrier/circuit.py), and where everything goes is [`placement.py`](../../electronics/carrier/placement.py).
 - The schematic to read is [`carrier.pdf`](../../electronics/carrier/kicad/carrier.pdf). The KiCad project and the netlist are beside it.
+- The board to read is [the picture](../../electronics/carrier/kicad/fab/carrier-top.png), with [the top](../../electronics/carrier/kicad/fab/carrier-top.pdf) and [the bottom](../../electronics/carrier/kicad/fab/carrier-bottom.pdf) as PDFs. What a maker needs is in [`kicad/fab/`](../../electronics/carrier/kicad/fab/).
 - [The README](../../electronics/carrier/README.md) says how to rebuild them, and [`REPORT.md`](../../electronics/carrier/REPORT.md) has the checks' results.
 
-Started 2026-11-01. Nothing here has been built or powered. "Assumed" marks what the parts in hand still have to confirm.
+Started 2026-11-01. Nothing here has been built, ordered or powered. "Assumed" marks what the parts in hand still have to confirm.
 
 ## 1. The parts
 
@@ -36,8 +37,8 @@ The rest are through-hole resistors, capacitors and connectors. The modules sit 
 | 8, 9 | 11, 12 | I2C_SDA, I2C_SCL | I2C0, to the ADC at address 0x48 |
 | 10, 11 | 14, 15 | MATRIX_SCK, MATRIX_TX | SPI1, to the matrix through U8 |
 | 12–15 | 16, 17, 19, 20 | LED1_EN–LED4_EN | The LEDs' enables, through U3 |
-| 16, 17 | 21, 22 | TRIG1, TRIG2 | The triggers: 1 mono, 2 colour |
-| 18, 19 | 24, 25 | EXPO1, EXPO2 | The exposure signals |
+| 16, 18 | 21, 24 | TRIG1, TRIG2 | The triggers: 1 mono, 2 colour |
+| 17, 19 | 22, 25 | EXPO1, EXPO2 | The exposure signals |
 | 20 | 26 | PORT_SET_3V3 | The camera port's position, through U8 |
 | 21 | 27 | PORT_AT | The camera port's position report |
 | 7, 22, 26, 27, 28 | 10, 29, 31, 32, 34 | SPARE_… | To J15, with 3.3 V, ground and RUN |
@@ -58,7 +59,7 @@ That's 21 pins used, and 5 spare. GPIOs 26–28 are the ADC-capable ones, kept f
 | J11 | 2-way JST XH | W29 | 1: the home switch; 2: 0 V |
 | J12, J13 | 4-way JST XH | W31, W32 | 1: trigger; 2: 0 V; 3: exposure; 4: 0 V |
 | J14 | 8-way JST XH | W27 | A pair per thermistor: 1 signal, 2 0 V, and so on |
-| J15 | 8-way pin header | None | 3.3 V, 0 V, GPIOs 7, 22, 26, 27, 28, RUN |
+| J15 | 8-way pin header | None | In order: 3.3 V, 0 V, GPIOs 28, 7, 27, 26, RUN, GPIO 22 |
 
 The Pico's own micro-USB takes W36.
 
@@ -73,7 +74,7 @@ The Pico's own micro-USB takes W36.
 - F1, a resettable fuse, protects the 5 V rail if the cable to the door shorts: the cable leaves the board and runs into the cover.
 - The firmware reads the door through a 3.9 kΩ and 6.8 kΩ divider, which gives 3.18 V.
 
-This is a good interlock, not a certified safety circuit. A short on the board between 5 V and the door's rail would defeat it; the layout in E05 should keep them apart.
+This is a good interlock, not a certified safety circuit. A short on the board between 5 V and the door's rail would defeat it, so [the layout](#5-the-layout) keeps them apart.
 
 **Pull-downs and the RP2350.** The Pico 2's earlier chips have a fault, erratum E9: an input pin can sit at about 2.1 V unless something holds it down. As Hackaday quotes the datasheet, an external pull-down of 8.2 kΩ or less is needed. So every pull-down on a Pico pin here is at most 6.8 kΩ. The door's sense needed this: a larger divider would read as "door shut" with the door open.
 
@@ -93,13 +94,59 @@ This is a good interlock, not a certified safety circuit. A short on the board b
 
 **Bulk capacitors.** 100 µF at the 24 V input and at the slider's driver, as StepStick boards usually have, and 470 µF on the 5 V rail for the matrix.
 
-## 5. The checks
+## 5. The layout
 
-`make.py` runs KiCad's electrical rules check (ERC) and these checks of its own. All eight pass:
+Two layers of 1 oz copper, 140 × 100 mm, with an M3 hole 4 mm in from each corner, as the CAD's tray has them. That's larger than the 130 × 80 mm the CAD assumed until now, and it still fits the tray with nothing in the way. The CAD's model now has the board's real layout and its tall parts.
+
+**Where things go.** The four LED drivers run along the top, with their terminals at the edge. Power is at the left: the 24 V input, the buck, the matrix's terminal and its buffer. The Pico is at the bottom's centre with its USB at the edge. The cameras' connectors are to its left, the slider's to its right, and the thermistors are in the top right corner. Resistors stand upright to save room.
+
+**The current's paths come first.** What carries real current, and the runs that most need a clear path, are laid out in the script (`FIXED` in `placement.py`), and locked. The router then works around them.
+
+| Track | Width and layer | Why |
+|---|---|---|
+| 5 V | 2 mm, top | From the buck to the matrix's terminal, about 4 A at most, then to the bulk capacitor, the fuse, the Pico's diode and U8. The router adds a short link on the bottom between the buck's two output pins. |
+| The matrix's return | 2 mm, bottom | From J7 to the buck's ground pins, where no signal can cut it |
+| 24 V | 1 mm | Along the LED drivers, and on to the slider, with no via on the way |
+| The door's feed and rail | 0.4 mm, top | Clear runs, away from everything else |
+| DIM1, DIM2, VSYS, EXPO1_IN, I2C_SCL | 0.25–0.5 mm | The longest runs, and the ones that kept boxing others in |
+
+**The interlock.** The fuse F1 sits by the buck, so 5 V stays at the board's left: its copper stops at x = 46 mm, apart from F1 itself, and the door's rail starts there and runs right. A design rule also holds the door's nets 1 mm from 5 V, which the DRC checks. E04 asked the layout to keep them apart, and I found the router wouldn't do it alone: in an early try, a 5 V track passed 0.53 mm from U3's supply pin. This makes a short on the board unlikely, not impossible.
+
+**Ground.** The bottom layer is a GND pour, which carries its current, and every GND pad also has a track. The router's signals cut the pour in places, and when I let it count GND as a plane, those cuts left 11 connections open. A pad's thermal connection to the pour can be thin where tracks crowd it. KiCad reports those as warnings, and the checks fail only if one is on a part that carries power.
+
+**The schematic changed slightly for the layout.** None of this changes how the circuit behaves:
+
+- GPIO 17 and GPIO 18 swapped, so the cameras' signals don't cross.
+- The LED drivers' third and fourth buffer gates swapped, for the same reason. LED 3 uses U3's fourth gate, and LED 4 its third.
+- J15's pins were reordered, so that each one lines up with the Pico pin it joins.
+- The 2N3904s use KiCad's wider TO-92 footprint, because the narrower one's pads were too close for the clearance rule.
+
+**The two footprints KiCad doesn't have** are the LDD-1000H's and the D36V50F5's, both this project's own, from the makers' drawings (`footprints.py`). Pololu's drawing and photo settled the buck's pin order, which E04 left open: from the left along its lower edge, VOUT, GND, GND, VIN, VRP, then EN and PG. VRP isn't used.
+
+**Routing.** FreeRouting does it, and its result is kept in `routes.ses`, so only a new route needs FreeRouting. A new route gives a different board, because the router isn't repeatable, so the checks are what say whether it's good. The README has the details, and they took some finding: a long job does worse than a chain of short ones, and the options that keep tracks at their full width matter.
+
+**The fabrication files,** in `kicad/fab/`:
+
+| File | What it is |
+|---|---|
+| `carrier-gerbers.zip` | Gerbers and drills |
+| `carrier-bom.csv`, `carrier-cpl.csv` | For assembling the ADC, the one surface-mount part, in JLCPCB's columns |
+| `carrier-parts.csv` | Every part, for buying and hand assembly |
+| `carrier-top.pdf`, `carrier-bottom.pdf`, `carrier-top.png` | The board to read |
+
+**Before ordering:**
+
+- Print `carrier-top.pdf` at 100 % and lay the real parts on it, the LED drivers, the buck and the StepStick above all. Their footprints come from drawings, and nothing has been built.
+- Upload the zip to the maker, and read its design check and viewer. The rules here are ordinary for two layers (tracks from 0.25 mm, 0.2 mm clearance, 0.8 mm vias with 0.4 mm holes), but I haven't run a maker's check on them.
+- Confirm that LCSC C37593 is the ADS1115IDGSR and in stock, and that the ADC's rotation looks right in the maker's preview, with pin 1 at its dot. I couldn't confirm either here.
+
+## 6. The checks
+
+`make.py` runs KiCad's electrical rules check (ERC) and design rules check (DRC), and these checks of its own. All 14 pass, as [`REPORT.md`](../../electronics/carrier/REPORT.md) shows, and I read the copper too, because that's how I found what a clean DRC missed: an early 5 V track had cut the buck's ground pins off from the pour.
 
 | Check | Result |
 |---|---|
-| The ERC is clean | No violations. It ignores footprint links until E05 adds this board's own footprints. |
+| The ERC is clean | No violations |
 | KiCad reads back the circuit in `circuit.py`, net for net | 73 nets, 81 parts |
 | With the door open, nothing on the board can power the DIM lines | Each DIM has only its buffer and a pull-down. The buffer runs only from the door's rail, which 5 V reaches only through the switch. |
 | Every peripheral sits on a pin that has it | UART0, I2C0 and SPI1, on pins confirmed against Raspberry Pi's SDK |
@@ -107,24 +154,34 @@ This is a good interlock, not a certified safety circuit. A short on the board b
 | Pull-downs hold the Pico's pins low, despite E9 | All at most 8.2 kΩ |
 | The door's fuse carries the DIM lines' current | 20 mA with all four on, of 100 mA |
 | Each connector matches its cable | 14 connectors, against [`cables.csv`](../../cad/optima/outputs/cables.csv) |
+| The DRC is clean | No violations, and thin thermals only on pads that carry no power |
+| Every net is routed | No connections open |
+| The board matches its schematic | KiCad finds no differences |
+| The power nets' tracks are wide enough, and their supplies have no vias | Each at its class's width |
+| The parts are where `placement.py` says | All 81. `routes.ses` holds their old places, so moving one without a new route fails here. |
+| The board is the size the CAD gives it | 140 × 100 mm |
 
-These catch mistakes in the wiring. They can't catch a wrong fact in the parts' data, so I read the facts that matter from the makers' sheets. One of them mattered: the LDD-1000H's DIM is pin 22, while the 1200 and 1500 mA models' is pin 21.
+These catch mistakes in the wiring and the layout. They can't catch a wrong fact in the parts' data, so I read the facts that matter from the makers' sheets. One of them mattered: the LDD-1000H's DIM is pin 22, while the 1200 and 1500 mA models' is pin 21.
 
-## 6. What's still open
+To see that the layout's checks can fail, I planted faults in a copy: no route, a 5 V track by the door's feed, a fixed track across another, a wider power class, a part moved without a new route, two nets swapped, and the wrong size in the CAD. Each one failed the check it should.
+
+## 7. What's still open
 
 - **The DIM pin's current.** Mean Well says an open DIM reads as on, but not what it sources. I assumed 0.5 mA, which 1 kΩ holds at 0.5 V. E08 measures DIM with the door open: it must be below 0.8 V.
-- **The D36V50F5's pin order.** Pololu's page shows it only in a picture. E05 takes it from Pololu's drawing, along with the LDD-1000H's footprint, and these two are the board's own.
+- **The parts' real fit.** See [before ordering](#5-the-layout). The tall parts' heights in the CAD are assumed, apart from the LDD-1000H's.
+- **LCSC's part number and the ADC's rotation.** Also there.
 - **The buck's current at 24 V,** from Pololu's graph. The board needs about 4 A.
 - **The cameras' trigger wiring,** which waits for ToupTek's pinouts (E01 §6).
 - **The thermistors,** still to be chosen. The divider assumes 10 kΩ at 25 °C.
 - **Which Pico 2 you buy.** Newer chips (stepping A3 or A4) don't have E9, but the board works with either.
 
-## 7. Sources
+## 8. Sources
 
 - Mean Well's [LDD-H datasheet](https://www.farnell.com/datasheets/3169447.pdf), from which I read the pin tables.
 - TI's [SN74AHCT125 datasheet](https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf) and KiCad's symbol for the ADS1115.
 - BTT's [TMC2209 V1.3 schematic](https://github.com/bigtreetech/BIGTREETECH-Stepper-Motor-Driver/blob/master/TMC2209/V1.3/Schematic/TMC2209%20V1.3-SCH.pdf) and [module page](https://neo.bttwiki.com/en/docs/accessories-docs/tmc-driver/tmc-2209/).
-- Pololu's [D36V50F5](https://www.pololu.com/product/4091) and [D24V50F5](https://www.pololu.com/product/2851).
+- Pololu's [D36V50F5](https://www.pololu.com/product/4091), with its [dimensions](https://www.pololu.com/file/0J1732/d36v50fx-step-down-voltage-regulator-dimensions.pdf) and [connections](https://a.pololu-files.com/picture/0J10742.1200.png), and its [D24V50F5](https://www.pololu.com/product/2851).
+- JLCPCB on [the BOM and placement files](https://jlcpcb.com/help/article/how-to-generate-the-bom-and-centroid-file-from-kicad).
 - KiCad's Pico symbol, and Raspberry Pi's [SDK register file](https://github.com/raspberrypi/pico-sdk/blob/master/src/rp2350/hardware_regs/include/hardware/regs/io_bank0.h) for the pins' functions.
 - On powering the Pico 2 and on E9, these are second-hand, because I couldn't read Raspberry Pi's PDFs: [a pinout guide](https://mischianti.org/raspberry-pi-pico-2-high-resolution-pinout-datasheet-and-specs/), [Hackaday on E9](https://hackaday.com/2024/09/04/the-worsening-raspberry-pi-rp2350-e9-erratum-situation/) and [on the A4 stepping](https://hackaday.com/2025/07/31/).
 - On the TMC2209's UART wiring, also second-hand: [a Rust driver's notes](https://docs.rs/crate/tmc2209-uart/latest) and [a Raspberry Pi project](https://pypi.org/project/TMC-2209-Raspberry-Pi/0.2.2).
